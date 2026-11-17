@@ -1,0 +1,15 @@
+node_modules/
+dist/
+coverage/
+bin/
+obj/
+*.user
+.vs/
+.idea/
+.env
+.env.*
+.DS_Store
+*.log
+.wrangler/
+.superpowers/
+conformance/private/
