@@ -20,8 +20,16 @@ vào BIN sẽ gắn nhầm mọi QR BVBank thành ví.
 
 ## Quan sát từ QR thật
 
-(Điền ở Plan 2, Task 5, từ các mẫu `vectors/vietqr/vietqr-real-*.json`.)
+**Chưa có.** Chủ dự án hoãn việc chụp QR thật (2026-11-18). Khi có, làm theo `conformance/README.md` mục "QR thật": bỏ
+file vào `conformance/private/`, chạy `node conformance/tools/recipe/extract.mjs`, rồi ghi quan sát vào đây.
 
 ## Luật đang bật
 
-(Chưa có. Plan 2, Task 6.)
+**Không có.** `decodeVietQr` chưa bao giờ trả `provider`. Spec 5.3 chỉ cho bật một ví khi có ít nhất một mẫu
+`vietqr-real-<ví>-*` chứng minh dấu hiệu nhận diện; các giả thuyết ở trên chưa đủ.
+
+Việc còn lại khi có QR thật (Plan 2, Task 5–6):
+- Chạy `extract.mjs`, commit các mẫu `*-real-*`.
+- Ghi quan sát vào mục trên, đối chiếu với từng giả thuyết.
+- Thêm `VietQrData.provider` và luật nhận diện cho ví có bằng chứng; luật không được dựa riêng vào BIN.
+- Test: mọi mẫu ví thật ra đúng `provider`; mọi mẫu ngân hàng (kể cả một QR BVBank thường dựng tay) không có `provider`.
