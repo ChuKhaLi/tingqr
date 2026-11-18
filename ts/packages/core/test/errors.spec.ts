@@ -1,8 +1,10 @@
 import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
+import { CONFORMANCE_DIR } from './conformance-root.js'
 import { ERROR_CODES, TingQrError, WARNING_CODES } from '../src/index.js'
 
 const codes = JSON.parse(
-  readFileSync(new URL('../../../../conformance/errors.json', import.meta.url), 'utf8'),
+  readFileSync(join(CONFORMANCE_DIR, 'errors.json'), 'utf8'),
 ) as { errors: { code: string }[]; warnings: { code: string }[] }
 
 test('ERROR_CODES and WARNING_CODES equal conformance/errors.json', () => {
@@ -18,4 +20,8 @@ test('TingQrError carries code and tag', () => {
   expect(e.code).toBe('NON_ASCII')
   expect(e.tag).toBe('62')
   expect(e.message).toBe('msg')
+})
+
+test('TingQrError without a tag has no tag property', () => {
+  expect('tag' in new TingQrError('CRC_MISMATCH', 'msg')).toBe(false)
 })

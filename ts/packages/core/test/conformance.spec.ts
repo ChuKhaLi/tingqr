@@ -2,7 +2,7 @@
 // The .NET runner (Plan 8) applies exactly the same rules. To support a new scheme, add a row to SCHEMES.
 import { readFileSync, readdirSync, statSync } from 'node:fs'
 import { join } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { CONFORMANCE_DIR } from './conformance-root.js'
 import { TingQrError, decodeVietQr, encodeVietQr, type ParseMode, type Result } from '../src/index.js'
 
 interface SchemeRunner {
@@ -27,7 +27,7 @@ interface Vector {
   errorTag?: string
 }
 
-const VECTORS = fileURLToPath(new URL('../../../../conformance/vectors/', import.meta.url))
+const VECTORS = join(CONFORMANCE_DIR, 'vectors')
 
 function files(dir: string): string[] {
   return readdirSync(dir).flatMap((name) => {
@@ -57,6 +57,13 @@ describe.each(vectors.map((v) => [v.id, v] as const))('%s', (_id, v) => {
   if (v.kind === 'valid') {
     test('decodes to expected in strict mode', () => {
       const r = runner(v).decode(v.payload, { mode: 'strict' })
+      expect(errorCode(r)).toBeUndefined()
+      if (!r.ok) return
+      expect(r.value).toStrictEqual(v.expected)
+      expect(r.warnings.map((w) => w.code)).toEqual(v.warnings ?? [])
+    })
+    test('decodes to the same expected in lenient mode, with the same warnings', () => {
+      const r = runner(v).decode(v.payload, { mode: 'lenient' })
       expect(errorCode(r)).toBeUndefined()
       if (!r.ok) return
       expect(r.value).toStrictEqual(v.expected)

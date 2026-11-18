@@ -78,3 +78,26 @@ test('parsePayload strips a UTF-8 BOM and no-break spaces around the payload and
     if (r.ok) expect(r.value.raw).toBe(S)
   }
 })
+
+test('parsePayload reports CRC_MISSING when tag 63 does not hold 4 hex digits', () => {
+  // '6302😀😀': two characters that are four UTF-16 units, so a .length check would wrongly pass it.
+  for (const tail of ['6302😀😀', '6304GGGG', '6304AE9-']) {
+    const r = parsePayload(S.slice(0, -8) + tail)
+    expect(r.ok, tail).toBe(false)
+    if (!r.ok) expect(r.error.code, tail).toBe('CRC_MISSING')
+  }
+})
+
+test('parsePayload reports CRC_MISSING when the last field holds 4 hex digits but is not tag 63', () => {
+  const r = parsePayload(S + '0004ABCD')
+  expect(r.ok).toBe(false)
+  if (!r.ok) expect(r.error.code).toBe('CRC_MISSING')
+})
+
+test('parsePayload reports CRC_MISSING when tag 63 holds more than 4 characters', () => {
+  for (const tail of ['6305XAE9F', '6305AE9FX']) {
+    const r = parsePayload(S.slice(0, -8) + tail)
+    expect(r.ok, tail).toBe(false)
+    if (!r.ok) expect(r.error.code, tail).toBe('CRC_MISSING')
+  }
+})

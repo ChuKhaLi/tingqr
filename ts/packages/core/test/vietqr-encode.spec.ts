@@ -80,3 +80,24 @@ test.each([
 test('the @tingqr/core/vietqr entry exports the same function', () => {
   expect(encodeFromSubpath).toBe(encodeVietQr)
 })
+
+test.each([
+  [{ bankBin: 970422 as unknown as string, accountNumber: '0123456789' }, '38'],
+  [{ bankBin: '970422', accountNumber: 123456789 as unknown as string }, '38'],
+  [{ bankBin: '970422', accountNumber: '0123456789', purpose: 123 as unknown as string }, '62'],
+  [{ bankBin: '970422', accountNumber: '0123456789', service: 'wallet' as never }, '38'],
+  [{ bankBin: '970422', accountNumber: '0123456789', service: 'toString' as never }, '38'],
+  [{ bankBin: '970422', accountNumber: '0123456789', amount: true as never }, '54'],
+])('wrongly typed input %j throws INVALID_VALUE, not TypeError', (input, tag) => {
+  const e = thrown(() => encodeVietQr(input))
+  expect(e.code).toBe('INVALID_VALUE')
+  expect(e.tag).toBe(tag)
+})
+
+test('empty-string purpose is treated as no purpose', () => {
+  expect(encodeVietQr({ ...BASE, purpose: '' })).toBe(encodeVietQr(BASE))
+})
+
+test.each(['9704220', 'X970422', '970422 '])('bank BIN %j is rejected (exactly 6 digits)', (bankBin) => {
+  expect(thrown(() => encodeVietQr({ ...BASE, bankBin })).code).toBe('INVALID_VALUE')
+})

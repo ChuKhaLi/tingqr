@@ -2,6 +2,7 @@
 export const ERROR_CODES = [
   'CRC_MISSING',
   'CRC_MISMATCH',
+  'BAD_TAG',
   'BAD_LENGTH',
   'TRUNCATED',
   'FIELD_TOO_LONG',
@@ -26,7 +27,7 @@ export interface Warning {
 
 export class TingQrError extends Error {
   readonly code: ErrorCode
-  readonly tag?: string
+  declare readonly tag?: string
 
   constructor(code: ErrorCode, message: string, tag?: string) {
     super(message)

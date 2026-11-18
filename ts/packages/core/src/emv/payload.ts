@@ -44,7 +44,7 @@ export function parsePayload(input: string): Result<EmvPayload> {
   }
 
   const last = fields[fields.length - 1]
-  if (!last || last.tag !== '63' || last.value.length !== 4) {
+  if (!last || last.tag !== '63' || !/^[0-9A-Fa-f]{4}$/.test(last.value)) {
     return {
       ok: false,
       error: new TingQrError('CRC_MISSING', 'The payload must end with tag 63 holding a 4-digit CRC.', '63'),

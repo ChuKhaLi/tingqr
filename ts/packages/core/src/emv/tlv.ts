@@ -37,6 +37,9 @@ export function parseTlv(input: string): TlvNode[] {
       throw new TingQrError('TRUNCATED', `Field header at position ${i} is cut off.`)
     }
     const tag = chars.slice(i, i + 2).join('')
+    if (!/^\d{2}$/.test(tag)) {
+      throw new TingQrError('BAD_TAG', `Tag "${tag}" at position ${i} is not two digits.`)
+    }
     const lengthText = chars.slice(i + 2, i + 4).join('')
     if (!/^\d{2}$/.test(lengthText)) {
       throw new TingQrError('BAD_LENGTH', `Tag ${tag} has length "${lengthText}", expected two digits.`, tag)

@@ -1,7 +1,9 @@
 /** UTF-8 bytes of a string. Written out so the core needs no DOM or Node typings. */
 function* utf8Bytes(input: string): Generator<number> {
   for (const ch of input) {
-    const cp = ch.codePointAt(0) as number
+    let cp = ch.codePointAt(0) as number
+    // A lone surrogate is not a character; encode it as U+FFFD like TextEncoder and .NET do.
+    if (cp >= 0xd800 && cp <= 0xdfff) cp = 0xfffd
     if (cp < 0x80) {
       yield cp
     } else if (cp < 0x800) {

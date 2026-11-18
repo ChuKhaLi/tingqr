@@ -23,10 +23,10 @@ function amountText(amount: VietQrInput['amount']): string | undefined {
 
 /** Build a VietQR (NAPAS) payload. Throws TingQrError on invalid input; never silently changes it. */
 export function encodeVietQr(input: VietQrInput): string {
-  if (!BIN.test(input.bankBin)) {
+  if (typeof input.bankBin !== 'string' || !BIN.test(input.bankBin)) {
     throw new TingQrError('INVALID_VALUE', `Bank BIN "${input.bankBin}" must be 6 digits.`, '38')
   }
-  if (!ACCOUNT.test(input.accountNumber)) {
+  if (typeof input.accountNumber !== 'string' || !ACCOUNT.test(input.accountNumber)) {
     throw new TingQrError(
       'INVALID_VALUE',
       `Account number "${input.accountNumber}" must be 3–25 letters or digits.`,
@@ -35,6 +35,9 @@ export function encodeVietQr(input: VietQrInput): string {
   }
   const amount = amountText(input.amount)
   const purpose = input.purpose === '' ? undefined : input.purpose
+  if (purpose !== undefined && typeof purpose !== 'string') {
+    throw new TingQrError('INVALID_VALUE', 'Purpose must be a string.', '62')
+  }
   if (purpose !== undefined && !PRINTABLE_ASCII.test(purpose)) {
     throw new TingQrError(
       'NON_ASCII',
@@ -44,6 +47,9 @@ export function encodeVietQr(input: VietQrInput): string {
   }
 
   const service = input.service ?? 'account'
+  if (!Object.hasOwn(SERVICE_CODE, service)) {
+    throw new TingQrError('INVALID_VALUE', `Service "${String(service)}" must be 'account' or 'card'.`, '38')
+  }
   const beneficiary = field('00', input.bankBin) + field('01', input.accountNumber)
   const merchant = field('00', VIETQR_GUID) + field('01', beneficiary) + field('02', SERVICE_CODE[service])
 

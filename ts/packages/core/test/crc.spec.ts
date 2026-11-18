@@ -34,3 +34,24 @@ test('crc16 encodes 3- and 4-byte UTF-8 characters', () => {
   expect(crc16('ក')).toBe('F1F1')
   expect(crc16('😀')).toBe('4F4F')
 })
+
+test('crc16 encodes a lone surrogate as U+FFFD, like TextEncoder and .NET', () => {
+  // EF BF BD → 38D9 (independent Python run)
+  expect(crc16('\uD800')).toBe('38D9')
+  expect(crc16('\uDC00')).toBe('38D9')
+})
+
+test.each([
+  ['\u007F', '6E88'],
+  ['\u0080', 'FCB1'],
+  ['߿', '4E22'],
+  ['ࠀ', 'E05B'],
+  ['퟿', '701D'],
+  ['', 'FDBC'],
+  ['￿', '189B'],
+  [String.fromCodePoint(0x10000), 'E9A4'],
+  ['\uDFFF', '38D9'],
+])('crc16 is correct at the UTF-8 encoding boundary %j', (ch, expected) => {
+  // Reference values from an independent Python run over the UTF-8 bytes (lone \uDFFF → U+FFFD).
+  expect(crc16(ch)).toBe(expected)
+})

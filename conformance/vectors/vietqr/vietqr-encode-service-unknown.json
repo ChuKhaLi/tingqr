@@ -1,0 +1,13 @@
+{
+  "id": "vietqr-encode-service-unknown",
+  "scheme": "vietqr",
+  "kind": "encode-invalid",
+  "input": {
+    "bankBin": "970422",
+    "accountNumber": "0123456789",
+    "service": "wallet"
+  },
+  "error": "INVALID_VALUE",
+  "errorTag": "38",
+  "source": "tingqr encode rules (spec 5.3, conformance/schemes/vietqr.md); input-only vector, no QR payload; fake account"
+}

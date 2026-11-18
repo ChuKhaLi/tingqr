@@ -1,0 +1,11 @@
+{
+  "id": "vietqr-bad-tag",
+  "scheme": "vietqr",
+  "kind": "invalid",
+  "payload": "00020101021138530010A0000007270123000697041601092576788590208QRIBFTTA5303704X802VN6304AE9F",
+  "error": "BAD_TAG",
+  "source": "mutation of vietqr-readme-sample",
+  "derived": true,
+  "derivedFrom": "vietqr-readme-sample",
+  "note": "Tag 58 renamed to X8; CRC left as is (parsing fails before CRC)."
+}

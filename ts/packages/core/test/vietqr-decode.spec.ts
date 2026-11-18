@@ -145,3 +145,67 @@ test('a duplicated sub-tag inside template 62 is DUPLICATE_TAG', () => {
   expect(r.ok).toBe(false)
   if (!r.ok) expect([r.error.code, r.error.tag]).toEqual(['DUPLICATE_TAG', '62.08'])
 })
+
+function withMerchant(merchant: string): string {
+  return rebuild((f) => f.map((x) => (x.tag === '38' ? { tag: '38', value: merchant } : x)))
+}
+
+test('missing 38.01 entirely is MISSING_TAG on 38.01', () => {
+  const r = decodeVietQr(withMerchant(field('00', 'A000000727') + field('02', 'QRIBFTTA')))
+  expect(r.ok).toBe(false)
+  if (!r.ok) expect([r.error.code, r.error.tag]).toEqual(['MISSING_TAG', '38.01'])
+})
+
+test('missing bank BIN in 38.01 is MISSING_TAG on 38.01', () => {
+  const r = decodeVietQr(withMerchant(field('00', 'A000000727') + field('01', field('01', '257678859')) + field('02', 'QRIBFTTA')))
+  expect(r.ok).toBe(false)
+  if (!r.ok) expect([r.error.code, r.error.tag]).toEqual(['MISSING_TAG', '38.01'])
+})
+
+test('missing service code is MISSING_TAG on 38.02', () => {
+  const r = decodeVietQr(withMerchant(field('00', 'A000000727') + field('01', field('00', '970416') + field('01', '257678859'))))
+  expect(r.ok).toBe(false)
+  if (!r.ok) expect([r.error.code, r.error.tag]).toEqual(['MISSING_TAG', '38.02'])
+})
+
+test('tag 38 without a GUID is UNSUPPORTED_SCHEME', () => {
+  const r = decodeVietQr(withMerchant(field('01', field('00', '970416') + field('01', '257678859')) + field('02', 'QRIBFTTA')))
+  expect(!r.ok && r.error.code).toBe('UNSUPPORTED_SCHEME')
+})
+
+test('payload format indicator other than 01 is INVALID_VALUE on 00', () => {
+  const r = decodeVietQr(rebuild((f) => f.map((x) => (x.tag === '00' ? { tag: '00', value: '02' } : x))))
+  expect(r.ok).toBe(false)
+  if (!r.ok) expect([r.error.code, r.error.tag]).toEqual(['INVALID_VALUE', '00'])
+})
+
+test('missing tag 00 is INVALID_VALUE on 00; missing tag 01 is INVALID_VALUE on 01', () => {
+  const no00 = decodeVietQr(rebuild((f) => f.filter((x) => x.tag !== '00')))
+  expect(!no00.ok && [no00.error.code, no00.error.tag]).toEqual(['INVALID_VALUE', '00'])
+  const no01 = decodeVietQr(rebuild((f) => f.filter((x) => x.tag !== '01')))
+  expect(!no01.ok && [no01.error.code, no01.error.tag]).toEqual(['INVALID_VALUE', '01'])
+})
+
+test('merchant tags 52, 59, 60 are returned; tag 62 without 08 gives no purpose', () => {
+  const p = rebuild((f) => [
+    ...f,
+    { tag: '52', value: '5812' },
+    { tag: '59', value: 'TINGQR SHOP' },
+    { tag: '60', value: 'HA NOI' },
+    { tag: '62', value: field('05', 'REF123') },
+  ])
+  const r = decodeVietQr(p)
+  expect(r.ok).toBe(true)
+  if (!r.ok) return
+  expect(r.value.merchantCategoryCode).toBe('5812')
+  expect(r.value.merchantName).toBe('TINGQR SHOP')
+  expect(r.value.merchantCity).toBe('HA NOI')
+  expect(r.value.additionalData).toStrictEqual({ '05': 'REF123' })
+  expect('purpose' in r.value).toBe(false)
+})
+
+test('a duplicated tag directly inside template 38 is DUPLICATE_TAG on 38.00', () => {
+  const r = decodeVietQr(withMerchant(field('00', 'A000000727') + field('00', 'A000000727') + field('01', field('00', '970416') + field('01', '257678859')) + field('02', 'QRIBFTTA')))
+  expect(r.ok).toBe(false)
+  if (!r.ok) expect([r.error.code, r.error.tag]).toEqual(['DUPLICATE_TAG', '38.00'])
+})

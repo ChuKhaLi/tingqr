@@ -35,6 +35,7 @@ QR cá nhân không có tag `52`, `59`, `60`. Khi đọc, tingqr trả lại cá
 
 - Không có tag 38 với GUID `A000000727`: `UNSUPPORTED_SCHEME`.
 - Thiếu `38.01.00`, `38.01.01` hay `38.02`: `MISSING_TAG`. Mã dịch vụ lạ: `INVALID_VALUE`.
+- Tag không phải hai chữ số: `BAD_TAG`. Tag 63 không phải đúng 4 chữ hex: `CRC_MISSING`.
 - Tag trùng ở cấp đầu hoặc trong `38`, `38.01`, `62`: `DUPLICATE_TAG`, ở cả hai chế độ.
 - Chế độ chặt (mặc định): thiếu `53` hoặc `58` thì `MISSING_TAG`. Chế độ chấp nhận lệch chuẩn: điền `704` / `VN` và
   cảnh báo `MISSING_OPTIONAL_TAG`.
@@ -48,9 +49,11 @@ QR cá nhân không có tag `52`, `59`, `60`. Khi đọc, tingqr trả lại cá
   - 4 mẫu mà `vietqr@1.2.0` và `vietnam-qr-pay@1.5.1` cho ra cùng một chuỗi;
   - `vietqr-card` chỉ có một oracle, vì `genQRText` của `vietqr` luôn ghi `QRIBFTTA`.
 - 1 mẫu `valid` từ README của `vietnam-qr-pay` (MIT).
-- 1 mẫu `invalid` và 1 mẫu `lenient` sửa từ các mẫu trên. CRC được tính lại bằng một hàm Python độc lập.
-- 8 mẫu `encode-invalid` (chỉ có `input`, không có chuỗi QR) ghim các luật tạo mã: chữ có dấu, nội dung 96 ký tự, số
-  tiền 0 / có số 0 đứng đầu / số lẻ / 14 chữ số, BIN 5 số, số tài khoản quá ngắn. Bản .NET phải chạy đạt các mẫu này.
+- 3 mẫu `invalid` (CRC sai, tag không phải chữ số, tag 63 không phải 4 chữ hex) và 2 mẫu `lenient` (thiếu tag 58, thiếu
+  tag 53) sửa từ các mẫu trên. CRC của mẫu `lenient` được tính lại bằng một hàm Python độc lập.
+- 13 mẫu `encode-invalid` (chỉ có `input`, không có chuỗi QR) ghim các luật tạo mã: chữ có dấu, nội dung 96 ký tự hoặc
+  không phải chuỗi, số tiền 0 / có số 0 đứng đầu / số lẻ / 14 chữ số, BIN 5 hoặc 7 số / có ký tự lạ / không phải chuỗi,
+  số tài khoản quá ngắn, mã dịch vụ lạ. Bản .NET phải chạy đạt các mẫu này.
 - Mọi số tài khoản đều là số giả.
 
 ## Chưa được kiểm

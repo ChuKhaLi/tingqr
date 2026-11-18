@@ -1,0 +1,22 @@
+{
+  "id": "vietqr-missing-currency",
+  "scheme": "vietqr",
+  "kind": "lenient",
+  "payload": "00020101021138540010A00000072701240006970422011001234567890208QRIBFTTA5802VN6304B113",
+  "error": "MISSING_TAG",
+  "warnings": [
+    "MISSING_OPTIONAL_TAG"
+  ],
+  "expected": {
+    "bankBin": "970422",
+    "accountNumber": "0123456789",
+    "service": "account",
+    "initiation": "static",
+    "currency": "704",
+    "country": "VN"
+  },
+  "source": "mutation of vietqr-static-account",
+  "derived": true,
+  "derivedFrom": "vietqr-static-account",
+  "note": "Tag 53 (5303704) removed; CRC recomputed with an independent Python CRC-16/CCITT-FALSE routine, not with tingqr."
+}

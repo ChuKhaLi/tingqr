@@ -55,3 +55,18 @@ test('encodeFields(parseTlv(s)) round-trips a published VietQR sample', () => {
   expect(fields.map((f) => f.tag)).toEqual(['00', '01', '38', '53', '58', '63'])
   expect(encodeFields(fields)).toBe(SAMPLE)
 })
+
+test('parseTlv rejects a tag that is not two digits with BAD_TAG', () => {
+  expect(thrownCode(() => parseTlv('AB02xx'))?.code).toBe('BAD_TAG')
+  expect(thrownCode(() => parseTlv('😀😀02xx'))?.code).toBe('BAD_TAG')
+})
+
+test('parseTlv reports TRUNCATED for a cut-off field header', () => {
+  expect(thrownCode(() => parseTlv('00'))?.code).toBe('TRUNCATED')
+  expect(thrownCode(() => parseTlv('000'))?.code).toBe('TRUNCATED')
+  expect(thrownCode(() => parseTlv('0002AB01'))?.code).toBe('TRUNCATED')
+})
+
+test('parseTlv accepts an empty field that ends exactly at the end of input', () => {
+  expect(parseTlv('0000')).toEqual([{ tag: '00', value: '' }])
+})

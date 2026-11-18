@@ -1,9 +1,9 @@
 import { readFileSync, readdirSync, statSync } from 'node:fs'
 import { basename, join } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { CONFORMANCE_DIR } from './conformance-root.js'
 import Ajv2020 from 'ajv/dist/2020.js'
 
-const ROOT = fileURLToPath(new URL('../../../../conformance/', import.meta.url))
+const ROOT = CONFORMANCE_DIR
 const schema = JSON.parse(readFileSync(join(ROOT, 'vectors.schema.json'), 'utf8'))
 const codes = JSON.parse(readFileSync(join(ROOT, 'errors.json'), 'utf8')) as {
   errors: { code: string }[]
