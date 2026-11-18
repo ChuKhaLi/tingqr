@@ -7,7 +7,16 @@ bộ mẫu thử ở đây, nên hai bản cho cùng kết quả trên mọi hà
 - `errors.json`: bảng mã lỗi và mã cảnh báo dùng chung. Không ngôn ngữ nào được có mã ngoài bảng.
 - `schemes/<id>.md`: mô tả từng loại QR (tag, GUID, quy tắc, nguồn).
 - `vectors/<id>/*.json`: mẫu thử, mỗi file một mẫu, tên file trùng `id`.
-- `tools/oracle/`: script chạy các thư viện độc lập (giấy phép MIT) để sinh mẫu, có `node_modules` riêng.
+- `tools/oracle/`: script chạy các thư viện độc lập để sinh mẫu, có `node_modules` riêng. Phiên bản ghim cứng:
+
+  | Gói | Phiên bản | Giấy phép | Dùng cho |
+  |---|---|---|---|
+  | `vietqr` | 1.2.0 | MIT | VietQR |
+  | `vietnam-qr-pay` | 1.5.1 | MIT | VietQR, VNPAY |
+  | `promptpay-qr` | 0.5.0 | MIT (file `LICENSE` trong gói) | PromptPay |
+  | `promptparse` | 1.7.1 | MIT (file `LICENSE.md` trong gói) | PromptPay |
+  | `thai-qr-payment` | 1.2.0 | MIT (khai báo trong `package.json`; file `LICENSE` có ở repo GitHub `uunw/thai-qr-payment`, không có trong gói npm) | PromptPay |
+  | `bakong-khqr` | 1.0.20 | ISC khai báo trong `package.json`, không có file LICENSE (SDK của Ngân hàng Quốc gia Campuchia) | KHQR |
 - `private/`: QR thật chụp ở máy chủ dự án. **Nằm trong `.gitignore`, không bao giờ commit.**
 
 ## Một file mẫu thử

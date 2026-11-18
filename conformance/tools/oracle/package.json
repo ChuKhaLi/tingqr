@@ -2,8 +2,12 @@
   "name": "tingqr-oracles",
   "private": true,
   "type": "module",
-  "description": "Independent MIT-licensed implementations run to generate conformance vectors. Not part of any published package.",
+  "description": "Independent implementations (MIT; bakong-khqr is ISC) run to generate conformance vectors. Not part of any published package.",
   "devDependencies": {
+    "bakong-khqr": "1.0.20",
+    "promptparse": "1.7.1",
+    "promptpay-qr": "0.5.0",
+    "thai-qr-payment": "1.2.0",
     "vietnam-qr-pay": "1.5.1",
     "vietqr": "1.2.0"
   }

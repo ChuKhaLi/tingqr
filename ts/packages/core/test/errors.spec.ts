@@ -25,3 +25,13 @@ test('TingQrError carries code and tag', () => {
 test('TingQrError without a tag has no tag property', () => {
   expect('tag' in new TingQrError('CRC_MISMATCH', 'msg')).toBe(false)
 })
+
+test('TingQrError carries the top-level fields it was given', () => {
+  const fields = [{ tag: '00', value: '01' }]
+  expect(new TingQrError('UNKNOWN_SCHEME', 'm', undefined, fields).fields).toEqual(fields)
+})
+
+test('TingQrError without fields has no fields property', () => {
+  expect('fields' in new TingQrError('UNKNOWN_SCHEME', 'm')).toBe(false)
+  expect('fields' in new TingQrError('UNKNOWN_SCHEME', 'm', '29')).toBe(false)
+})
