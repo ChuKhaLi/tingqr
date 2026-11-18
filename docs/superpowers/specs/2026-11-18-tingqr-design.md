@@ -37,7 +37,7 @@ xuyên biên giới đều nằm ở đó. Tài liệu này không chép lại.
   - Không bao giờ âm thầm tạo ra chuỗi hỏng. Đây là lỗi đang có ở `vietnam-qr-pay` (issue #15).
 - **Danh sách ngân hàng Việt Nam:** BIN, mã viết tắt, tên, logo (xem 5.4).
 - **Link mở app ngân hàng** cho Android và iPhone (xem 5.5).
-- **Vẽ QR thành SVG,** không phụ thuộc gói nào, chạy được trên trình duyệt, Node và Workers.
+- **Vẽ QR thành SVG** ở gói `@tingqr/render`, chạy được trên trình duyệt, Node và Workers.
 - **Gói Angular** (component, pipe) và **gói NestJS** (module, service).
 - **Bộ mẫu thử dùng chung** ở `conformance/` (xem 5.2), dựng ngay từ đầu để bản .NET dùng lại.
 
@@ -76,9 +76,11 @@ xuyên biên giới đều nằm ở đó. Tài liệu này không chép lại.
   - Angular 20 trở lên. Noel tree dùng Angular 21 SSR trên Cloudflare Workers, nên component phải render được ở SSR.
   - NestJS 10 trở lên.
   - .NET 8 trở lên. Phần lõi có thêm `netstandard2.0` nếu không tốn nhiều công.
-- **Lõi TypeScript không phụ thuộc gói nào** và chạy được trên trình duyệt, Node và Workers. **[Claude]**
-  - Lý do: đây là điểm người dùng đánh giá cao nhất ở thư viện đang dẫn đầu.
-  - Thư viện native chỉ được dùng trong gói vẽ ảnh dành cho máy chủ (sau v0.1).
+- **Chỉ riêng `@tingqr/core` không có dependency** và chạy được trên trình duyệt, Node và Workers. **[chủ dự án, 2026-11-18]**
+  - Lõi chỉ dựng, đọc và nhận diện chuỗi QR, vốn không cần gói nào. Lý do giữ: đây là điểm người dùng đánh giá cao nhất ở
+    thư viện đang dẫn đầu.
+  - **Các gói khác được dùng gói ngoài:** gói vẽ ảnh, gói tích hợp. Không port thư viện có sẵn chỉ để tránh dependency.
+  - Thư viện native chỉ dùng trong gói vẽ ảnh dành cho máy chủ (PNG, ảnh có khung trang trí; sau v0.1).
 - **Giấy phép:** MIT. Ghi công vietqr-node (MIT, Casso) ở những file được port từ đó. **[Claude]**
 - **Repo trên GitHub:** đặt dưới tài khoản cá nhân của chủ dự án, như `zkteco-protocol` và `nom-na`. Có thể chuyển sang
   một organization sau. **[Claude]**
@@ -120,7 +122,8 @@ tingqr/
 │  ├─ vectors.schema.json    ← JSON Schema cho file mẫu thử
 │  └─ banks/                 ← banks.json, bank-apps.json (5.4, 5.5)
 ├─ ts/                       ← pnpm workspace
-│  ├─ packages/core          ← @tingqr/core
+│  ├─ packages/core          ← @tingqr/core (không dependency)
+│  ├─ packages/render        ← @tingqr/render (SVG, bọc qrcode-generator)
 │  ├─ packages/angular       ← @tingqr/angular (ng-packagr)
 │  ├─ packages/nestjs        ← @tingqr/nestjs
 │  └─ packages/bank-logos    ← @tingqr/bank-logos (logo, không thuộc MIT, 5.4)
@@ -258,8 +261,9 @@ tree khớp với vietqr.io ở cả 15 app nó có.
 ### 5.6 Vẽ SVG và gói tích hợp **[Claude]**
 
 - **Vẽ SVG:**
-  - `toSvg(payload, options)` tự mã hoá QR, không dùng gói ngoài.
-  - Có thể port bộ mã hoá QR mã nguồn mở có giấy phép MIT như vietqr-node đã làm. Builder chọn nguồn và ghi giấy phép.
+  - Gói riêng `@tingqr/render` có `toSvg(payload, options)`, bọc `qrcode-generator` (MIT, bản 2.x, không có dependency;
+    Noel tree đang dùng). Không port bộ mã hoá QR. **[chủ dự án, 2026-11-18]**
+  - Bản .NET (`TingQR.Rendering`, v0.2) bọc `QRCoder`.
   - Tuỳ chọn: mức sửa lỗi, viền, màu, ô logo ở giữa. Nếu có logo giữa thì tự nâng mức sửa lỗi lên H.
 - **`@tingqr/angular`:**
   - Component standalone `<tingqr-code [payload]>` hoặc nhận dữ liệu VietQR.
