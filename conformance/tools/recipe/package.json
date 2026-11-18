@@ -1,0 +1,15 @@
+{
+  "name": "tingqr-recipe",
+  "private": true,
+  "type": "module",
+  "description": "Turn real QR captures in conformance/private/ into masked, committable recipe vectors. Never prints payloads.",
+  "scripts": {
+    "test": "node --test"
+  },
+  "devDependencies": {
+    "jpeg-js": "0.4.4",
+    "jsqr": "1.4.0",
+    "pngjs": "7.0.0",
+    "vietnam-qr-pay": "1.5.1"
+  }
+}

@@ -1,0 +1,47 @@
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+importers:
+
+  .:
+    devDependencies:
+      jpeg-js:
+        specifier: 0.4.4
+        version: 0.4.4
+      jsqr:
+        specifier: 1.4.0
+        version: 1.4.0
+      pngjs:
+        specifier: 7.0.0
+        version: 7.0.0
+      vietnam-qr-pay:
+        specifier: 1.5.1
+        version: 1.5.1
+
+packages:
+
+  jpeg-js@0.4.4:
+    resolution: {integrity: sha512-WZzeDOEtTOBK4Mdsar0IqEU5sMr3vSV2RqkAIzUEV2BHnUfKGyswWFPFwK5EeDo93K3FohSHbLAjj0s1Wzd+dg==}
+
+  jsqr@1.4.0:
+    resolution: {integrity: sha512-dxLob7q65Xg2DvstYkRpkYtmKm2sPJ9oFhrhmudT1dZvNFFTlroai3AWSpLey/w5vMcLBXRgOJsbXpdN9HzU/A==}
+
+  pngjs@7.0.0:
+    resolution: {integrity: sha512-LKWqWJRhstyYo9pGvgor/ivk2w94eSjE3RGVuzLGlr3NmD8bf7RcYGze1mNdEHRP6TRP6rMuDHk5t44hnTRyow==}
+    engines: {node: '>=14.19.0'}
+
+  vietnam-qr-pay@1.5.1:
+    resolution: {integrity: sha512-ECA1DQKFBeOeUX3naRBHJXKOpD+TJ0kOqQsOMGBPd1KqBHdRBnvT6A8sTdRroqDj16tYGj2I4W0GAMxPDe8DBQ==}
+
+snapshots:
+
+  jpeg-js@0.4.4: {}
+
+  jsqr@1.4.0: {}
+
+  pngjs@7.0.0: {}
+
+  vietnam-qr-pay@1.5.1: {}
