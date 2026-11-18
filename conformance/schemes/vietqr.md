@@ -37,8 +37,8 @@ QR cá nhân không có tag `52`, `59`, `60`. Khi đọc, tingqr trả lại cá
 - Thiếu `38.01.00`, `38.01.01` hay `38.02`: `MISSING_TAG`. Mã dịch vụ lạ: `INVALID_VALUE`.
 - Tag không phải hai chữ số: `BAD_TAG`. Tag 63 không phải đúng 4 chữ hex: `CRC_MISSING`.
 - Tag trùng ở cấp đầu hoặc trong `38`, `38.01`, `62`: `DUPLICATE_TAG`, ở cả hai chế độ.
-- Chế độ chặt (mặc định): thiếu `53` hoặc `58` thì `MISSING_TAG`. Chế độ chấp nhận lệch chuẩn: điền `704` / `VN` và
-  cảnh báo `MISSING_OPTIONAL_TAG`.
+- Chế độ chấp nhận lệch chuẩn (mặc định): thiếu `53` hoặc `58` thì điền `704` / `VN` và cảnh báo `MISSING_OPTIONAL_TAG`.
+  Chế độ chặt (`{ mode: 'strict' }`): thiếu thì `MISSING_TAG`.
 - Tag `54` trả về nguyên văn (kể cả `50000.00`).
 - Khoảng trắng hai đầu (space, tab, CR, LF, BOM `U+FEFF`, no-break space `U+00A0`) được bỏ kèm cảnh báo
   `TRIMMED_WHITESPACE`; CRC viết thường được chấp nhận kèm `LOWERCASE_CRC`.

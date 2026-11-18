@@ -60,7 +60,7 @@ test('tag 54 is returned verbatim, including decimals', () => {
 
 test('missing tag 58: strict fails with MISSING_TAG, lenient defaults to VN and warns', () => {
   const p = rebuild((f) => f.filter((x) => x.tag !== '58'))
-  const strict = decodeVietQr(p)
+  const strict = decodeVietQr(p, { mode: 'strict' })
   expect(strict.ok).toBe(false)
   if (!strict.ok) {
     expect(strict.error.code).toBe('MISSING_TAG')
@@ -230,4 +230,12 @@ test('tags 26 and 80 both land in extraFields, template values unsplit', () => {
   const p = rebuild((f) => [...f, { tag: '26', value: field('00', 'ZP') + field('01', 'X') }, { tag: '80', value: '046' }])
   const r = decodeVietQr(p)
   expect(r.ok && r.value.extraFields).toStrictEqual({ '26': '0002ZP0101X', '80': '046' })
+})
+
+test('default mode is lenient: missing tag 58 reads with a warning; strict must be asked for', () => {
+  const p = rebuild((f) => f.filter((x) => x.tag !== '58'))
+  const byDefault = decodeVietQr(p)
+  expect(byDefault.ok).toBe(true)
+  expect(byDefault.ok && byDefault.warnings.map((w) => w.code)).toEqual(['MISSING_OPTIONAL_TAG'])
+  expect(decodeVietQr(p, { mode: 'strict' }).ok).toBe(false)
 })

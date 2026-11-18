@@ -12,7 +12,7 @@ function rebuild(edit: (fields: { tag: string; value: string }[]) => { tag: stri
 }
 
 test('the README VNPAY QR fails strict mode on missing tag 52', () => {
-  const r = decodeVnpayQr(V)
+  const r = decodeVnpayQr(V, { mode: 'strict' })
   expect(r.ok).toBe(false)
   if (!r.ok) expect([r.error.code, r.error.tag]).toEqual(['MISSING_TAG', '52'])
 })
@@ -70,7 +70,7 @@ test('missing 53 and 58 in lenient mode default to 704 and VN, in tag order with
 
 test('missing 59 is MISSING_TAG in strict mode and a warning without default in lenient mode', () => {
   const p = rebuild((f) => [...f.filter((x) => x.tag !== '59'), { tag: '52', value: '5732' }, { tag: '60', value: 'HA NOI' }])
-  const strict = decodeVnpayQr(p)
+  const strict = decodeVnpayQr(p, { mode: 'strict' })
   expect(!strict.ok && [strict.error.code, strict.error.tag]).toEqual(['MISSING_TAG', '59'])
   const lenient = decodeVnpayQr(p, { mode: 'lenient' })
   expect(lenient.ok && 'merchantName' in lenient.value).toBe(false)
@@ -122,4 +122,10 @@ test('unknown top-level tags are returned in extraFields', () => {
 
 test('the @tingqr/core/vnpay entry exports the same function', () => {
   expect(decodeFromSubpath).toBe(decodeVnpayQr)
+})
+
+test('default mode is lenient: a real-world VNPAY QR reads without options', () => {
+  const r = decodeVnpayQr(V)
+  expect(r.ok).toBe(true)
+  expect(r.ok && r.warnings.map((w) => w.tag)).toEqual(['52', '60'])
 })

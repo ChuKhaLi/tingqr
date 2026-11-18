@@ -181,6 +181,9 @@ tingqr/
     - Chặt: theo đúng EMVCo.
     - Chấp nhận lệch chuẩn: cho VNPAY-QR và QR ngoài đời thiếu tag 52 hoặc 60.
   - `detect` dùng chế độ chấp nhận lệch chuẩn và báo các chỗ lệch kèm kết quả.
+  - **Mọi hàm đọc mặc định dùng chế độ chấp nhận lệch chuẩn**, mọi chỗ lệch nằm trong `warnings`; chế độ chặt phải
+    truyền `{ mode: 'strict' }`. Lý do: VNPAY-QR ngoài đời thiếu tag 52/60, mặc định chặt sẽ báo lỗi với gần như mọi
+    QR thật. **[chủ dự án, 2026-11-18]**
 - **Mỗi loại QR là một module:** gồm `id`, cách nhận ra (GUID và tag), `encode`, `decode` và kiểu dữ liệu riêng.
   - Module của v0.1: `vietqr`, `vnpay`, `promptpay`, `khqr`.
   - MoMo và ZaloPay là **biến thể nhận diện** của `vietqr` (`provider: 'momo' | 'zalopay'`), không phải module riêng.

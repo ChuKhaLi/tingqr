@@ -26,11 +26,11 @@ function fail(code: TingQrError['code'], message: string, tag?: string): { ok: f
 }
 
 /**
- * Read a VNPAY-QR merchant payload. Strict mode (default) requires the EMV tags 52, 53, 58, 59 and 60; real VNPAY
- * codes usually lack 52 and 60, so read them with `{ mode: 'lenient' }`, which warns instead.
+ * Read a VNPAY-QR merchant payload. Lenient mode (default) accepts codes without the EMV tags 52/59/60 — real VNPAY
+ * codes usually lack 52 and 60 — and reports each in `warnings`; `{ mode: 'strict' }` requires 52, 53, 58, 59, 60.
  */
 export function decodeVnpayQr(payload: string, options: { mode?: ParseMode } = {}): Result<VnpayQrData> {
-  const mode = options.mode ?? 'strict'
+  const mode = options.mode ?? 'lenient'
   const parsed = parsePayload(payload)
   if (!parsed.ok) return parsed
   const p = parsed.value

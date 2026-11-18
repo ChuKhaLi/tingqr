@@ -18,9 +18,12 @@ const SERVICE_BY_CODE: ReadonlyMap<string, VietQrService> = new Map(
 
 const INTERPRETED_TAGS: ReadonlySet<string> = new Set(['00', '01', '38', '52', '53', '54', '58', '59', '60', '62', '63'])
 
-/** Read a VietQR payload. Strict mode (default) requires tags 53 and 58; lenient mode fills defaults and warns. */
+/**
+ * Read a VietQR payload. Lenient mode (default) fills tags 53/58 when missing and reports every deviation in
+ * `warnings`; `{ mode: 'strict' }` rejects them instead (use it to validate codes you generate).
+ */
 export function decodeVietQr(payload: string, options: { mode?: ParseMode } = {}): Result<VietQrData> {
-  const mode = options.mode ?? 'strict'
+  const mode = options.mode ?? 'lenient'
   const parsed = parsePayload(payload)
   if (!parsed.ok) return parsed
   const p = parsed.value

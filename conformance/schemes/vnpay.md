@@ -32,12 +32,10 @@ Thứ tự kiểm:
 3. `26.01`, nếu thiếu thì `MISSING_TAG`.
 4. Tag `00` và `01`.
 5. Tag `52`, `53`, `58`, `59`, `60` theo thứ tự tăng dần:
-   - **Chế độ chặt (mặc định):** thiếu tag nào thì `MISSING_TAG`. Vì vậy hầu hết VNPAY-QR ngoài đời sẽ báo lỗi ở chế
-     độ chặt.
-   - **Chế độ chấp nhận lệch chuẩn:** mỗi tag thiếu thêm một cảnh báo `MISSING_OPTIONAL_TAG`. `53` và `58` được điền
+   - **Chế độ chấp nhận lệch chuẩn (mặc định):** mỗi tag thiếu thêm một cảnh báo `MISSING_OPTIONAL_TAG`. `53` và `58` được điền
      mặc định `704` và `VN`; `52`, `59`, `60` để trống.
-
-**Đọc VNPAY-QR thật thì dùng `{ mode: 'lenient' }`.**
+   - **Chế độ chặt (`{ mode: 'strict' }`):** thiếu tag nào thì `MISSING_TAG`. Hầu hết VNPAY-QR ngoài đời sẽ báo lỗi ở
+     chế độ này; dùng nó để kiểm mã có đúng chuẩn EMVCo không.
 
 Ngoài ra:
 - Tag trùng trong `26` hoặc `62` báo `DUPLICATE_TAG`.
