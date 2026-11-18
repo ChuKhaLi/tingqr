@@ -1,0 +1,19 @@
+{
+  "errors": [
+    { "code": "CRC_MISSING", "en": "The payload has no CRC field (tag 63, length 4) at the end.", "vi": "Chuỗi QR không có trường CRC (tag 63, dài 4) ở cuối." },
+    { "code": "CRC_MISMATCH", "en": "The CRC in tag 63 does not match the payload.", "vi": "CRC ở tag 63 không khớp với nội dung chuỗi." },
+    { "code": "BAD_LENGTH", "en": "A field length is not two decimal digits.", "vi": "Độ dài của một trường không phải hai chữ số." },
+    { "code": "TRUNCATED", "en": "A field length runs past the end of the payload.", "vi": "Độ dài một trường vượt quá phần còn lại của chuỗi." },
+    { "code": "FIELD_TOO_LONG", "en": "A field value is longer than 99 characters.", "vi": "Giá trị một trường dài hơn 99 ký tự." },
+    { "code": "NON_ASCII", "en": "The value contains characters outside printable ASCII.", "vi": "Giá trị có ký tự ngoài ASCII in được." },
+    { "code": "MISSING_TAG", "en": "A required tag is missing.", "vi": "Thiếu một tag bắt buộc." },
+    { "code": "INVALID_VALUE", "en": "A value does not match the format the scheme requires.", "vi": "Giá trị không đúng định dạng loại QR yêu cầu." },
+    { "code": "UNSUPPORTED_SCHEME", "en": "The payload belongs to a different scheme than the function expects.", "vi": "Chuỗi thuộc loại QR khác với loại hàm này xử lý." },
+    { "code": "UNKNOWN_SCHEME", "en": "No supported scheme recognises this payload.", "vi": "Không loại QR nào được hỗ trợ nhận ra chuỗi này." }
+  ],
+  "warnings": [
+    { "code": "TRIMMED_WHITESPACE", "en": "Whitespace around the payload was removed before parsing.", "vi": "Đã bỏ khoảng trắng hai đầu chuỗi trước khi đọc." },
+    { "code": "MISSING_OPTIONAL_TAG", "en": "A tag the standard requires is missing; it is commonly omitted in practice, so a default was used.", "vi": "Thiếu một tag mà chuẩn yêu cầu nhưng thực tế hay bỏ; đã dùng giá trị mặc định." },
+    { "code": "LOWERCASE_CRC", "en": "The CRC is written in lowercase hex.", "vi": "CRC viết bằng chữ hex thường." }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/ChuKhaLi/tingqr/conformance/vectors.schema.json",
+  "title": "tingqr conformance vector",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "scheme", "kind", "payload", "source"],
+  "properties": {
+    "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+    "scheme": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+    "kind": { "enum": ["valid", "invalid", "lenient"] },
+    "payload": { "type": "string" },
+    "input": { "type": "object" },
+    "roundTrip": { "type": "boolean" },
+    "expected": { "type": "object" },
+    "warnings": { "type": "array", "items": { "type": "string" } },
+    "error": { "type": "string" },
+    "source": { "type": "string", "minLength": 10 },
+    "derived": { "type": "boolean" },
+    "derivedFrom": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+    "note": { "type": "string" }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "kind": { "const": "valid" } } },
+      "then": { "required": ["expected"], "not": { "required": ["error"] } }
+    },
+    {
+      "if": { "properties": { "kind": { "const": "lenient" } } },
+      "then": { "required": ["expected", "error", "warnings"], "not": { "required": ["input"] } }
+    },
+    {
+      "if": { "properties": { "kind": { "const": "invalid" } } },
+      "then": { "required": ["error"], "not": { "anyOf": [{ "required": ["expected"] }, { "required": ["input"] }] } }
+    },
+    {
+      "if": { "properties": { "derivedFrom": { "type": "string" } }, "required": ["derivedFrom"] },
+      "then": { "required": ["derived"], "properties": { "derived": { "const": true } } }
+    }
+  ]
+}

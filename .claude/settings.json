@@ -3,11 +3,17 @@
   "permissions": {
     "deny": [
       "Read(./conformance/private/**)",
-      "Grep(./conformance/private/**)"
+      "Grep(./conformance/private/**)",
+      "Glob(./conformance/private/**)",
+      "Bash(*conformance/private*)",
+      "Bash(*conformance\\private*)"
     ],
     "ask": [
       "Bash(npm publish*)",
       "Bash(pnpm publish*)",
+      "Bash(*publish*)",
+      "Bash(pnpm*exec*)",
+      "Bash(pnpm*dlx*)",
       "Bash(dotnet nuget push*)",
       "Bash(git push*)"
     ],
@@ -16,7 +22,10 @@
       "Bash(pnpm test*)",
       "Bash(pnpm build*)",
       "Bash(pnpm typecheck*)",
-      "Bash(pnpm -C ts *)",
+      "Bash(pnpm -C ts install*)",
+      "Bash(pnpm -C ts test*)",
+      "Bash(pnpm -C ts build*)",
+      "Bash(pnpm -C ts typecheck*)",
       "Bash(npx vitest*)",
       "Bash(npx tsc*)",
       "Bash(dotnet build*)",
