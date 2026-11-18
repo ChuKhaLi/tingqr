@@ -129,3 +129,31 @@ test('default mode is lenient: a real-world VNPAY QR reads without options', () 
   expect(r.ok).toBe(true)
   expect(r.ok && r.warnings.map((w) => w.tag)).toEqual(['52', '60'])
 })
+
+test('parse-level warnings (trimmed whitespace) are passed through first', () => {
+  const r = decodeVnpayQr(V + '\r\n')
+  expect(r.ok && r.warnings.map((w) => w.code)).toEqual(['TRIMMED_WHITESPACE', 'MISSING_OPTIONAL_TAG', 'MISSING_OPTIONAL_TAG'])
+})
+
+test('tag 26 with another GUID, or without sub-tag 00, is UNSUPPORTED_SCHEME', () => {
+  for (const value of [field('00', 'A000000727') + field('01', '0105313144'), field('01', '0105313144')]) {
+    const r = decodeVnpayQr(rebuild((f) => f.map((x) => (x.tag === '26' ? { tag: '26', value } : x))))
+    expect(!r.ok && [r.error.code, r.error.tag]).toEqual(['UNSUPPORTED_SCHEME', '26'])
+  }
+})
+
+test('missing tag 00 or 01 is INVALID_VALUE on that tag', () => {
+  const no00 = decodeVnpayQr(rebuild((f) => f.filter((x) => x.tag !== '00')))
+  expect(!no00.ok && [no00.error.code, no00.error.tag]).toEqual(['INVALID_VALUE', '00'])
+  const no01 = decodeVnpayQr(rebuild((f) => f.filter((x) => x.tag !== '01')))
+  expect(!no01.ok && [no01.error.code, no01.error.tag]).toEqual(['INVALID_VALUE', '01'])
+})
+
+test('a VNPAY QR without tag 62 has no additionalData and no named 62 fields', () => {
+  const r = decodeVnpayQr(rebuild((f) => f.filter((x) => x.tag !== '62')))
+  expect(r.ok).toBe(true)
+  if (!r.ok) return
+  expect('additionalData' in r.value).toBe(false)
+  expect('store' in r.value).toBe(false)
+  expect(r.value.merchantId).toBe('0105313144')
+})
