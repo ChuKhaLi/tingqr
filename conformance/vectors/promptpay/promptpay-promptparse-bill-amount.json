@@ -1,0 +1,24 @@
+{
+  "id": "promptpay-promptparse-bill-amount",
+  "scheme": "promptpay",
+  "kind": "valid",
+  "payload": "00020101021230650016A00000067701011201150994000165501000212123456789012030667042953037645802TH54073649.2263044534",
+  "expected": {
+    "initiation": "dynamic",
+    "currency": "764",
+    "country": "TH",
+    "amount": "3649.22",
+    "kind": "bill-payment",
+    "crossBorder": false,
+    "billerId": "099400016550100",
+    "subFields": {
+      "01": "099400016550100",
+      "02": "123456789012",
+      "03": "670429"
+    },
+    "reference1": "123456789012",
+    "reference2": "670429"
+  },
+  "source": "maythiwat/promptparse@1.7.1 src/index.test.ts (MIT), oracle output pinned in the library's own test, test 'Convert BOT Barcode to Bill Payment (Valid, with Ref.2 and amount)'",
+  "note": "expected written by hand; checked with promptparse@1.7.1 parse() by `node check-promptpay.mjs` in conformance/tools/oracle."
+}

@@ -3,7 +3,15 @@
 import { readFileSync, readdirSync, statSync } from 'node:fs'
 import { join } from 'node:path'
 import { CONFORMANCE_DIR } from './conformance-root.js'
-import { TingQrError, decodeVietQr, decodeVnpayQr, encodeVietQr, type ParseMode, type Result } from '../src/index.js'
+import {
+  TingQrError,
+  decodePromptPayQr,
+  decodeVietQr,
+  decodeVnpayQr,
+  encodeVietQr,
+  type ParseMode,
+  type Result,
+} from '../src/index.js'
 
 interface SchemeRunner {
   encode?: (input: any) => string
@@ -13,6 +21,7 @@ interface SchemeRunner {
 const SCHEMES: Record<string, SchemeRunner> = {
   vietqr: { encode: encodeVietQr, decode: decodeVietQr },
   vnpay: { decode: decodeVnpayQr },
+  promptpay: { decode: decodePromptPayQr },
 }
 
 interface Vector {

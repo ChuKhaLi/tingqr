@@ -1,0 +1,22 @@
+{
+  "id": "promptpay-tqp-cross-border",
+  "scheme": "promptpay",
+  "kind": "valid",
+  "payload": "00020101021230550016A0000006770120060115099400016550100021212345678901253037645406100.005802TH63049D1C",
+  "expected": {
+    "initiation": "dynamic",
+    "currency": "764",
+    "country": "TH",
+    "amount": "100.00",
+    "kind": "bill-payment",
+    "crossBorder": true,
+    "billerId": "099400016550100",
+    "subFields": {
+      "01": "099400016550100",
+      "02": "123456789012"
+    },
+    "reference1": "123456789012"
+  },
+  "source": "uunw/thai-qr-payment@v1.2.0 packages/payload/src/builder.test.ts (MIT), oracle output pinned in the library's own test, test 'produces the expected wire bytes for a documented sample'",
+  "note": "expected written by hand; checked with promptparse@1.7.1 parse() by `node check-promptpay.mjs` in conformance/tools/oracle."
+}

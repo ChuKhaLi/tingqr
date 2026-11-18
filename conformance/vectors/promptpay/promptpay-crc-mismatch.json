@@ -1,0 +1,12 @@
+{
+  "id": "promptpay-crc-mismatch",
+  "scheme": "promptpay",
+  "kind": "invalid",
+  "payload": "00020101021129370016A000000677010111011300668012345675802TH530376463046190",
+  "error": "CRC_MISMATCH",
+  "errorTag": "63",
+  "source": "mutation of promptpay-dtinth-mobile",
+  "derived": true,
+  "derivedFrom": "promptpay-dtinth-mobile",
+  "note": "Last CRC character changed from 7 to 0."
+}

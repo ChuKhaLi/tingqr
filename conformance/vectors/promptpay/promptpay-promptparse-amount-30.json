@@ -1,0 +1,22 @@
+{
+  "id": "promptpay-promptparse-amount-30",
+  "scheme": "promptpay",
+  "kind": "valid",
+  "payload": "00020101021229370016A0000006770101110113006681222333353037645802TH540530.0063043CAD",
+  "expected": {
+    "initiation": "dynamic",
+    "currency": "764",
+    "country": "TH",
+    "amount": "30.00",
+    "kind": "credit-transfer",
+    "ota": false,
+    "proxyType": "mobile",
+    "proxy": "0066812223333",
+    "subFields": {
+      "01": "0066812223333"
+    },
+    "mobile": "0812223333"
+  },
+  "source": "maythiwat/promptparse@1.7.1 src/index.test.ts (MIT), oracle output pinned in the library's own test, test 'Generate Any ID with amount'",
+  "note": "expected written by hand; checked with promptparse@1.7.1 parse() by `node check-promptpay.mjs` in conformance/tools/oracle."
+}

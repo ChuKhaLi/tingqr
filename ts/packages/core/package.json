@@ -38,6 +38,16 @@
         "types": "./dist/vnpay.d.cts",
         "default": "./dist/vnpay.cjs"
       }
+    },
+    "./promptpay": {
+      "import": {
+        "types": "./dist/promptpay.d.ts",
+        "default": "./dist/promptpay.js"
+      },
+      "require": {
+        "types": "./dist/promptpay.d.cts",
+        "default": "./dist/promptpay.cjs"
+      }
     }
   },
   "files": [
