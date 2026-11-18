@@ -43,3 +43,27 @@ bộ mẫu thử ở đây, nên hai bản cho cùng kết quả trên mọi hà
 1. Ghi file vào `vectors/<scheme>/<id>.json`.
 2. Chạy `pnpm test:all`. Test `conformance-format` kiểm schema, mã lỗi, `id` trùng tên file.
 3. Thêm loại QR mới: theo skill `add-scheme` (`.claude/skills/add-scheme/SKILL.md`).
+
+## QR thật: chụp ở máy, chỉ commit công thức
+
+1. Bỏ QR thật vào `conformance/private/` (nằm trong `.gitignore`, **không bao giờ commit**). Tên file:
+   `<nhãn>__<mô-tả>.(txt|png|jpg)`.
+   - `<nhãn>` là `bank`, `momo`, `zalopay`, `vnpay` hoặc `other`: app hay nơi bạn lấy QR. Nhãn này là bằng chứng
+     "QR này của ví nào".
+   - File `.txt` chứa đúng một chuỗi QR. Ảnh chụp màn hình QR trong app dễ giải hơn ảnh chụp giấy; hoặc dùng app quét QR
+     để chép chuỗi.
+2. Chạy (lần đầu cần `pnpm install` trong `conformance/tools/recipe`):
+
+   ```
+   node conformance/tools/recipe/extract.mjs
+   ```
+
+   - Với mỗi file, công cụ thay số tài khoản, tên, mã tham chiếu bằng giá trị giả. Độ dài, loại ký tự, GUID, BIN và
+     tiền tố ví (`PSP`, `MOMOW2W`, `99ZP`, `99MM`) được giữ.
+   - CRC được tính lại bằng hàm riêng của công cụ.
+   - Kết quả ghi vào `vectors/<scheme>/<scheme>-real-<nhãn>-<mô-tả>.json`, có `derived: true`.
+   - `expected` lấy từ bộ đọc của `vietnam-qr-pay` trên chuỗi **đã che**.
+   - Công cụ chỉ in tên file và id, không bao giờ in chuỗi QR.
+3. `pnpm test:all` chạy thêm `private.spec.ts`: đọc từng QR thật ở chế độ chấp nhận lệch chuẩn. Test này chỉ chạy trên máy
+   có `conformance/private/`, và chỉ in tên file.
+4. Test của công cụ: `pnpm -C conformance/tools/recipe test` (chỉ dùng mẫu README công khai).
