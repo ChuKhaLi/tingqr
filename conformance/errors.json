@@ -6,6 +6,7 @@
     { "code": "TRUNCATED", "en": "A field length runs past the end of the payload.", "vi": "Độ dài một trường vượt quá phần còn lại của chuỗi." },
     { "code": "FIELD_TOO_LONG", "en": "A field value is longer than 99 characters.", "vi": "Giá trị một trường dài hơn 99 ký tự." },
     { "code": "NON_ASCII", "en": "The value contains characters outside printable ASCII.", "vi": "Giá trị có ký tự ngoài ASCII in được." },
+    { "code": "DUPLICATE_TAG", "en": "A tag appears more than once at the same level.", "vi": "Một tag xuất hiện hơn một lần ở cùng một cấp." },
     { "code": "MISSING_TAG", "en": "A required tag is missing.", "vi": "Thiếu một tag bắt buộc." },
     { "code": "INVALID_VALUE", "en": "A value does not match the format the scheme requires.", "vi": "Giá trị không đúng định dạng loại QR yêu cầu." },
     { "code": "UNSUPPORTED_SCHEME", "en": "The payload belongs to a different scheme than the function expects.", "vi": "Chuỗi thuộc loại QR khác với loại hàm này xử lý." },

@@ -11,8 +11,8 @@ function fail(code: TingQrError['code'], message: string, tag?: string): { ok: f
   return { ok: false, error: new TingQrError(code, message, tag) }
 }
 
-const SERVICE_BY_CODE = Object.fromEntries(
-  Object.entries(SERVICE_CODE).map(([service, code]) => [code, service as VietQrService]),
+const SERVICE_BY_CODE: ReadonlyMap<string, VietQrService> = new Map(
+  (Object.keys(SERVICE_CODE) as VietQrService[]).map((service) => [SERVICE_CODE[service], service]),
 )
 
 /** Read a VietQR payload. Strict mode (default) requires tags 53 and 58; lenient mode fills defaults and warns. */
@@ -25,14 +25,14 @@ export function decodeVietQr(payload: string, options: { mode?: ParseMode } = {}
 
   try {
     const merchantValue = getField(p, '38')?.value
-    const merchant = merchantValue === undefined ? undefined : parseTemplate(merchantValue)
+    const merchant = merchantValue === undefined ? undefined : parseTemplate(merchantValue, '38')
     if (!merchant || sub(merchant, '00')?.toUpperCase() !== VIETQR_GUID) {
       return fail('UNSUPPORTED_SCHEME', 'Not a VietQR payload: tag 38 with GUID A000000727 is missing.', '38')
     }
 
     const beneficiaryValue = sub(merchant, '01')
     if (beneficiaryValue === undefined) return fail('MISSING_TAG', 'Tag 38.01 (beneficiary) is missing.', '38.01')
-    const beneficiary = parseTemplate(beneficiaryValue)
+    const beneficiary = parseTemplate(beneficiaryValue, '38.01')
     const bankBin = sub(beneficiary, '00')
     const accountNumber = sub(beneficiary, '01')
     if (bankBin === undefined || accountNumber === undefined) {
@@ -41,7 +41,7 @@ export function decodeVietQr(payload: string, options: { mode?: ParseMode } = {}
 
     const serviceCode = sub(merchant, '02')
     if (serviceCode === undefined) return fail('MISSING_TAG', 'Tag 38.02 (service code) is missing.', '38.02')
-    const service = SERVICE_BY_CODE[serviceCode]
+    const service = SERVICE_BY_CODE.get(serviceCode)
     if (!service) {
       return fail('INVALID_VALUE', `Service code "${serviceCode}" is not QRIBFTTA or QRIBFTTC.`, '38.02')
     }
@@ -84,7 +84,7 @@ export function decodeVietQr(payload: string, options: { mode?: ParseMode } = {}
     if (amount !== undefined) value.amount = amount
     const additional = getField(p, '62')?.value
     if (additional !== undefined) {
-      const data = Object.fromEntries(parseTemplate(additional).map((n) => [n.tag, n.value]))
+      const data = Object.fromEntries(parseTemplate(additional, '62').map((n) => [n.tag, n.value]))
       value.additionalData = data
       if (data['08'] !== undefined) value.purpose = data['08']
     }

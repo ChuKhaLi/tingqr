@@ -62,3 +62,10 @@ test('parsePayload wraps TLV errors into a Result instead of throwing', () => {
   expect(r.ok).toBe(false)
   if (!r.ok) expect(r.error.code).toBe('TRUNCATED')
 })
+
+test('parsePayload rejects a duplicated top-level tag with DUPLICATE_TAG', () => {
+  const fields = parseTlv(S).filter((f) => f.tag !== '63')
+  const r = parsePayload(buildPayload([...fields, { tag: '58', value: 'TH' }]))
+  expect(r.ok).toBe(false)
+  if (!r.ok) expect([r.error.code, r.error.tag]).toEqual(['DUPLICATE_TAG', '58'])
+})

@@ -52,7 +52,19 @@ export function parseTlv(input: string): TlvNode[] {
   return out
 }
 
-/** Parse the value of a template tag (e.g. 38, 62) into its sub-fields. */
-export function parseTemplate(value: string): TlvNode[] {
-  return parseTlv(value)
+/** Throw DUPLICATE_TAG if a tag appears twice at this level. `path` prefixes the tag in the error (e.g. '38.01'). */
+export function assertUniqueTags(nodes: readonly TlvField[], path?: string): void {
+  const seen = new Set<string>()
+  for (const n of nodes) {
+    const where = path ? `${path}.${n.tag}` : n.tag
+    if (seen.has(n.tag)) throw new TingQrError('DUPLICATE_TAG', `Tag ${where} appears more than once.`, where)
+    seen.add(n.tag)
+  }
+}
+
+/** Parse the value of a template tag (e.g. 38, 62) into its sub-fields. Rejects duplicate sub-tags. */
+export function parseTemplate(value: string, path?: string): TlvNode[] {
+  const nodes = parseTlv(value)
+  assertUniqueTags(nodes, path)
+  return nodes
 }

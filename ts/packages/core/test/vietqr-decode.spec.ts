@@ -116,3 +116,32 @@ test('CRC errors pass through; trailing newline is accepted with a warning', () 
 test('the @tingqr/core/vietqr entry exports the same decode function', () => {
   expect(decodeFromSubpath).toBe(decodeVietQr)
 })
+
+test('a service code naming an Object.prototype property is INVALID_VALUE, not a crash or a match', () => {
+  for (const code of ['constructor', 'toString', '__proto__']) {
+    const p = rebuild((f) => f.map((x) => (x.tag === '38' ? { tag: '38', value: x.value.replace('0208QRIBFTTA', field('02', code)) } : x)))
+    const r = decodeVietQr(p)
+    expect(r.ok, code).toBe(false)
+    if (!r.ok) expect([r.error.code, r.error.tag], code).toEqual(['INVALID_VALUE', '38.02'])
+  }
+})
+
+test('a duplicated tag inside template 38.01 is DUPLICATE_TAG in both modes', () => {
+  const merchant =
+    field('00', 'A000000727') +
+    field('01', field('00', '970416') + field('01', '257678859') + field('01', '999999999')) +
+    field('02', 'QRIBFTTA')
+  const p = rebuild((f) => f.map((x) => (x.tag === '38' ? { tag: '38', value: merchant } : x)))
+  for (const mode of ['strict', 'lenient'] as const) {
+    const r = decodeVietQr(p, { mode })
+    expect(r.ok, mode).toBe(false)
+    if (!r.ok) expect([r.error.code, r.error.tag], mode).toEqual(['DUPLICATE_TAG', '38.01.01'])
+  }
+})
+
+test('a duplicated sub-tag inside template 62 is DUPLICATE_TAG', () => {
+  const p = rebuild((f) => [...f, { tag: '62', value: field('08', 'A') + field('08', 'B') }])
+  const r = decodeVietQr(p)
+  expect(r.ok).toBe(false)
+  if (!r.ok) expect([r.error.code, r.error.tag]).toEqual(['DUPLICATE_TAG', '62.08'])
+})

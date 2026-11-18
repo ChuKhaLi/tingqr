@@ -1,6 +1,6 @@
 import { TingQrError, type Result, type Warning } from '../errors.js'
 import { crc16 } from './crc.js'
-import { encodeFields, parseTlv, type TlvField, type TlvNode } from './tlv.js'
+import { assertUniqueTags, encodeFields, parseTlv, type TlvField, type TlvNode } from './tlv.js'
 
 export type ParseMode = 'strict' | 'lenient'
 
@@ -56,6 +56,12 @@ export function parsePayload(input: string): Result<EmvPayload> {
       ok: false,
       error: new TingQrError('CRC_MISMATCH', `CRC is ${last.value}, expected ${expected}.`, '63'),
     }
+  }
+  try {
+    assertUniqueTags(fields)
+  } catch (e) {
+    if (e instanceof TingQrError) return { ok: false, error: e }
+    throw e
   }
   if (last.value !== last.value.toUpperCase()) {
     warnings.push({ code: 'LOWERCASE_CRC', message: 'The CRC is written in lowercase hex.', tag: '63' })
