@@ -10,14 +10,37 @@ TypeScript và bản .NET, kèm tích hợp sẵn cho Angular, NestJS và ASP.NE
 - **Bản thiết kế đã duyệt (2026-11-18):** `docs/superpowers/specs/2026-11-18-tingqr-design.md`. Đó là nguồn chính cho mọi
   quyết định. Mục ghi **[chủ dự án]** thì không tự đổi; mục **[Claude]** có thể đề xuất sửa.
   - Nghiên cứu nền: `docs/huong-di/2026-11-18-nghien-cuu-va-huong-di.md`.
-  - Chưa có code. Bước tiếp: kế hoạch ở `docs/superpowers/plans/`.
+  - **Plan 1 đang làm** (nhánh `plan-1`): `docs/superpowers/plans/2026-11-18-plan-1-nen-mong-va-vietqr.md`. Lộ trình
+    Plan 1–8 nằm ở đầu file đó.
 - **Chủ dự án đã quyết:**
   - Mục đích chính là một thư viện mã nguồn mở có tiếng; dùng phụ trong Noel tree (`../noel-tree`, Angular 21 SSR trên
     Cloudflare Workers).
   - Hướng B: đa quốc gia Đông Nam Á, Việt Nam trước, muốn đi trước ở QR xuyên biên giới.
-  - Không bắt buộc lõi phải thuần JS. Có thể tách bản server và bản client.
+  - Chỉ riêng `@tingqr/core` không có dependency. Bộ mã hoá QR port từ Nayuki (MIT) vào `@tingqr/render`, không bọc
+    thư viện QR khác. Thư viện native chỉ ở gói vẽ ảnh cho máy chủ (sau v0.1).
   - Tên `tingqr` (chốt 2026-11-18). README phải nói rõ ngay đầu: thư viện **không** xác nhận thanh toán hay nhận webhook
     ("ting ting" dễ làm dev Việt tưởng vậy).
+
+## Lệnh
+
+- Ở gốc repo: `pnpm test:all`, `pnpm build:all`, `pnpm typecheck:all` (hiện chỉ có phần TypeScript; Plan 8 thêm .NET).
+- Chi tiết phần TypeScript: `ts/CLAUDE.md`.
+
+## Conformance trước, code sau
+
+- `conformance/` là nguồn sự thật chung cho mọi ngôn ngữ: mẫu thử, mã lỗi (`errors.json`), mô tả loại QR.
+- Hành vi mới phải có mẫu thử trước rồi mới có code. Thêm loại QR: dùng skill `add-scheme`.
+- `conformance/private/` chứa QR thật, không bao giờ commit và Claude không đọc (bị chặn trong `.claude/settings.json`).
+- Trước khi merge: agent `evidence-review` (khẳng định có quá bằng chứng không) và `parity-review` (hai ngôn ngữ có khớp
+  không).
+
+## Làm song song
+
+- Việc TypeScript và .NET chạy song song phải ở hai git worktree riêng; thư mục khác nhau vẫn dùng chung git index.
+
+## LSP
+
+- Bật plugin LSP TypeScript. Từ Plan 8 bật thêm LSP C#.
 
 ## Quy ước
 

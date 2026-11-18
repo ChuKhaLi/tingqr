@@ -1,0 +1,10 @@
+{
+  "name": "tingqr-repo",
+  "private": true,
+  "packageManager": "pnpm@10.34.1",
+  "scripts": {
+    "test:all": "pnpm -C ts test",
+    "build:all": "pnpm -C ts build",
+    "typecheck:all": "pnpm -C ts typecheck"
+  }
+}
