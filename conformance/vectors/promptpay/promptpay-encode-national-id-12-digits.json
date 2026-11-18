@@ -1,0 +1,14 @@
+{
+  "id": "promptpay-encode-national-id-12-digits",
+  "scheme": "promptpay",
+  "kind": "encode-invalid",
+  "input": {
+    "target": {
+      "nationalId": "111111111111"
+    }
+  },
+  "error": "INVALID_VALUE",
+  "errorTag": "29.02",
+  "source": "conformance/schemes/promptpay.md, encode rules (hand-written input that breaks one rule)",
+  "note": "National/tax ID must be exactly 13 digits."
+}

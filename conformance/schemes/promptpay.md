@@ -61,6 +61,20 @@ Ngoài ra:
 - **Chưa xác nhận:** "ref3" ở `62.07` và các trường xuyên biên giới ở `62.08`. tingqr chỉ trả nguyên văn trong
   `additionalData`, không đặt tên.
 
+## Tạo mã (`encodePromptPayQr`)
+
+- **Thứ tự tag:** `00`, `01`, `29`/`30`, `53`, `54` (nếu có), `58`, `63`, tăng dần như EMVCo và như `thai-qr-payment`.
+  Có `amount` thì `01` là `12`, không có thì `11`.
+- **`mobile`:** bỏ mọi ký tự không phải số, rồi phải còn `0` + 9 số, `66` + 9 số hoặc `0066` + 9 số. Ghi là `0066` + 9 số.
+  Sai thì `INVALID_VALUE` tag `29.01`.
+- **`nationalId`** đúng 13 chữ số (`29.02`), **`eWallet`** đúng 15 chữ số (`29.03`), **`billerId`** 13 hoặc 15 chữ số
+  (`30.01`). Không bỏ dấu gạch: có ký tự không phải số là `INVALID_VALUE`.
+- **`reference1`, `reference2`** (`30.02`, `30.03`): ASCII in được (không thì `NON_ASCII`), tối đa 20 ký tự (không thì
+  `INVALID_VALUE`). Giới hạn 20 lấy theo các thư viện, vì đặc tả chưa đọc được. Chuỗi rỗng coi như không có.
+- **`amount`** (`54`): số hoặc chuỗi dạng `^\d{1,10}(\.\d{1,2})?$`, lớn hơn 0. Luôn ghi hai chữ số thập phân (`30.00`),
+  bỏ số 0 thừa ở đầu (`0001.5` → `1.50`). Không làm tròn: `1.234` hay `0.1 + 0.2` bị từ chối. Chuỗi rỗng coi như không có
+  số tiền.
+
 ## Mẫu thử (`vectors/promptpay/`)
 
 - 17 mẫu `valid` chép nguyên văn từ file test của ba thư viện, ở đúng phiên bản trên:
@@ -70,6 +84,9 @@ Ngoài ra:
 - `expected` viết tay, rồi đối chiếu bằng `parse()` của `promptparse` (`node check-promptpay.mjs` trong
   `tools/oracle/`).
 - 1 mẫu `invalid`: CRC sai, sửa từ mẫu `promptpay-dtinth-mobile`.
+- 5 mẫu `valid` có `input`, sinh bằng `tools/oracle/gen-promptpay.mjs`: builder của `thai-qr-payment` tạo, `parse()` của
+  `promptparse` đọc lại khớp từng trường và thứ tự tag. tingqr phải tạo ra đúng từng byte.
+- 7 mẫu `encode-invalid`, mỗi mẫu vi phạm một quy tắc tạo mã ở trên.
 
 ## Chưa được kiểm
 

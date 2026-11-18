@@ -1,0 +1,15 @@
+{
+  "id": "promptpay-encode-amount-3-decimals",
+  "scheme": "promptpay",
+  "kind": "encode-invalid",
+  "input": {
+    "target": {
+      "mobile": "0812223333"
+    },
+    "amount": 1.234
+  },
+  "error": "INVALID_VALUE",
+  "errorTag": "54",
+  "source": "conformance/schemes/promptpay.md, encode rules (hand-written input that breaks one rule)",
+  "note": "Amount has at most 2 decimals; tingqr refuses instead of rounding (thai-qr-payment rounds to 1.23)."
+}

@@ -1,0 +1,15 @@
+{
+  "id": "promptpay-encode-ref1-21-chars",
+  "scheme": "promptpay",
+  "kind": "encode-invalid",
+  "input": {
+    "target": {
+      "billerId": "099400016550100",
+      "reference1": "123456789012345678901"
+    }
+  },
+  "error": "INVALID_VALUE",
+  "errorTag": "30.02",
+  "source": "conformance/schemes/promptpay.md, encode rules (hand-written input that breaks one rule)",
+  "note": "References are at most 20 characters (limit shared by the oracles; Thai QR spec not read)."
+}

@@ -60,3 +60,20 @@ export interface PromptPayBillPayment {
 }
 
 export type PromptPayData = PromptPayCommon & (PromptPayCreditTransfer | PromptPayBillPayment)
+
+/** Who receives a PromptPay payment. */
+export type PromptPayTarget =
+  /** Thai mobile number: '0812223333', '+66 81-222-3333', '66812223333'; non-digits are removed. */
+  | { mobile: string }
+  /** National ID or tax ID: exactly 13 digits. */
+  | { nationalId: string }
+  /** E-wallet ID: exactly 15 digits. */
+  | { eWallet: string }
+  /** Bill payment: biller ID of 13 or 15 digits; references are printable ASCII, at most 20 characters. */
+  | { billerId: string; reference1?: string; reference2?: string }
+
+export interface PromptPayInput {
+  target: PromptPayTarget
+  /** THB, greater than zero, at most 2 decimals and 9999999999.99. Written with two decimals ('30.00'). */
+  amount?: number | string
+}

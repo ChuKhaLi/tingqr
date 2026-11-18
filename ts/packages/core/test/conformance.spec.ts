@@ -6,6 +6,7 @@ import { CONFORMANCE_DIR } from './conformance-root.js'
 import {
   TingQrError,
   decodePromptPayQr,
+  encodePromptPayQr,
   decodeVietQr,
   decodeVnpayQr,
   encodeVietQr,
@@ -21,7 +22,7 @@ interface SchemeRunner {
 const SCHEMES: Record<string, SchemeRunner> = {
   vietqr: { encode: encodeVietQr, decode: decodeVietQr },
   vnpay: { decode: decodeVnpayQr },
-  promptpay: { decode: decodePromptPayQr },
+  promptpay: { encode: encodePromptPayQr, decode: decodePromptPayQr },
 }
 
 interface Vector {
