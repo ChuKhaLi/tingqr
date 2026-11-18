@@ -13,3 +13,5 @@ obj/
 .wrangler/
 .superpowers/
 conformance/private/
+reports/
+.stryker-tmp/

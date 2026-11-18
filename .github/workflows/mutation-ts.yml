@@ -1,0 +1,42 @@
+name: Mutation (TypeScript core)
+
+# Stryker mutates @tingqr/core and fails if the mutation score drops below the `break` threshold in
+# ts/packages/core/stryker.config.json. One OS and one Node version: the score does not vary by platform.
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'ts/packages/core/**'
+      - 'conformance/**'
+      - '.github/workflows/mutation-ts.yml'
+  pull_request:
+    paths:
+      - 'ts/packages/core/**'
+      - 'conformance/**'
+      - '.github/workflows/mutation-ts.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  mutation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+          cache: pnpm
+          cache-dependency-path: ts/pnpm-lock.yaml
+      - run: pnpm -C ts install --frozen-lockfile
+      - run: pnpm -C ts/packages/core mutate
+      - name: Upload mutation report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mutation-report
+          path: ts/packages/core/reports/mutation/
+          if-no-files-found: ignore
