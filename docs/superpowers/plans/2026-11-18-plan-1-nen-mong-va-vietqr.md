@@ -15,7 +15,7 @@
 1. **Plan 1 (file này):** nền móng, setup Claude Code, tầng EMV, VietQR, CI TypeScript.
 2. Plan 2: VNPAY-QR, nhận diện MoMo/ZaloPay, công cụ QR thật ở máy (`conformance/private/` → "công thức", spec 5.2a). Cần chủ dự án chụp QR thật.
 3. Plan 3: PromptPay, KHQR, `detect()`.
-4. Plan 4: gói `@tingqr/render`, vẽ SVG bằng cách bọc `qrcode-generator` (MIT). Không port bộ mã hoá QR.
+4. Plan 4: gói `@tingqr/render`: port bộ mã hoá QR của Nayuki (MIT) vào tingqr, vẽ SVG, mẫu thử ma trận lấy từ Nayuki gốc làm oracle.
 5. Plan 5: danh sách ngân hàng, link mở app, `@tingqr/bank-logos`, skill `update-banks` và Action hằng tháng.
 6. Plan 6: `@tingqr/angular`, `@tingqr/nestjs`, thử trong Noel tree.
 7. Plan 7: README, bảng thử trên app thật, phát hành npm qua OIDC, skill `release-drill` → **v0.1**.

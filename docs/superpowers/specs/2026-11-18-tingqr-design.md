@@ -79,7 +79,8 @@ xuyên biên giới đều nằm ở đó. Tài liệu này không chép lại.
 - **Chỉ riêng `@tingqr/core` không có dependency** và chạy được trên trình duyệt, Node và Workers. **[chủ dự án, 2026-11-18]**
   - Lõi chỉ dựng, đọc và nhận diện chuỗi QR, vốn không cần gói nào. Lý do giữ: đây là điểm người dùng đánh giá cao nhất ở
     thư viện đang dẫn đầu.
-  - **Các gói khác được dùng gói ngoài:** gói vẽ ảnh, gói tích hợp. Không port thư viện có sẵn chỉ để tránh dependency.
+  - **Các gói tích hợp được dùng gói ngoài** (Angular, NestJS, ASP.NET Core). Riêng bộ mã hoá QR thì không bọc thư viện
+    QR khác mà port vào tingqr (5.6). **[chủ dự án, 2026-11-18]**
   - Thư viện native chỉ dùng trong gói vẽ ảnh dành cho máy chủ (PNG, ảnh có khung trang trí; sau v0.1).
 - **Giấy phép:** MIT. Ghi công vietqr-node (MIT, Casso) ở những file được port từ đó. **[Claude]**
 - **Repo trên GitHub:** đặt dưới tài khoản cá nhân của chủ dự án, như `zkteco-protocol` và `nom-na`. Có thể chuyển sang
@@ -123,7 +124,7 @@ tingqr/
 │  └─ banks/                 ← banks.json, bank-apps.json (5.4, 5.5)
 ├─ ts/                       ← pnpm workspace
 │  ├─ packages/core          ← @tingqr/core (không dependency)
-│  ├─ packages/render        ← @tingqr/render (SVG, bọc qrcode-generator)
+│  ├─ packages/render        ← @tingqr/render (SVG, bộ mã hoá QR port từ Nayuki, không dependency)
 │  ├─ packages/angular       ← @tingqr/angular (ng-packagr)
 │  ├─ packages/nestjs        ← @tingqr/nestjs
 │  └─ packages/bank-logos    ← @tingqr/bank-logos (logo, không thuộc MIT, 5.4)
@@ -261,9 +262,14 @@ tree khớp với vietqr.io ở cả 15 app nó có.
 ### 5.6 Vẽ SVG và gói tích hợp **[Claude]**
 
 - **Vẽ SVG:**
-  - Gói riêng `@tingqr/render` có `toSvg(payload, options)`, bọc `qrcode-generator` (MIT, bản 2.x, không có dependency;
-    Noel tree đang dùng). Không port bộ mã hoá QR. **[chủ dự án, 2026-11-18]**
-  - Bản .NET (`TingQR.Rendering`, v0.2) bọc `QRCoder`.
+  - Gói riêng `@tingqr/render` có `toSvg(payload, options)` và `toMatrix(payload, options)`. **[chủ dự án, 2026-11-18]**
+  - **Bộ mã hoá QR là code của tingqr, port từ Nayuki QR Code generator** (bản TypeScript, MIT, header
+    `Copyright (c) Project Nayuki`; https://github.com/nayuki/QR-Code-generator). Không bọc thư viện QR khác, không có
+    dependency. Giữ header giấy phép và ghi công trong file được port và trong NOTICE. **[chủ dự án, 2026-11-18]**
+  - Bản .NET (`TingQR.Rendering`, v0.2) port từ `manuelbl/QrCodeGenerator` (MIT), vốn là bản port trung thành của Nayuki.
+  - **Hai ngôn ngữ phải cho cùng một ma trận điểm ảnh** với cùng chuỗi và cùng tuỳ chọn (mức sửa lỗi, mask, phiên bản).
+    Bộ mẫu thử có loại mẫu ma trận (`conformance/vectors/render/`) để chứng minh. Mẫu ma trận lấy từ chính bộ mã hoá
+    Nayuki gốc chạy làm oracle, không lấy từ code đã port.
   - Tuỳ chọn: mức sửa lỗi, viền, màu, ô logo ở giữa. Nếu có logo giữa thì tự nâng mức sửa lỗi lên H.
 - **`@tingqr/angular`:**
   - Component standalone `<tingqr-code [payload]>` hoặc nhận dữ liệu VietQR.
