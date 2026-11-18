@@ -69,6 +69,7 @@ for (const c of CASES) {
     payload,
     expected,
     error: 'MISSING_TAG',
+    errorTag: '52',
     warnings: ['MISSING_OPTIONAL_TAG', 'MISSING_OPTIONAL_TAG'],
     source: 'vietnam-qr-pay@1.5.1 QRPay.initVNPayQR (MIT), single oracle; fake merchant',
     note: 'The oracle omits tags 52 and 60, like real VNPAY codes: strict fails on 52, lenient warns for 52 and 60.',

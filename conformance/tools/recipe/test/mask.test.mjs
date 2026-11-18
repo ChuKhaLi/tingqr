@@ -117,3 +117,21 @@ test('fake digits are a keyed permutation per position, not a shift (no linear r
     )
   assert.ok(Array.from({ length: 20 }, (_, pos) => keepsDifferences(pos)).some((v) => !v))
 })
+
+test('the "all" rule also masks spaces and combining marks, so word lengths of names do not survive', () => {
+  const body = ZALOPAY.slice(0, -8).replace('5802VN', '5802VN5910NGUYEN VAN') + '6304'
+  const { payload } = maskPayload(body + crc16(body), { seed: 'test' })
+  assert.ok(payload.includes('5910XXXXXXXXXX'))
+  const nfd = 'Nguyễn'
+  const body2 = ZALOPAY.slice(0, -8).replace('5802VN', '5802VN59' + String([...nfd].length).padStart(2, '0') + nfd) + '6304'
+  const { payload: p2 } = maskPayload(body2 + crc16(body2), { seed: 'test' })
+  assert.ok(!/\p{M}/u.test(p2))
+})
+
+test('tag 64 (merchant information in another language) is a template: inner lengths kept, language kept', () => {
+  const t64 = '0002vi' + '0105Xa Ba' // 00 = language, 01 = name
+  const body = ZALOPAY.slice(0, -8).replace('5802VN', '5802VN64' + String(t64.length).padStart(2, '0') + t64) + '6304'
+  const { payload, masked } = maskPayload(body + crc16(body), { seed: 'test' })
+  assert.ok(payload.includes('64150002vi0105XxXXx'))
+  assert.ok(masked.includes('64.01'))
+})

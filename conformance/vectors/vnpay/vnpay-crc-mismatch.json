@@ -4,6 +4,7 @@
   "kind": "invalid",
   "payload": "00020101021126280010A0000007750110010531314453037045408210900005802VN5910CELLPHONES62600312CPSHN ONLINE0517021908061613127850705ONLHN0810CellphoneS63047680",
   "error": "CRC_MISMATCH",
+  "errorTag": "63",
   "source": "mutation of vnpay-readme-cellphones",
   "derived": true,
   "derivedFrom": "vnpay-readme-cellphones",

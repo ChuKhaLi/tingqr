@@ -49,6 +49,11 @@ function errorCode(r: Result<unknown>): string | undefined {
   return r.ok ? undefined : r.error.code
 }
 
+/** Error code plus, when the vector pins one, the tag the error refers to. */
+function errorOf(r: Result<unknown>, v: Vector): [string | undefined, string | undefined] {
+  return [errorCode(r), v.errorTag === undefined || r.ok ? undefined : r.error.tag]
+}
+
 test('the runner sees every vector file, and there are at least 8', () => {
   expect(vectors.length).toBe(files(VECTORS).length)
   expect(vectors.length).toBeGreaterThanOrEqual(8)
@@ -80,7 +85,7 @@ describe.each(vectors.map((v) => [v.id, v] as const))('%s', (_id, v) => {
   }
   if (v.kind === 'invalid') {
     test.each(['strict', 'lenient'] as const)('fails with the expected error in %s mode', (mode) => {
-      expect(errorCode(runner(v).decode(v.payload, { mode }))).toBe(v.error)
+      expect(errorOf(runner(v).decode(v.payload, { mode }), v)).toEqual([v.error, v.errorTag])
     })
   }
   if (v.kind === 'encode-invalid') {
@@ -100,7 +105,7 @@ describe.each(vectors.map((v) => [v.id, v] as const))('%s', (_id, v) => {
   }
   if (v.kind === 'lenient') {
     test('fails in strict mode with the expected error', () => {
-      expect(errorCode(runner(v).decode(v.payload, { mode: 'strict' }))).toBe(v.error)
+      expect(errorOf(runner(v).decode(v.payload, { mode: 'strict' }), v)).toEqual([v.error, v.errorTag])
     })
     test('decodes to expected in lenient mode with the expected warnings', () => {
       const r = runner(v).decode(v.payload, { mode: 'lenient' })

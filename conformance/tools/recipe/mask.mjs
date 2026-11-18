@@ -10,7 +10,7 @@ import { createHmac, randomBytes } from 'node:crypto'
 import { crc16 } from './crc.mjs'
 import { isTemplate, parse, write } from './tlv.mjs'
 
-const KEEP = new Set(['00', '01', '52', '53', '54', '58', '60', '38.01.00', '38.02'])
+const KEEP = new Set(['00', '01', '52', '53', '54', '58', '60', '38.01.00', '38.02', '64.00'])
 // Identifiers of a person or account: masked, except a known wallet prefix or wallet shape.
 const DIGITS = new Set(['38.01.01', '26.01', '62.01', '62.02', '62.04', '62.05', '62.07', '80'])
 
@@ -56,6 +56,8 @@ function maskValue(value, how, key) {
       if (i < prefix.length) return ch
       if (/\d/.test(ch)) return key(ch, chars.length - 1 - i)
       if (/\p{L}/u.test(ch) && !shaped) return /\p{Ll}/u.test(ch) ? 'x' : 'X'
+      // In free text, spaces and combining marks would reveal word lengths and diacritics of names.
+      if (how === 'all' && /[\s\p{M}]/u.test(ch)) return 'X'
       return ch
     })
     .join('')

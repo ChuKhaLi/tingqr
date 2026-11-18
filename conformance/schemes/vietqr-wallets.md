@@ -32,4 +32,6 @@ Việc còn lại khi có QR thật (Plan 2, Task 5–6):
 - Chạy `extract.mjs`, commit các mẫu `*-real-*`.
 - Ghi quan sát vào mục trên, đối chiếu với từng giả thuyết.
 - Thêm `VietQrData.provider` và luật nhận diện cho ví có bằng chứng; luật không được dựa riêng vào BIN.
+- Sửa `conformance/tools/recipe/extract.mjs` để ghi `expected.provider` theo nhãn ví (hiện chỉ ghi nhãn trong `note`,
+  vì chưa hàm đọc nào trả `provider`); chạy lại `extract.mjs` cho các QR ví.
 - Test: mọi mẫu ví thật ra đúng `provider`; mọi mẫu ngân hàng (kể cả một QR BVBank thường dựng tay) không có `provider`.

@@ -22,6 +22,7 @@
     }
   },
   "error": "MISSING_TAG",
+  "errorTag": "52",
   "warnings": [
     "MISSING_OPTIONAL_TAG",
     "MISSING_OPTIONAL_TAG"

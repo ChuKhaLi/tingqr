@@ -18,8 +18,8 @@ export function write(fields) {
   return fields.map((f) => f.tag + String([...f.value].length).padStart(2, '0') + f.value).join('')
 }
 
-/** Paths whose value is itself TLV: top-level 26–51 and 62, plus 38.01. */
+/** Paths whose value is itself TLV: top-level 26–51, 62 and 64, plus 38.01. */
 export function isTemplate(path) {
-  if (path === '62' || path === '38.01') return true
+  if (path === '62' || path === '64' || path === '38.01') return true
   return /^\d{2}$/.test(path) && Number(path) >= 26 && Number(path) <= 51
 }

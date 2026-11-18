@@ -4,6 +4,7 @@
   "kind": "lenient",
   "payload": "00020101021138540010A00000072701240006970422011001234567890208QRIBFTTA53037046304CD6C",
   "error": "MISSING_TAG",
+  "errorTag": "58",
   "warnings": [
     "MISSING_OPTIONAL_TAG"
   ],

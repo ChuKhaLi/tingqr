@@ -18,7 +18,6 @@ import { oracleExpected } from './oracle-map.mjs'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 const LABELS = new Set(['bank', 'momo', 'zalopay', 'vnpay', 'other'])
-const WALLETS = new Set(['momo', 'zalopay'])
 const NAME = /^([a-z]+)__([A-Za-z0-9._-]+)\.(txt|png|jpe?g)$/i
 
 function arg(name, fallback) {
@@ -72,7 +71,7 @@ for (const name of readdirSync(privateDir).sort()) {
     continue
   }
   const { scheme, expected, missing } = oracle
-  if (scheme === 'vietqr' && WALLETS.has(label)) expected.provider = label
+  // The wallet label stays in `note` only: no decoder emits `provider` yet (Plan 2 Task 6 adds it with the rules).
   const id = `${scheme}-real-${label}-${slug(m[2])}`
   const date = statSync(file).mtime.toISOString().slice(0, 10)
   const vector = {
@@ -81,7 +80,7 @@ for (const name of readdirSync(privateDir).sort()) {
     kind: missing.length ? 'lenient' : 'valid',
     payload: masked.payload,
     expected,
-    ...(missing.length ? { error: 'MISSING_TAG', warnings: missing.map(() => 'MISSING_OPTIONAL_TAG') } : {}),
+    ...(missing.length ? { error: 'MISSING_TAG', errorTag: missing[0], warnings: missing.map(() => 'MISSING_OPTIONAL_TAG') } : {}),
     source: `rút từ QR thật của ${label}, chụp ngày ${date}; giá trị nhạy cảm đã thay (masked: ${masked.masked.join(', ')}), CRC tính lại`,
     derived: true,
     note: `Nhãn ví do người chụp ghi: ${label}. Tag thiếu so với chuẩn: ${missing.length ? missing.join(', ') : 'không'}. expected lấy từ vietnam-qr-pay@1.5.1 trên chuỗi đã che.`,

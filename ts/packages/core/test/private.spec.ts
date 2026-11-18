@@ -8,7 +8,7 @@ import { CONFORMANCE_DIR } from './conformance-root.js'
 
 // TINGQR_PRIVATE_DIR lets the spec be checked against a temporary folder of public samples.
 const PRIVATE = process.env.TINGQR_PRIVATE_DIR ?? join(CONFORMANCE_DIR, 'private')
-const files = existsSync(PRIVATE) ? readdirSync(PRIVATE).filter((f) => f.endsWith('.txt')).sort() : []
+const files = existsSync(PRIVATE) ? readdirSync(PRIVATE).filter((f) => f.toLowerCase().endsWith('.txt')).sort() : []
 
 function decoderFor(payload: string) {
   if (payload.toUpperCase().includes('A000000727')) return decodeVietQr

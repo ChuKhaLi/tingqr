@@ -4,6 +4,7 @@
   "kind": "invalid",
   "payload": "00020101021126140010A00000077553037045802VN5911TINGQR SHOP62240312TINGQR STORE0704TQ016304CDD3",
   "error": "MISSING_TAG",
+  "errorTag": "26.01",
   "source": "mutation of vnpay-static",
   "derived": true,
   "derivedFrom": "vnpay-static",

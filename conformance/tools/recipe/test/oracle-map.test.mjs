@@ -17,6 +17,8 @@ for (const [scheme, id, missing] of [
   ['vietqr', 'vietqr-card', []],
   ['vnpay', 'vnpay-readme-cellphones', ['52', '60']],
   ['vnpay', 'vnpay-bill-mobile', ['52', '60']],
+  ['vnpay', 'vnpay-static', ['52', '60']],
+  ['vnpay', 'vnpay-amount-purpose-ref', ['52', '60']],
 ]) {
   test(`oracleExpected reproduces ${id}`, () => {
     const v = vector(scheme, id)

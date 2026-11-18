@@ -4,6 +4,7 @@
   "kind": "invalid",
   "payload": "00020101021138530010A0000007270123000697041601092576788590208QRIBFTTA53037045802VN6302😀😀",
   "error": "CRC_MISSING",
+  "errorTag": "63",
   "source": "mutation of vietqr-readme-sample",
   "derived": true,
   "derivedFrom": "vietqr-readme-sample",
