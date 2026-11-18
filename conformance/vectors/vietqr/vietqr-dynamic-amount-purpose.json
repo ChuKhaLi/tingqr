@@ -1,0 +1,26 @@
+{
+  "id": "vietqr-dynamic-amount-purpose",
+  "scheme": "vietqr",
+  "kind": "valid",
+  "payload": "00020101021238540010A00000072701240006970422011001234567890208QRIBFTTA53037045405500005802VN62150811TINGQR TEST6304E922",
+  "input": {
+    "bankBin": "970422",
+    "accountNumber": "0123456789",
+    "amount": "50000",
+    "purpose": "TINGQR TEST"
+  },
+  "expected": {
+    "bankBin": "970422",
+    "accountNumber": "0123456789",
+    "service": "account",
+    "initiation": "dynamic",
+    "currency": "704",
+    "country": "VN",
+    "amount": "50000",
+    "purpose": "TINGQR TEST",
+    "additionalData": {
+      "08": "TINGQR TEST"
+    }
+  },
+  "source": "vietqr@1.2.0 genQRText + vietnam-qr-pay@1.5.1 QRPay.initVietQR (both MIT), agree; fake account"
+}

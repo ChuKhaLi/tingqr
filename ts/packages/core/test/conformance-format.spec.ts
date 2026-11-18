@@ -71,4 +71,6 @@ test('every vector file matches vectors.schema.json and the shared codes', () =>
   }
 })
 
-test.todo('vector set is not empty')
+test('vector set is not empty', () => {
+  expect(files.length).toBeGreaterThanOrEqual(1)
+})

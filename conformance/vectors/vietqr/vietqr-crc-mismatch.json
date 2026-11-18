@@ -1,0 +1,11 @@
+{
+  "id": "vietqr-crc-mismatch",
+  "scheme": "vietqr",
+  "kind": "invalid",
+  "payload": "00020101021138530010A0000007270123000697041601092576788590208QRIBFTTA53037045802VN6304AE90",
+  "error": "CRC_MISMATCH",
+  "source": "mutation of vietqr-readme-sample",
+  "derived": true,
+  "derivedFrom": "vietqr-readme-sample",
+  "note": "Last CRC character changed from F to 0."
+}

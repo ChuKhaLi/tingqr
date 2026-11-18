@@ -1,0 +1,22 @@
+{
+  "id": "vietqr-card",
+  "scheme": "vietqr",
+  "kind": "valid",
+  "payload": "00020101021238600010A00000072701300006970422011697042201234567890208QRIBFTTC53037045405200005802VN630440A0",
+  "input": {
+    "bankBin": "970422",
+    "accountNumber": "9704220123456789",
+    "service": "card",
+    "amount": "20000"
+  },
+  "expected": {
+    "bankBin": "970422",
+    "accountNumber": "9704220123456789",
+    "service": "card",
+    "initiation": "dynamic",
+    "currency": "704",
+    "country": "VN",
+    "amount": "20000"
+  },
+  "source": "vietnam-qr-pay@1.5.1 QRPay.initVietQR (MIT), single oracle (vietqr@1.2.0 cannot write QRIBFTTC); fake account"
+}

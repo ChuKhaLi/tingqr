@@ -1,0 +1,19 @@
+{
+  "id": "vietqr-static-account",
+  "scheme": "vietqr",
+  "kind": "valid",
+  "payload": "00020101021138540010A00000072701240006970422011001234567890208QRIBFTTA53037045802VN6304B1A7",
+  "input": {
+    "bankBin": "970422",
+    "accountNumber": "0123456789"
+  },
+  "expected": {
+    "bankBin": "970422",
+    "accountNumber": "0123456789",
+    "service": "account",
+    "initiation": "static",
+    "currency": "704",
+    "country": "VN"
+  },
+  "source": "vietqr@1.2.0 genQRText + vietnam-qr-pay@1.5.1 QRPay.initVietQR (both MIT), agree; fake account"
+}
