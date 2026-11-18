@@ -24,6 +24,8 @@ export interface VietQrData {
   merchantCity?: string
   /** Tag 52. */
   merchantCategoryCode?: string
+  /** Top-level tags decodeVietQr does not interpret (e.g. 26, 80), keyed by tag, value verbatim. */
+  extraFields?: Record<string, string>
   /** Tag 53 verbatim; '704' when missing in lenient mode. */
   currency: string
   /** Tag 58 verbatim; 'VN' when missing in lenient mode. */

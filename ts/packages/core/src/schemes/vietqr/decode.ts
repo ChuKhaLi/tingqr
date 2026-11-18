@@ -15,6 +15,8 @@ const SERVICE_BY_CODE: ReadonlyMap<string, VietQrService> = new Map(
   (Object.keys(SERVICE_CODE) as VietQrService[]).map((service) => [SERVICE_CODE[service], service]),
 )
 
+const INTERPRETED_TAGS: ReadonlySet<string> = new Set(['00', '01', '38', '52', '53', '54', '58', '59', '60', '62', '63'])
+
 /** Read a VietQR payload. Strict mode (default) requires tags 53 and 58; lenient mode fills defaults and warns. */
 export function decodeVietQr(payload: string, options: { mode?: ParseMode } = {}): Result<VietQrData> {
   const mode = options.mode ?? 'strict'
@@ -97,6 +99,8 @@ export function decodeVietQr(payload: string, options: { mode?: ParseMode } = {}
       const v = getField(p, tag)?.value
       if (v !== undefined) value[key] = v
     }
+    const extra = p.fields.filter((f) => !INTERPRETED_TAGS.has(f.tag))
+    if (extra.length > 0) value.extraFields = Object.fromEntries(extra.map((f) => [f.tag, f.value]))
     return { ok: true, value, warnings }
   } catch (e) {
     if (e instanceof TingQrError) return { ok: false, error: e }
