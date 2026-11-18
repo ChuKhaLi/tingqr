@@ -10,8 +10,11 @@ TypeScript và bản .NET, kèm tích hợp sẵn cho Angular, NestJS và ASP.NE
 - **Bản thiết kế đã duyệt (2026-11-18):** `docs/superpowers/specs/2026-11-18-tingqr-design.md`. Đó là nguồn chính cho mọi
   quyết định. Mục ghi **[chủ dự án]** thì không tự đổi; mục **[Claude]** có thể đề xuất sửa.
   - Nghiên cứu nền: `docs/huong-di/2026-11-18-nghien-cuu-va-huong-di.md`.
-  - **Plan 1 đang làm** (nhánh `plan-1`): `docs/superpowers/plans/2026-11-18-plan-1-nen-mong-va-vietqr.md`. Lộ trình
-    Plan 1–8 nằm ở đầu file đó.
+  - **Plan 1 xong (2026-11-18, nhánh `plan-1`):** `docs/superpowers/plans/2026-11-18-plan-1-nen-mong-va-vietqr.md`. Lộ
+    trình Plan 1–8 nằm ở đầu file đó. Có `@tingqr/core` (tầng EMV, tạo và đọc VietQR), `conformance/` với 8 mẫu VietQR
+    (từ hai oracle MIT và mẫu README của `vietnam-qr-pay`), workflow `ci-ts.yml`.
+  - **CI chưa chạy lần nào trên GitHub** (repo chưa được push). VietQR **chưa quét thử bằng app thật**.
+  - Tiếp theo: Plan 2 (VNPAY, MoMo, ZaloPay), cần chủ dự án chụp QR thật vào `conformance/private/`.
 - **Chủ dự án đã quyết:**
   - Mục đích chính là một thư viện mã nguồn mở có tiếng; dùng phụ trong Noel tree (`../noel-tree`, Angular 21 SSR trên
     Cloudflare Workers).
