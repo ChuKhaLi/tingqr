@@ -1,7 +1,6 @@
 import { TingQrError, type Result, type Warning } from '../../errors.js'
-import { readAdditionalData, readExtraFields } from '../../emv/fields.js'
+import { readAdditionalData, readExtraFields, readSchemeTemplate } from '../../emv/fields.js'
 import { getField, parsePayload, type ParseMode } from '../../emv/payload.js'
-import { parseTemplate } from '../../emv/tlv.js'
 import { VNPAY_GUID, type VnpayQrData } from './types.js'
 
 const INTERPRETED_TAGS: ReadonlySet<string> = new Set(['00', '01', '26', '52', '53', '54', '58', '59', '60', '62', '63'])
@@ -37,10 +36,8 @@ export function decodeVnpayQr(payload: string, options: { mode?: ParseMode } = {
   const warnings: Warning[] = [...parsed.warnings]
 
   try {
-    const providerValue = getField(p, '26')?.value
-    const provider = providerValue === undefined ? undefined : parseTemplate(providerValue, '26')
-    const guid = provider?.find((n) => n.tag === '00')?.value
-    if (!provider || guid?.toUpperCase() !== VNPAY_GUID) {
+    const provider = readSchemeTemplate(p, '26', VNPAY_GUID)
+    if (!provider) {
       return fail('UNSUPPORTED_SCHEME', 'Not a VNPAY-QR payload: tag 26 with GUID A000000775 is missing.', '26')
     }
     const merchantId = provider.find((n) => n.tag === '01')?.value

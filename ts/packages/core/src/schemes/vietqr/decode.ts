@@ -1,5 +1,5 @@
 import { TingQrError, type Result, type Warning } from '../../errors.js'
-import { readAdditionalData, readExtraFields } from '../../emv/fields.js'
+import { readAdditionalData, readExtraFields, readSchemeTemplate } from '../../emv/fields.js'
 import { getField, parsePayload, type ParseMode } from '../../emv/payload.js'
 import { parseTemplate, type TlvNode } from '../../emv/tlv.js'
 import { SERVICE_CODE, VIETQR_GUID, type VietQrData, type VietQrService } from './types.js'
@@ -30,9 +30,8 @@ export function decodeVietQr(payload: string, options: { mode?: ParseMode } = {}
   const warnings: Warning[] = [...parsed.warnings]
 
   try {
-    const merchantValue = getField(p, '38')?.value
-    const merchant = merchantValue === undefined ? undefined : parseTemplate(merchantValue, '38')
-    if (!merchant || sub(merchant, '00')?.toUpperCase() !== VIETQR_GUID) {
+    const merchant = readSchemeTemplate(p, '38', VIETQR_GUID)
+    if (!merchant) {
       return fail('UNSUPPORTED_SCHEME', 'Not a VietQR payload: tag 38 with GUID A000000727 is missing.', '38')
     }
 

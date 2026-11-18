@@ -157,3 +157,25 @@ test('a VNPAY QR without tag 62 has no additionalData and no named 62 fields', (
   expect('store' in r.value).toBe(false)
   expect(r.value.merchantId).toBe('0105313144')
 })
+
+test('a VietQR whose tag 26 is not clean TLV is UNSUPPORTED_SCHEME for the VNPAY decoder', () => {
+  const vietqrFields = parseTlv(S_VIETQR).filter((f) => f.tag !== '63')
+  for (const value of ['ABCD', field('00', 'X') + field('00', 'Y'), field('00', 'A000000727')]) {
+    const p = buildPayload([...vietqrFields.slice(0, 2), { tag: '26', value }, ...vietqrFields.slice(2)])
+    const r = decodeVnpayQr(p)
+    expect(!r.ok && r.error.code, value).toBe('UNSUPPORTED_SCHEME')
+  }
+})
+
+test('a VNPAY QR with duplicated sub-tags in 26 is still DUPLICATE_TAG', () => {
+  const p = rebuild((f) => f.map((x) => (x.tag === '26' ? { tag: '26', value: field('00', 'A000000775') + field('01', '1') + field('01', '2') } : x)))
+  const r = decodeVnpayQr(p)
+  expect(!r.ok && [r.error.code, r.error.tag]).toEqual(['DUPLICATE_TAG', '26.01'])
+})
+
+test('a VNPAY QR whose tag 38 is not clean TLV is UNSUPPORTED_SCHEME for the VietQR decoder', () => {
+  for (const value of ['ABCD', field('00', 'X') + field('00', 'Y')]) {
+    const r = decodeVietQr(rebuild((f) => [...f, { tag: '38', value }]))
+    expect(!r.ok && r.error.code, value).toBe('UNSUPPORTED_SCHEME')
+  }
+})

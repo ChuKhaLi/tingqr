@@ -50,6 +50,8 @@ bộ mẫu thử ở đây, nên hai bản cho cùng kết quả trên mọi hà
    `<nhãn>__<mô-tả>.(txt|png|jpg)`.
    - `<nhãn>` là `bank`, `momo`, `zalopay`, `vnpay` hoặc `other`: app hay nơi bạn lấy QR. Nhãn này là bằng chứng
      "QR này của ví nào".
+   - **`<mô-tả>` trở thành id của mẫu được commit**, nên không được chứa tên người, số điện thoại hay số tài khoản.
+     Dùng mô tả chung như `nhan-tien`, `quan-cafe-1`, `mb-1`.
    - File `.txt` chứa đúng một chuỗi QR. Ảnh chụp màn hình QR trong app dễ giải hơn ảnh chụp giấy; hoặc dùng app quét QR
      để chép chuỗi.
 2. Chạy (lần đầu cần `pnpm install` trong `conformance/tools/recipe`):
@@ -66,4 +68,8 @@ bộ mẫu thử ở đây, nên hai bản cho cùng kết quả trên mọi hà
    - Công cụ chỉ in tên file và id, không bao giờ in chuỗi QR.
 3. `pnpm test:all` chạy thêm `private.spec.ts`: đọc từng QR thật ở chế độ chấp nhận lệch chuẩn. Test này chỉ chạy trên máy
    có `conformance/private/`, và chỉ in tên file.
-4. Test của công cụ: `pnpm -C conformance/tools/recipe test` (chỉ dùng mẫu README công khai).
+4. Test của công cụ: `pnpm test:recipe` (chỉ dùng mẫu README công khai; CI cũng chạy).
+5. Che giá trị: chữ số được thay bằng khoá bí mật sinh ngẫu nhiên mỗi lần chạy (không lưu), theo vị trí tính từ cuối
+   trường, nên hai trường có cùng đuôi số vẫn cùng đuôi sau khi che. Chữ cái trong số tài khoản, mã tham chiếu… thành
+   `X`/`x`, trừ tiền tố ví đã biết và dạng số tài khoản ví (`99ZP…M…`, `99MM…M…`). Sub-tag `00` của template chỉ giữ
+   khi là AID hoặc tên miền ngược. Mỗi lần chạy lại cho chữ số giả khác.

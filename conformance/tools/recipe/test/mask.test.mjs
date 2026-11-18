@@ -36,7 +36,7 @@ test('VNPAY: names masked to X, amount and GUID kept, ids masked', () => {
   const { payload, masked } = maskPayload(VNPAY)
   assert.equal(payload.length, VNPAY.length)
   assert.ok(payload.includes('5910XXXXXXXXXX'), '59 masked')
-  assert.ok(payload.includes('0810XXXXXXXXXX'), '62.08 masked')
+  assert.ok(payload.includes('0810XxxxxxxxxX'), '62.08 masked (letter case kept)')
   assert.ok(payload.includes('540821090000'), '54 kept')
   assert.ok(payload.includes('0010A000000775'), '26.00 kept')
   assert.ok(!payload.includes('0105313144'), '26.01 masked')
@@ -44,8 +44,8 @@ test('VNPAY: names masked to X, amount and GUID kept, ids masked', () => {
   assert.ok(crcOk(payload))
 })
 
-test('masking is deterministic', () => {
-  assert.equal(maskPayload(VNPAY).payload, maskPayload(VNPAY).payload)
+test('masking is deterministic for a given seed', () => {
+  assert.equal(maskPayload(VNPAY, { seed: 's' }).payload, maskPayload(VNPAY, { seed: 's' }).payload)
 })
 
 test('an unknown top-level tag is masked with the "all" rule', () => {
@@ -63,4 +63,42 @@ test('a template tag whose value is not TLV is masked whole with the "all" rule'
   assert.ok(masked.includes('26'))
   assert.match(payload, /2604XX\d\d/)
   assert.ok(crcOk(payload))
+})
+
+test('letters in an alphanumeric account outside a known prefix or wallet shape are masked', () => {
+  const body = MOMO_NEW.slice(0, -8).replace('0118PSP123456789000000', '0112NGUYENVANA88') + '6304'
+  // keep the outer 38 length consistent: rebuild through the masker's own parse/write via a full payload
+  const fixed = body.replace('38620010', '38560010').replace('01320006', '01260006')
+  const { payload } = maskPayload(fixed + crc16(fixed), { seed: 'test' })
+  assert.match(payload, /0112XXXXXXXXXX\d\d/)
+  assert.ok(!payload.includes('NGUYEN'))
+})
+
+test('a template sub-tag 00 that is not an AID or reverse-domain id is masked', () => {
+  const body = ZALOPAY.slice(0, -8).replace('5802VN', '5802VN26160006ABC1230102XY') + '6304'
+  const { payload, masked } = maskPayload(body + crc16(body), { seed: 'test' })
+  assert.ok(masked.includes('26.00'))
+  assert.ok(!payload.includes('ABC123'))
+  assert.match(payload, /26160006XXX\d{3}0102XX/)
+})
+
+test('an AID or reverse-domain id in sub-tag 00 is kept', () => {
+  const body = ZALOPAY.slice(0, -8).replace('5802VN', '5802VN26190015vn.zalopay.test') + '6304'
+  const { payload } = maskPayload(body + crc16(body), { seed: 'test' })
+  assert.ok(payload.includes('0015vn.zalopay.test'))
+})
+
+test('equal digit suffixes stay equal across fields (MoMo old: 62.05 suffix = account suffix)', () => {
+  const MOMO_OLD = '00020101021138620010A00000072701320006970454011899MM24011M348750800208QRIBFTTA53037045802VN62190515MOMOW2W3487508080030466304EBC8'
+  const { payload } = maskPayload(MOMO_OLD, { seed: 'test' })
+  const account = /011899MM\d{5}M(\d{8})0208/.exec(payload)[1]
+  const ref = /0515MOMOW2W(\d{8})/.exec(payload)[1]
+  assert.equal(ref, account)
+  assert.notEqual(account, '34875080')
+})
+
+test('different seeds give different fake digits; the same seed is deterministic', () => {
+  const a = maskPayload(MOMO_NEW, { seed: 'one' }).payload
+  assert.equal(maskPayload(MOMO_NEW, { seed: 'one' }).payload, a)
+  assert.notEqual(maskPayload(MOMO_NEW, { seed: 'two' }).payload, a)
 })

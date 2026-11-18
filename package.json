@@ -5,6 +5,7 @@
   "scripts": {
     "test:all": "pnpm -C ts test",
     "build:all": "pnpm -C ts build",
-    "typecheck:all": "pnpm -C ts typecheck"
+    "typecheck:all": "pnpm -C ts typecheck",
+    "test:recipe": "pnpm -C conformance/tools/recipe test"
   }
 }
