@@ -1,0 +1,37 @@
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+importers:
+
+  .:
+    devDependencies:
+      vietnam-qr-pay:
+        specifier: 1.5.1
+        version: 1.5.1
+      vietqr:
+        specifier: 1.2.0
+        version: 1.2.0
+
+packages:
+
+  jpeg-js@0.4.4:
+    resolution: {integrity: sha512-WZzeDOEtTOBK4Mdsar0IqEU5sMr3vSV2RqkAIzUEV2BHnUfKGyswWFPFwK5EeDo93K3FohSHbLAjj0s1Wzd+dg==}
+
+  vietnam-qr-pay@1.5.1:
+    resolution: {integrity: sha512-ECA1DQKFBeOeUX3naRBHJXKOpD+TJ0kOqQsOMGBPd1KqBHdRBnvT6A8sTdRroqDj16tYGj2I4W0GAMxPDe8DBQ==}
+
+  vietqr@1.2.0:
+    resolution: {integrity: sha512-/0g3ihr3VwGyV6Pm5vxgMt2LKcSeZF4dtJ+DGiQV4nQTp+lRZ5jAKt48YxBAhujoBV7DBiDPqIGK6Gb3D7DG6Q==}
+
+snapshots:
+
+  jpeg-js@0.4.4: {}
+
+  vietnam-qr-pay@1.5.1: {}
+
+  vietqr@1.2.0:
+    dependencies:
+      jpeg-js: 0.4.4

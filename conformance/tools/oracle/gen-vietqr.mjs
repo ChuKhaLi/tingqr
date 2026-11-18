@@ -4,7 +4,7 @@
 // a human decides and records the reason in the vector's `note`. Cases one oracle cannot express use the
 // other alone and say "single oracle" in `source`.
 //
-// Run: cd conformance/tools/oracle && npm install && node gen-vietqr.mjs
+// Run: cd conformance/tools/oracle && pnpm install && node gen-vietqr.mjs
 import { createRequire } from 'node:module'
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
