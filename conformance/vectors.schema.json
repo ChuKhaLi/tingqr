@@ -4,38 +4,193 @@
   "title": "tingqr conformance vector",
   "type": "object",
   "additionalProperties": false,
-  "required": ["id", "scheme", "kind", "payload", "source"],
+  "required": [
+    "id",
+    "scheme",
+    "kind",
+    "source"
+  ],
   "properties": {
-    "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
-    "scheme": { "type": "string", "pattern": "^[a-z0-9-]+$" },
-    "kind": { "enum": ["valid", "invalid", "lenient"] },
-    "payload": { "type": "string" },
-    "input": { "type": "object" },
-    "roundTrip": { "type": "boolean" },
-    "expected": { "type": "object" },
-    "warnings": { "type": "array", "items": { "type": "string" } },
-    "error": { "type": "string" },
-    "source": { "type": "string", "minLength": 10 },
-    "derived": { "type": "boolean" },
-    "derivedFrom": { "type": "string", "pattern": "^[a-z0-9-]+$" },
-    "note": { "type": "string" }
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]+$"
+    },
+    "scheme": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]+$"
+    },
+    "kind": {
+      "enum": [
+        "valid",
+        "invalid",
+        "lenient",
+        "encode-invalid"
+      ]
+    },
+    "payload": {
+      "type": "string"
+    },
+    "input": {
+      "type": "object"
+    },
+    "roundTrip": {
+      "type": "boolean"
+    },
+    "expected": {
+      "type": "object"
+    },
+    "warnings": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "error": {
+      "type": "string"
+    },
+    "source": {
+      "type": "string",
+      "minLength": 10
+    },
+    "derived": {
+      "type": "boolean"
+    },
+    "derivedFrom": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]+$"
+    },
+    "note": {
+      "type": "string"
+    },
+    "errorTag": {
+      "type": "string",
+      "pattern": "^[0-9]{2}(\\.[0-9]{2})*$"
+    }
   },
   "allOf": [
     {
-      "if": { "properties": { "kind": { "const": "valid" } } },
-      "then": { "required": ["expected"], "not": { "required": ["error"] } }
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "encode-invalid"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "input",
+          "error"
+        ],
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "payload"
+              ]
+            },
+            {
+              "required": [
+                "expected"
+              ]
+            }
+          ]
+        }
+      },
+      "else": {
+        "required": [
+          "payload"
+        ]
+      }
     },
     {
-      "if": { "properties": { "kind": { "const": "lenient" } } },
-      "then": { "required": ["expected", "error", "warnings"], "not": { "required": ["input"] } }
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "valid"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "expected"
+        ],
+        "not": {
+          "required": [
+            "error"
+          ]
+        }
+      }
     },
     {
-      "if": { "properties": { "kind": { "const": "invalid" } } },
-      "then": { "required": ["error"], "not": { "anyOf": [{ "required": ["expected"] }, { "required": ["input"] }] } }
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "lenient"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "expected",
+          "error",
+          "warnings"
+        ],
+        "not": {
+          "required": [
+            "input"
+          ]
+        }
+      }
     },
     {
-      "if": { "properties": { "derivedFrom": { "type": "string" } }, "required": ["derivedFrom"] },
-      "then": { "required": ["derived"], "properties": { "derived": { "const": true } } }
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "invalid"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "error"
+        ],
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "expected"
+              ]
+            },
+            {
+              "required": [
+                "input"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "derivedFrom": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "derivedFrom"
+        ]
+      },
+      "then": {
+        "required": [
+          "derived"
+        ],
+        "properties": {
+          "derived": {
+            "const": true
+          }
+        }
+      }
     }
   ]
 }

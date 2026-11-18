@@ -21,7 +21,8 @@ export function getField(p: EmvPayload, tag: string): TlvNode | undefined {
   return p.fields.find((f) => f.tag === tag)
 }
 
-const EDGE_WHITESPACE = /^[ \t\r\n]+|[ \t\r\n]+$/g
+/** ASCII whitespace plus a UTF-8 BOM (files saved by Windows tools) and no-break spaces. */
+const EDGE_WHITESPACE = /^[ \t\r\n﻿ ]+|[ \t\r\n﻿ ]+$/g
 
 /**
  * Parse an EMV merchant-presented payload and verify its CRC. Scheme-agnostic: required tags and

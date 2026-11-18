@@ -16,12 +16,13 @@ bộ mẫu thử ở đây, nên hai bản cho cùng kết quả trên mọi hà
 |---|---|---|
 | `id` | có | `^[a-z0-9-]+$`, trùng tên file |
 | `scheme` | có | ví dụ `vietqr` |
-| `kind` | có | `valid`: đọc ra `expected` ở chế độ chặt. `invalid`: cả hai chế độ đều báo `error`. `lenient`: chế độ chặt báo `error`, chế độ chấp nhận lệch chuẩn đọc ra `expected` kèm `warnings` |
-| `payload` | có | chuỗi QR, không chứa `\r` |
+| `kind` | có | `valid`: đọc ra `expected` ở chế độ chặt. `invalid`: cả hai chế độ đều báo `error`. `lenient`: chế độ chặt báo `error`, chế độ chấp nhận lệch chuẩn đọc ra `expected` kèm `warnings`. `encode-invalid`: tạo mã từ `input` phải báo lỗi `error` (kèm `errorTag` nếu có); không có `payload` |
+| `payload` | trừ `encode-invalid` | chuỗi QR, không chứa `\r` |
 | `input` | không | chỉ ở `valid`: tạo mã từ `input` phải ra đúng `payload` từng byte, trừ khi `roundTrip: false` |
 | `expected` | `valid`, `lenient` | dữ liệu đọc ra |
 | `warnings` | `lenient` | mã cảnh báo mong đợi |
-| `error` | `invalid`, `lenient` | mã lỗi mong đợi |
+| `error` | `invalid`, `lenient`, `encode-invalid` | mã lỗi mong đợi |
+| `errorTag` | không | tag kèm lỗi, dạng `62` hoặc `38.01` |
 | `source` | có | nguồn: đặc tả (mục, trang), repo kèm giấy phép, oracle kèm phiên bản, hoặc "rút từ QR thật của <loại>, chụp ngày D" |
 | `derived`, `derivedFrom` | khi sửa từ mẫu khác | `derivedFrom` là `id` mẫu gốc |
 | `note` | không | ghi đã sửa gì, đã chạy lệnh gì |

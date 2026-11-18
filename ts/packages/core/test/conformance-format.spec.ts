@@ -67,8 +67,14 @@ test('every vector file matches vectors.schema.json and the shared codes', () =>
     expect(v.id, file).toBe(basename(file, '.json'))
     if (v.error !== undefined) expect(errorCodes.has(v.error), `${file}: unknown error ${v.error}`).toBe(true)
     for (const w of v.warnings ?? []) expect(warningCodes.has(w), `${file}: unknown warning ${w}`).toBe(true)
-    expect(v.payload.includes('\r'), `${file}: payload contains CR`).toBe(false)
+    if (v.payload !== undefined) expect(v.payload.includes('\r'), `${file}: payload contains CR`).toBe(false)
   }
+})
+
+test('schema rejects an encode-invalid vector that carries a payload', () => {
+  const v = { id: 'x', scheme: 'vietqr', kind: 'encode-invalid', input: {}, error: 'NON_ASCII', source: 'test fixture inside conformance-format.spec.ts' }
+  expect(validate(v)).toBe(true)
+  expect(validate({ ...v, payload: '000201' })).toBe(false)
 })
 
 test('vector set is not empty', () => {

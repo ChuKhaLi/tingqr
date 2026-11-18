@@ -1,0 +1,12 @@
+{
+  "id": "vietqr-encode-account-too-short",
+  "scheme": "vietqr",
+  "kind": "encode-invalid",
+  "input": {
+    "bankBin": "970422",
+    "accountNumber": "12"
+  },
+  "error": "INVALID_VALUE",
+  "errorTag": "38",
+  "source": "tingqr encode rules (spec 5.3, conformance/schemes/vietqr.md); input-only vector, no QR payload; fake account"
+}

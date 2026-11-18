@@ -39,7 +39,8 @@ QR cá nhân không có tag `52`, `59`, `60`. Khi đọc, tingqr trả lại cá
 - Chế độ chặt (mặc định): thiếu `53` hoặc `58` thì `MISSING_TAG`. Chế độ chấp nhận lệch chuẩn: điền `704` / `VN` và
   cảnh báo `MISSING_OPTIONAL_TAG`.
 - Tag `54` trả về nguyên văn (kể cả `50000.00`).
-- Khoảng trắng hai đầu được bỏ kèm cảnh báo `TRIMMED_WHITESPACE`; CRC viết thường được chấp nhận kèm `LOWERCASE_CRC`.
+- Khoảng trắng hai đầu (space, tab, CR, LF, BOM `U+FEFF`, no-break space `U+00A0`) được bỏ kèm cảnh báo
+  `TRIMMED_WHITESPACE`; CRC viết thường được chấp nhận kèm `LOWERCASE_CRC`.
 
 ## Mẫu thử (`vectors/vietqr/`)
 
@@ -48,6 +49,8 @@ QR cá nhân không có tag `52`, `59`, `60`. Khi đọc, tingqr trả lại cá
   - `vietqr-card` chỉ có một oracle, vì `genQRText` của `vietqr` luôn ghi `QRIBFTTA`.
 - 1 mẫu `valid` từ README của `vietnam-qr-pay` (MIT).
 - 1 mẫu `invalid` và 1 mẫu `lenient` sửa từ các mẫu trên. CRC được tính lại bằng một hàm Python độc lập.
+- 8 mẫu `encode-invalid` (chỉ có `input`, không có chuỗi QR) ghim các luật tạo mã: chữ có dấu, nội dung 96 ký tự, số
+  tiền 0 / có số 0 đứng đầu / số lẻ / 14 chữ số, BIN 5 số, số tài khoản quá ngắn. Bản .NET phải chạy đạt các mẫu này.
 - Mọi số tài khoản đều là số giả.
 
 ## Chưa được kiểm

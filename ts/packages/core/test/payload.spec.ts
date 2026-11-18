@@ -69,3 +69,12 @@ test('parsePayload rejects a duplicated top-level tag with DUPLICATE_TAG', () =>
   expect(r.ok).toBe(false)
   if (!r.ok) expect([r.error.code, r.error.tag]).toEqual(['DUPLICATE_TAG', '58'])
 })
+
+test('parsePayload strips a UTF-8 BOM and no-break spaces around the payload and warns', () => {
+  for (const input of ['﻿' + S, S + ' ', '﻿ ' + S + '\r\n']) {
+    const r = parsePayload(input)
+    expect(r.ok, JSON.stringify(input)).toBe(true)
+    expect(codes(r)).toEqual(['TRIMMED_WHITESPACE'])
+    if (r.ok) expect(r.value.raw).toBe(S)
+  }
+})

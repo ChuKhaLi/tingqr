@@ -1,0 +1,13 @@
+{
+  "id": "vietqr-encode-purpose-accented",
+  "scheme": "vietqr",
+  "kind": "encode-invalid",
+  "input": {
+    "bankBin": "970422",
+    "accountNumber": "0123456789",
+    "purpose": "Chuyển tiền"
+  },
+  "error": "NON_ASCII",
+  "errorTag": "62",
+  "source": "tingqr encode rules (spec 5.3, conformance/schemes/vietqr.md); input-only vector, no QR payload; fake account"
+}

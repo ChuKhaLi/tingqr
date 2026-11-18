@@ -3,7 +3,7 @@
 import { readFileSync, readdirSync, statSync } from 'node:fs'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { decodeVietQr, encodeVietQr, type ParseMode, type Result } from '../src/index.js'
+import { TingQrError, decodeVietQr, encodeVietQr, type ParseMode, type Result } from '../src/index.js'
 
 interface SchemeRunner {
   encode?: (input: any) => string
@@ -17,13 +17,14 @@ const SCHEMES: Record<string, SchemeRunner> = {
 interface Vector {
   id: string
   scheme: string
-  kind: 'valid' | 'invalid' | 'lenient'
+  kind: 'valid' | 'invalid' | 'lenient' | 'encode-invalid'
   payload: string
   input?: unknown
   roundTrip?: boolean
   expected?: unknown
   warnings?: string[]
   error?: string
+  errorTag?: string
 }
 
 const VECTORS = fileURLToPath(new URL('../../../../conformance/vectors/', import.meta.url))
@@ -72,6 +73,21 @@ describe.each(vectors.map((v) => [v.id, v] as const))('%s', (_id, v) => {
   if (v.kind === 'invalid') {
     test.each(['strict', 'lenient'] as const)('fails with the expected error in %s mode', (mode) => {
       expect(errorCode(runner(v).decode(v.payload, { mode }))).toBe(v.error)
+    })
+  }
+  if (v.kind === 'encode-invalid') {
+    test('encode throws the expected TingQrError code and tag', () => {
+      const encode = runner(v).encode
+      expect(encode, `scheme ${v.scheme} has no encoder`).toBeDefined()
+      let thrown: unknown
+      try {
+        encode!(v.input)
+      } catch (e) {
+        thrown = e
+      }
+      expect(thrown).toBeInstanceOf(TingQrError)
+      expect((thrown as TingQrError).code).toBe(v.error)
+      if (v.errorTag !== undefined) expect((thrown as TingQrError).tag).toBe(v.errorTag)
     })
   }
   if (v.kind === 'lenient') {

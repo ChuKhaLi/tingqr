@@ -32,9 +32,9 @@ jobs:
         node: ['20', '22', '24']
     steps:
       - uses: actions/checkout@v5
+      # No `version:` here: the action reads `packageManager` from the root package.json, and setting both
+      # with different strings ("10" vs "10.34.1") makes it fail with "Multiple versions of pnpm specified".
       - uses: pnpm/action-setup@v6
-        with:
-          version: 10
       - uses: actions/setup-node@v5
         with:
           node-version: ${{ matrix.node }}
