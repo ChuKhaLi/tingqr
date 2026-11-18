@@ -1,11 +1,12 @@
 // Replace sensitive values in a real QR payload while keeping its structure: tag order, lengths, character classes,
 // scheme identifiers, BINs, service codes and known wallet prefixes (PSP, MOMOW2W, 99ZP, 99MM). The CRC is recomputed.
 //
-// Fake digits: digit d at distance k from the end of a value becomes (d + key[k]) mod 10, where key is derived from a
-// secret seed. Equal digits at equal distance from the end stay equal across fields (so relations such as "62.05 ends
-// with the account's last 8 digits" survive), but the originals cannot be recovered without the seed. extract.mjs uses
-// a fresh random seed per run and never stores it; tests pass a fixed seed.
-import { createHash, randomBytes } from 'node:crypto'
+// Fake digits: for each distance k from the end of a value, a secret permutation P_k of 0–9 (derived with HMAC-SHA256
+// from a seed) maps digit d to P_k(d). Equal digits at equal distance from the end stay equal across fields, unequal
+// ones stay unequal — so relations such as "62.05 ends with the account's last 8 digits" survive — but, unlike a shift
+// cipher, differences between digits are not preserved, so knowing one field does not reveal another. extract.mjs
+// uses a fresh random seed per run and never stores it; tests pass a fixed seed.
+import { createHmac, randomBytes } from 'node:crypto'
 import { crc16 } from './crc.mjs'
 import { isTemplate, parse, write } from './tlv.mjs'
 
@@ -28,9 +29,22 @@ function rule(path, value) {
   return 'all'
 }
 
-function keyFor(seed) {
-  const bytes = createHash('sha256').update(String(seed)).digest()
-  return (distanceFromEnd) => bytes[distanceFromEnd % bytes.length] % 10
+/** digitMapper(seed)(digit, distanceFromEnd) → fake digit; a keyed permutation of 0–9 per distance. Exported for tests. */
+export function digitMapper(seed) {
+  const perms = new Map()
+  return (digit, distance) => {
+    let perm = perms.get(distance)
+    if (!perm) {
+      const bytes = createHmac('sha256', String(seed)).update(`digits:${distance}`).digest()
+      perm = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+      for (let i = 9; i > 0; i--) {
+        const j = bytes[9 - i] % (i + 1)
+        ;[perm[i], perm[j]] = [perm[j], perm[i]]
+      }
+      perms.set(distance, perm)
+    }
+    return perm[Number(digit)]
+  }
 }
 
 function maskValue(value, how, key) {
@@ -40,7 +54,7 @@ function maskValue(value, how, key) {
   return chars
     .map((ch, i) => {
       if (i < prefix.length) return ch
-      if (/\d/.test(ch)) return String((Number(ch) + key(chars.length - 1 - i)) % 10)
+      if (/\d/.test(ch)) return key(ch, chars.length - 1 - i)
       if (/\p{L}/u.test(ch) && !shaped) return /\p{Ll}/u.test(ch) ? 'x' : 'X'
       return ch
     })
@@ -72,7 +86,7 @@ function maskFields(fields, prefix, masked, key) {
  * @returns {{ payload: string, masked: string[] }} masked lists the paths a masking rule was applied to, never values.
  */
 export function maskPayload(payload, options = {}) {
-  const key = keyFor(options.seed ?? randomBytes(32).toString('hex'))
+  const key = digitMapper(options.seed ?? randomBytes(32).toString('hex'))
   const fields = parse(payload).filter((f) => f.tag !== '63')
   const masked = []
   const body = write(maskFields(fields, '', masked, key)) + '6304'

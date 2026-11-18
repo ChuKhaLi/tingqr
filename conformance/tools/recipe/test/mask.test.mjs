@@ -102,3 +102,18 @@ test('different seeds give different fake digits; the same seed is deterministic
   assert.equal(maskPayload(MOMO_NEW, { seed: 'one' }).payload, a)
   assert.notEqual(maskPayload(MOMO_NEW, { seed: 'two' }).payload, a)
 })
+
+test('fake digits are a keyed permutation per position, not a shift (no linear relation leaks)', async () => {
+  const { digitMapper } = await import('../mask.mjs')
+  const map = digitMapper('test')
+  for (let pos = 0; pos < 20; pos++) {
+    const images = Array.from({ length: 10 }, (_, d) => map(d, pos))
+    assert.deepEqual([...images].sort(), ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'], `bijective at ${pos}`)
+  }
+  // A shift (d + k) mod 10 keeps every difference; a random permutation does not, for some position.
+  const keepsDifferences = (pos) =>
+    Array.from({ length: 10 }, (_, d) => (Number(map((d + 1) % 10, pos)) - Number(map(d, pos)) + 10) % 10).every(
+      (x, _, all) => x === all[0],
+    )
+  assert.ok(Array.from({ length: 20 }, (_, pos) => keepsDifferences(pos)).some((v) => !v))
+})

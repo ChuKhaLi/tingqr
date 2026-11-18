@@ -69,7 +69,7 @@ bộ mẫu thử ở đây, nên hai bản cho cùng kết quả trên mọi hà
 3. `pnpm test:all` chạy thêm `private.spec.ts`: đọc từng QR thật ở chế độ chấp nhận lệch chuẩn. Test này chỉ chạy trên máy
    có `conformance/private/`, và chỉ in tên file.
 4. Test của công cụ: `pnpm test:recipe` (chỉ dùng mẫu README công khai; CI cũng chạy).
-5. Che giá trị: chữ số được thay bằng khoá bí mật sinh ngẫu nhiên mỗi lần chạy (không lưu), theo vị trí tính từ cuối
+5. Che giá trị: mỗi vị trí (tính từ cuối trường) có một hoán vị bí mật của 0–9, sinh từ khoá ngẫu nhiên mỗi lần chạy (không lưu). Chữ số được thay theo hoán vị đó,
    trường, nên hai trường có cùng đuôi số vẫn cùng đuôi sau khi che. Chữ cái trong số tài khoản, mã tham chiếu… thành
    `X`/`x`, trừ tiền tố ví đã biết và dạng số tài khoản ví (`99ZP…M…`, `99MM…M…`). Sub-tag `00` của template chỉ giữ
    khi là AID hoặc tên miền ngược. Mỗi lần chạy lại cho chữ số giả khác.
