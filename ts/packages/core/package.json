@@ -28,6 +28,16 @@
         "types": "./dist/vietqr.d.cts",
         "default": "./dist/vietqr.cjs"
       }
+    },
+    "./vnpay": {
+      "import": {
+        "types": "./dist/vnpay.d.ts",
+        "default": "./dist/vnpay.js"
+      },
+      "require": {
+        "types": "./dist/vnpay.d.cts",
+        "default": "./dist/vnpay.cjs"
+      }
     }
   },
   "files": [

@@ -1,0 +1,31 @@
+{
+  "id": "vnpay-readme-cellphones",
+  "scheme": "vnpay",
+  "kind": "lenient",
+  "payload": "00020101021126280010A0000007750110010531314453037045408210900005802VN5910CELLPHONES62600312CPSHN ONLINE0517021908061613127850705ONLHN0810CellphoneS63047685",
+  "expected": {
+    "merchantId": "0105313144",
+    "initiation": "static",
+    "amount": "21090000",
+    "currency": "704",
+    "country": "VN",
+    "merchantName": "CELLPHONES",
+    "additionalData": {
+      "03": "CPSHN ONLINE",
+      "05": "02190806161312785",
+      "07": "ONLHN",
+      "08": "CellphoneS"
+    },
+    "store": "CPSHN ONLINE",
+    "reference": "02190806161312785",
+    "terminal": "ONLHN",
+    "purpose": "CellphoneS"
+  },
+  "error": "MISSING_TAG",
+  "warnings": [
+    "MISSING_OPTIONAL_TAG",
+    "MISSING_OPTIONAL_TAG"
+  ],
+  "source": "vietnam-qr-pay README (MIT), https://github.com/xuannghia/vietnam-qr-pay; public shop QR (CellphoneS) shown in that README",
+  "note": "expected written by hand and cross-checked with `new QRPay(payload)` of vietnam-qr-pay@1.5.1; no tags 52/60 and tag 01 = 11 with an amount, as in real VNPAY codes."
+}

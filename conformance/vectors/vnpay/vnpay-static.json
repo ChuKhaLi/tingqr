@@ -1,0 +1,26 @@
+{
+  "id": "vnpay-static",
+  "scheme": "vnpay",
+  "kind": "lenient",
+  "payload": "00020101021126280010A0000007750110012345678953037045802VN5911TINGQR SHOP62240312TINGQR STORE0704TQ016304BC4B",
+  "expected": {
+    "merchantId": "0123456789",
+    "initiation": "static",
+    "currency": "704",
+    "country": "VN",
+    "merchantName": "TINGQR SHOP",
+    "store": "TINGQR STORE",
+    "terminal": "TQ01",
+    "additionalData": {
+      "03": "TINGQR STORE",
+      "07": "TQ01"
+    }
+  },
+  "error": "MISSING_TAG",
+  "warnings": [
+    "MISSING_OPTIONAL_TAG",
+    "MISSING_OPTIONAL_TAG"
+  ],
+  "source": "vietnam-qr-pay@1.5.1 QRPay.initVNPayQR (MIT), single oracle; fake merchant",
+  "note": "The oracle omits tags 52 and 60, like real VNPAY codes: strict fails on 52, lenient warns for 52 and 60."
+}

@@ -1,4 +1,5 @@
 import { TingQrError, type Result, type Warning } from '../../errors.js'
+import { readAdditionalData, readExtraFields } from '../../emv/fields.js'
 import { getField, parsePayload, type ParseMode } from '../../emv/payload.js'
 import { parseTemplate, type TlvNode } from '../../emv/tlv.js'
 import { SERVICE_CODE, VIETQR_GUID, type VietQrData, type VietQrService } from './types.js'
@@ -84,11 +85,10 @@ export function decodeVietQr(payload: string, options: { mode?: ParseMode } = {}
     }
     const amount = getField(p, '54')?.value
     if (amount !== undefined) value.amount = amount
-    const additional = getField(p, '62')?.value
-    if (additional !== undefined) {
-      const data = Object.fromEntries(parseTemplate(additional, '62').map((n) => [n.tag, n.value]))
-      value.additionalData = data
-      if (data['08'] !== undefined) value.purpose = data['08']
+    const additional = readAdditionalData(p)
+    if (additional) {
+      value.additionalData = additional
+      if (additional['08'] !== undefined) value.purpose = additional['08']
     }
     const optional: [string, 'merchantName' | 'merchantCity' | 'merchantCategoryCode'][] = [
       ['59', 'merchantName'],
@@ -99,8 +99,8 @@ export function decodeVietQr(payload: string, options: { mode?: ParseMode } = {}
       const v = getField(p, tag)?.value
       if (v !== undefined) value[key] = v
     }
-    const extra = p.fields.filter((f) => !INTERPRETED_TAGS.has(f.tag))
-    if (extra.length > 0) value.extraFields = Object.fromEntries(extra.map((f) => [f.tag, f.value]))
+    const extra = readExtraFields(p, INTERPRETED_TAGS)
+    if (extra) value.extraFields = extra
     return { ok: true, value, warnings }
   } catch (e) {
     if (e instanceof TingQrError) return { ok: false, error: e }
