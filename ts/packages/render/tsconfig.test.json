@@ -1,5 +1,14 @@
 {
   "extends": "../../tsconfig.base.json",
-  "compilerOptions": { "types": ["node", "vitest/globals"] },
-  "include": ["src", "test"]
+  "compilerOptions": {
+    "types": [
+      "node",
+      "vitest/globals"
+    ],
+    "noUncheckedIndexedAccess": false
+  },
+  "include": [
+    "src",
+    "test"
+  ]
 }
