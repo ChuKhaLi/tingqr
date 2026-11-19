@@ -161,7 +161,8 @@ interface LogoOptions {
     vị (finder) kèm dải phân cách, ô thông tin định dạng, hàng/cột timing, hay ô thông tin phiên bản: `INVALID_VALUE`.
     Thông báo nêu rõ lý do và gợi ý giảm `size`/`padding` hoặc tăng `minVersion`.
   - **Không tự tăng `minVersion`** hay tự thu nhỏ logo: đó là âm thầm đổi đầu vào. Với phiên bản nhỏ (1–2), logo mặc
-    định sẽ bị từ chối; chuỗi VietQR thật thường ở phiên bản 3–6 khi dùng mức H.
+    định sẽ bị từ chối. (Sửa 2026-11-20: các mẫu VietQR của repo ở mức H nằm ở phiên bản 7–12, không phải 3–6 như bản
+    đầu ghi; vì vậy mọi VietQR có logo đều xoá pattern căn chỉnh ở giữa, rủi ro ở mục 6.)
   - Pattern căn chỉnh (alignment) ở giữa được phép bị xoá; rủi ro này kiểm bằng quét thật (mục 6).
 - **`href` cho phép:** `data:image/png`, `data:image/jpeg`, `data:image/webp`, `data:image/svg+xml` (base64 hoặc không),
   `https:`, `http:`, hoặc đường dẫn tương đối không có `:` trước dấu `/` đầu tiên. Dạng khác (ví dụ `javascript:`) thì

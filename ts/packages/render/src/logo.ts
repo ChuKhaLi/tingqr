@@ -1,5 +1,9 @@
 import { TingQrError } from '@tingqr/core'
 
+/**
+ * Centre logo. **Provisional:** the limits below (logo size ≤ 0.25, cleared area ≤ 10%, clearing the centre alignment
+ * pattern on version 7+) are not yet verified by scans with real banking apps; see conformance/scans.md.
+ */
 export interface LogoOptions {
   /** Logo image: data:image/(png|jpeg|webp|svg+xml), http(s): URL, or a relative path. */
   href: string
@@ -24,8 +28,8 @@ export const MAX_CLEARED_SHARE = 0.1
 /**
  * First row/column the cleared box may start at. Rows and columns 0–8 hold the top-left finder, its separator, the
  * format information (row/column 8) and the timing pattern (row/column 6); the box is centred, so the same bound keeps
- * it off the other two finders. The version information (versions ≥ 7) lies further in, but a box within
- * MAX_CLEARED_SHARE never reaches it there.
+ * it off the other two finders. The version information (versions ≥ 7) sits in rows 0–5 beside the top-right finder and
+ * columns 0–5 beside the bottom-left one, so a box starting at row/column 9 or later never touches it either.
  */
 export const MIN_CLEAR_START = 9
 

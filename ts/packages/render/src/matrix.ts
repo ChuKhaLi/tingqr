@@ -34,6 +34,8 @@ const ECC: Readonly<Record<Ecc, QrCode.Ecc>> = {
   H: QrCode.Ecc.HIGH,
 }
 const ECC_NAME: readonly Ecc[] = ['L', 'M', 'Q', 'H']
+/** A high surrogate not followed by a low one, or a low surrogate not preceded by a high one. */
+const LONE_SURROGATE = /[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/
 
 function invalid(message: string): TingQrError {
   return new TingQrError('INVALID_VALUE', message)
@@ -53,6 +55,10 @@ function intOption(value: unknown, name: string, min: number, max: number, fallb
  */
 export function toMatrix(text: string, options: MatrixOptions = {}): QrMatrix {
   if (typeof text !== 'string') throw invalid('Text must be a string.')
+  // Nayuki encodes byte-mode text with encodeURI, which throws URIError on a lone surrogate (e.g. an emoji cut by slice()).
+  if (LONE_SURROGATE.test(text)) {
+    throw invalid('Text contains an unpaired surrogate (a character cut in half); it cannot be encoded as UTF-8.')
+  }
   const ecc = options.ecc ?? 'M'
   if (!Object.hasOwn(ECC, ecc)) throw invalid("Option ecc must be 'L', 'M', 'Q' or 'H'.")
   const boostEcc = options.boostEcc ?? true

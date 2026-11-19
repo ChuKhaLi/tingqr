@@ -58,7 +58,16 @@ const INVALID = [
   ['render-invalid-min-above-max', { text: 'A', minVersion: 5, maxVersion: 4 }, 'minVersion must not exceed maxVersion'],
   ['render-invalid-mask-8', { text: 'A', mask: 8 }, 'mask is an integer 0–7'],
   ['render-invalid-mask-fraction', { text: 'A', mask: 1.5 }, 'mask is an integer 0–7'],
-  ['render-invalid-too-long', { text: 'a'.repeat(3000), maxVersion: 40, ecc: 'H' }, 'version 40 at ECC H holds 1273 bytes'],
+  [
+    'render-invalid-too-long',
+    { text: 'a'.repeat(1274), maxVersion: 40, ecc: 'H', boostEcc: false },
+    'one byte over version 40 at ECC H (1273 bytes in byte mode); the same text fits at ECC L',
+  ],
+  [
+    'render-invalid-lone-surrogate',
+    { text: 'ting \uD83D qr' },
+    'unpaired high surrogate (an emoji cut in half by slice()); the original encoder would throw a URIError',
+  ],
 ]
 
 const NAYUKI = 'nayuki/QR-Code-generator v1.8.0 (MIT), commit 720f62b, original file run by conformance/tools/oracle/gen-render.mjs'

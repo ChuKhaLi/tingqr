@@ -34,6 +34,8 @@ jobs:
           cache: pnpm
           cache-dependency-path: ts/pnpm-lock.yaml
       - run: pnpm -C ts install --frozen-lockfile
+      # render's tests import @tingqr/core through its dist, and the scan-sheet test runs render's dist.
+      - run: pnpm -C ts build
       - run: pnpm -C ts/packages/core mutate
       # The ported Nayuki encoder (src/qrcodegen.ts) is excluded in render's stryker.config.json; matrix vectors prove it.
       - run: pnpm -C ts/packages/render mutate

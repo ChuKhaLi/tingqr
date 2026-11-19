@@ -74,3 +74,9 @@ test.each([
 test('minVersion equal to maxVersion pins the version', () => {
   expect(toMatrix('A', { minVersion: 3, maxVersion: 3 }).version).toBe(3)
 })
+
+test.each(['\uD800', 'a\uDC00b', '😀'.slice(0, 1)])('text with an unpaired surrogate (%#) is INVALID_VALUE, not a URIError', (text) => {
+  const e = thrown(() => toMatrix(text))
+  expect(e.code).toBe('INVALID_VALUE')
+  expect(e.message).toContain('surrogate')
+})

@@ -4,7 +4,7 @@ import { toMatrix, toSvg, type SvgOptions } from '../src/index.js'
 import { cellsOf } from './svg.spec.js'
 
 const HREF = 'data:image/png;base64,AAAA'
-// 60 characters of byte-mode text: version ≥ 3 at ECC H.
+// 61 bytes of byte-mode text: version 7 at ECC H, so the version-information area exists.
 const TEXT = 'tingqr logo test: the quick brown fox jumps over the lazy dog'
 
 function code(fn: () => unknown): string {
@@ -155,4 +155,11 @@ describe('logo size and padding bounds on a large code (area limit not reached)'
     expect(() => toSvg(TEXT, { minVersion: 40, logo: { href: HREF, size: 0.05, padding: 5 } })).toThrow(/padding must be/)
     expect(toSvg(TEXT, { minVersion: 40, logo: { href: HREF, size: 0.05, padding: 4 } })).toContain('<image')
   })
+})
+
+test('an SVG with a logo is a complete document', () => {
+  const svg = toSvg(TEXT, { logo: { href: HREF } })
+  expect(svg.startsWith('<svg ')).toBe(true)
+  expect(svg.endsWith('</svg>')).toBe(true)
+  expect(svg.match(/<\/svg>/g)).toHaveLength(1)
 })

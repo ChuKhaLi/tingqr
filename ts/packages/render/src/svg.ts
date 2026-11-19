@@ -8,15 +8,24 @@ export interface SvgOptions extends MatrixOptions {
   margin?: number
   /** Dark module colour, '#rgb' or '#rrggbb'; default '#000000'. */
   foreground?: string
-  /** Background colour, '#rgb', '#rrggbb' or 'transparent'; default '#ffffff'. */
+  /**
+   * Background colour, '#rgb', '#rrggbb' or 'transparent'; default '#ffffff'. With 'transparent' no contrast is checked:
+   * you are responsible for printing the code on a background light enough for the foreground.
+   */
   background?: string
   /** width/height of the <svg>: a positive number (px) or a length like '40mm', '2in', '100%'. Absent: scales to its box. */
   size?: number | string
-  /** Centre logo. Forces ECC H (an explicit ecc other than 'H' is rejected) and clears the modules under it. */
+  /**
+   * Centre logo (provisional, see LogoOptions). Forces ECC H (an explicit ecc other than 'H' is rejected) and clears the
+   * modules under it.
+   */
   logo?: LogoOptions
 }
 
-/** Minimum WCAG contrast between foreground and background; below it many phone scanners struggle. */
+/**
+ * Minimum contrast between foreground and background. A heuristic: 4.5:1 is the WCAG text threshold, used here as a
+ * conservative bar for phone cameras; not a measured property of banking apps.
+ */
 const MIN_CONTRAST = 4.5
 const LENGTH = /^\d+(\.\d+)?(px|mm|cm|in|pt|%)?$/
 

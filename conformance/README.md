@@ -63,9 +63,11 @@ Dành cho bộ vẽ QR (`@tingqr/render`, sau này `TingQR.Rendering`). Mẫu n�
 2. Chạy `pnpm -C ts/packages/render scan-sheet`. Script chỉ in số mã và đường dẫn file, không bao giờ in chuỗi QR hay số
    tài khoản. Trang ghi ra `ts/packages/render/scan-sheet/index.html` (bị gitignore).
 3. Trang có:
-   - các mẫu VietQR tài khoản giả (chỉ để kiểm app đọc được mã);
+   - các mẫu VietQR không phải tài khoản của bạn (chỉ để kiểm app đọc được mã; phần lớn là tài khoản bịa, mẫu README
+     có thể là tài khoản người khác);
    - mã từ file của bạn;
-   - mỗi mã in cả bản có logo lẫn bản không logo, cạnh 40 mm. In trên A4 được.
+   - mỗi mã in cả bản có logo lẫn bản không logo, cạnh 40 mm (kể cả viền trắng 4 ô). In trên A4 được.
+   - Thông tin hiện cạnh mã được kiểm khớp với đầu vào; lệch thì script dừng và báo trường lệch (không in giá trị).
 4. Quét, **dừng ở màn hình xác nhận**, rồi ghi kết quả vào `conformance/scans.md`.
 
 Chỉ chủ dự án chạy bước 2 khi có dữ liệu thật; Claude không chạy và không đọc trang sinh ra từ dữ liệu thật.

@@ -77,10 +77,12 @@ function errorOf(r: Result<unknown>, v: Vector): [string | undefined, string | u
   return [errorCode(r), v.errorTag === undefined || r.ok ? undefined : r.error.tag]
 }
 
-test('the runner sees every vector file except render ones, and there are at least 8', () => {
+test('render vectors live only in vectors/render/ (run by @tingqr/render); this runner sees all others', () => {
+  const renderDir = join(VECTORS, 'render')
+  const renderFiles = files(renderDir).length
   expect(allVectors.length).toBe(files(VECTORS).length)
-  expect(vectors.length).toBe(allVectors.filter((v) => v.scheme !== 'render').length)
-  expect(vectors.every((v) => v.scheme !== 'render')).toBe(true)
+  expect(allVectors.filter((v) => v.scheme === 'render').length).toBe(renderFiles)
+  expect(vectors.length).toBe(files(VECTORS).length - renderFiles)
   expect(vectors.length).toBeGreaterThanOrEqual(8)
 })
 

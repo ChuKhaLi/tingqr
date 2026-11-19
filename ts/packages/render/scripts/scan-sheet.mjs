@@ -3,8 +3,9 @@
 //   pnpm -C ts/packages/render scan-sheet
 //
 // Codes come from two places:
-//   - the fake-account VietQR vectors (conformance/vectors/vietqr, kind "valid" with an "input"): they only show
-//     whether an app can read the code; never send money to them;
+//   - the sample VietQR vectors (conformance/vectors/vietqr, kind "valid" with an "input"): not the owner's accounts
+//     (most are made up; a README sample may belong to a stranger), so they only show whether an app can read the
+//     code; never send money to them;
 //   - the owner's own accounts in conformance/private/scan-inputs.json (gitignored), or the file named by the
 //     TINGQR_SCAN_INPUTS environment variable: an array of { id, input } where input is what encodeVietQr takes.
 //     Only the owner runs the script with real data. The script prints counts and the output path, never a payload
@@ -38,7 +39,25 @@ function entryFor(id, input, real) {
   const expect = { bankBin, accountNumber }
   if (amount !== undefined) expect.amount = amount
   if (purpose !== undefined) expect.purpose = purpose
+  // What the sheet shows must be what was asked for, not merely what tingqr reads back from its own code.
+  checkRoundTrip(id, input, expect)
   return { id, real, payload, expect }
+}
+
+/**
+ * Throw when the decoded code does not carry the requested bank, account, amount and purpose. The message names the
+ * field only, never its value (real account numbers must not reach the console).
+ */
+export function checkRoundTrip(id, input, decoded) {
+  const want = {
+    bankBin: input.bankBin,
+    accountNumber: input.accountNumber,
+    amount: input.amount === undefined || input.amount === '' ? undefined : String(input.amount),
+    purpose: input.purpose === undefined || input.purpose === '' ? undefined : input.purpose,
+  }
+  for (const field of Object.keys(want)) {
+    if (want[field] !== decoded[field]) throw new Error(`${id}: the code does not carry the requested ${field}`)
+  }
 }
 
 /** Fake vectors first, then the owner's real entries (if the file exists). */
@@ -50,7 +69,13 @@ export function loadEntries({ conformanceDir, scanInputsPath }) {
     .filter((v) => v.kind === 'valid' && v.input !== undefined)
     .map((v) => entryFor(v.id, v.input, false))
   if (existsSync(scanInputsPath)) {
-    const real = JSON.parse(readFileSync(scanInputsPath, 'utf8'))
+    let real
+    try {
+      real = JSON.parse(readFileSync(scanInputsPath, 'utf8'))
+    } catch {
+      // V8's SyntaxError quotes a slice of the file, which may hold an account number.
+      throw new Error('scan inputs file is not valid JSON')
+    }
     if (!Array.isArray(real)) throw new Error('scan inputs must be a JSON array of { id, input }')
     for (const { id, input } of real) entries.push(entryFor(String(id), input, true))
   }
@@ -82,7 +107,7 @@ export function renderSheet(entries, { toSvg, logoHref = TEST_LOGO }) {
         .join('')
       const label = e.real
         ? '<p class="real">Tài khoản thật của bạn</p>'
-        : '<p class="fake">Tài khoản giả: chỉ kiểm app đọc được mã, không chuyển tiền</p>'
+        : '<p class="fake">Tài khoản mẫu, không phải của bạn: chỉ kiểm app đọc được mã, không chuyển tiền</p>'
       return (
         `<section class="card"><h2>${escapeHtml(e.id)}</h2>${label}<table>${rows}</table>` +
         `<div class="codes"><figure>${toSvg(e.payload, { size: '40mm' })}<figcaption>Không logo</figcaption></figure>` +
