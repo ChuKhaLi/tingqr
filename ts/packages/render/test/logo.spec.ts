@@ -133,3 +133,26 @@ describe('toSvg with a logo', () => {
     expect(code(() => toSvg(TEXT, { logo: { href: 'javascript:alert(1)' } }))).toBe('INVALID_VALUE')
   })
 })
+
+describe('checkLogoHref anchoring', () => {
+  test.each(['javascript:alert(1)//https://x.vn/a.png', 'javascript:x//data:image/png;base64,AAAA', 'x data:image/png,AA'])(
+    'rejects %o (the safe prefix must be at the start)',
+    (href) => {
+      expect(code(() => checkLogoHref(href))).toBe('INVALID_VALUE')
+    },
+  )
+  test('rejects a non-string that stringifies to a safe href', () => {
+    const fake = { toString: () => 'logo.png', length: 8 } as unknown as string
+    expect(code(() => checkLogoHref(fake))).toBe('INVALID_VALUE')
+  })
+})
+
+describe('logo size and padding bounds on a large code (area limit not reached)', () => {
+  test('size 0.26 is rejected even when it would fit', () => {
+    expect(() => toSvg(TEXT, { minVersion: 40, logo: { href: HREF, size: 0.26, padding: 0 } })).toThrow(/size must be/)
+  })
+  test('padding 5 is rejected even when it would fit; padding 4 is accepted', () => {
+    expect(() => toSvg(TEXT, { minVersion: 40, logo: { href: HREF, size: 0.05, padding: 5 } })).toThrow(/padding must be/)
+    expect(toSvg(TEXT, { minVersion: 40, logo: { href: HREF, size: 0.05, padding: 4 } })).toContain('<image')
+  })
+})

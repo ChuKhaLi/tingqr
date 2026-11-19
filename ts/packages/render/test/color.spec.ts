@@ -19,3 +19,13 @@ test('WCAG contrast ratio', () => {
   expect(contrastRatio([0x77, 0x77, 0x77], [255, 255, 255])).toBeLessThan(4.5)
   expect(contrastRatio([0x76, 0x76, 0x76], [255, 255, 255])).toBeGreaterThanOrEqual(4.5)
 })
+
+test('rejects a colour with text before the #, and non-strings that stringify to a colour', () => {
+  expect(() => parseHexColor('x#fff')).toThrow(TingQrError)
+  expect(() => parseHexColor({ toString: () => '#fff' } as unknown as string)).toThrow(TingQrError)
+})
+
+test('dark channels use the linear segment of the sRGB curve', () => {
+  // #050505: channel 5/255 is below 0.03928, so it is divided by 12.92 (luminance ≈ 0.00152).
+  expect(contrastRatio([5, 5, 5], [255, 255, 255])).toBeCloseTo(20.38, 2)
+})

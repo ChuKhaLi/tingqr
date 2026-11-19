@@ -45,6 +45,8 @@ jobs:
       - run: pnpm -C ts build
       - name: '@tingqr/core has no runtime/peer/optional dependencies and fits the size budget'
         run: node ts/scripts/check-core-package.mjs
+      - name: '@tingqr/render depends only on @tingqr/core, keeps the Nayuki notice and fits the size budget'
+        run: node ts/scripts/check-render-package.mjs
       - run: pnpm -C ts test
       # The recipe tool guards privacy (masking, never printing payloads); its tests use public README samples only.
       - run: pnpm -C conformance/tools/recipe install --frozen-lockfile

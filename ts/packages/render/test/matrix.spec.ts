@@ -62,3 +62,15 @@ test.each([
 test('explicit defaults give the same matrix as no options', () => {
   expect(toMatrix(ALNUM, { ecc: 'M', boostEcc: true, minVersion: 1, maxVersion: 40 })).toEqual(toMatrix(ALNUM))
 })
+
+test.each([
+  [{ mask: 8 }, /mask/],
+  [{ maxVersion: 41 }, /maxVersion/],
+  [{ minVersion: 5, maxVersion: 4 }, /minVersion must not exceed maxVersion/],
+])('option %o is rejected by tingqr with a message naming it', (options, message) => {
+  expect(() => toMatrix('A', options)).toThrow(message)
+})
+
+test('minVersion equal to maxVersion pins the version', () => {
+  expect(toMatrix('A', { minVersion: 3, maxVersion: 3 }).version).toBe(3)
+})

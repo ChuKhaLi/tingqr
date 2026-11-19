@@ -26,9 +26,18 @@ TypeScript và bản .NET, kèm tích hợp sẵn cho Angular, NestJS và ASP.NE
     - **Đặc tả Thai QR của Ngân hàng Thái Lan chưa đọc được.** Quy tắc PromptPay dựa vào ba thư viện MIT; OTA, xuyên
       biên giới, sub-tag `04`/`05` chỉ từ `thai-qr-payment`; giới hạn tham chiếu 20 ký tự chưa có nguồn
       (`conformance/schemes/promptpay.md`).
+  - **Plan 4** (2026-11-19, nhánh `plan-4`): `docs/superpowers/plans/2026-11-19-plan-4-render.md`, thiết kế
+    `docs/superpowers/specs/2026-11-19-tingqr-render-design.md`.
+    - Xong: gói `@tingqr/render` (`toMatrix`, `toSvg`, logo ở giữa), bộ mã hoá port từ Nayuki v1.8.0, mẫu ma trận
+      `conformance/vectors/render/` sinh từ file Nayuki gốc, trang quét thử VietQR, bảng `conformance/scans.md`.
+    - **Trang quét thử có rồi, chưa có kết quả quét.** Giới hạn logo (10% diện tích, `size` ≤ 0.25) là tạm thời cho
+      tới khi có kết quả quét.
+    - Đầu vào quét thật của chủ dự án ở `conformance/private/scan-inputs.json`; chỉ chủ dự án chạy `scan-sheet` với dữ
+      liệu thật.
   - Repo GitHub riêng tư `ChuKhaLi/tingqr`; CI (`ci-ts.yml`) và mutation (`mutation-ts.yml`, ngưỡng 90%) chạy trên PR.
   - **Chưa quét thử bằng app thật** cho VietQR, VNPAY, PromptPay lẫn KHQR.
-  - Tiếp theo: Plan 4 (`@tingqr/render`), hoặc làm nốt Plan 2 Task 5–6 khi có QR thật.
+  - Tiếp theo: chủ dự án quét thử VietQR và điền `conformance/scans.md`; Plan 5 (danh sách ngân hàng, link mở app,
+    `@tingqr/bank-logos`); hoặc làm nốt Plan 2 Task 5–6 khi có QR thật.
 - **Chủ dự án đã quyết:**
   - Mục đích chính là một thư viện mã nguồn mở có tiếng; dùng phụ trong Noel tree (`../noel-tree`, Angular 21 SSR trên
     Cloudflare Workers).

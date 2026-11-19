@@ -116,3 +116,16 @@ test('bad text or matrix options surface as INVALID_VALUE', () => {
   expect(code(() => toSvg(42 as unknown as string))).toBe('INVALID_VALUE')
   expect(code(() => toSvg(TEXT, { mask: 9 }))).toBe('INVALID_VALUE')
 })
+
+test.each(['0', '0mm', '0.0px'])('a zero length %o is rejected', (size) => {
+  expect(code(() => toSvg(TEXT, { size }))).toBe('INVALID_VALUE')
+})
+test('a non-string size that stringifies to a length is rejected', () => {
+  expect(code(() => toSvg(TEXT, { size: { toString: () => '40mm' } } as unknown as SvgOptions))).toBe('INVALID_VALUE')
+})
+test.each([
+  ['40', 'width="40"'],
+  ['2.55in', 'width="2.55in"'],
+])('size %o (unitless or two decimals) is accepted', (size, attr) => {
+  expect(toSvg(TEXT, { size })).toContain(attr)
+})
