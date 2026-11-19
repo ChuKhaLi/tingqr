@@ -14,4 +14,7 @@
   - Đột biến sống sót đã biết là tương đương, không cần test: anchor `^`/`$` của regex kiểm tag và độ dài (chỉ nhận lát
     cắt đúng 2 ký tự), nhánh `instanceof TingQrError` khi bắt lỗi (chỉ có TingQrError được ném), và chuỗi thông báo lỗi.
   - Đột biến khác sống sót là lỗ hổng test: viết test giết nó, đừng hạ ngưỡng.
-- `pnpm check:core` (sau `pnpm build`): lõi không có dependency/peer/optional, tarball dưới 40 KB.
+- `pnpm check:core` (sau `pnpm build`): lõi không có dependency/peer/optional, tarball dưới 40 KB, mỗi subpath CJS `require` được, tầng EMV chỉ có một bản trong CJS.
+- **CJS subpath là file một dòng** `module.exports = require('./index.cjs')`, do `onSuccess` trong `tsup.config.ts` ghi
+  đè (CJS không tách chunk được, để nguyên thì mỗi subpath tự chứa một bản lõi). ESM vẫn tách chunk bình thường.
+  Thêm subpath mới: thêm vào `SUBPATHS` ở `tsup.config.ts` và ở `scripts/check-core-package.mjs`.
