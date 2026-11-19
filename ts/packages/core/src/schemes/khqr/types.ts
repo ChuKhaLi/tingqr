@@ -69,7 +69,8 @@ export interface KhqrInput {
   merchantCity?: string
   /** Tag 52, 4 digits; '5999' by default. */
   merchantCategoryCode?: string
-  currency: 'KHR' | 'USD'
+  /** 'KHR' / 'USD', or the numeric '116' / '840' that decodeKhqr returns in `currency`. */
+  currency: 'KHR' | 'USD' | '116' | '840'
   /** KHR: a whole number > 0. USD: > 0 with at most 2 decimals. Absent: a static code. */
   amount?: number | string
   /** 62.01, 62.02, 62.03, 62.07, 62.08: each at most 25 characters. */

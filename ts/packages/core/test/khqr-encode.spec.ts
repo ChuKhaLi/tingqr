@@ -273,3 +273,28 @@ test.each([5999, '59990', 'a5999', '5999a'])('merchantCategoryCode %o is rejecte
 test.each(['a@', '@b', '@'])('bakongAccountId %s with an empty name or bank is rejected', (account) => {
   expect(errorOf({ ...BASE, bakongAccountId: account })).toEqual(['INVALID_VALUE', '29.00'])
 })
+
+test.each([
+  ['116', 'KHR'],
+  ['840', 'USD'],
+] as const)('currency %s encodes exactly like %s', (numeric, alpha) => {
+  const input = { ...BASE, amount: '5', expiresAt: NOW + 1 }
+  expect(encodeKhqr({ ...input, currency: numeric })).toBe(encodeKhqr({ ...input, currency: alpha }))
+})
+
+test('numeric 840 follows the USD amount rule, numeric 116 the KHR one', () => {
+  expect(tag(encodeKhqr({ ...BASE, currency: '840', amount: 1.5, expiresAt: NOW + 1 }), '54')).toBe('1.50')
+  expect(errorOf({ ...BASE, currency: '116', amount: 1.5, expiresAt: NOW + 1 })).toEqual(['INVALID_VALUE', '54'])
+})
+
+test('the decoded currency can be passed straight back to encodeKhqr', () => {
+  const first = encodeKhqr({ ...BASE, currency: 'USD', amount: 2, expiresAt: NOW + 1 })
+  const r = decodeKhqr(first, { mode: 'strict' })
+  if (!r.ok) throw new Error(r.error.code)
+  const again = encodeKhqr({ ...BASE, currency: r.value.currency as KhqrInput['currency'], amount: 2, expiresAt: NOW + 1 })
+  expect(again).toBe(first)
+})
+
+test.each(['764', 'khr', 116])('currency %o is rejected', (currency) => {
+  expect(errorOf({ ...BASE, currency })).toEqual(['INVALID_VALUE', '53'])
+})
