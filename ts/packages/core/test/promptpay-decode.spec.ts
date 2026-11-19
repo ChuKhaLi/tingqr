@@ -217,3 +217,26 @@ test('a malformed tag 62 is reported', () => {
 test('the ./promptpay subpath exports the same decoder', () => {
   expect(decodeFromSubpath).toBe(decodePromptPayQr)
 })
+
+test('a national ID that looks like 0066 + 9 digits gets no mobile', () => {
+  const payload = rebuild(PP_MOBILE, (f) => setTag(f, '29', field('00', PROMPTPAY_AID.creditTransfer) + field('02', '0066812223333')))
+  const { value } = ok(payload)
+  expect(value).toMatchObject({ proxyType: 'nationalId', proxy: '0066812223333' })
+  expect('mobile' in value).toBe(false)
+})
+
+test('a bill payment without references has no reference keys', () => {
+  const payload = rebuild(PP_BILL_REF3, (f) => setTag(f, '30', field('00', PROMPTPAY_AID.billPayment) + field('01', '0112233445566')))
+  const { value } = ok(payload, 'strict')
+  expect('reference1' in value).toBe(false)
+  expect('reference2' in value).toBe(false)
+})
+
+test.each(['00', '01'])('a missing tag %s is INVALID_VALUE, not a crash', (t) => {
+  expect(err(rebuild(PP_MOBILE, (f) => f.filter((x) => x.tag !== t)))).toEqual(['INVALID_VALUE', t])
+})
+
+test.each(['10066812223333', '00668122233334'])('a 14-digit mobile proxy %s is not normalised', (proxy) => {
+  const payload = rebuild(PP_MOBILE, (f) => setTag(f, '29', field('00', PROMPTPAY_AID.creditTransfer) + field('01', proxy)))
+  expect('mobile' in ok(payload).value).toBe(false)
+})

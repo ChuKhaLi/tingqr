@@ -182,3 +182,17 @@ test('the ./khqr subpath exports the same functions', () => {
   expect(decodeFromSubpath).toBe(decodeKhqr)
   expect(expiredFromSubpath).toBe(isKhqrExpired)
 })
+
+test('parse warnings (whitespace) are kept', () => {
+  expect(ok(` ${INDIVIDUAL} `).warnings.map((w) => w.code)).toEqual(['TRIMMED_WHITESPACE'])
+})
+
+test.each(['00', '01'])('a missing tag %s is INVALID_VALUE, not a crash', (t) => {
+  expect(err(rebuild(INDIVIDUAL, (f) => drop(f, t)))).toEqual(['INVALID_VALUE', t])
+})
+
+test.each(['01726821915797', '17268219157970'])('a 14-digit timestamp %s is not a time', (stamp) => {
+  const { value } = ok(rebuild(INDIVIDUAL, (f) => setTag(f, '99', field('00', stamp) + field('01', stamp))))
+  expect('createdAt' in value).toBe(false)
+  expect('expiresAt' in value).toBe(false)
+})

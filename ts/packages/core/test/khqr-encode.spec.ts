@@ -250,3 +250,21 @@ test('Khmer text is allowed in tag 64, counted in characters', () => {
 test('the ./khqr subpath exports the same encoder', () => {
   expect(encodeFromSubpath).toBe(encodeKhqr)
 })
+
+test('leading zeros are removed, and a 13-character amount is the longest accepted', () => {
+  const amount = (currency: 'KHR' | 'USD', a: number | string) => tag(encodeKhqr({ ...BASE, currency, amount: a, expiresAt: NOW + 1 }), '54')
+  expect(amount('KHR', '001000')).toBe('1000')
+  expect(amount('KHR', 100)).toBe('100')
+  expect(amount('USD', '100')).toBe('100')
+  expect(amount('USD', '0010.5')).toBe('10.50')
+  expect(amount('KHR', '1234567890123')).toBe('1234567890123')
+  expect(errorOf({ ...BASE, currency: 'USD', amount: '12345678901.23', expiresAt: NOW + 1 })).toEqual(['INVALID_VALUE', '54'])
+})
+
+test.each([[['1000']], [{ toString: (): string => '1000' }]])('an amount that is neither number nor string (%o) is rejected', (amount) => {
+  expect(errorOf({ ...BASE, amount, expiresAt: NOW + 1 })).toEqual(['INVALID_VALUE', '54'])
+})
+
+test.each([5999, '59990', 'a5999', '5999a'])('merchantCategoryCode %o is rejected', (mcc) => {
+  expect(errorOf({ ...BASE, merchantCategoryCode: mcc })).toEqual(['INVALID_VALUE', '52'])
+})

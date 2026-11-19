@@ -125,3 +125,20 @@ test('a 20-character reference is accepted', () => {
 test('the ./promptpay subpath exports the same encoder', () => {
   expect(encodeFromSubpath).toBe(encodePromptPayQr)
 })
+
+test.each([
+  [{ nationalId: 'A111111111111' }, '29.02'],
+  [{ eWallet: 'A12345678901234' }, '29.03'],
+])('an ID with a non-digit first character (%o) is rejected', (target, t) => {
+  expect(errorOf({ target })).toEqual(['INVALID_VALUE', t])
+})
+
+test('leading zeros are removed without touching inner zeros', () => {
+  const amount = (a: number | string) => decodePromptPayQr(encodePromptPayQr({ target: { mobile: '0812223333' }, amount: a }))
+  expect(amount(100)).toMatchObject({ value: { amount: '100.00' } })
+  expect(amount('00100.5')).toMatchObject({ value: { amount: '100.50' } })
+})
+
+test.each([[['30']], [{ toString: (): string => '30' }]])('an amount that is neither number nor string (%o) is rejected', (amount) => {
+  expect(errorOf({ target: { mobile: '0812223333' }, amount })).toEqual(['INVALID_VALUE', '54'])
+})
