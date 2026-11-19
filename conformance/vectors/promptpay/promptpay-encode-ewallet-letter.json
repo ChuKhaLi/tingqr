@@ -1,0 +1,14 @@
+{
+  "id": "promptpay-encode-ewallet-letter",
+  "scheme": "promptpay",
+  "kind": "encode-invalid",
+  "input": {
+    "target": {
+      "eWallet": "01234567890123A"
+    }
+  },
+  "error": "INVALID_VALUE",
+  "errorTag": "29.03",
+  "source": "conformance/schemes/promptpay.md, encode rules (hand-written input that breaks one rule)",
+  "note": "E-wallet ID must be exactly 15 digits."
+}

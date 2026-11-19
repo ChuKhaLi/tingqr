@@ -1,0 +1,14 @@
+{
+  "id": "promptpay-encode-mobile-8-digits",
+  "scheme": "promptpay",
+  "kind": "encode-invalid",
+  "input": {
+    "target": {
+      "mobile": "08122233"
+    }
+  },
+  "error": "INVALID_VALUE",
+  "errorTag": "29.01",
+  "source": "conformance/schemes/promptpay.md, encode rules (hand-written input that breaks one rule)",
+  "note": "Mobile must be 0 + 9 digits, 66 + 9 or 0066 + 9 after removing non-digits."
+}

@@ -1,0 +1,15 @@
+{
+  "id": "promptpay-encode-ref1-accented",
+  "scheme": "promptpay",
+  "kind": "encode-invalid",
+  "input": {
+    "target": {
+      "billerId": "099400016550100",
+      "reference1": "CAFÉ"
+    }
+  },
+  "error": "NON_ASCII",
+  "errorTag": "30.02",
+  "source": "conformance/schemes/promptpay.md, encode rules (hand-written input that breaks one rule)",
+  "note": "References must be printable ASCII."
+}

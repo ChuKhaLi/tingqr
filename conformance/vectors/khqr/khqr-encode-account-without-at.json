@@ -1,0 +1,16 @@
+{
+  "id": "khqr-encode-account-without-at",
+  "scheme": "khqr",
+  "kind": "encode-invalid",
+  "input": {
+    "accountType": "individual",
+    "bakongAccountId": "jonhsmithnbcq",
+    "merchantName": "Jonh Smith",
+    "currency": "KHR",
+    "createdAt": 1731000000000
+  },
+  "error": "INVALID_VALUE",
+  "errorTag": "29.00",
+  "source": "conformance/schemes/khqr.md, encode rules (hand-written input that breaks one rule; limits from bakong-khqr@1.0.20 constant/index.js)",
+  "note": "The Bakong account must be name@bank with exactly one '@'."
+}

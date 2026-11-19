@@ -1,0 +1,22 @@
+{
+  "id": "promptpay-promptparse-amount-20-15",
+  "scheme": "promptpay",
+  "kind": "valid",
+  "payload": "00020101021229370016A0000006770101110113006680111111153037645802TH540520.15630442BE",
+  "expected": {
+    "initiation": "dynamic",
+    "currency": "764",
+    "country": "TH",
+    "amount": "20.15",
+    "kind": "credit-transfer",
+    "ota": false,
+    "proxyType": "mobile",
+    "proxy": "0066801111111",
+    "subFields": {
+      "01": "0066801111111"
+    },
+    "mobile": "0801111111"
+  },
+  "source": "maythiwat/promptparse@1.7.1 src/index.test.ts (MIT), oracle output pinned in the library's own test, test 'Parse payload (strict) with valid checksum and get tag value'",
+  "note": "expected written by hand. `node check-promptpay.mjs` (conformance/tools/oracle) has promptparse@1.7.1 parse() accept it in strict mode (CRC) and read the same AID, 29/30 sub-tags, 01, 52, 53, 54, 58, 59, 60 and the 62 sub-tags named in expected. Not oracle-checked: kind/ota/crossBorder (the script's own AID table), proxyType, mobile, extraFields, warnings."
+}

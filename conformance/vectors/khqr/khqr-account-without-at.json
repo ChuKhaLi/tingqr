@@ -1,0 +1,11 @@
+{
+  "id": "khqr-account-without-at",
+  "scheme": "khqr",
+  "kind": "invalid",
+  "payload": "00020101021130460008khqraclb0111855124649170215ACLEDA Bank Plc5204599953038405802KH5907BUN MAO6010Phnom Penh6102126213020901050033164310002KM0107BUN MAO0210Phnom Penh63045450",
+  "error": "UNSUPPORTED_SCHEME",
+  "source": "mutation of khqr-sdk-merchant-acleda",
+  "derived": true,
+  "derivedFrom": "khqr-sdk-merchant-acleda",
+  "note": "Removed '@' from 30.00 ('khqr@aclb' -> 'khqraclb'), lengths of 30 and 30.00 reduced by one, CRC computed with conformance/tools/crc16.py (independent Python CRC-16/CCITT-FALSE). Proves only that decodeKhqr does not recognise a tag 30 without a Bakong account."
+}

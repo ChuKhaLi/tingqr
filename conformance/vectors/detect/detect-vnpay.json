@@ -1,0 +1,16 @@
+{
+  "id": "detect-vnpay",
+  "scheme": "detect",
+  "kind": "valid",
+  "payload": "00020101021126280010A0000007750110010531314453037045408210900005802VN5910CELLPHONES62600312CPSHN ONLINE0517021908061613127850705ONLHN0810CellphoneS63047685",
+  "expected": {
+    "scheme": "vnpay",
+    "alsoMatches": []
+  },
+  "source": "copy of conformance/vectors/vnpay/vnpay-readme-cellphones.json (see its source)",
+  "warnings": [
+    "MISSING_OPTIONAL_TAG",
+    "MISSING_OPTIONAL_TAG"
+  ],
+  "note": "detect reads in lenient mode; the VNPAY sample lacks tags 52 and 60."
+}

@@ -1,0 +1,31 @@
+{
+  "id": "khqr-sdk-merchant-acleda",
+  "scheme": "khqr",
+  "kind": "valid",
+  "payload": "00020101021130470009khqr@aclb0111855124649170215ACLEDA Bank Plc5204599953038405802KH5907BUN MAO6010Phnom Penh6102126213020901050033164310002KM0107BUN MAO0210Phnom Penh6304E313",
+  "expected": {
+    "accountType": "merchant",
+    "bakongAccountId": "khqr@aclb",
+    "merchantId": "85512464917",
+    "acquiringBank": "ACLEDA Bank Plc",
+    "initiation": "static",
+    "currency": "840",
+    "currencyAlpha": "USD",
+    "merchantCategoryCode": "5999",
+    "merchantName": "BUN MAO",
+    "merchantCity": "Phnom Penh",
+    "postalCode": "12",
+    "country": "KH",
+    "additionalData": {
+      "02": "010500331"
+    },
+    "mobileNumber": "010500331",
+    "alternateLanguage": {
+      "language": "KM",
+      "merchantName": "BUN MAO",
+      "merchantCity": "Phnom Penh"
+    }
+  },
+  "source": "bakong-khqr@1.0.20 test/decode.test.js (ISC declared in package.json, no LICENSE file; official NBC SDK), 'Decode Test 6'",
+  "note": "expected written by hand. `node check-khqr.mjs` (conformance/tools/oracle) compares the fields bakong-khqr@1.0.20 BakongKHQR.decode extracts; that decode validates nothing (no CRC or required-tag check). Not compared: currencyAlpha, postalCode, the raw 62/99 maps, extraFields, warnings. CRC checked with conformance/tools/crc16.py. Tag 61 (postal code) and upper-case language code KM, kept verbatim."
+}

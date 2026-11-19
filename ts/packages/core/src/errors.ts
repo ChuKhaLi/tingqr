@@ -1,3 +1,5 @@
+import type { TlvNode } from './emv/tlv.js'
+
 /** Error codes shared with every tingqr implementation. Must equal `conformance/errors.json`. */
 export const ERROR_CODES = [
   'CRC_MISSING',
@@ -28,12 +30,15 @@ export interface Warning {
 export class TingQrError extends Error {
   readonly code: ErrorCode
   declare readonly tag?: string
+  /** Top-level fields already read, when the error is about the payload as a whole (e.g. UNKNOWN_SCHEME). */
+  declare readonly fields?: TlvNode[]
 
-  constructor(code: ErrorCode, message: string, tag?: string) {
+  constructor(code: ErrorCode, message: string, tag?: string, fields?: TlvNode[]) {
     super(message)
     this.name = 'TingQrError'
     this.code = code
     if (tag !== undefined) this.tag = tag
+    if (fields !== undefined) this.fields = fields
   }
 }
 

@@ -1,0 +1,26 @@
+{
+  "id": "promptpay-promptparse-bill-ref3",
+  "scheme": "promptpay",
+  "kind": "valid",
+  "payload": "00020101021130620016A000000677010112011301122334455660211CUSTOMER0010306INV00153037645802TH62070703SCB6304780E",
+  "expected": {
+    "initiation": "static",
+    "currency": "764",
+    "country": "TH",
+    "additionalData": {
+      "07": "SCB"
+    },
+    "kind": "bill-payment",
+    "crossBorder": false,
+    "billerId": "0112233445566",
+    "subFields": {
+      "01": "0112233445566",
+      "02": "CUSTOMER001",
+      "03": "INV001"
+    },
+    "reference1": "CUSTOMER001",
+    "reference2": "INV001"
+  },
+  "source": "maythiwat/promptparse@1.7.1 src/index.test.ts (MIT), oracle output pinned in the library's own test, test 'Generate Bill Payment with Ref.3'",
+  "note": "expected written by hand. `node check-promptpay.mjs` (conformance/tools/oracle) has promptparse@1.7.1 parse() accept it in strict mode (CRC) and read the same AID, 29/30 sub-tags, 01, 52, 53, 54, 58, 59, 60 and the 62 sub-tags named in expected. Not oracle-checked: kind/ota/crossBorder (the script's own AID table), proxyType, mobile, extraFields, warnings."
+}

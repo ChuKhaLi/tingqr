@@ -15,3 +15,4 @@ obj/
 conformance/private/
 reports/
 .stryker-tmp/
+__pycache__/

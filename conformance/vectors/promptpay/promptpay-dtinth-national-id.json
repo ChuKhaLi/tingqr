@@ -1,0 +1,20 @@
+{
+  "id": "promptpay-dtinth-national-id",
+  "scheme": "promptpay",
+  "kind": "valid",
+  "payload": "00020101021129370016A000000677010111021311111111111115802TH530376463047B5A",
+  "expected": {
+    "initiation": "static",
+    "currency": "764",
+    "country": "TH",
+    "kind": "credit-transfer",
+    "ota": false,
+    "proxyType": "nationalId",
+    "proxy": "1111111111111",
+    "subFields": {
+      "02": "1111111111111"
+    }
+  },
+  "source": "dtinth/promptpay-qr@v0.5.0 index.test.js (MIT), oracle output pinned in the library's own test, test 'National ID number'",
+  "note": "expected written by hand. `node check-promptpay.mjs` (conformance/tools/oracle) has promptparse@1.7.1 parse() accept it in strict mode (CRC) and read the same AID, 29/30 sub-tags, 01, 52, 53, 54, 58, 59, 60 and the 62 sub-tags named in expected. Not oracle-checked: kind/ota/crossBorder (the script's own AID table), proxyType, mobile, extraFields, warnings."
+}

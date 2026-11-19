@@ -1,0 +1,10 @@
+{
+  "id": "detect-unknown-aid",
+  "scheme": "detect",
+  "kind": "invalid",
+  "payload": "00020101021129230010A0000009990105ABCDE53037645802TH6304941F",
+  "error": "UNKNOWN_SCHEME",
+  "source": "hand-built EMV payload to exercise the \"no scheme recognised\" branch of detect()",
+  "derived": true,
+  "note": "Tag 29 holds AID A000000999, which no supported scheme uses. CRC computed with conformance/tools/crc16.py (independent Python CRC-16/CCITT-FALSE). Not a real QR."
+}

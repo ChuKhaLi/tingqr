@@ -17,9 +17,18 @@ TypeScript và bản .NET, kèm tích hợp sẵn cho Angular, NestJS và ASP.NE
     - **Mọi hàm đọc mặc định chế độ chấp nhận lệch chuẩn**, chặt phải truyền `{ mode: 'strict' }` (chủ dự án chọn).
     - **Hoãn (chủ dự án):** Task 5 chụp QR thật và phần code Task 6 nhận diện ví. Chưa có `provider`; xem
       `conformance/schemes/vietqr-wallets.md`.
+  - **Plan 3** (2026-11-19, nhánh `plan-3`): `docs/superpowers/plans/2026-11-18-plan-3-promptpay-khqr-detect.md`.
+    - Xong: tạo và đọc PromptPay (`encodePromptPayQr`, `decodePromptPayQr`), KHQR (`encodeKhqr`, `decodeKhqr`,
+      `isKhqrExpired`), `detect()`, `TingQrError.fields`. Gói npm bỏ source map.
+    - Oracle mới trong `conformance/tools/oracle/`: `promptpay-qr`, `promptparse`, `thai-qr-payment` (MIT),
+      `bakong-khqr` (ISC chỉ khai báo trong `package.json`). Chạy oracle phải qua `node conformance/tools/oracle/...`
+      để chủ dự án được hỏi.
+    - **Đặc tả Thai QR của Ngân hàng Thái Lan chưa đọc được.** Quy tắc PromptPay dựa vào ba thư viện MIT; OTA, xuyên
+      biên giới, sub-tag `04`/`05` chỉ từ `thai-qr-payment`; giới hạn tham chiếu 20 ký tự chưa có nguồn
+      (`conformance/schemes/promptpay.md`).
   - Repo GitHub riêng tư `ChuKhaLi/tingqr`; CI (`ci-ts.yml`) và mutation (`mutation-ts.yml`, ngưỡng 90%) chạy trên PR.
-  - **Chưa quét thử bằng app thật** cho VietQR lẫn VNPAY.
-  - Tiếp theo: Plan 3 (PromptPay, KHQR, `detect()`), hoặc làm nốt Task 5–6 khi có QR thật.
+  - **Chưa quét thử bằng app thật** cho VietQR, VNPAY, PromptPay lẫn KHQR.
+  - Tiếp theo: Plan 4 (`@tingqr/render`), hoặc làm nốt Plan 2 Task 5–6 khi có QR thật.
 - **Chủ dự án đã quyết:**
   - Mục đích chính là một thư viện mã nguồn mở có tiếng; dùng phụ trong Noel tree (`../noel-tree`, Angular 21 SSR trên
     Cloudflare Workers).

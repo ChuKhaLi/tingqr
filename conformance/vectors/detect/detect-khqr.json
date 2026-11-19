@@ -1,0 +1,11 @@
+{
+  "id": "detect-khqr",
+  "scheme": "detect",
+  "kind": "valid",
+  "payload": "00020101021229460015john_smith@devb0111855122334550208Dev Bank52045999530384054031005802KH5910John Smith6010PHNOM PENH62670106#123450211855122334550311Coffee Shop0709Cashier_10810Buy coffee64280002km0108ចន ស្មីន0206ភ្នំពញ993400131726821915797011317268220357976304B73E",
+  "expected": {
+    "scheme": "khqr",
+    "alsoMatches": []
+  },
+  "source": "copy of conformance/vectors/khqr/khqr-sdk-individual-usd.json (see its source)"
+}

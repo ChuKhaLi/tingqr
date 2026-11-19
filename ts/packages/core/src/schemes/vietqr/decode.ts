@@ -1,6 +1,6 @@
 import { TingQrError, type Result, type Warning } from '../../errors.js'
 import { readAdditionalData, readExtraFields, readSchemeTemplate } from '../../emv/fields.js'
-import { getField, parsePayload, type ParseMode } from '../../emv/payload.js'
+import { getField, parsePayload, type EmvPayload, type ParseMode } from '../../emv/payload.js'
 import { parseTemplate, type TlvNode } from '../../emv/tlv.js'
 import { SERVICE_CODE, VIETQR_GUID, type VietQrData, type VietQrService } from './types.js'
 
@@ -23,11 +23,14 @@ const INTERPRETED_TAGS: ReadonlySet<string> = new Set(['00', '01', '38', '52', '
  * `warnings`; `{ mode: 'strict' }` rejects them instead (use it to validate codes you generate).
  */
 export function decodeVietQr(payload: string, options: { mode?: ParseMode } = {}): Result<VietQrData> {
-  const mode = options.mode ?? 'lenient'
   const parsed = parsePayload(payload)
   if (!parsed.ok) return parsed
-  const p = parsed.value
-  const warnings: Warning[] = [...parsed.warnings]
+  return readVietQr(parsed.value, parsed.warnings, options.mode ?? 'lenient')
+}
+
+/** decodeVietQr on a payload already parsed by parsePayload; detect() uses it so the payload is parsed once. */
+export function readVietQr(p: EmvPayload, parsedWarnings: readonly Warning[], mode: ParseMode): Result<VietQrData> {
+  const warnings: Warning[] = [...parsedWarnings]
 
   try {
     const merchant = readSchemeTemplate(p, '38', VIETQR_GUID)

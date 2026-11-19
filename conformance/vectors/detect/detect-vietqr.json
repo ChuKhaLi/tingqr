@@ -1,0 +1,11 @@
+{
+  "id": "detect-vietqr",
+  "scheme": "detect",
+  "kind": "valid",
+  "payload": "00020101021138530010A0000007270123000697041601092576788590208QRIBFTTA53037045802VN6304AE9F",
+  "expected": {
+    "scheme": "vietqr",
+    "alsoMatches": []
+  },
+  "source": "copy of conformance/vectors/vietqr/vietqr-readme-sample.json (see its source)"
+}

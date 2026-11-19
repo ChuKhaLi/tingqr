@@ -3,7 +3,19 @@
 import { readFileSync, readdirSync, statSync } from 'node:fs'
 import { join } from 'node:path'
 import { CONFORMANCE_DIR } from './conformance-root.js'
-import { TingQrError, decodeVietQr, decodeVnpayQr, encodeVietQr, type ParseMode, type Result } from '../src/index.js'
+import {
+  TingQrError,
+  decodeKhqr,
+  detect,
+  decodePromptPayQr,
+  encodeKhqr,
+  encodePromptPayQr,
+  decodeVietQr,
+  decodeVnpayQr,
+  encodeVietQr,
+  type ParseMode,
+  type Result,
+} from '../src/index.js'
 
 interface SchemeRunner {
   encode?: (input: any) => string
@@ -13,6 +25,15 @@ interface SchemeRunner {
 const SCHEMES: Record<string, SchemeRunner> = {
   vietqr: { encode: encodeVietQr, decode: decodeVietQr },
   vnpay: { decode: decodeVnpayQr },
+  promptpay: { encode: encodePromptPayQr, decode: decodePromptPayQr },
+  khqr: { encode: encodeKhqr, decode: decodeKhqr },
+  // detect vectors pin only the scheme and the secondary matches; each scheme's data has its own vectors.
+  detect: {
+    decode: (payload) => {
+      const r = detect(payload)
+      return r.ok ? { ...r, value: { scheme: r.value.scheme, alsoMatches: r.value.alsoMatches } } : r
+    },
+  },
 }
 
 interface Vector {

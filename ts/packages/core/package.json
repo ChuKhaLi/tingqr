@@ -38,6 +38,26 @@
         "types": "./dist/vnpay.d.cts",
         "default": "./dist/vnpay.cjs"
       }
+    },
+    "./promptpay": {
+      "import": {
+        "types": "./dist/promptpay.d.ts",
+        "default": "./dist/promptpay.js"
+      },
+      "require": {
+        "types": "./dist/promptpay.d.cts",
+        "default": "./dist/promptpay.cjs"
+      }
+    },
+    "./khqr": {
+      "import": {
+        "types": "./dist/khqr.d.ts",
+        "default": "./dist/khqr.js"
+      },
+      "require": {
+        "types": "./dist/khqr.d.cts",
+        "default": "./dist/khqr.cjs"
+      }
     }
   },
   "files": [

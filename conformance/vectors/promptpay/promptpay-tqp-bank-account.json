@@ -1,0 +1,21 @@
+{
+  "id": "promptpay-tqp-bank-account",
+  "scheme": "promptpay",
+  "kind": "valid",
+  "payload": "00020101021229370016A0000006770101110413014123456789053037645406100.005802TH6304901D",
+  "expected": {
+    "initiation": "dynamic",
+    "currency": "764",
+    "country": "TH",
+    "amount": "100.00",
+    "kind": "credit-transfer",
+    "ota": false,
+    "proxyType": "bankAccount",
+    "proxy": "0141234567890",
+    "subFields": {
+      "04": "0141234567890"
+    }
+  },
+  "source": "uunw/thai-qr-payment@v1.2.0 packages/payload/src/builder.test.ts (MIT), oracle output pinned in the library's own test, test 'emits tag 29 with sub-tag 04 and the standard PromptPay AID'",
+  "note": "expected written by hand. `node check-promptpay.mjs` (conformance/tools/oracle) has promptparse@1.7.1 parse() accept it in strict mode (CRC) and read the same AID, 29/30 sub-tags, 01, 52, 53, 54, 58, 59, 60 and the 62 sub-tags named in expected. Not oracle-checked: kind/ota/crossBorder (the script's own AID table), proxyType, mobile, extraFields, warnings."
+}

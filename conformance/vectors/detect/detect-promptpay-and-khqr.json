@@ -1,0 +1,13 @@
+{
+  "id": "detect-promptpay-and-khqr",
+  "scheme": "detect",
+  "kind": "valid",
+  "payload": "00020101021129370016A0000006770101110113006681222333330350009khqr@devb01061234560208Dev Bank53037645802TH63040DB1",
+  "expected": {
+    "scheme": "promptpay",
+    "alsoMatches": []
+  },
+  "source": "tag 29 of promptpay-promptparse-mobile (promptparse@1.7.1, MIT) plus tag 30 of khqr-sdk-merchant-usd (bakong-khqr@1.0.20, ISC)",
+  "derived": true,
+  "note": "Built by hand: a Thai PromptPay code (58 = TH) that also carries a KHQR-shaped tag 30. KHQR requires tag 58 to be KH or absent, so only PromptPay matches. Not a real QR. CRC computed with conformance/tools/crc16.py (independent Python CRC-16/CCITT-FALSE)."
+}
