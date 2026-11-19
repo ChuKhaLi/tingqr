@@ -27,5 +27,5 @@
     }
   },
   "source": "bakong-khqr@1.0.20 test/decode.test.js (ISC declared in package.json, no LICENSE file; official NBC SDK), 'Decode Test 6'",
-  "note": "expected written by hand; checked with bakong-khqr@1.0.20 BakongKHQR.decode by `node check-khqr.mjs` in conformance/tools/oracle. Tag 61 (postal code) and upper-case language code KM, kept verbatim."
+  "note": "expected written by hand. `node check-khqr.mjs` (conformance/tools/oracle) compares the fields bakong-khqr@1.0.20 BakongKHQR.decode extracts; that decode validates nothing (no CRC or required-tag check). Not compared: currency, postalCode, the raw 62/99 maps, extraFields, warnings. CRC checked with conformance/tools/crc16.py. Tag 61 (postal code) and upper-case language code KM, kept verbatim."
 }

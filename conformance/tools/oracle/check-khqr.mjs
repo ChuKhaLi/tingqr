@@ -1,7 +1,8 @@
 // Check every KHQR vector's hand-written `expected` against bakong-khqr@1.0.20 BakongKHQR.decode, the official SDK of
 // the National Bank of Cambodia (ISC, declared in its package.json; no LICENSE file). For each `valid` or `lenient`
 // vector, every field the SDK reads must equal the matching field of `expected` (absent in `expected` = null in the
-// SDK). Tag 61 (postal code) and the raw tag 62/99 maps are not read by the SDK and are not checked here.
+// SDK). The SDK's decode does not validate anything, so this checks field extraction only. Not compared: currency,
+// tag 61 (postal code), the raw tag 62/99 maps, extraFields and warnings.
 //
 // Run: cd conformance/tools/oracle && pnpm install && node check-khqr.mjs
 import { createRequire } from 'node:module'
@@ -45,8 +46,8 @@ let checked = 0
 for (const name of readdirSync(DIR).filter((n) => n.endsWith('.json'))) {
   const v = JSON.parse(readFileSync(join(DIR, name), 'utf8'))
   if (v.kind !== 'valid' && v.kind !== 'lenient') continue
-  const { status, data } = BakongKHQR.decode(v.payload)
-  if (status.code !== 0) throw new Error(`${v.id}: the SDK cannot decode the payload (${status.message})`)
+  // BakongKHQR.decode always returns status 0 and never validates (CRC, required tags): this compares extraction only.
+  const { data } = BakongKHQR.decode(v.payload)
   for (const [field, read] of Object.entries(MAP)) {
     const expected = read(v.expected) ?? null
     if (data[field] !== expected) {

@@ -7,5 +7,5 @@
   "source": "mutation of khqr-sdk-merchant-acleda",
   "derived": true,
   "derivedFrom": "khqr-sdk-merchant-acleda",
-  "note": "Removed '@' from 30.00 ('khqr@aclb' -> 'khqraclb'), lengths of 30 and 30.00 reduced by one, CRC recomputed with an independent Python CRC-16/CCITT-FALSE. Proves only that decodeKhqr does not recognise a tag 30 without a Bakong account."
+  "note": "Removed '@' from 30.00 ('khqr@aclb' -> 'khqraclb'), lengths of 30 and 30.00 reduced by one, CRC computed with conformance/tools/crc16.py (independent Python CRC-16/CCITT-FALSE). Proves only that decodeKhqr does not recognise a tag 30 without a Bakong account."
 }

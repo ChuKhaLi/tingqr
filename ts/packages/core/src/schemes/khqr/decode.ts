@@ -15,6 +15,8 @@ const ADDITIONAL_NAMES = {
   '08': 'purpose',
 } as const
 const TIMESTAMP = /^\d{13}$/
+/** name@bank: exactly one '@', with a non-empty name and bank. */
+const BAKONG_ACCOUNT = /^[^@]+@[^@]+$/
 
 function fail(code: TingQrError['code'], message: string, tag?: string): { ok: false; error: TingQrError } {
   return { ok: false, error: new TingQrError(code, message, tag) }
@@ -25,8 +27,9 @@ function sub(nodes: TlvNode[], tag: string): string | undefined {
 }
 
 /**
- * The sub-fields of tag 29/30 when it is clean TLV whose 00 is a Bakong account ('name@bank', exactly one '@'). PromptPay
- * puts an AID there, which never contains '@', so the two schemes cannot both match.
+ * The sub-fields of tag 29/30 when it is clean TLV whose 00 is a Bakong account ('name@bank'). A PromptPay AID in the
+ * same tag never contains '@', so one tag is never read as both; a payload may still carry PromptPay in one of 29/30
+ * and KHQR in the other (detect() then reports both).
  */
 function readAccount(p: EmvPayload, tag: '29' | '30'): TlvNode[] | undefined {
   const value = getField(p, tag)?.value
@@ -38,7 +41,7 @@ function readAccount(p: EmvPayload, tag: '29' | '30'): TlvNode[] | undefined {
     return undefined
   }
   const account = sub(nodes, '00')
-  if (account === undefined || account.split('@').length !== 2) return undefined
+  if (account === undefined || !BAKONG_ACCOUNT.test(account)) return undefined
   assertUniqueTags(nodes, tag)
   return nodes
 }
@@ -152,12 +155,18 @@ export function readKhqr(p: EmvPayload, parsedWarnings: readonly Warning[], mode
       const times = [['00', 'createdAt'], ['01', 'expiresAt']] as const
       for (const [s, key] of times) {
         const v = timestamp[s]
-        if (v !== undefined && TIMESTAMP.test(v)) value[key] = Number(v)
+        if (v === undefined) continue
+        if (TIMESTAMP.test(v)) value[key] = Number(v)
+        else if (mode === 'strict') return fail('INVALID_VALUE', `Tag 99.${s} must be Unix milliseconds (13 digits).`, `99.${s}`)
       }
     }
-    if (value.initiation === 'dynamic' && timestamp?.['01'] === undefined) {
+    if (value.initiation === 'dynamic' && value.expiresAt === undefined) {
       if (mode === 'strict') return fail('MISSING_TAG', 'A dynamic KHQR must carry an expiry time (99.01).', '99.01')
-      warnings.push({ code: 'MISSING_OPTIONAL_TAG', message: 'Dynamic KHQR without an expiry time (99.01).', tag: '99.01' })
+      warnings.push({
+        code: 'MISSING_OPTIONAL_TAG',
+        message: 'Dynamic KHQR without a readable expiry time (99.01).',
+        tag: '99.01',
+      })
     }
 
     const interpreted = new Set(['00', '01', '15', accountTag, '52', '53', '54', '58', '59', '60', '61', '62', '63', '64', '99'])

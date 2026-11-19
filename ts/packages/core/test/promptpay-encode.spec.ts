@@ -142,3 +142,11 @@ test('leading zeros are removed without touching inner zeros', () => {
 test.each([[['30']], [{ toString: (): string => '30' }]])('an amount that is neither number nor string (%o) is rejected', (amount) => {
   expect(errorOf({ target: { mobile: '0812223333' }, amount })).toEqual(['INVALID_VALUE', '54'])
 })
+
+test.each([
+  [{ mobile: '0812223333', nationalId: '1111111111111' }],
+  [{ mobile: '0812223333', billerId: '0112233445566' }],
+  [{ eWallet: '012345678901234', nationalId: '1111111111111' }],
+])('a target with more than one recipient (%o) is rejected, not silently narrowed', (target) => {
+  expect(errorOf({ target })).toEqual(['INVALID_VALUE', '29'])
+})

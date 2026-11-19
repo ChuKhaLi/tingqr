@@ -23,7 +23,9 @@ TypeScript và bản .NET, kèm tích hợp sẵn cho Angular, NestJS và ASP.NE
     - Oracle mới trong `conformance/tools/oracle/`: `promptpay-qr`, `promptparse`, `thai-qr-payment` (MIT),
       `bakong-khqr` (ISC chỉ khai báo trong `package.json`). Chạy oracle phải qua `node conformance/tools/oracle/...`
       để chủ dự án được hỏi.
-    - **Đặc tả Thai QR của Ngân hàng Thái Lan chưa đọc được**; quy tắc PromptPay là điểm chung của ba thư viện MIT.
+    - **Đặc tả Thai QR của Ngân hàng Thái Lan chưa đọc được.** Quy tắc PromptPay dựa vào ba thư viện MIT; OTA, xuyên
+      biên giới, sub-tag `04`/`05` chỉ từ `thai-qr-payment`; giới hạn tham chiếu 20 ký tự chưa có nguồn
+      (`conformance/schemes/promptpay.md`).
   - Repo GitHub riêng tư `ChuKhaLi/tingqr`; CI (`ci-ts.yml`) và mutation (`mutation-ts.yml`, ngưỡng 90%) chạy trên PR.
   - **Chưa quét thử bằng app thật** cho VietQR, VNPAY, PromptPay lẫn KHQR.
   - Tiếp theo: Plan 4 (`@tingqr/render`), hoặc làm nốt Plan 2 Task 5–6 khi có QR thật.

@@ -18,5 +18,5 @@
     "mobile": "0812223333"
   },
   "source": "maythiwat/promptparse@1.7.1 src/index.test.ts (MIT), oracle output pinned in the library's own test, test 'Generate Any ID with amount'",
-  "note": "expected written by hand; checked with promptparse@1.7.1 parse() by `node check-promptpay.mjs` in conformance/tools/oracle."
+  "note": "expected written by hand. `node check-promptpay.mjs` (conformance/tools/oracle) has promptparse@1.7.1 parse() accept it in strict mode (CRC) and read the same AID, 29/30 sub-tags, 01, 52, 53, 54, 58, 59, 60 and the 62 sub-tags named in expected. Not oracle-checked: kind/ota/crossBorder (the script's own AID table), proxyType, mobile, extraFields, warnings."
 }

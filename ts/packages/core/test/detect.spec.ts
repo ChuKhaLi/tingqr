@@ -97,3 +97,9 @@ test('whitespace warnings from parsing are kept, once', () => {
   const r = detect(`  ${PROMPTPAY}\n`)
   expect(r.ok && r.warnings.map((w) => w.code)).toEqual(['TRIMMED_WHITESPACE'])
 })
+
+test('a PromptPay tag 29 next to a KHQR tag 30 is PromptPay, and KHQR is reported in alsoMatches', () => {
+  const t30 = field('00', 'khqr@devb') + field('01', '123456') + field('02', 'Dev Bank')
+  const r = detect(rebuild(PROMPTPAY, (f) => [...f, { tag: '30', value: t30 }]))
+  expect(r).toMatchObject({ ok: true, value: { scheme: 'promptpay', alsoMatches: ['khqr'] } })
+})

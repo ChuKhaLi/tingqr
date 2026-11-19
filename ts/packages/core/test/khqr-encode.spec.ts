@@ -268,3 +268,7 @@ test.each([[['1000']], [{ toString: (): string => '1000' }]])('an amount that is
 test.each([5999, '59990', 'a5999', '5999a'])('merchantCategoryCode %o is rejected', (mcc) => {
   expect(errorOf({ ...BASE, merchantCategoryCode: mcc })).toEqual(['INVALID_VALUE', '52'])
 })
+
+test.each(['a@', '@b', '@'])('bakongAccountId %s with an empty name or bank is rejected', (account) => {
+  expect(errorOf({ ...BASE, bakongAccountId: account })).toEqual(['INVALID_VALUE', '29.00'])
+})

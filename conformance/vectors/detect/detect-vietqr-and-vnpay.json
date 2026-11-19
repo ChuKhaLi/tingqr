@@ -11,5 +11,5 @@
   },
   "source": "fields of the vietnam-qr-pay README samples (MIT): tag 38 of vietqr-readme-sample, tag 26 of vnpay-readme-cellphones",
   "derived": true,
-  "note": "Built by hand from the two README samples (tags 00, 01, 26, 38, 53, 58), CRC computed with an independent Python CRC-16/CCITT-FALSE. Models a shop QR carrying both VietQR and VNPAY."
+  "note": "Built by hand from the two README samples (tags 00, 01, 26, 38, 53, 58), CRC computed with conformance/tools/crc16.py (independent Python CRC-16/CCITT-FALSE). Hypothetical shop QR carrying both VietQR and VNPAY; no captured QR shows this yet."
 }

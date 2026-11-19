@@ -196,3 +196,24 @@ test.each(['01726821915797', '17268219157970'])('a 14-digit timestamp %s is not 
   expect('createdAt' in value).toBe(false)
   expect('expiresAt' in value).toBe(false)
 })
+
+test.each([
+  ['01', '2', '99.01'],
+  ['00', '1', '99.00'],
+])('strict mode rejects a 99.%s that is not 13 digits', (sub, bad, t) => {
+  const stamps = { '00': '1726821915797', '01': '1726822035797', [sub]: bad }
+  const payload = rebuild(INDIVIDUAL, (f) => setTag(f, '99', field('00', stamps['00']!) + field('01', stamps['01']!)))
+  expect(err(payload, 'strict')).toEqual(['INVALID_VALUE', t])
+})
+
+test('lenient mode: a dynamic code whose 99.01 is unreadable has no expiry and is warned about', () => {
+  const payload = rebuild(INDIVIDUAL, (f) => setTag(f, '99', field('00', '1726821915797') + field('01', '2')))
+  const r = ok(payload)
+  expect('expiresAt' in r.value).toBe(false)
+  expect(r.value.timestamp).toEqual({ '00': '1726821915797', '01': '2' })
+  expect(r.warnings.map((w) => [w.code, w.tag])).toEqual([['MISSING_OPTIONAL_TAG', '99.01']])
+})
+
+test.each(['a@', '@b'])('an account %s with an empty name or bank is not KHQR', (account) => {
+  expect(err(rebuild(INDIVIDUAL, (f) => setTag(f, '29', field('00', account))))).toEqual(['UNSUPPORTED_SCHEME', '29'])
+})

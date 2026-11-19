@@ -1,9 +1,8 @@
 // Generate KHQR encode vectors with bakong-khqr@1.0.20, the official SDK of the National Bank of Cambodia (ISC,
 // declared in its package.json; no LICENSE file). The SDK stamps tag 99.00 with Date.now(), so this script pins
 // Date.now to 1731000000000 to make the output reproducible; tingqr takes the same value as `createdAt`.
-// Each payload is checked with the SDK's own BakongKHQR.verify. Error 46 (KHQR expired) is ignored there because the
-// pinned clock is in 2024; with Date.now pinned it does not occur. `expected` is built from the case inputs, never
-// from tingqr.
+// Each payload must pass the SDK's own BakongKHQR.verify (with Date.now still pinned, so no case has expired).
+// `expected` is built from the case inputs, never from tingqr.
 //
 // Run: cd conformance/tools/oracle && pnpm install && node gen-khqr.mjs
 import { createRequire } from 'node:module'
@@ -18,7 +17,6 @@ const NOW = 1731000000000
 Date.now = () => NOW
 
 const OUT = join(dirname(fileURLToPath(import.meta.url)), '..', '..', 'vectors', 'khqr')
-const EXPIRED = 46
 
 const CASES = [
   {
@@ -140,7 +138,7 @@ mkdirSync(OUT, { recursive: true })
 for (const c of CASES) {
   const payload = sdkPayload(c.input)
   const check = BakongKHQR.verify(payload)
-  if (!check.isValid && check.errorCode !== EXPIRED) throw new Error(`${c.id}: SDK verify rejects ${payload}`)
+  if (!check.isValid) throw new Error(`${c.id}: SDK verify rejects ${payload}`)
   const vector = {
     id: c.id,
     scheme: 'khqr',

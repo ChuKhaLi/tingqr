@@ -1,0 +1,15 @@
+{
+  "id": "detect-promptpay-and-khqr",
+  "scheme": "detect",
+  "kind": "valid",
+  "payload": "00020101021129370016A0000006770101110113006681222333330350009khqr@devb01061234560208Dev Bank53037645802TH63040DB1",
+  "expected": {
+    "scheme": "promptpay",
+    "alsoMatches": [
+      "khqr"
+    ]
+  },
+  "source": "tag 29 of promptpay-promptparse-mobile (promptparse@1.7.1, MIT) plus tag 30 of khqr-sdk-merchant-usd (bakong-khqr@1.0.20, ISC)",
+  "derived": true,
+  "note": "Built by hand to show that PromptPay (29) and KHQR (30) can both be recognised in one payload; not a real QR. CRC computed with conformance/tools/crc16.py (independent Python CRC-16/CCITT-FALSE)."
+}

@@ -39,8 +39,10 @@ thống Bakong. Có hai dạng: cá nhân (tag `29`) và cửa hàng (tag `30`).
 Thứ tự kiểm:
 
 1. CRC và độ dài.
-2. Tag `29` hoặc `30` đọc được dạng TLV và có `00` chứa **đúng một** `@`. Không có thì `UNSUPPORTED_SCHEME`. AID của
-   PromptPay ở cùng vị trí không bao giờ có `@`, nên PromptPay không bị nhận nhầm là KHQR.
+2. Tag `29` hoặc `30` đọc được dạng TLV và có `00` dạng `tên@ngân-hàng` (đúng một `@`, tên và ngân hàng không rỗng).
+   Không có thì `UNSUPPORTED_SCHEME`. AID của PromptPay không bao giờ có `@`, nên **cùng một tag** không bị đọc thành cả
+   hai loại. Một chuỗi vẫn có thể mang PromptPay ở tag này và KHQR ở tag kia; `detect()` khi đó báo cả hai (xem
+   `detect.md`).
    - Có cả `29` lẫn `30` hợp lệ: lấy `29`, tag `30` nằm trong `extraFields`. Chưa thấy QR nào như vậy.
 3. Cửa hàng: thiếu `30.01` hoặc `30.02` thì `MISSING_TAG` ở cả hai chế độ.
 4. Tag `00` và `01` như VietQR.
@@ -49,7 +51,10 @@ Thứ tự kiểm:
    - **Chế độ chặt:** thiếu tag khác cũng là `MISSING_TAG`.
    - **Chế độ chấp nhận lệch chuẩn (mặc định):** mỗi tag thiếu có một cảnh báo `MISSING_OPTIONAL_TAG`. `58` được điền
      `KH`; `52`, `59`, `60` để trống.
-6. QR động (`01` = `12`) không có `99.01`: chế độ chặt báo `MISSING_TAG` `99.01`, chế độ chấp nhận lệch chuẩn cảnh báo.
+6. `99.00` hoặc `99.01` có mặt nhưng không phải 13 chữ số: chế độ chặt báo `INVALID_VALUE` ở sub-tag đó; chế độ chấp
+   nhận lệch chuẩn giữ nguyên văn trong `timestamp`, không điền `createdAt`/`expiresAt`.
+7. QR động (`01` = `12`) không có `99.01` đọc được: chế độ chặt báo `MISSING_TAG` `99.01`, chế độ chấp nhận lệch chuẩn
+   cảnh báo `MISSING_OPTIONAL_TAG` `99.01`.
 
 Ngoài ra:
 - `currency` suy từ `53`: `116` là `KHR`, `840` là `USD`, mã khác thì không có `currency` (vẫn có `currencyCode`).
@@ -68,11 +73,16 @@ Ngoài ra:
   `expiresAt` bắt buộc khi có `amount` và phải lớn hơn `createdAt`.
   - Tag `99` (`00` = `createdAt`, `01` = `expiresAt`) chỉ được ghi khi có `expiresAt`. Như SDK, QR tĩnh không có
     `expiresAt` thì không có tag `99`, nên `createdAt` không xuất hiện trong chuỗi.
-- **Số tiền như SDK:** KHR là số nguyên lớn hơn 0 (chuỗi chỉ gồm chữ số; `1000.0` bị từ chối). USD lớn hơn 0, tối đa
-  hai chữ số thập phân: số nguyên ghi nguyên (`1`), có phần lẻ thì ghi hai chữ số (`1.5` → `1.50`, `'1.0'` → `1.00`).
-  Bỏ số 0 thừa ở đầu, tối đa 13 ký tự. Không làm tròn.
-- **Giới hạn** (lấy từ `constant/index.js` của SDK), sai thì `INVALID_VALUE` kèm tag:
-  - `bakongAccountId` đúng một `@`, tối đa 32 ký tự (`29.00`/`30.00`);
+- **Số tiền, ghi giống SDK nhưng chặt hơn SDK:** KHR là số nguyên lớn hơn 0. USD lớn hơn 0, tối đa hai chữ số thập phân:
+  số nguyên ghi nguyên (`1`), có phần lẻ thì ghi hai chữ số (`1.5` → `1.50`, `'1.0'` → `1.00`), như SDK. Tối đa 13 ký
+  tự. Không làm tròn. Khác SDK:
+  - KHR dạng chuỗi chỉ nhận chữ số: `'1000.0'` bị từ chối (SDK nhận và ghi `1000`);
+  - tingqr bỏ số 0 thừa ở đầu (SDK giữ nguyên với USD số nguyên).
+  - Chỉ USD `1.5` có mẫu sinh bằng SDK; USD số nguyên chưa có mẫu từ SDK.
+- **Giới hạn độ dài** lấy từ `constant/index.js` của SDK; sai thì `INVALID_VALUE` kèm tag:
+  - `bakongAccountId` tối đa 32 ký tự, dạng `tên@ngân-hàng` (`29.00`/`30.00`). "Đúng một `@`" theo
+    `helper/checkAccountID.js` của SDK (bộ tạo mã của SDK chỉ đòi có `@`); "tên và ngân hàng không rỗng" là quy tắc
+    thêm của tingqr;
   - `accountInformation`, `merchantId`, `acquiringBank` tối đa 32. Cửa hàng bắt buộc `merchantId` (`30.01`) và
     `acquiringBank` (`30.02`). `accountInformation` chỉ dành cho cá nhân, `merchantId` chỉ cho cửa hàng; dùng nhầm thì
     `INVALID_VALUE` ở `29`/`30`;
@@ -87,12 +97,15 @@ Ngoài ra:
 
 ## Mẫu thử (`vectors/khqr/`)
 
-- 5 mẫu chép nguyên văn từ thư mục `test/` của `bakong-khqr@1.0.20`. `expected` viết tay, rồi đối chiếu bằng
-  `BakongKHQR.decode` của SDK (`node check-khqr.mjs` trong `tools/oracle/`). CRC của cả 5 được kiểm lại bằng hàm Python
-  độc lập.
+- 5 mẫu chép nguyên văn từ thư mục `test/` của `bakong-khqr@1.0.20` (thư mục này có trong gói npm, kiểm lại được).
+  `expected` viết tay, rồi so với các trường mà `BakongKHQR.decode` của SDK tách ra (`node check-khqr.mjs` trong
+  `tools/oracle/`). Hàm `decode` của SDK **không kiểm gì** (không CRC, không tag bắt buộc), nên đây chỉ là đối chiếu
+  cách tách trường; nhãn `valid`/`lenient` dựa vào quy tắc ở trên. CRC của cả 5 được kiểm bằng `tools/crc16.py`.
   - 3 mẫu `valid`: cá nhân USD có `62`, `64` tiếng Khmer, `99`; cửa hàng cùng nội dung; cửa hàng ACLEDA có `61` và `KM`.
   - 2 mẫu `lenient`: QR động không có `99.01` (KHR `50000.0`; KHR có tag `15` UnionPay).
-- 2 mẫu `invalid`: CRC sai; `30.00` bị bỏ `@` (chỉ chứng minh `decodeKhqr` không nhận ra, CRC tính lại bằng Python).
+- 2 mẫu `invalid`: CRC sai; `30.00` bị bỏ `@` (chỉ chứng minh `decodeKhqr` không nhận ra, CRC tính lại bằng
+  `tools/crc16.py`).
+- 1 mẫu `lenient`: `99.01` không phải 13 chữ số, sửa từ mẫu cá nhân USD, CRC bằng `tools/crc16.py`.
 - 4 mẫu `valid` có `input`, sinh bằng `tools/oracle/gen-khqr.mjs`: SDK tạo với `Date.now` gán cố định
   `1731000000000`, `BakongKHQR.verify` của SDK chấp nhận. tingqr phải tạo ra đúng từng byte.
 - 6 mẫu `encode-invalid`, mỗi mẫu vi phạm một quy tắc tạo mã ở trên.

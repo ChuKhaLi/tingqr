@@ -6,5 +6,5 @@
   "error": "UNKNOWN_SCHEME",
   "source": "hand-built EMV payload to exercise the \"no scheme recognised\" branch of detect()",
   "derived": true,
-  "note": "Tag 29 holds AID A000000999, which no supported scheme uses. CRC computed with an independent Python CRC-16/CCITT-FALSE. Not a real QR."
+  "note": "Tag 29 holds AID A000000999, which no supported scheme uses. CRC computed with conformance/tools/crc16.py (independent Python CRC-16/CCITT-FALSE). Not a real QR."
 }

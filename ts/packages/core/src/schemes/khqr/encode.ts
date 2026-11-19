@@ -9,6 +9,8 @@ const USD_AMOUNT = /^(\d+)(?:\.(\d{1,2}))?$/
 /** Longest tag 54 the SDK accepts (INVALID_LENGTH.AMOUNT). */
 const MAX_AMOUNT_LENGTH = 13
 const CURRENCY_CODE = { KHR: '116', USD: '840' } as const
+/** name@bank: exactly one '@', with a non-empty name and bank. */
+const BAKONG_ACCOUNT = /^[^@]+@[^@]+$/
 
 function invalid(message: string, tag: string): TingQrError {
   return new TingQrError('INVALID_VALUE', message, tag)
@@ -65,7 +67,7 @@ function accountTemplate(input: KhqrInput): ['29' | '30', string] {
   }
   const tag = merchant ? '30' : '29'
   const account = text(input.bakongAccountId, 'bakongAccountId', `${tag}.00`, 32, { required: true }) as string
-  if (account.split('@').length !== 2) throw invalid('bakongAccountId must be name@bank with exactly one "@".', `${tag}.00`)
+  if (!BAKONG_ACCOUNT.test(account)) throw invalid('bakongAccountId must be name@bank with exactly one "@".', `${tag}.00`)
   if (merchant && input.accountInformation !== undefined) {
     throw invalid('accountInformation is for individual accounts; a merchant uses merchantId.', '30')
   }

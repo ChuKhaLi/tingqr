@@ -4,7 +4,17 @@ QR thanh toán của Thái Lan theo khung EMVCo (merchant-presented). Có hai d�
 đơn (tag `30`).
 
 **Đặc tả:** "Thai QR Code Payment Standard" của Ngân hàng Thái Lan **chưa đọc được**: trang gốc trả 404, bản lưu trên
-Wayback chưa tải được (2026-11-18). Quy tắc dưới đây là **điểm chung của ba thư viện độc lập, giấy phép MIT**:
+Wayback chưa tải được (2026-11-18). Quy tắc dưới đây dựa vào **ba thư viện độc lập, giấy phép MIT**, nhưng mức độ chung
+không đều:
+
+- **Cả ba cùng có:** chuyển tiền tag `29` với AID `A000000677010111`, sub-tag `01`–`03`, và các tag cấp đầu.
+- **Hai trong ba** (`promptparse`, `thai-qr-payment`): thanh toán hoá đơn tag `30` với AID `A000000677010112`.
+- **Chỉ `thai-qr-payment`:** AID OTA `…0114`, AID xuyên biên giới `…2006`, sub-tag `04` (tài khoản ngân hàng) và `05`
+  (mã OTA). Ba mẫu `promptpay-tqp-*` vì vậy chỉ dựa vào một thư viện.
+- **Lựa chọn của tingqr, không thư viện nào áp:** biller 13 hoặc 15 chữ số, tham chiếu tối đa 20 ký tự, thứ tự ưu tiên
+  proxy (xem dưới).
+
+Ba thư viện:
 
 - `promptpay-qr@0.5.0` (dtinth, https://github.com/dtinth/promptpay-qr);
 - `promptparse@1.7.1` (maythiwat, https://github.com/maythiwat/promptparse);
@@ -44,7 +54,8 @@ Thứ tự kiểm:
 2. Tag `29` có AID chuyển tiền, hoặc tag `30` có AID hoá đơn (so không phân biệt hoa thường). AID của tag này đặt ở tag
    kia không được tính. Không có thì `UNSUPPORTED_SCHEME`. Có cả hai thì lấy `29`, tag `30` nằm trong `extraFields`.
 3. Chuyển tiền:
-   - `proxyType` là sub-tag đầu tiên có mặt trong `01`, `02`, `03`, `04`. `proxy` là giá trị nguyên văn.
+   - `proxyType` là sub-tag đầu tiên có mặt theo thứ tự `01`, `02`, `03`, `04`. `proxy` là giá trị nguyên văn. Thứ tự
+     này là lựa chọn của tingqr: `thai-qr-payment` xét `04` trước rồi mới `01`–`03`. Chưa có mẫu nào có hai proxy.
    - `mobile` chỉ điền khi `29.01` có dạng `0066` + 9 số, viết lại thành `0` + 9 số. Dạng khác vẫn có trong `proxy`.
    - Không có sub-tag nào trong `01`–`04`:
      - **Chế độ chấp nhận lệch chuẩn (mặc định):** `proxyType: 'unknown'`, `proxy: ''`, cảnh báo `MISSING_OPTIONAL_TAG` tag `29`.
@@ -69,8 +80,12 @@ Ngoài ra:
   Sai thì `INVALID_VALUE` tag `29.01`.
 - **`nationalId`** đúng 13 chữ số (`29.02`), **`eWallet`** đúng 15 chữ số (`29.03`), **`billerId`** 13 hoặc 15 chữ số
   (`30.01`). Không bỏ dấu gạch: có ký tự không phải số là `INVALID_VALUE`.
+- **Chỉ một đích:** `target` có từ hai trong `mobile`, `nationalId`, `eWallet`, `billerId` thì `INVALID_VALUE` tag `29`.
+  tingqr không tự chọn một.
 - **`reference1`, `reference2`** (`30.02`, `30.03`): ASCII in được (không thì `NON_ASCII`), tối đa 20 ký tự (không thì
-  `INVALID_VALUE`). Giới hạn 20 lấy theo các thư viện, vì đặc tả chưa đọc được. Chuỗi rỗng coi như không có.
+  `INVALID_VALUE`). **Giới hạn 20 chưa có nguồn:** không thư viện nào áp giới hạn này, và đặc tả chưa đọc được. Chuỗi
+  rỗng coi như không có.
+- **Biller 13 hoặc 15 chữ số** cũng là lựa chọn của tingqr; các thư viện không kiểm độ dài biller.
 - **`amount`** (`54`): số hoặc chuỗi dạng `^\d{1,10}(\.\d{1,2})?$`, lớn hơn 0. Luôn ghi hai chữ số thập phân (`30.00`),
   bỏ số 0 thừa ở đầu (`0001.5` → `1.50`). Không làm tròn: `1.234` hay `0.1 + 0.2` bị từ chối. Chuỗi rỗng coi như không có
   số tiền.
@@ -82,11 +97,14 @@ Ngoài ra:
   - `promptparse` `src/index.test.ts`: 8 mẫu.
   - `thai-qr-payment` `packages/payload/src/builder.test.ts`: 3 mẫu.
 - `expected` viết tay, rồi đối chiếu bằng `parse()` của `promptparse` (`node check-promptpay.mjs` trong
-  `tools/oracle/`).
+  `tools/oracle/`). `promptparse` chỉ đọc tag; nó không phân loại AID. Vì vậy `kind`, `ota`, `crossBorder` (theo bảng
+  AID của chính script), `proxyType`, `mobile`, `extraFields` và cảnh báo **không** được oracle kiểm.
+- Không mẫu `promptpay-*` nào có trong gói npm của các thư viện; chúng được chép từ file test trên GitHub ở đúng tag
+  phiên bản (`v0.5.0`, `1.7.1`, `v1.2.0`). Muốn kiểm lại thì mở các file đó ở tag tương ứng.
 - 1 mẫu `invalid`: CRC sai, sửa từ mẫu `promptpay-dtinth-mobile`.
 - 5 mẫu `valid` có `input`, sinh bằng `tools/oracle/gen-promptpay.mjs`: builder của `thai-qr-payment` tạo, `parse()` của
   `promptparse` đọc lại khớp từng trường và thứ tự tag. tingqr phải tạo ra đúng từng byte.
-- 7 mẫu `encode-invalid`, mỗi mẫu vi phạm một quy tắc tạo mã ở trên.
+- 8 mẫu `encode-invalid`, mỗi mẫu vi phạm một quy tắc tạo mã ở trên.
 
 ## Chưa được kiểm
 

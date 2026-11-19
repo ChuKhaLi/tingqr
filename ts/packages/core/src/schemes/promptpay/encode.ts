@@ -44,6 +44,8 @@ function amountText(amount: unknown): string | undefined {
 
 function merchantTemplate(target: PromptPayInput['target'] | undefined): ['29' | '30', string] {
   const t = (target ?? {}) as Record<string, unknown>
+  const kinds = ['mobile', 'nationalId', 'eWallet', 'billerId'].filter((k) => k in t)
+  if (kinds.length > 1) throw invalid(`Target has ${kinds.join(' and ')}; give exactly one recipient.`, '29')
   if ('mobile' in t) {
     const raw = typeof t.mobile === 'string' ? t.mobile.replace(/\D/g, '') : ''
     const m = MOBILE.exec(raw)

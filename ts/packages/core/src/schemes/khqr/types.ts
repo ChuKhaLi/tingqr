@@ -80,7 +80,11 @@ export interface KhqrInput {
   purpose?: string
   /** Tag 64, the only text that may be non-ASCII: language code (1–2 characters), name (≤ 25), city (≤ 15). */
   alternateLanguage?: { language: string; merchantName: string; merchantCity?: string }
-  /** Unix milliseconds (13 digits). Required so the output never depends on the clock. */
+  /**
+   * Unix milliseconds (13 digits). Required so the output never depends on the clock. Written to 99.00 only together
+   * with `expiresAt`: like the Bakong SDK, a static code without `expiresAt` has no tag 99, so this value is checked
+   * and then left out.
+   */
   createdAt: number
   /** Unix milliseconds (13 digits), after createdAt. Required with an amount. */
   expiresAt?: number

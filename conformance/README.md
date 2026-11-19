@@ -7,6 +7,7 @@ bộ mẫu thử ở đây, nên hai bản cho cùng kết quả trên mọi hà
 - `errors.json`: bảng mã lỗi và mã cảnh báo dùng chung. Không ngôn ngữ nào được có mã ngoài bảng.
 - `schemes/<id>.md`: mô tả từng loại QR (tag, GUID, quy tắc, nguồn).
 - `vectors/<id>/*.json`: mẫu thử, mỗi file một mẫu, tên file trùng `id`.
+- `tools/crc16.py`: CRC-16/CCITT-FALSE viết bằng Python, độc lập với tingqr, để tính lại CRC của mẫu dựng tay hoặc sửa.
 - `tools/oracle/`: script chạy các thư viện độc lập để sinh mẫu, có `node_modules` riêng. Phiên bản ghim cứng:
 
   | Gói | Phiên bản | Giấy phép | Dùng cho |
@@ -25,7 +26,7 @@ bộ mẫu thử ở đây, nên hai bản cho cùng kết quả trên mọi hà
 |---|---|---|
 | `id` | có | `^[a-z0-9-]+$`, trùng tên file |
 | `scheme` | có | ví dụ `vietqr` |
-| `kind` | có | `valid`: đọc ra `expected` ở chế độ chặt. `invalid`: cả hai chế độ đều báo `error`. `lenient`: chế độ chặt báo `error`, chế độ chấp nhận lệch chuẩn đọc ra `expected` kèm `warnings`. `encode-invalid`: tạo mã từ `input` phải báo lỗi `error` (kèm `errorTag` nếu có); không có `payload` |
+| `kind` | có | `valid`: đọc ra `expected` ở chế độ chặt (riêng `scheme: detect`, không có chế độ chặt: `detect` đọc ra `expected`). `invalid`: cả hai chế độ đều báo `error`. `lenient`: chế độ chặt báo `error`, chế độ chấp nhận lệch chuẩn đọc ra `expected` kèm `warnings`. `encode-invalid`: tạo mã từ `input` phải báo lỗi `error` (kèm `errorTag` nếu có); không có `payload` |
 | `payload` | trừ `encode-invalid` | chuỗi QR, không chứa `\r` |
 | `input` | không | chỉ ở `valid`: tạo mã từ `input` phải ra đúng `payload` từng byte, trừ khi `roundTrip: false` |
 | `expected` | `valid`, `lenient` | dữ liệu đọc ra |

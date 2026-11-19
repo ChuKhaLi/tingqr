@@ -1,0 +1,15 @@
+{
+  "id": "promptpay-encode-two-targets",
+  "scheme": "promptpay",
+  "kind": "encode-invalid",
+  "input": {
+    "target": {
+      "mobile": "0812223333",
+      "nationalId": "1111111111111"
+    }
+  },
+  "error": "INVALID_VALUE",
+  "errorTag": "29",
+  "source": "conformance/schemes/promptpay.md, encode rules (hand-written input that breaks one rule)",
+  "note": "A target must name exactly one recipient; tingqr refuses instead of picking one."
+}
