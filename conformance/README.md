@@ -53,6 +53,23 @@ Dành cho bộ vẽ QR (`@tingqr/render`, sau này `TingQR.Rendering`). Mẫu n�
   thuộc `core`.
 - Mẫu ma trận chỉ sinh từ bộ mã hoá Nayuki **gốc** chạy làm oracle, không bao giờ từ code đã port.
 
+## Trang quét thử (VietQR bằng app thật)
+
+1. Ghi tài khoản của bạn vào `conformance/private/scan-inputs.json` (thư mục này bị gitignore, không bao giờ commit).
+   File là một mảng `{ id, input }`; `input` giống tham số của `encodeVietQr` (`bankBin`, `accountNumber`, `amount`,
+   `purpose`). Xem mẫu ở `conformance/scan-inputs.example.json` (dữ liệu giả).
+   - `id` không được chứa số tài khoản hay tên (ví dụ `mb-1`), vì nó được ghi vào `conformance/scans.md`.
+   - Có thể trỏ tới file khác bằng biến môi trường `TINGQR_SCAN_INPUTS`.
+2. Chạy `pnpm -C ts/packages/render scan-sheet`. Script chỉ in số mã và đường dẫn file, không bao giờ in chuỗi QR hay số
+   tài khoản. Trang ghi ra `ts/packages/render/scan-sheet/index.html` (bị gitignore).
+3. Trang có:
+   - các mẫu VietQR tài khoản giả (chỉ để kiểm app đọc được mã);
+   - mã từ file của bạn;
+   - mỗi mã in cả bản có logo lẫn bản không logo, cạnh 40 mm. In trên A4 được.
+4. Quét, **dừng ở màn hình xác nhận**, rồi ghi kết quả vào `conformance/scans.md`.
+
+Chỉ chủ dự án chạy bước 2 khi có dữ liệu thật; Claude không chạy và không đọc trang sinh ra từ dữ liệu thật.
+
 ## Quy tắc nguồn
 
 - Không tự bịa chuỗi QR. Mẫu `invalid` là mẫu `valid` bị sửa, ghi rõ đã sửa gì.

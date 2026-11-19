@@ -30,7 +30,8 @@
   "scripts": {
     "build": "tsup",
     "test": "vitest run",
-    "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.test.json"
+    "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.test.json",
+    "scan-sheet": "pnpm build && node scripts/scan-sheet.mjs"
   },
   "dependencies": {
     "@tingqr/core": "workspace:*"
