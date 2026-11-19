@@ -4,8 +4,7 @@
     "types": [
       "node",
       "vitest/globals"
-    ],
-    "noUncheckedIndexedAccess": false
+    ]
   },
   "include": [
     "src",
