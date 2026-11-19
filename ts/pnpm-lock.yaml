@@ -33,6 +33,12 @@ importers:
         specifier: ^8.20.0
         version: 8.20.0
 
+  packages/render:
+    dependencies:
+      '@tingqr/core':
+        specifier: workspace:*
+        version: link:../core
+
 packages:
 
   '@babel/code-frame@8.0.6':

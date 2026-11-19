@@ -24,7 +24,8 @@
         "valid",
         "invalid",
         "lenient",
-        "encode-invalid"
+        "encode-invalid",
+        "matrix"
       ]
     },
     "payload": {
@@ -97,9 +98,19 @@
         }
       },
       "else": {
-        "required": [
-          "payload"
-        ]
+        "if": {
+          "properties": {
+            "kind": {
+              "const": "matrix"
+            }
+          }
+        },
+        "then": {},
+        "else": {
+          "required": [
+            "payload"
+          ]
+        }
       }
     },
     {
@@ -189,6 +200,35 @@
           "derived": {
             "const": true
           }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "matrix"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "input",
+          "expected"
+        ],
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "payload"
+              ]
+            },
+            {
+              "required": [
+                "error"
+              ]
+            }
+          ]
         }
       }
     }

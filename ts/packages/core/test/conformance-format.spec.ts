@@ -80,3 +80,25 @@ test('schema rejects an encode-invalid vector that carries a payload', () => {
 test('vector set is not empty', () => {
   expect(files.length).toBeGreaterThanOrEqual(1)
 })
+
+const matrix = {
+  id: 'x',
+  scheme: 'render',
+  kind: 'matrix',
+  input: { text: 'A' },
+  expected: { size: 21, version: 1, ecc: 'M', mask: 0, rows: [] },
+  source: 'test fixture inside conformance-format.spec.ts',
+}
+
+test('schema accepts a matrix vector with input and expected and no payload', () => {
+  expect(validate(matrix), ajv.errorsText(validate.errors)).toBe(true)
+})
+
+test('schema rejects a matrix vector without input or expected, or with a payload or error', () => {
+  const { input: _i, ...noInput } = matrix
+  const { expected: _e, ...noExpected } = matrix
+  expect(validate(noInput)).toBe(false)
+  expect(validate(noExpected)).toBe(false)
+  expect(validate({ ...matrix, payload: '000201' })).toBe(false)
+  expect(validate({ ...matrix, error: 'INVALID_VALUE' })).toBe(false)
+})

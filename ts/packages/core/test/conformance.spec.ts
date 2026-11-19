@@ -58,7 +58,9 @@ function files(dir: string): string[] {
   })
 }
 
-const vectors: Vector[] = files(VECTORS).map((f) => JSON.parse(readFileSync(f, 'utf8')))
+// Matrix vectors (scheme "render") run in @tingqr/render's own runner: render depends on core, so core cannot import it.
+const allVectors: Vector[] = files(VECTORS).map((f) => JSON.parse(readFileSync(f, 'utf8')))
+const vectors: Vector[] = allVectors.filter((v) => v.scheme !== 'render')
 
 function runner(v: Vector): SchemeRunner {
   const r = SCHEMES[v.scheme]
@@ -75,8 +77,10 @@ function errorOf(r: Result<unknown>, v: Vector): [string | undefined, string | u
   return [errorCode(r), v.errorTag === undefined || r.ok ? undefined : r.error.tag]
 }
 
-test('the runner sees every vector file, and there are at least 8', () => {
-  expect(vectors.length).toBe(files(VECTORS).length)
+test('the runner sees every vector file except render ones, and there are at least 8', () => {
+  expect(allVectors.length).toBe(files(VECTORS).length)
+  expect(vectors.length).toBe(allVectors.filter((v) => v.scheme !== 'render').length)
+  expect(vectors.every((v) => v.scheme !== 'render')).toBe(true)
   expect(vectors.length).toBeGreaterThanOrEqual(8)
 })
 

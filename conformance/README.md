@@ -37,6 +37,20 @@ bộ mẫu thử ở đây, nên hai bản cho cùng kết quả trên mọi hà
 | `derived`, `derivedFrom` | khi sửa từ mẫu khác | `derivedFrom` là `id` mẫu gốc |
 | `note` | không | ghi đã sửa gì, đã chạy lệnh gì |
 
+## Mẫu ma trận (`kind: "matrix"`, `scheme: "render"`)
+
+Dành cho bộ vẽ QR (`@tingqr/render`, sau này `TingQR.Rendering`). Mẫu nằm ở `vectors/render/`.
+
+- `input`: `{ text, ecc?, boostEcc?, minVersion?, maxVersion?, mask? }`. Không có `payload`, không có `error`.
+- `expected`: `{ size, version, ecc, mask, rows }`. `rows[y]` là chuỗi `0`/`1`, `1` là ô tối.
+- **Quy tắc so sánh:** gọi `toMatrix(input.text, các trường còn lại của input)`. Kết quả phải đúng `size`, `version`,
+  `ecc` (mức thực dùng, sau khi nâng) và `mask`, và `rows[y][x] === '1'` khi và chỉ khi `modules[y][x]`.
+- Mẫu `encode-invalid` có `scheme: "render"` đặt tuỳ chọn ngay trong `input` (`{ text, ...tuỳ chọn }`). `toMatrix` phải
+  ném lỗi có đúng mã `error`.
+- Mẫu ma trận chạy bằng bộ chạy riêng của `@tingqr/render`. Bộ chạy của `@tingqr/core` bỏ qua chúng, vì `render` phụ
+  thuộc `core`.
+- Mẫu ma trận chỉ sinh từ bộ mã hoá Nayuki **gốc** chạy làm oracle, không bao giờ từ code đã port.
+
 ## Quy tắc nguồn
 
 - Không tự bịa chuỗi QR. Mẫu `invalid` là mẫu `valid` bị sửa, ghi rõ đã sửa gì.
