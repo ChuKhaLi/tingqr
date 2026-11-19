@@ -1,0 +1,12 @@
+{
+  "id": "render-invalid-min-version-0",
+  "scheme": "render",
+  "kind": "encode-invalid",
+  "input": {
+    "text": "A",
+    "minVersion": 0
+  },
+  "error": "INVALID_VALUE",
+  "source": "docs/superpowers/specs/2026-11-19-tingqr-render-design.md section 5.2 (hand-written option check, not oracle output)",
+  "note": "versions are 1–40"
+}

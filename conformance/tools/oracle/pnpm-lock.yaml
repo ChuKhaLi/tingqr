@@ -20,6 +20,9 @@ importers:
       thai-qr-payment:
         specifier: 1.2.0
         version: 1.2.0
+      typescript:
+        specifier: 5.9.3
+        version: 5.9.3
       vietnam-qr-pay:
         specifier: 1.5.1
         version: 1.5.1
@@ -109,6 +112,11 @@ packages:
     engines: {node: '>=22', pnpm: '>=8'}
     hasBin: true
 
+  typescript@5.9.3:
+    resolution: {integrity: sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==}
+    engines: {node: '>=14.17'}
+    hasBin: true
+
   vietnam-qr-pay@1.5.1:
     resolution: {integrity: sha512-ECA1DQKFBeOeUX3naRBHJXKOpD+TJ0kOqQsOMGBPd1KqBHdRBnvT6A8sTdRroqDj16tYGj2I4W0GAMxPDe8DBQ==}
 
@@ -191,6 +199,8 @@ snapshots:
       pngjs: 2.3.1
 
   thai-qr-payment@1.2.0: {}
+
+  typescript@5.9.3: {}
 
   vietnam-qr-pay@1.5.1: {}
 

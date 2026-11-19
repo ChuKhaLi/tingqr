@@ -18,6 +18,8 @@ bộ mẫu thử ở đây, nên hai bản cho cùng kết quả trên mọi hà
   | `promptparse` | 1.7.1 | MIT (file `LICENSE.md` trong gói) | PromptPay |
   | `thai-qr-payment` | 1.2.0 | MIT (khai báo trong `package.json`; file `LICENSE` có ở repo GitHub `uunw/thai-qr-payment`, không có trong gói npm) | PromptPay |
   | `bakong-khqr` | 1.0.20 | ISC khai báo trong `package.json`, không có file LICENSE (SDK của Ngân hàng Quốc gia Campuchia) | KHQR |
+  | Nayuki `qrcodegen.ts` | v1.8.0, commit `720f62b` | MIT (header trong file) | Mẫu ma trận (`vendor/`, file gốc không sửa, kiểm SHA-256 trước khi chạy) |
+  | `typescript` | 5.9.3 | Apache-2.0 | Dịch file Nayuki gốc trong `gen-render.mjs` |
 - `private/`: QR thật chụp ở máy chủ dự án. **Nằm trong `.gitignore`, không bao giờ commit.**
 
 ## Một file mẫu thử

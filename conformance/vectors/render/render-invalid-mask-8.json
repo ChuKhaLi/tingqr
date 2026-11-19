@@ -1,0 +1,12 @@
+{
+  "id": "render-invalid-mask-8",
+  "scheme": "render",
+  "kind": "encode-invalid",
+  "input": {
+    "text": "A",
+    "mask": 8
+  },
+  "error": "INVALID_VALUE",
+  "source": "docs/superpowers/specs/2026-11-19-tingqr-render-design.md section 5.2 (hand-written option check, not oracle output)",
+  "note": "mask is an integer 0–7"
+}
