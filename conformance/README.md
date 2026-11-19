@@ -18,6 +18,8 @@ bộ mẫu thử ở đây, nên hai bản cho cùng kết quả trên mọi hà
   | `promptparse` | 1.7.1 | MIT (file `LICENSE.md` trong gói) | PromptPay |
   | `thai-qr-payment` | 1.2.0 | MIT (khai báo trong `package.json`; file `LICENSE` có ở repo GitHub `uunw/thai-qr-payment`, không có trong gói npm) | PromptPay |
   | `bakong-khqr` | 1.0.20 | ISC khai báo trong `package.json`, không có file LICENSE (SDK của Ngân hàng Quốc gia Campuchia) | KHQR |
+  | Nayuki `qrcodegen.ts` | v1.8.0, commit `720f62b` | MIT (header trong file) | Mẫu ma trận (`vendor/`, file gốc không sửa, kiểm SHA-256 trước khi chạy) |
+  | `typescript` | 5.9.3 | Apache-2.0 | Dịch file Nayuki gốc trong `gen-render.mjs` |
 - `private/`: QR thật chụp ở máy chủ dự án. **Nằm trong `.gitignore`, không bao giờ commit.**
 
 ## Một file mẫu thử
@@ -36,6 +38,39 @@ bộ mẫu thử ở đây, nên hai bản cho cùng kết quả trên mọi hà
 | `source` | có | nguồn: đặc tả (mục, trang), repo kèm giấy phép, oracle kèm phiên bản, hoặc "rút từ QR thật của <loại>, chụp ngày D" |
 | `derived`, `derivedFrom` | khi sửa từ mẫu khác | `derivedFrom` là `id` mẫu gốc |
 | `note` | không | ghi đã sửa gì, đã chạy lệnh gì |
+
+## Mẫu ma trận (`kind: "matrix"`, `scheme: "render"`)
+
+Dành cho bộ vẽ QR (`@tingqr/render`, sau này `TingQR.Rendering`). Mẫu nằm ở `vectors/render/`.
+
+- `input`: `{ text, ecc?, boostEcc?, minVersion?, maxVersion?, mask? }`. Không có `payload`, không có `error`.
+- `expected`: `{ size, version, ecc, mask, rows }`. `rows[y]` là chuỗi `0`/`1`, `1` là ô tối.
+- **Quy tắc so sánh:** gọi `toMatrix(input.text, các trường còn lại của input)`. Kết quả phải đúng `size`, `version`,
+  `ecc` (mức thực dùng, sau khi nâng) và `mask`, và `rows[y][x] === '1'` khi và chỉ khi `modules[y][x]`.
+- Mẫu `encode-invalid` có `scheme: "render"` đặt tuỳ chọn ngay trong `input` (`{ text, ...tuỳ chọn }`). `toMatrix` phải
+  ném lỗi có đúng mã `error`.
+- Mẫu ma trận chạy bằng bộ chạy riêng của `@tingqr/render`. Bộ chạy của `@tingqr/core` bỏ qua chúng, vì `render` phụ
+  thuộc `core`.
+- Mẫu ma trận chỉ sinh từ bộ mã hoá Nayuki **gốc** chạy làm oracle, không bao giờ từ code đã port.
+
+## Trang quét thử (VietQR bằng app thật)
+
+1. Ghi tài khoản của bạn vào `conformance/private/scan-inputs.json` (thư mục này bị gitignore, không bao giờ commit).
+   File là một mảng `{ id, input }`; `input` giống tham số của `encodeVietQr` (`bankBin`, `accountNumber`, `amount`,
+   `purpose`). Xem mẫu ở `conformance/scan-inputs.example.json` (dữ liệu giả).
+   - `id` không được chứa số tài khoản hay tên (ví dụ `mb-1`), vì nó được ghi vào `conformance/scans.md`.
+   - Có thể trỏ tới file khác bằng biến môi trường `TINGQR_SCAN_INPUTS`.
+2. Chạy `pnpm -C ts/packages/render scan-sheet`. Script chỉ in số mã và đường dẫn file, không bao giờ in chuỗi QR hay số
+   tài khoản. Trang ghi ra `ts/packages/render/scan-sheet/index.html` (bị gitignore).
+3. Trang có:
+   - các mẫu VietQR không phải tài khoản của bạn (chỉ để kiểm app đọc được mã; phần lớn là tài khoản bịa, mẫu README
+     có thể là tài khoản người khác);
+   - mã từ file của bạn;
+   - mỗi mã in cả bản có logo lẫn bản không logo, cạnh 40 mm (kể cả viền trắng 4 ô). In trên A4 được.
+   - Thông tin hiện cạnh mã được kiểm khớp với đầu vào; lệch thì script dừng và báo trường lệch (không in giá trị).
+4. Quét, **dừng ở màn hình xác nhận**, rồi ghi kết quả vào `conformance/scans.md`.
+
+Chỉ chủ dự án chạy bước 2 khi có dữ liệu thật; Claude không chạy và không đọc trang sinh ra từ dữ liệu thật.
 
 ## Quy tắc nguồn
 

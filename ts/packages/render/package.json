@@ -1,0 +1,44 @@
+{
+  "name": "@tingqr/render",
+  "version": "0.0.0",
+  "description": "Render payment QR payloads as a module matrix or SVG, with an optional centre logo. QR encoder ported from Project Nayuki (MIT).",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    }
+  },
+  "files": [
+    "dist",
+    "NOTICE"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.test.json",
+    "scan-sheet": "pnpm build && node scripts/scan-sheet.mjs",
+    "mutate": "stryker run"
+  },
+  "dependencies": {
+    "@tingqr/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@stryker-mutator/core": "^10.1.1",
+    "@stryker-mutator/vitest-runner": "^10.1.1"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "id": "render-invalid-lone-surrogate",
+  "scheme": "render",
+  "kind": "encode-invalid",
+  "input": {
+    "text": "ting \ud83d qr"
+  },
+  "error": "INVALID_VALUE",
+  "source": "docs/superpowers/specs/2026-11-19-tingqr-render-design.md section 5.2 (hand-written option check, not oracle output)",
+  "note": "unpaired high surrogate (an emoji cut in half by slice()); the original encoder would throw a URIError"
+}

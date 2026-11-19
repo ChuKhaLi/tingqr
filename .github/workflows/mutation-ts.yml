@@ -1,17 +1,19 @@
-name: Mutation (TypeScript core)
+name: Mutation (TypeScript core and render)
 
-# Stryker mutates @tingqr/core and fails if the mutation score drops below the `break` threshold in
-# ts/packages/core/stryker.config.json. One OS and one Node version: the score does not vary by platform.
+# Stryker mutates @tingqr/core and @tingqr/render and fails if either score drops below the `break` threshold in its
+# stryker.config.json. One OS and one Node version: the score does not vary by platform.
 on:
   push:
     branches: [main]
     paths:
       - 'ts/packages/core/**'
+      - 'ts/packages/render/**'
       - 'conformance/**'
       - '.github/workflows/mutation-ts.yml'
   pull_request:
     paths:
       - 'ts/packages/core/**'
+      - 'ts/packages/render/**'
       - 'conformance/**'
       - '.github/workflows/mutation-ts.yml'
   workflow_dispatch:
@@ -22,7 +24,7 @@ permissions:
 jobs:
   mutation:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30  # core alone took ~13 min on CI (2026-11-19)
     steps:
       - uses: actions/checkout@v5
       - uses: pnpm/action-setup@v6
@@ -32,11 +34,18 @@ jobs:
           cache: pnpm
           cache-dependency-path: ts/pnpm-lock.yaml
       - run: pnpm -C ts install --frozen-lockfile
+      # render's tests import @tingqr/core through its dist, and the scan-sheet test runs render's dist.
+      - run: pnpm -C ts build
       - run: pnpm -C ts/packages/core mutate
-      - name: Upload mutation report
+      # The ported Nayuki encoder (src/qrcodegen.ts) is excluded in render's stryker.config.json; matrix vectors prove it.
+      - run: pnpm -C ts/packages/render mutate
+        if: success() || failure()
+      - name: Upload mutation reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: mutation-report
-          path: ts/packages/core/reports/mutation/
+          path: |
+            ts/packages/core/reports/mutation/
+            ts/packages/render/reports/mutation/
           if-no-files-found: ignore

@@ -1,0 +1,6 @@
+[
+  {
+    "id": "mb-1",
+    "input": { "bankBin": "970422", "accountNumber": "0123456789", "amount": 2000, "purpose": "tingqr scan test" }
+  }
+]
