@@ -1,0 +1,17 @@
+{
+  "id": "khqr-encode-amount-without-expiry",
+  "scheme": "khqr",
+  "kind": "encode-invalid",
+  "input": {
+    "accountType": "individual",
+    "bakongAccountId": "jonhsmith@nbcq",
+    "merchantName": "Jonh Smith",
+    "currency": "KHR",
+    "createdAt": 1731000000000,
+    "amount": 1000
+  },
+  "error": "INVALID_VALUE",
+  "errorTag": "99.01",
+  "source": "conformance/schemes/khqr.md, encode rules (hand-written input that breaks one rule; limits from bakong-khqr@1.0.20 constant/index.js)",
+  "note": "A dynamic KHQR needs expiresAt (SDK: EXPIRATION_TIMESTAMP_REQUIRED)."
+}

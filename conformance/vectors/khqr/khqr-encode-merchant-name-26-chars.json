@@ -1,0 +1,16 @@
+{
+  "id": "khqr-encode-merchant-name-26-chars",
+  "scheme": "khqr",
+  "kind": "encode-invalid",
+  "input": {
+    "accountType": "individual",
+    "bakongAccountId": "jonhsmith@nbcq",
+    "merchantName": "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+    "currency": "KHR",
+    "createdAt": 1731000000000
+  },
+  "error": "INVALID_VALUE",
+  "errorTag": "59",
+  "source": "conformance/schemes/khqr.md, encode rules (hand-written input that breaks one rule; limits from bakong-khqr@1.0.20 constant/index.js)",
+  "note": "Merchant name is at most 25 characters (SDK INVALID_LENGTH.MERCHANT_NAME)."
+}

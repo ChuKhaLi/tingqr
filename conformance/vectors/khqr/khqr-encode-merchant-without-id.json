@@ -1,0 +1,17 @@
+{
+  "id": "khqr-encode-merchant-without-id",
+  "scheme": "khqr",
+  "kind": "encode-invalid",
+  "input": {
+    "accountType": "merchant",
+    "bakongAccountId": "khqr@devb",
+    "acquiringBank": "Dev Bank",
+    "merchantName": "TINGQR SHOP",
+    "currency": "KHR",
+    "createdAt": 1731000000000
+  },
+  "error": "INVALID_VALUE",
+  "errorTag": "30.01",
+  "source": "conformance/schemes/khqr.md, encode rules (hand-written input that breaks one rule; limits from bakong-khqr@1.0.20 constant/index.js)",
+  "note": "A merchant KHQR needs merchantId."
+}

@@ -1,0 +1,18 @@
+{
+  "id": "khqr-encode-usd-3-decimals",
+  "scheme": "khqr",
+  "kind": "encode-invalid",
+  "input": {
+    "accountType": "individual",
+    "bakongAccountId": "jonhsmith@nbcq",
+    "merchantName": "Jonh Smith",
+    "currency": "USD",
+    "createdAt": 1731000000000,
+    "amount": 1.234,
+    "expiresAt": 1731000600000
+  },
+  "error": "INVALID_VALUE",
+  "errorTag": "54",
+  "source": "conformance/schemes/khqr.md, encode rules (hand-written input that breaks one rule; limits from bakong-khqr@1.0.20 constant/index.js)",
+  "note": "USD amounts have at most 2 decimals; tingqr does not round."
+}

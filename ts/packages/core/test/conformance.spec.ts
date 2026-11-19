@@ -7,6 +7,7 @@ import {
   TingQrError,
   decodeKhqr,
   decodePromptPayQr,
+  encodeKhqr,
   encodePromptPayQr,
   decodeVietQr,
   decodeVnpayQr,
@@ -24,7 +25,7 @@ const SCHEMES: Record<string, SchemeRunner> = {
   vietqr: { encode: encodeVietQr, decode: decodeVietQr },
   vnpay: { decode: decodeVnpayQr },
   promptpay: { encode: encodePromptPayQr, decode: decodePromptPayQr },
-  khqr: { decode: decodeKhqr },
+  khqr: { encode: encodeKhqr, decode: decodeKhqr },
 }
 
 interface Vector {

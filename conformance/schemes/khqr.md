@@ -60,6 +60,31 @@ Ngoài ra:
 - Tag trùng trong `29`, `30`, `62`, `64`, `99` báo `DUPLICATE_TAG`. Tag cấp đầu không được diễn giải trả trong
   `extraFields`.
 
+## Tạo mã (`encodeKhqr`)
+
+- **Thứ tự tag như SDK:** `00`, `01`, `29`/`30`, `52`, `53`, `54`, `58`, `59`, `60`, `62`, `64`, `99`, `63`. Sub-tag
+  `62` theo thứ tự `01`, `02`, `03`, `07`, `08`. Có `amount` thì `01` là `12`.
+- **Thời gian không lấy từ đồng hồ.** `createdAt` bắt buộc (13 chữ số mili-giây), nên cùng đầu vào luôn cho cùng chuỗi.
+  `expiresAt` bắt buộc khi có `amount` và phải lớn hơn `createdAt`.
+  - Tag `99` (`00` = `createdAt`, `01` = `expiresAt`) chỉ được ghi khi có `expiresAt`. Như SDK, QR tĩnh không có
+    `expiresAt` thì không có tag `99`, nên `createdAt` không xuất hiện trong chuỗi.
+- **Số tiền như SDK:** KHR là số nguyên lớn hơn 0 (chuỗi chỉ gồm chữ số; `1000.0` bị từ chối). USD lớn hơn 0, tối đa
+  hai chữ số thập phân: số nguyên ghi nguyên (`1`), có phần lẻ thì ghi hai chữ số (`1.5` → `1.50`, `'1.0'` → `1.00`).
+  Bỏ số 0 thừa ở đầu, tối đa 13 ký tự. Không làm tròn.
+- **Giới hạn** (lấy từ `constant/index.js` của SDK), sai thì `INVALID_VALUE` kèm tag:
+  - `bakongAccountId` đúng một `@`, tối đa 32 ký tự (`29.00`/`30.00`);
+  - `accountInformation`, `merchantId`, `acquiringBank` tối đa 32. Cửa hàng bắt buộc `merchantId` (`30.01`) và
+    `acquiringBank` (`30.02`). `accountInformation` chỉ dành cho cá nhân, `merchantId` chỉ cho cửa hàng; dùng nhầm thì
+    `INVALID_VALUE` ở `29`/`30`;
+  - `merchantName` 1–25 (`59`), `merchantCity` tối đa 15, mặc định `Phnom Penh` (`60`), `merchantCategoryCode` 4 chữ
+    số, mặc định `5999` (`52`);
+  - các trường `62` mỗi trường tối đa 25;
+  - `alternateLanguage`: `language` 1–2 ký tự (`64.00`), `merchantName` bắt buộc như SDK, tối đa 25 (`64.01`),
+    `merchantCity` tối đa 15 (`64.02`).
+- **Chữ:** chỉ `alternateLanguage` được có chữ ngoài ASCII (ví dụ Khmer). Trường khác có chữ ngoài ASCII in được thì
+  `NON_ASCII`.
+- Chưa hỗ trợ tạo tag `15` (UnionPay).
+
 ## Mẫu thử (`vectors/khqr/`)
 
 - 5 mẫu chép nguyên văn từ thư mục `test/` của `bakong-khqr@1.0.20`. `expected` viết tay, rồi đối chiếu bằng
@@ -68,6 +93,9 @@ Ngoài ra:
   - 3 mẫu `valid`: cá nhân USD có `62`, `64` tiếng Khmer, `99`; cửa hàng cùng nội dung; cửa hàng ACLEDA có `61` và `KM`.
   - 2 mẫu `lenient`: QR động không có `99.01` (KHR `50000.0`; KHR có tag `15` UnionPay).
 - 2 mẫu `invalid`: CRC sai; `30.00` bị bỏ `@` (chỉ chứng minh `decodeKhqr` không nhận ra, CRC tính lại bằng Python).
+- 4 mẫu `valid` có `input`, sinh bằng `tools/oracle/gen-khqr.mjs`: SDK tạo với `Date.now` gán cố định
+  `1731000000000`, `BakongKHQR.verify` của SDK chấp nhận. tingqr phải tạo ra đúng từng byte.
+- 6 mẫu `encode-invalid`, mỗi mẫu vi phạm một quy tắc tạo mã ở trên.
 
 ## Chưa được kiểm
 

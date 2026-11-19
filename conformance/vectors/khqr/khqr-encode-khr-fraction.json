@@ -1,0 +1,18 @@
+{
+  "id": "khqr-encode-khr-fraction",
+  "scheme": "khqr",
+  "kind": "encode-invalid",
+  "input": {
+    "accountType": "individual",
+    "bakongAccountId": "jonhsmith@nbcq",
+    "merchantName": "Jonh Smith",
+    "currency": "KHR",
+    "createdAt": 1731000000000,
+    "amount": 1.5,
+    "expiresAt": 1731000600000
+  },
+  "error": "INVALID_VALUE",
+  "errorTag": "54",
+  "source": "conformance/schemes/khqr.md, encode rules (hand-written input that breaks one rule; limits from bakong-khqr@1.0.20 constant/index.js)",
+  "note": "KHR amounts are whole numbers (SDK: TRANSACTION_AMOUNT_INVALID)."
+}
