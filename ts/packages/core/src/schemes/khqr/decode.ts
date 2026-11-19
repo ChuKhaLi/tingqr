@@ -50,11 +50,14 @@ function readAccount(p: EmvPayload, tag: '29' | '30'): TlvNode[] | undefined {
  * `isKhqrExpired(data, now)`.
  */
 export function decodeKhqr(payload: string, options: { mode?: ParseMode } = {}): Result<KhqrData> {
-  const mode = options.mode ?? 'lenient'
   const parsed = parsePayload(payload)
   if (!parsed.ok) return parsed
-  const p = parsed.value
-  const warnings: Warning[] = [...parsed.warnings]
+  return readKhqr(parsed.value, parsed.warnings, options.mode ?? 'lenient')
+}
+
+/** decodeKhqr on a payload already parsed by parsePayload; detect() uses it so the payload is parsed once. */
+export function readKhqr(p: EmvPayload, parsedWarnings: readonly Warning[], mode: ParseMode): Result<KhqrData> {
+  const warnings: Warning[] = [...parsedWarnings]
 
   try {
     const individual = readAccount(p, '29')

@@ -42,11 +42,14 @@ function findTemplate(p: EmvPayload, tag: string, aids: readonly string[]): [str
  * them instead. TrueMoney and other e-wallets are returned as `proxyType: 'eWallet'` without a provider label.
  */
 export function decodePromptPayQr(payload: string, options: { mode?: ParseMode } = {}): Result<PromptPayData> {
-  const mode = options.mode ?? 'lenient'
   const parsed = parsePayload(payload)
   if (!parsed.ok) return parsed
-  const p = parsed.value
-  const warnings: Warning[] = [...parsed.warnings]
+  return readPromptPayQr(parsed.value, parsed.warnings, options.mode ?? 'lenient')
+}
+
+/** decodePromptPayQr on a payload already parsed by parsePayload; detect() uses it so the payload is parsed once. */
+export function readPromptPayQr(p: EmvPayload, parsedWarnings: readonly Warning[], mode: ParseMode): Result<PromptPayData> {
+  const warnings: Warning[] = [...parsedWarnings]
 
   try {
     let merchant: PromptPayCreditTransfer | PromptPayBillPayment

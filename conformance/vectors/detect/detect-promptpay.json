@@ -1,0 +1,11 @@
+{
+  "id": "detect-promptpay",
+  "scheme": "detect",
+  "kind": "valid",
+  "payload": "00020101021129370016A0000006770101110113006681222333353037645802TH63041DCF",
+  "expected": {
+    "scheme": "promptpay",
+    "alsoMatches": []
+  },
+  "source": "copy of conformance/vectors/promptpay/promptpay-promptparse-mobile.json (see its source)"
+}

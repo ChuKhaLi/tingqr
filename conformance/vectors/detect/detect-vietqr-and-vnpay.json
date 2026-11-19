@@ -1,0 +1,15 @@
+{
+  "id": "detect-vietqr-and-vnpay",
+  "scheme": "detect",
+  "kind": "valid",
+  "payload": "00020101021126280010A0000007750110010531314438530010A0000007270123000697041601092576788590208QRIBFTTA53037045802VN6304208F",
+  "expected": {
+    "scheme": "vietqr",
+    "alsoMatches": [
+      "vnpay"
+    ]
+  },
+  "source": "fields of the vietnam-qr-pay README samples (MIT): tag 38 of vietqr-readme-sample, tag 26 of vnpay-readme-cellphones",
+  "derived": true,
+  "note": "Built by hand from the two README samples (tags 00, 01, 26, 38, 53, 58), CRC computed with an independent Python CRC-16/CCITT-FALSE. Models a shop QR carrying both VietQR and VNPAY."
+}

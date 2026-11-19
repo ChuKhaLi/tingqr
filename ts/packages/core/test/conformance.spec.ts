@@ -6,6 +6,7 @@ import { CONFORMANCE_DIR } from './conformance-root.js'
 import {
   TingQrError,
   decodeKhqr,
+  detect,
   decodePromptPayQr,
   encodeKhqr,
   encodePromptPayQr,
@@ -26,6 +27,13 @@ const SCHEMES: Record<string, SchemeRunner> = {
   vnpay: { decode: decodeVnpayQr },
   promptpay: { encode: encodePromptPayQr, decode: decodePromptPayQr },
   khqr: { encode: encodeKhqr, decode: decodeKhqr },
+  // detect vectors pin only the scheme and the secondary matches; each scheme's data has its own vectors.
+  detect: {
+    decode: (payload) => {
+      const r = detect(payload)
+      return r.ok ? { ...r, value: { scheme: r.value.scheme, alsoMatches: r.value.alsoMatches } } : r
+    },
+  },
 }
 
 interface Vector {
