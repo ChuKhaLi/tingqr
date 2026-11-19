@@ -9,6 +9,8 @@ const USD_AMOUNT = /^(\d+)(?:\.(\d{1,2}))?$/
 /** Longest tag 54 the SDK accepts (INVALID_LENGTH.AMOUNT). */
 const MAX_AMOUNT_LENGTH = 13
 const CURRENCY_CODE = { KHR: '116', USD: '840' } as const
+/** Accepted `currency` inputs: the alphabetic code, or the numeric code that decodeKhqr returns. */
+const CURRENCY_ALPHA: Readonly<Record<string, 'KHR' | 'USD'>> = { KHR: 'KHR', USD: 'USD', '116': 'KHR', '840': 'USD' }
 /** name@bank: exactly one '@', with a non-empty name and bank. */
 const BAKONG_ACCOUNT = /^[^@]+@[^@]+$/
 
@@ -94,8 +96,9 @@ export function encodeKhqr(input: KhqrInput): string {
   const [accountTag, account] = accountTemplate(input)
   const mcc = input.merchantCategoryCode ?? '5999'
   if (typeof mcc !== 'string' || !/^\d{4}$/.test(mcc)) throw invalid('merchantCategoryCode must be 4 digits.', '52')
-  if (!Object.hasOwn(CURRENCY_CODE, input.currency)) throw invalid("currency must be 'KHR' or 'USD'.", '53')
-  const amount = amountText(input.amount, input.currency)
+  const currency = typeof input.currency === 'string' && Object.hasOwn(CURRENCY_ALPHA, input.currency) ? CURRENCY_ALPHA[input.currency]! : undefined
+  if (!currency) throw invalid("currency must be 'KHR', 'USD', '116' or '840'.", '53')
+  const amount = amountText(input.amount, currency)
   const name = text(input.merchantName, 'merchantName', '59', 25, { required: true }) as string
   const city = text(input.merchantCity, 'merchantCity', '60', 15) ?? 'Phnom Penh'
 
@@ -136,7 +139,7 @@ export function encodeKhqr(input: KhqrInput): string {
     { tag: '01', value: amount ? '12' : '11' },
     { tag: accountTag, value: account },
     { tag: '52', value: mcc },
-    { tag: '53', value: CURRENCY_CODE[input.currency] },
+    { tag: '53', value: CURRENCY_CODE[currency] },
   ]
   if (amount) fields.push({ tag: '54', value: amount })
   fields.push({ tag: '58', value: 'KH' }, { tag: '59', value: name }, { tag: '60', value: city })

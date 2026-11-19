@@ -73,6 +73,8 @@ Ngoài ra:
 
 - **Thứ tự tag như SDK:** `00`, `01`, `29`/`30`, `52`, `53`, `54`, `58`, `59`, `60`, `62`, `64`, `99`, `63`. Sub-tag
   `62` theo thứ tự `01`, `02`, `03`, `07`, `08`. Có `amount` thì `01` là `12`.
+- **`currency`** nhận `KHR`/`USD` hoặc mã số `116`/`840` (đúng giá trị `decodeKhqr` trả trong `currency`, nên đọc rồi
+  tạo lại được). Giá trị khác: `INVALID_VALUE` tag `53` (chủ dự án chọn, 2026-11-19).
 - **Thời gian không lấy từ đồng hồ.** `createdAt` bắt buộc (13 chữ số mili-giây), nên cùng đầu vào luôn cho cùng chuỗi.
   `expiresAt` bắt buộc khi có `amount` và phải lớn hơn `createdAt`.
   - Tag `99` (`00` = `createdAt`, `01` = `expiresAt`) chỉ được ghi khi có `expiresAt`. Như SDK, QR tĩnh không có
