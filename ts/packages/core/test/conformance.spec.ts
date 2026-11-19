@@ -5,6 +5,7 @@ import { join } from 'node:path'
 import { CONFORMANCE_DIR } from './conformance-root.js'
 import {
   TingQrError,
+  decodeKhqr,
   decodePromptPayQr,
   encodePromptPayQr,
   decodeVietQr,
@@ -23,6 +24,7 @@ const SCHEMES: Record<string, SchemeRunner> = {
   vietqr: { encode: encodeVietQr, decode: decodeVietQr },
   vnpay: { decode: decodeVnpayQr },
   promptpay: { encode: encodePromptPayQr, decode: decodePromptPayQr },
+  khqr: { decode: decodeKhqr },
 }
 
 interface Vector {

@@ -1,0 +1,12 @@
+{
+  "id": "khqr-crc-mismatch",
+  "scheme": "khqr",
+  "kind": "invalid",
+  "payload": "00020101021229460015john_smith@devb0111855122334550208Dev Bank52045999530384054031005802KH5910John Smith6010PHNOM PENH62670106#123450211855122334550311Coffee Shop0709Cashier_10810Buy coffee64280002km0108ចន ស្មីន0206ភ្នំពញ993400131726821915797011317268220357976304B730",
+  "error": "CRC_MISMATCH",
+  "errorTag": "63",
+  "source": "mutation of khqr-sdk-individual-usd",
+  "derived": true,
+  "derivedFrom": "khqr-sdk-individual-usd",
+  "note": "Last CRC character changed from E to 0."
+}

@@ -1,0 +1,40 @@
+{
+  "id": "khqr-sdk-khr-50000",
+  "scheme": "khqr",
+  "kind": "lenient",
+  "payload": "00020101021229310014jonhsmith@nbcq0109012345678520459995303116540750000.05802KH5910Jonh Smith6009Siam Reap62550117INV-2021-07-658220211855123456780305BKK-1070601234599170013163039583850263041134",
+  "expected": {
+    "accountType": "individual",
+    "bakongAccountId": "jonhsmith@nbcq",
+    "accountInformation": "012345678",
+    "initiation": "dynamic",
+    "currencyCode": "116",
+    "currency": "KHR",
+    "amount": "50000.0",
+    "merchantCategoryCode": "5999",
+    "merchantName": "Jonh Smith",
+    "merchantCity": "Siam Reap",
+    "country": "KH",
+    "additionalData": {
+      "01": "INV-2021-07-65822",
+      "02": "85512345678",
+      "03": "BKK-1",
+      "07": "012345"
+    },
+    "billNumber": "INV-2021-07-65822",
+    "mobileNumber": "85512345678",
+    "storeLabel": "BKK-1",
+    "terminalLabel": "012345",
+    "createdAt": 1630395838502,
+    "timestamp": {
+      "00": "1630395838502"
+    }
+  },
+  "error": "MISSING_TAG",
+  "errorTag": "99.01",
+  "warnings": [
+    "MISSING_OPTIONAL_TAG"
+  ],
+  "source": "bakong-khqr@1.0.20 test/decode.test.js (ISC declared in package.json, no LICENSE file; official NBC SDK), 'Decode Test 8'",
+  "note": "expected written by hand; checked with bakong-khqr@1.0.20 BakongKHQR.decode by `node check-khqr.mjs` in conformance/tools/oracle. Older dynamic QR: KHR amount written 50000.0 (kept verbatim) and no 99.01, which SDK v2.8 requires: strict fails, lenient warns."
+}

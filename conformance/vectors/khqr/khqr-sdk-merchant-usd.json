@@ -1,0 +1,45 @@
+{
+  "id": "khqr-sdk-merchant-usd",
+  "scheme": "khqr",
+  "kind": "valid",
+  "payload": "00020101021230350009khqr@devb01061234560208Dev Bank52045999530384054031005802KH5910John Smith6010PHNOM PENH62670106#123450211855122334550311Coffee Shop0709Cashier_10810Buy coffee64280002km0108ចន ស្មីន0206ភ្នំពញ993400131726822962612011317268230826126304A560",
+  "expected": {
+    "accountType": "merchant",
+    "bakongAccountId": "khqr@devb",
+    "merchantId": "123456",
+    "acquiringBank": "Dev Bank",
+    "initiation": "dynamic",
+    "currencyCode": "840",
+    "currency": "USD",
+    "amount": "100",
+    "merchantCategoryCode": "5999",
+    "merchantName": "John Smith",
+    "merchantCity": "PHNOM PENH",
+    "country": "KH",
+    "additionalData": {
+      "01": "#12345",
+      "02": "85512233455",
+      "03": "Coffee Shop",
+      "07": "Cashier_1",
+      "08": "Buy coffee"
+    },
+    "billNumber": "#12345",
+    "mobileNumber": "85512233455",
+    "storeLabel": "Coffee Shop",
+    "terminalLabel": "Cashier_1",
+    "purpose": "Buy coffee",
+    "alternateLanguage": {
+      "language": "km",
+      "merchantName": "ចន ស្មីន",
+      "merchantCity": "ភ្នំពញ"
+    },
+    "createdAt": 1726822962612,
+    "expiresAt": 1726823082612,
+    "timestamp": {
+      "00": "1726822962612",
+      "01": "1726823082612"
+    }
+  },
+  "source": "bakong-khqr@1.0.20 test/feature/timestamp/decode.test.js (ISC declared in package.json, no LICENSE file; official NBC SDK), 'Decode Test 2'",
+  "note": "expected written by hand; checked with bakong-khqr@1.0.20 BakongKHQR.decode by `node check-khqr.mjs` in conformance/tools/oracle."
+}
