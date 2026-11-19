@@ -9,8 +9,8 @@
     "accountInformation": "85512233455",
     "acquiringBank": "Dev Bank",
     "initiation": "dynamic",
-    "currencyCode": "840",
-    "currency": "USD",
+    "currency": "840",
+    "currencyAlpha": "USD",
     "amount": "100",
     "merchantCategoryCode": "5999",
     "merchantName": "John Smith",
@@ -41,5 +41,5 @@
     }
   },
   "source": "bakong-khqr@1.0.20 test/feature/timestamp/decode.test.js (ISC declared in package.json, no LICENSE file; official NBC SDK), 'Decode Test 1'",
-  "note": "expected written by hand. `node check-khqr.mjs` (conformance/tools/oracle) compares the fields bakong-khqr@1.0.20 BakongKHQR.decode extracts; that decode validates nothing (no CRC or required-tag check). Not compared: currency, postalCode, the raw 62/99 maps, extraFields, warnings. CRC checked with conformance/tools/crc16.py. Tag 99 comes after 64; tag 64 holds Khmer text (length in characters)."
+  "note": "expected written by hand. `node check-khqr.mjs` (conformance/tools/oracle) compares the fields bakong-khqr@1.0.20 BakongKHQR.decode extracts; that decode validates nothing (no CRC or required-tag check). Not compared: currencyAlpha, postalCode, the raw 62/99 maps, extraFields, warnings. CRC checked with conformance/tools/crc16.py. Tag 99 comes after 64; tag 64 holds Khmer text (length in characters)."
 }

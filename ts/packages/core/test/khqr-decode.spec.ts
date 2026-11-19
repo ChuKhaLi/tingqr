@@ -42,7 +42,8 @@ test('tag 99 after 64 is read; 13-digit timestamps become numbers', () => {
   expect(value.createdAt).toBe(1726821915797)
   expect(value.expiresAt).toBe(1726822035797)
   expect(value.timestamp).toEqual({ '00': '1726821915797', '01': '1726822035797' })
-  expect(value.currency).toBe('USD')
+  expect(value.currency).toBe('840')
+  expect(value.currencyAlpha).toBe('USD')
 })
 
 test('tag 99 values that are not 13 digits stay in timestamp only', () => {
@@ -140,11 +141,11 @@ test('with both 29 and 30, tag 29 wins and 30 is an extra field', () => {
   expect(value.extraFields).toEqual({ '30': t30 })
 })
 
-test('currency codes other than 116/840 are kept without a currency name', () => {
+test('currency is tag 53 verbatim; currencyAlpha only for 116/840', () => {
   const { value } = ok(rebuild(INDIVIDUAL, (f) => setTag(f, '53', '764')))
-  expect(value.currencyCode).toBe('764')
-  expect('currency' in value).toBe(false)
-  expect(ok(rebuild(INDIVIDUAL, (f) => setTag(f, '53', '116'))).value.currency).toBe('KHR')
+  expect(value.currency).toBe('764')
+  expect('currencyAlpha' in value).toBe(false)
+  expect(ok(rebuild(INDIVIDUAL, (f) => setTag(f, '53', '116'))).value).toMatchObject({ currency: '116', currencyAlpha: 'KHR' })
 })
 
 test('unknown top-level tags go to extraFields; tag 15 is unionPay', () => {
@@ -216,4 +217,10 @@ test('lenient mode: a dynamic code whose 99.01 is unreadable has no expiry and i
 
 test.each(['a@', '@b'])('an account %s with an empty name or bank is not KHQR', (account) => {
   expect(err(rebuild(INDIVIDUAL, (f) => setTag(f, '29', field('00', account))))).toEqual(['UNSUPPORTED_SCHEME', '29'])
+})
+
+test.each(['DE', 'TH', 'kh'])('an @ account in a code whose tag 58 is %s is not KHQR', (country) => {
+  const payload = rebuild(INDIVIDUAL, (f) => setTag(f, '58', country))
+  expect(err(payload)).toEqual(['UNSUPPORTED_SCHEME', '29'])
+  expect(err(payload, 'strict')).toEqual(['UNSUPPORTED_SCHEME', '29'])
 })

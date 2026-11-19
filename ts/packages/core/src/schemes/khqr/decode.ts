@@ -28,8 +28,7 @@ function sub(nodes: TlvNode[], tag: string): string | undefined {
 
 /**
  * The sub-fields of tag 29/30 when it is clean TLV whose 00 is a Bakong account ('name@bank'). A PromptPay AID in the
- * same tag never contains '@', so one tag is never read as both; a payload may still carry PromptPay in one of 29/30
- * and KHQR in the other (detect() then reports both).
+ * same tag never contains '@', so one tag is never read as both. decodeKhqr also requires tag 58 to be 'KH' or absent.
  */
 function readAccount(p: EmvPayload, tag: '29' | '30'): TlvNode[] | undefined {
   const value = getField(p, tag)?.value
@@ -47,7 +46,8 @@ function readAccount(p: EmvPayload, tag: '29' | '30'): TlvNode[] | undefined {
 }
 
 /**
- * Read a Cambodian KHQR (Bakong) payload, individual (tag 29) or merchant (tag 30). Lenient mode (default) accepts
+ * Read a Cambodian KHQR (Bakong) payload, individual (tag 29) or merchant (tag 30); tag 58, when present, must be 'KH'
+ * or the payload is not KHQR (UNSUPPORTED_SCHEME). Lenient mode (default) accepts
  * codes missing tags 52/58/59/60 or a dynamic code without an expiry (99.01), reporting each in `warnings`;
  * `{ mode: 'strict' }` rejects them. Missing tag 53 is an error in both modes. Never compares with the clock: use
  * `isKhqrExpired(data, now)`.
@@ -63,6 +63,10 @@ export function readKhqr(p: EmvPayload, parsedWarnings: readonly Warning[], mode
   const warnings: Warning[] = [...parsedWarnings]
 
   try {
+    const country = getField(p, '58')?.value
+    if (country !== undefined && country !== 'KH') {
+      return fail('UNSUPPORTED_SCHEME', `Not a KHQR payload: tag 58 (country) is "${country}", not "KH".`, '29')
+    }
     const individual = readAccount(p, '29')
     const merchant = individual ? undefined : readAccount(p, '30')
     const account = individual ?? merchant
@@ -104,7 +108,7 @@ export function readKhqr(p: EmvPayload, parsedWarnings: readonly Warning[], mode
       accountType: individual ? 'individual' : 'merchant',
       bakongAccountId: sub(account, '00') as string,
       initiation: poi === '12' ? 'dynamic' : 'static',
-      currencyCode: standard['53'] as string,
+      currency: standard['53'] as string,
       country: standard['58'] as string,
     }
     const accountFields: [string, 'accountInformation' | 'merchantId' | 'acquiringBank'][] = [
@@ -115,8 +119,8 @@ export function readKhqr(p: EmvPayload, parsedWarnings: readonly Warning[], mode
       const v = sub(account, s)
       if (v !== undefined) value[key] = v
     }
-    const currency = CURRENCY[value.currencyCode]
-    if (currency) value.currency = currency
+    const alpha = CURRENCY[value.currency]
+    if (alpha) value.currencyAlpha = alpha
     if (standard['52'] !== undefined) value.merchantCategoryCode = standard['52']
     if (standard['59'] !== undefined) value.merchantName = standard['59']
     if (standard['60'] !== undefined) value.merchantCity = standard['60']

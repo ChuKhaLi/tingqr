@@ -11,10 +11,10 @@ export interface KhqrData {
   acquiringBank?: string
   /** Tag 01: '11' static, '12' dynamic. */
   initiation: 'static' | 'dynamic'
-  /** Tag 53 verbatim ('116' KHR, '840' USD). */
-  currencyCode: string
-  /** Derived from currencyCode; absent for codes other than 116 and 840. */
-  currency?: 'KHR' | 'USD'
+  /** Tag 53 verbatim, the ISO 4217 numeric code ('116' KHR, '840' USD), as in every other scheme. */
+  currency: string
+  /** Alphabetic code for '116' and '840'; absent for other codes. */
+  currencyAlpha?: 'KHR' | 'USD'
   /** Tag 54, verbatim. */
   amount?: string
   /** Tag 52. */

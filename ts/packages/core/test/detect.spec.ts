@@ -98,8 +98,27 @@ test('whitespace warnings from parsing are kept, once', () => {
   expect(r.ok && r.warnings.map((w) => w.code)).toEqual(['TRIMMED_WHITESPACE'])
 })
 
-test('a PromptPay tag 29 next to a KHQR tag 30 is PromptPay, and KHQR is reported in alsoMatches', () => {
+test('a KHQR tag 30 inside a Thai (58 = TH) PromptPay code is not KHQR', () => {
   const t30 = field('00', 'khqr@devb') + field('01', '123456') + field('02', 'Dev Bank')
   const r = detect(rebuild(PROMPTPAY, (f) => [...f, { tag: '30', value: t30 }]))
+  expect(r).toMatchObject({ ok: true, value: { scheme: 'promptpay', alsoMatches: [] } })
+})
+
+test('without tag 58, a PromptPay tag 29 next to a KHQR tag 30 matches both; PromptPay comes first', () => {
+  const t30 = field('00', 'khqr@devb') + field('01', '123456') + field('02', 'Dev Bank')
+  const r = detect(rebuild(PROMPTPAY, (f) => [...f.filter((x) => x.tag !== '58'), { tag: '30', value: t30 }]))
   expect(r).toMatchObject({ ok: true, value: { scheme: 'promptpay', alsoMatches: ['khqr'] } })
+})
+
+test('an @ account in tag 29 of a non-Cambodian code is UNKNOWN_SCHEME, not KHQR', () => {
+  const payload = buildPayload([
+    { tag: '00', value: '01' },
+    { tag: '01', value: '11' },
+    { tag: '30', value: field('00', 'user@example') + field('01', 'M1') + field('02', 'Bank') },
+    { tag: '53', value: '978' },
+    { tag: '58', value: 'DE' },
+  ])
+  const r = detect(payload)
+  expect(r.ok).toBe(false)
+  if (!r.ok) expect(r.error.code).toBe('UNKNOWN_SCHEME')
 })

@@ -1,7 +1,7 @@
 // Check every KHQR vector's hand-written `expected` against bakong-khqr@1.0.20 BakongKHQR.decode, the official SDK of
 // the National Bank of Cambodia (ISC, declared in its package.json; no LICENSE file). For each `valid` or `lenient`
 // vector, every field the SDK reads must equal the matching field of `expected` (absent in `expected` = null in the
-// SDK). The SDK's decode does not validate anything, so this checks field extraction only. Not compared: currency,
+// SDK). The SDK's decode does not validate anything, so this checks field extraction only. Not compared: currencyAlpha,
 // tag 61 (postal code), the raw tag 62/99 maps, extraFields and warnings.
 //
 // Run: cd conformance/tools/oracle && pnpm install && node check-khqr.mjs
@@ -35,7 +35,7 @@ const MAP = {
   pointofInitiationMethod: (e) => (e.initiation === 'dynamic' ? '12' : '11'),
   unionPayMerchant: (e) => e.unionPay,
   merchantCategoryCode: (e) => e.merchantCategoryCode,
-  transactionCurrency: (e) => e.currencyCode,
+  transactionCurrency: (e) => e.currency,
   transactionAmount: (e) => e.amount,
   countryCode: (e) => e.country,
   merchantName: (e) => e.merchantName,

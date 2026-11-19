@@ -8,8 +8,8 @@
     "bakongAccountId": "chantha_dev@ftcc",
     "unionPay": "1974011600520446ACLB10002312081",
     "initiation": "dynamic",
-    "currencyCode": "116",
-    "currency": "KHR",
+    "currency": "116",
+    "currencyAlpha": "KHR",
     "amount": "1000",
     "merchantCategoryCode": "5999",
     "merchantName": "Chantha Dev",
@@ -22,5 +22,5 @@
     "MISSING_OPTIONAL_TAG"
   ],
   "source": "bakong-khqr@1.0.20 test/feature/timestamp/valid.test.js (ISC declared in package.json, no LICENSE file; official NBC SDK), 'Expiration timestamp is required'",
-  "note": "expected written by hand. `node check-khqr.mjs` (conformance/tools/oracle) compares the fields bakong-khqr@1.0.20 BakongKHQR.decode extracts; that decode validates nothing (no CRC or required-tag check). Not compared: currency, postalCode, the raw 62/99 maps, extraFields, warnings. CRC checked with conformance/tools/crc16.py. Tag 15 (UnionPay); dynamic without tag 99, which the SDK's verify rejects (error 45): strict fails, lenient warns."
+  "note": "expected written by hand. `node check-khqr.mjs` (conformance/tools/oracle) compares the fields bakong-khqr@1.0.20 BakongKHQR.decode extracts; that decode validates nothing (no CRC or required-tag check). Not compared: currencyAlpha, postalCode, the raw 62/99 maps, extraFields, warnings. CRC checked with conformance/tools/crc16.py. Tag 15 (UnionPay); dynamic without tag 99, which the SDK's verify rejects (error 45): strict fails, lenient warns."
 }

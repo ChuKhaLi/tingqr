@@ -14,7 +14,7 @@
    | 1 | `vietqr` | tag `38`, `00` = `A000000727` |
    | 2 | `vnpay` | tag `26`, `00` = `A000000775` |
    | 3 | `promptpay` | tag `29`/`30`, `00` = AID `A000000677…` |
-   | 4 | `khqr` | tag `29`/`30`, `00` có đúng một `@` |
+   | 4 | `khqr` | tag `58` là `KH` hoặc không có, và tag `29`/`30` có `00` dạng `tên@ngân-hàng` |
 
    Một loại **nhận ra** chuỗi khi hàm đọc của nó không trả `UNSUPPORTED_SCHEME`.
 3. Loại đầu tiên nhận ra chuỗi là kết quả. Nếu hàm đọc của loại đó trả lỗi khác (ví dụ `MISSING_TAG`), `detect` trả lỗi
@@ -30,9 +30,11 @@ PromptPay đặt AID ở sub-tag `00`; KHQR đặt tài khoản Bakong `tên@ng�
 `@`, vì vậy **cùng một tag** không bao giờ được đọc thành cả hai loại. `detect.spec.ts` kiểm trên mọi mẫu PromptPay và
 KHQR rằng loại này không ra loại kia, kể cả trong `alsoMatches`.
 
-Một chuỗi vẫn **có thể** mang PromptPay ở tag `29` và KHQR ở tag `30` (hoặc ngược lại). Khi đó cả hai loại nhận ra chuỗi:
-loại thử trước (PromptPay) là kết quả, loại kia nằm trong `alsoMatches`. Mẫu `detect-promptpay-and-khqr` (dựng tay)
-ghim hành vi này.
+KHQR còn đòi tag `58` là `KH` hoặc không có, nên một QR PromptPay Thái (`58 = TH`) không bao giờ khớp KHQR, kể cả khi
+có thêm tag 30 dạng KHQR. Mẫu `detect-promptpay-and-khqr` (dựng tay) ghim điều này: `{ scheme: 'promptpay',
+alsoMatches: [] }`. Chỉ một chuỗi **không có** tag 58, mang PromptPay ở một trong `29`/`30` và KHQR ở tag kia, mới khớp
+cả hai; khi đó PromptPay (thử trước) là kết quả và `khqr` nằm trong `alsoMatches` (`detect.spec.ts` kiểm trường hợp
+này).
 
 ## Mẫu thử (`vectors/detect/`)
 
@@ -40,7 +42,7 @@ ghim hành vi này.
 - 4 mẫu chép chuỗi từ mẫu đã có của từng loại (`source` trỏ tới mẫu gốc).
 - 1 mẫu có cả VietQR lẫn VNPAY, ghép tag `38` và `26` của hai mẫu README `vietnam-qr-pay`, CRC tính bằng
   `tools/crc16.py`.
-- 1 mẫu có PromptPay ở `29` và KHQR ở `30`, ghép từ hai mẫu đã có, CRC bằng `tools/crc16.py`.
+- 1 mẫu PromptPay (`58 = TH`) có thêm tag `30` dạng KHQR, ghép từ hai mẫu đã có, CRC bằng `tools/crc16.py`.
 - **`detect` không có chế độ chặt.** Mẫu `valid` của `detect` nghĩa là `detect` (luôn chấp nhận lệch chuẩn) đọc ra
   `expected` với đúng `warnings`; bộ chạy gọi `detect` như nhau ở cả hai lượt "strict" và "lenient".
 - 1 mẫu `invalid` `UNKNOWN_SCHEME`, dựng tay: tag `29` có AID lạ `A000000999`. Không phải QR thật. CRC bằng

@@ -39,10 +39,13 @@ thống Bakong. Có hai dạng: cá nhân (tag `29`) và cửa hàng (tag `30`).
 Thứ tự kiểm:
 
 1. CRC và độ dài.
-2. Tag `29` hoặc `30` đọc được dạng TLV và có `00` dạng `tên@ngân-hàng` (đúng một `@`, tên và ngân hàng không rỗng).
-   Không có thì `UNSUPPORTED_SCHEME`. AID của PromptPay không bao giờ có `@`, nên **cùng một tag** không bị đọc thành cả
-   hai loại. Một chuỗi vẫn có thể mang PromptPay ở tag này và KHQR ở tag kia; `detect()` khi đó báo cả hai (xem
-   `detect.md`).
+2. Nhận diện (chủ dự án chọn, 2026-11-19), không đạt thì `UNSUPPORTED_SCHEME`:
+   - tag `58`, nếu có, phải đúng là `KH`. Một chữ `@` một mình là dấu hiệu yếu: tag 26–51 là template chung, loại QR
+     nào cũng có thể dùng;
+   - tag `29` hoặc `30` đọc được dạng TLV và có `00` dạng `tên@ngân-hàng` (đúng một `@`, tên và ngân hàng không rỗng).
+
+   AID của PromptPay không bao giờ có `@`, nên **cùng một tag** không bị đọc thành cả hai loại. PromptPay Thái có
+   `58 = TH`, nên chỉ chuỗi **không có** tag 58 mới có thể khớp cả hai (xem `detect.md`).
    - Có cả `29` lẫn `30` hợp lệ: lấy `29`, tag `30` nằm trong `extraFields`. Chưa thấy QR nào như vậy.
 3. Cửa hàng: thiếu `30.01` hoặc `30.02` thì `MISSING_TAG` ở cả hai chế độ.
 4. Tag `00` và `01` như VietQR.
@@ -57,7 +60,8 @@ Thứ tự kiểm:
    cảnh báo `MISSING_OPTIONAL_TAG` `99.01`.
 
 Ngoài ra:
-- `currency` suy từ `53`: `116` là `KHR`, `840` là `USD`, mã khác thì không có `currency` (vẫn có `currencyCode`).
+- `currency` là tag `53` nguyên văn (mã số ISO 4217), giống mọi loại QR khác. `currencyAlpha` là `KHR` khi `116`, `USD`
+  khi `840`; mã khác thì không có `currencyAlpha` (chủ dự án chọn, 2026-11-19).
 - `timestamp` giữ mọi sub-tag của `99` nguyên văn. `createdAt`, `expiresAt` chỉ có khi giá trị là 13 chữ số.
 - **Hàm đọc không so với giờ hiện tại.** Mọi mẫu động trong test của SDK đã hết hạn từ 2024; nếu hàm đọc tự kiểm thì
   kết quả test thay đổi theo ngày chạy. Muốn kiểm thì gọi `isKhqrExpired(data, nowMs)`: `true` khi `nowMs > expiresAt`
