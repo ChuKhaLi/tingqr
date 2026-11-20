@@ -16,6 +16,7 @@ import {
   type ParseMode,
   type Result,
 } from '../src/index.js'
+import { bankAppLink } from '../src/banks.js'
 
 interface SchemeRunner {
   encode?: (input: any) => string
@@ -34,12 +35,19 @@ const SCHEMES: Record<string, SchemeRunner> = {
       return r.ok ? { ...r, value: { scheme: r.value.scheme, alsoMatches: r.value.alsoMatches } } : r
     },
   },
+  // Not a QR scheme: `link` vectors build a link from input, `encode-invalid` ones expect bankAppLink to throw.
+  'bank-app-link': {
+    encode: (i) => bankAppLink(i.appId, i.platform, i.fallbackUrl === undefined ? undefined : { fallbackUrl: i.fallbackUrl }),
+    decode: () => {
+      throw new Error('bank-app-link vectors have no payload to decode')
+    },
+  },
 }
 
 interface Vector {
   id: string
   scheme: string
-  kind: 'valid' | 'invalid' | 'lenient' | 'encode-invalid'
+  kind: 'valid' | 'invalid' | 'lenient' | 'encode-invalid' | 'link'
   payload: string
   input?: unknown
   roundTrip?: boolean
@@ -140,6 +148,11 @@ describe.each(vectors.map((v) => [v.id, v] as const))('%s', (_id, v) => {
       if (!r.ok) return
       expect(r.value).toStrictEqual(v.expected)
       expect(r.warnings.map((w) => w.code)).toEqual(v.warnings)
+    })
+  }
+  if (v.kind === 'link') {
+    test('builds exactly the expected link from input', () => {
+      expect(runner(v).encode!(v.input)).toBe((v.expected as { link: string }).link)
     })
   }
 })

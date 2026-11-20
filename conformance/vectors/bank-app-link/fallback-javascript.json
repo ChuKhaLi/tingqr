@@ -1,0 +1,12 @@
+{
+  "id": "fallback-javascript",
+  "scheme": "bank-app-link",
+  "kind": "encode-invalid",
+  "input": {
+    "appId": "mb",
+    "platform": "android",
+    "fallbackUrl": "javascript:alert(1)"
+  },
+  "error": "INVALID_VALUE",
+  "source": "quy tắc thiết kế docs/superpowers/specs/2026-11-20-tingqr-banks-design.md mục 5.3 + conformance/banks/bank-apps.json: fallbackUrl chỉ nhận https: hoặc http:."
+}

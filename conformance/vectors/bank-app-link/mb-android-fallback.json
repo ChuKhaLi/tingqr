@@ -1,0 +1,14 @@
+{
+  "id": "mb-android-fallback",
+  "scheme": "bank-app-link",
+  "kind": "link",
+  "input": {
+    "appId": "mb",
+    "platform": "android",
+    "fallbackUrl": "https://example.com/pay?a=1&b=2#x;y"
+  },
+  "expected": {
+    "link": "intent://#Intent;scheme=mbbank;package=com.mbmobile;S.browser_fallback_url=https%3A%2F%2Fexample.com%2Fpay%3Fa%3D1%26b%3D2%23x%3By;end"
+  },
+  "source": "quy tắc thiết kế docs/superpowers/specs/2026-11-20-tingqr-banks-design.md mục 5.3 + conformance/banks/bank-apps.json: fallbackUrl mã hoá bằng encodeURIComponent để ; và # không cắt link. Cùng cách mã hoá với S.browser_fallback_url trong redirect của dl.vietqr.io."
+}

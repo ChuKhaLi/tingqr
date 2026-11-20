@@ -1,0 +1,11 @@
+{
+  "id": "unknown-app",
+  "scheme": "bank-app-link",
+  "kind": "encode-invalid",
+  "input": {
+    "appId": "nope",
+    "platform": "android"
+  },
+  "error": "INVALID_VALUE",
+  "source": "quy tắc thiết kế docs/superpowers/specs/2026-11-20-tingqr-banks-design.md mục 5.3 + conformance/banks/bank-apps.json: appId không có trong danh sách."
+}

@@ -1,0 +1,11 @@
+{
+  "id": "missing-platform",
+  "scheme": "bank-app-link",
+  "kind": "encode-invalid",
+  "input": {
+    "appId": "momo",
+    "platform": "android"
+  },
+  "error": "INVALID_VALUE",
+  "source": "quy tắc thiết kế docs/superpowers/specs/2026-11-20-tingqr-banks-design.md mục 5.3 + conformance/banks/bank-apps.json: momo chỉ có scheme iOS trong dữ liệu."
+}

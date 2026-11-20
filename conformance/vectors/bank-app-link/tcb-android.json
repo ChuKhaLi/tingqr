@@ -1,0 +1,13 @@
+{
+  "id": "tcb-android",
+  "scheme": "bank-app-link",
+  "kind": "link",
+  "input": {
+    "appId": "tcb",
+    "platform": "android"
+  },
+  "expected": {
+    "link": "intent://applink#Intent;scheme=tcb;package=vn.com.techcombank.bb.app;end"
+  },
+  "source": "quy tắc thiết kế docs/superpowers/specs/2026-11-20-tingqr-banks-design.md mục 5.3 + conformance/banks/bank-apps.json; host applink theo redirect của dl.vietqr.io (conformance/banks/sources/2026-11-20). Chưa ai mở thử."
+}

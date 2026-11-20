@@ -117,3 +117,27 @@ test('schema requires the shape of a matrix vector expected', () => {
     expect(validate({ ...matrix, expected: bad }), JSON.stringify(bad)).toBe(false)
   }
 })
+
+const link = {
+  id: 'x',
+  scheme: 'bank-app-link',
+  kind: 'link',
+  input: { appId: 'mb', platform: 'android' },
+  expected: { link: 'intent://#Intent;scheme=mbbank;package=com.mbmobile;end' },
+  source: 'test fixture inside conformance-format.spec.ts',
+}
+
+test('schema accepts a link vector with input and expected.link and no payload', () => {
+  expect(validate(link), ajv.errorsText(validate.errors)).toBe(true)
+})
+
+test('schema rejects a link vector without expected, without input, or with a payload or error', () => {
+  const { expected: _e, ...noExpected } = link
+  const { input: _i, ...noInput } = link
+  expect(validate(noExpected)).toBe(false)
+  expect(validate(noInput)).toBe(false)
+  expect(validate({ ...link, payload: '000201' })).toBe(false)
+  expect(validate({ ...link, error: 'INVALID_VALUE' })).toBe(false)
+  expect(validate({ ...link, expected: { url: 'x' } })).toBe(false)
+  expect(validate({ ...link, expected: { link: 1 } })).toBe(false)
+})

@@ -1,0 +1,13 @@
+{
+  "id": "vib-android",
+  "scheme": "bank-app-link",
+  "kind": "link",
+  "input": {
+    "appId": "vib",
+    "platform": "android"
+  },
+  "expected": {
+    "link": "intent://myvib2.com.vn/data#Intent;scheme=myvib2;package=com.vib.myvib2;end"
+  },
+  "source": "quy tắc thiết kế docs/superpowers/specs/2026-11-20-tingqr-banks-design.md mục 5.3 + conformance/banks/bank-apps.json. Cùng chuỗi với appLink của Noel tree (../noel-tree/src/app/tree/bank-apps.ts); chủ dự án mở thử trên Android 2026-11-18 qua Noel tree."
+}

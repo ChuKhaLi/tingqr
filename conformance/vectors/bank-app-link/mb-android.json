@@ -1,0 +1,13 @@
+{
+  "id": "mb-android",
+  "scheme": "bank-app-link",
+  "kind": "link",
+  "input": {
+    "appId": "mb",
+    "platform": "android"
+  },
+  "expected": {
+    "link": "intent://#Intent;scheme=mbbank;package=com.mbmobile;end"
+  },
+  "source": "quy tắc thiết kế docs/superpowers/specs/2026-11-20-tingqr-banks-design.md mục 5.3 + conformance/banks/bank-apps.json. Cùng chuỗi với appLink của Noel tree (../noel-tree/src/app/tree/bank-apps.ts); chủ dự án mở thử trên Android 2026-11-18 qua Noel tree."
+}

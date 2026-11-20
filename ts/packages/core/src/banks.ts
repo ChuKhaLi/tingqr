@@ -1,7 +1,8 @@
 // @tingqr/core/banks: Vietnamese banks and the apps that open by URL scheme. Data: conformance/banks/.
 import { BANK_APP_DATA, BANK_DATA } from './banks/data.js'
+import { linkFor } from './banks/link.js'
 import { appsOf, deepFreeze, findBankIn } from './banks/lookup.js'
-import type { Bank, BankApp } from './banks/types.js'
+import type { AppPlatform, Bank, BankApp } from './banks/types.js'
 
 export type { AppPlatform, Bank, BankApp, BankAppAndroid } from './banks/types.js'
 
@@ -24,4 +25,14 @@ export function findBankApp(id: string): BankApp | undefined {
 /** Every app of the bank with this BIN; `[]` when it has none. */
 export function appsForBank(bin: string): BankApp[] {
   return appsOf(BANK_APPS, bin)
+}
+
+/**
+ * Link that opens a bank app: `intent://…` on Android (with `S.browser_fallback_url` when `fallbackUrl` is given),
+ * `scheme://` on iOS. It only opens the app; it does not pre-fill amount or message. iOS opens schemes only from a
+ * user tap. Throws `TingQrError('INVALID_VALUE')` for an unknown app, a platform the app has no scheme for, or a
+ * `fallbackUrl` that is not an absolute http(s) URL.
+ */
+export function bankAppLink(appId: string, platform: AppPlatform, options?: { fallbackUrl?: string }): string {
+  return linkFor(findBankApp(appId), appId, platform, options?.fallbackUrl)
 }

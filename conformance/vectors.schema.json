@@ -25,7 +25,8 @@
         "invalid",
         "lenient",
         "encode-invalid",
-        "matrix"
+        "matrix",
+        "link"
       ]
     },
     "payload": {
@@ -101,7 +102,10 @@
         "if": {
           "properties": {
             "kind": {
-              "const": "matrix"
+              "enum": [
+                "matrix",
+                "link"
+              ]
             }
           }
         },
@@ -274,6 +278,50 @@
               }
             }
           }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "link"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "input",
+          "expected"
+        ],
+        "properties": {
+          "expected": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "link"
+            ],
+            "properties": {
+              "link": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "payload"
+              ]
+            },
+            {
+              "required": [
+                "error"
+              ]
+            }
+          ]
         }
       }
     }

@@ -43,7 +43,7 @@ const SUBPATHS = {
   '@tingqr/core/promptpay': ['encodePromptPayQr', 'decodePromptPayQr'],
   '@tingqr/core/khqr': ['encodeKhqr', 'decodeKhqr', 'isKhqrExpired'],
   // Standalone bundle: not in index.cjs, carries the bank data and its own TingQrError copy.
-  '@tingqr/core/banks': ['findBank', 'findBankApp', 'appsForBank'],
+  '@tingqr/core/banks': ['findBank', 'findBankApp', 'appsForBank', 'bankAppLink'],
 }
 for (const [id, names] of Object.entries(SUBPATHS)) {
   let mod
@@ -57,6 +57,20 @@ for (const [id, names] of Object.entries(SUBPATHS)) {
     if (typeof mod[name] !== 'function') problems.push(`require('${id}').${name} is not a function`)
   }
 }
+// An error thrown by the banks bundle (its own TingQrError copy) must pass instanceof against the root class.
+try {
+  const { TingQrError } = require('@tingqr/core')
+  let err
+  try {
+    require('@tingqr/core/banks').bankAppLink('no-such-app', 'android')
+  } catch (e) {
+    err = e
+  }
+  if (!(err instanceof TingQrError)) problems.push('an error from require("@tingqr/core/banks") is not instanceof TingQrError of require("@tingqr/core")')
+} catch (e) {
+  problems.push(`cross-bundle TingQrError check failed: ${e.message}`)
+}
+
 const dist = join(CORE, 'dist')
 const crcCopies = readdirSync(dist)
   .filter((f) => f.endsWith('.cjs'))

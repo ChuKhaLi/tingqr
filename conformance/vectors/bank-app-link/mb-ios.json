@@ -1,0 +1,13 @@
+{
+  "id": "mb-ios",
+  "scheme": "bank-app-link",
+  "kind": "link",
+  "input": {
+    "appId": "mb",
+    "platform": "ios"
+  },
+  "expected": {
+    "link": "mbbank://"
+  },
+  "source": "quy tắc thiết kế docs/superpowers/specs/2026-11-20-tingqr-banks-design.md mục 5.3 + conformance/banks/bank-apps.json. Chưa ai mở thử trên iPhone."
+}

@@ -56,6 +56,18 @@ bộ mẫu thử ở đây, nên hai bản cho cùng kết quả trên mọi hà
 | `derived`, `derivedFrom` | khi sửa từ mẫu khác | `derivedFrom` là `id` mẫu gốc |
 | `note` | không | ghi đã sửa gì, đã chạy lệnh gì |
 
+## Mẫu link mở app (`kind: "link"`, `scheme: "bank-app-link"`)
+
+Dành cho `bankAppLink` (`@tingqr/core/banks`). Mẫu nằm ở `vectors/bank-app-link/`.
+
+- `input`: `{ appId, platform, fallbackUrl? }`. `platform` là `android` hoặc `ios`. Không có `payload`, không có `error`.
+- `expected`: `{ link }`.
+- **Quy tắc so sánh:** gọi `bankAppLink(appId, platform, { fallbackUrl })`. Kết quả phải bằng `expected.link` từng ký tự.
+  - Không truyền `fallbackUrl` khi `input` không có trường này.
+- Mẫu `encode-invalid` cùng `scheme` có `input` giống vậy. `bankAppLink` phải ném lỗi có đúng mã `error`.
+- Chuỗi mong đợi dựa trên `conformance/banks/bank-apps.json`. Đổi dữ liệu của một app thì phải sửa mẫu tương ứng.
+- Chỉ ghi "đã mở thử" trong `source` khi `deviceVerified` của app đó có dòng tương ứng.
+
 ## Mẫu ma trận (`kind: "matrix"`, `scheme: "render"`)
 
 Dành cho bộ vẽ QR (`@tingqr/render`, sau này `TingQR.Rendering`). Mẫu nằm ở `vectors/render/`.
