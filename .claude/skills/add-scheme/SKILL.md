@@ -19,6 +19,6 @@ Làm đúng thứ tự. Mỗi bước có bằng chứng thì mới sang bước
    `conformance/errors.json` trước.
 5. **Code .NET** (từ v0.2) chạy đạt cùng bộ mẫu.
 6. **Tài liệu**: README, ghi rõ loại này đã hay chưa được quét thử bằng app thật.
-7. **Bảng thử trên app thật** (`docs/conformance-matrix.md`): chỉ thêm dòng khi đã có người quét thật.
+7. **Bảng thử trên app thật** (`conformance/scans.md`): chỉ thêm dòng khi đã có người quét thật.
 
 Trước khi merge: chạy agent `evidence-review` và `parity-review`.

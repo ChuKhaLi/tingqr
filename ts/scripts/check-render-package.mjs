@@ -24,10 +24,22 @@ for (const field of ['peerDependencies', 'optionalDependencies', 'bundleDependen
 }
 if (!pkg.files?.includes('NOTICE')) problems.push('"files" must include NOTICE (Nayuki attribution)')
 // MIT: the Nayuki copyright notice must survive the build in every bundle (esbuild keeps only /*! or @license comments).
+// The whole notice must survive, not only the copyright line: compare the permission text word by word.
+const words = (t) => t.replace(/[*\s]+/g, ' ').trim()
+const header = readFileSync(join(RENDER, 'src', 'qrcodegen.ts'), 'utf8')
+const notice = words(header.slice(header.indexOf('Copyright (c) Project Nayuki'), header.indexOf('Software.') + 'Software.'.length))
+if (!notice.includes('Permission is hereby granted')) problems.push('could not read the Nayuki notice from src/qrcodegen.ts')
 for (const file of ['index.js', 'index.cjs']) {
-  const text = readFileSync(join(RENDER, 'dist', file), 'utf8')
-  if (!text.includes('Copyright (c) Project Nayuki. (MIT License)')) problems.push(`dist/${file} lost the Nayuki MIT notice`)
+  if (!words(readFileSync(join(RENDER, 'dist', file), 'utf8')).includes(notice)) {
+    problems.push(`dist/${file} lost the full Nayuki MIT notice`)
+  }
 }
+const rootLicense = readFileSync(join(RENDER, '..', '..', '..', 'LICENSE'), 'utf8')
+let packageLicense = ''
+try {
+  packageLicense = readFileSync(join(RENDER, 'LICENSE'), 'utf8')
+} catch {}
+if (packageLicense !== rootLicense) problems.push('packages/render/LICENSE must be a copy of the repository LICENSE (NOTICE refers to it)')
 
 const require = createRequire(join(RENDER, 'package.json'))
 try {

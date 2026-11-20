@@ -229,6 +229,51 @@
               ]
             }
           ]
+        },
+        "properties": {
+          "expected": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "size",
+              "version",
+              "ecc",
+              "mask",
+              "rows"
+            ],
+            "properties": {
+              "size": {
+                "type": "integer",
+                "minimum": 21,
+                "maximum": 177
+              },
+              "version": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 40
+              },
+              "ecc": {
+                "enum": [
+                  "L",
+                  "M",
+                  "Q",
+                  "H"
+                ]
+              },
+              "mask": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 7
+              },
+              "rows": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^[01]+$"
+                }
+              }
+            }
+          }
         }
       }
     }

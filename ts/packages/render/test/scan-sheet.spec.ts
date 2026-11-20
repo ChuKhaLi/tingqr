@@ -54,6 +54,7 @@ test('the sheet has the safety notice, two codes per entry, fake labels and 40mm
   expect(html.match(/<svg /g)).toHaveLength(entries.length * 2)
   expect(html.match(/Tài khoản mẫu, không phải của bạn/g)).toHaveLength(fakeCount)
   expect(html).toContain('width="40mm"')
+  expect(html.match(/<th>Loại QR<\/th><td>VietQR<\/td>/g)).toHaveLength(entries.length)
   expect(html).toContain('<image href="data:image/svg+xml')
   expect(html).toContain('@media print')
 })

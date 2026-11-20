@@ -98,6 +98,7 @@ export function renderSheet(entries, { toSvg, logoHref = TEST_LOGO }) {
   const cards = entries
     .map((e) => {
       const rows = [
+        ['Loại QR', 'VietQR'],
         ['Ngân hàng (BIN)', e.expect.bankBin],
         ['Số tài khoản', e.expect.accountNumber],
         ['Số tiền', e.expect.amount ?? '(không có)'],
