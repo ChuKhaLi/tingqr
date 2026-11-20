@@ -17,3 +17,5 @@ reports/
 .stryker-tmp/
 __pycache__/
 ts/packages/render/scan-sheet/
+
+.claude/worktrees/
