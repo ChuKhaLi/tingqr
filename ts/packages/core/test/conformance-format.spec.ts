@@ -102,3 +102,18 @@ test('schema rejects a matrix vector without input or expected, or with a payloa
   expect(validate({ ...matrix, payload: '000201' })).toBe(false)
   expect(validate({ ...matrix, error: 'INVALID_VALUE' })).toBe(false)
 })
+
+test('schema requires the shape of a matrix vector expected', () => {
+  const good = { ...matrix, expected: { size: 21, version: 1, ecc: 'M', mask: 0, rows: ['0101'] } }
+  expect(validate(good), ajv.errorsText(validate.errors)).toBe(true)
+  for (const bad of [
+    { size: 21, version: 1, ecc: 'M', mask: 0 },
+    { size: 21, version: 1, ecc: 'X', mask: 0, rows: [] },
+    { size: 21, version: 0, ecc: 'M', mask: 0, rows: [] },
+    { size: 21, version: 1, ecc: 'M', mask: 8, rows: [] },
+    { size: 21, version: 1, ecc: 'M', mask: 0, rows: ['012'] },
+    { size: 21, version: 1, ecc: 'M', mask: 0, rows: [], extra: 1 },
+  ]) {
+    expect(validate({ ...matrix, expected: bad }), JSON.stringify(bad)).toBe(false)
+  }
+})

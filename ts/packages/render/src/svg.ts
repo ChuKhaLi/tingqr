@@ -80,26 +80,8 @@ export function modulePath(modules: boolean[][], margin: number, skip: (x: numbe
   return d
 }
 
-/** Render `text` as a QR code SVG string. No DOM: runs in browsers, Node, Workers and SSR. */
-export function toSvg(text: string, options: SvgOptions = {}): string {
-  const { margin = 4, foreground = '#000000', background = '#ffffff', size, logo, ...matrixOptions } = options
-  if (typeof margin !== 'number' || !Number.isInteger(margin) || margin < 0 || margin > 16) {
-    throw invalid('Option margin must be an integer 0–16.')
-  }
-  checkColours(foreground, background)
-  const dimensions = sizeAttr(size)
-  if (logo !== undefined) {
-    if (matrixOptions.ecc !== undefined && matrixOptions.ecc !== 'H') {
-      throw invalid(`A logo needs ECC H; got ecc '${String(matrixOptions.ecc)}'. Leave ecc unset or pass 'H'.`)
-    }
-    matrixOptions.ecc = 'H'
-  }
-  const m = toMatrix(text, matrixOptions)
-  const w = m.size + 2 * margin
-  let svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${w}"${dimensions} shape-rendering="crispEdges">`
-  if (background !== 'transparent') svg += `<rect width="${w}" height="${w}" fill="${escapeAttr(background)}"/>`
-  if (logo === undefined) return svg + `<path fill="${escapeAttr(foreground)}" d="${modulePath(m.modules, margin)}"/></svg>`
-
+/** Validate the logo options (no matrix needed) and fill in their defaults. */
+function checkLogoOptions(logo: LogoOptions, background: string) {
   const href = checkLogoHref(logo.href)
   const logoSize = logo.size ?? 0.2
   if (typeof logoSize !== 'number' || !(logoSize > 0 && logoSize <= 0.25)) {
@@ -111,6 +93,34 @@ export function toSvg(text: string, options: SvgOptions = {}): string {
   }
   const logoBackground = logo.background ?? background
   if (logoBackground !== 'transparent') parseHexColor(logoBackground)
+  return { href, logoSize, padding, logoBackground }
+}
+
+/** Render `text` as a QR code SVG string. No DOM: runs in browsers, Node, Workers and SSR. */
+export function toSvg(text: string, options: SvgOptions = {}): string {
+  const { margin = 4, foreground = '#000000', background = '#ffffff', size, logo, ...matrixOptions } = options
+  if (typeof margin !== 'number' || !Number.isInteger(margin) || margin < 0 || margin > 16) {
+    throw invalid('Option margin must be an integer 0–16.')
+  }
+  checkColours(foreground, background)
+  const dimensions = sizeAttr(size)
+  // Every logo option is checked before encoding, so a bad option is reported even when the text is also too long.
+  const logoParts = logo === undefined ? undefined : checkLogoOptions(logo, background)
+  if (logoParts !== undefined) {
+    if (matrixOptions.ecc !== undefined && matrixOptions.ecc !== 'H') {
+      throw invalid(`A logo needs ECC H; got ecc '${String(matrixOptions.ecc)}'. Leave ecc unset or pass 'H'.`)
+    }
+    matrixOptions.ecc = 'H'
+  }
+  const m = toMatrix(text, matrixOptions)
+  const w = m.size + 2 * margin
+  let svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${w}"${dimensions} shape-rendering="crispEdges">`
+  if (background !== 'transparent') svg += `<rect width="${w}" height="${w}" fill="${escapeAttr(background)}"/>`
+  if (logoParts === undefined) {
+    return svg + `<path fill="${escapeAttr(foreground)}" d="${modulePath(m.modules, margin)}"/></svg>`
+  }
+
+  const { href, logoSize, padding, logoBackground } = logoParts
   const box = logoBox(m.size, logoSize, padding)
   checkLogoBox(m.size, box)
   const end = box.clearStart + box.clearSide

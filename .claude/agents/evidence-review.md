@@ -1,6 +1,6 @@
 ---
 name: evidence-review
-description: Reviews changes in tingqr for this project's signature defect — code, tests, vectors, docs or conformance-matrix rows that claim more than they prove. Use before merging, before a release, after implementing a plan, or when asked whether a change is really verified. Complements ordinary code review; it hunts overstated evidence, not style or bugs in general.
+description: Reviews changes in tingqr for this project's signature defect — code, tests, vectors, docs or scan-table rows (conformance/scans.md) that claim more than they prove. Use before merging, before a release, after implementing a plan, or when asked whether a change is really verified. Complements ordinary code review; it hunts overstated evidence, not style or bugs in general.
 tools: Read, Grep, Glob, Bash
 ---
 
@@ -15,7 +15,7 @@ codes. Every claim about a format is only as good as its source. The defect that
 
 The legitimate sources of evidence, strongest first:
 
-1. A real app scan recorded in `docs/conformance-matrix.md` (who, device, app version, date).
+1. A real app scan recorded in `conformance/scans.md` (who, device and OS, app version, date).
 2. A real QR captured on the owner's machine (`conformance/private/`, never committed) and the "recipe"
    vector derived from it (`derived: true`).
 3. Output of an independent MIT/Apache-licensed implementation run as an oracle

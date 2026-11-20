@@ -163,3 +163,15 @@ test('an SVG with a logo is a complete document', () => {
   expect(svg.endsWith('</svg>')).toBe(true)
   expect(svg.match(/<\/svg>/g)).toHaveLength(1)
 })
+
+test.each(['/\\evil.example/x.png', '\\\\evil.example/x.png', 'img\\logo.png', 'https:\\\\evil.example/x.png'])('rejects an href with a backslash (%s): browsers read it as a host', (href) => {
+  expect(href).toContain('\\')
+  expect(code(() => checkLogoHref(href))).toBe('INVALID_VALUE')
+})
+
+test('logo options are checked before the text is encoded', () => {
+  expect(() => toSvg('a'.repeat(5000), { logo: { href: 'javascript:x' } })).toThrow(/href/)
+  expect(() => toSvg('a'.repeat(5000), { logo: { href: HREF, size: 0.3 } })).toThrow(/size must be/)
+  expect(() => toSvg('a'.repeat(5000), { logo: { href: HREF, padding: 9 } })).toThrow(/padding must be/)
+  expect(() => toSvg('a'.repeat(5000), { logo: { href: HREF, background: 'red' } })).toThrow(/#rgb/)
+})

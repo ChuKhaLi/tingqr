@@ -20,13 +20,14 @@
     chứng cho bản port.
   - File port có `// @ts-nocheck` và không chạy mutation (`stryker.config.json` loại trừ); code còn lại của gói vẫn
     chặt như `core`.
-  - `pnpm check:render` (sau `pnpm build`): chỉ phụ thuộc `@tingqr/core`, header MIT của Nayuki còn trong `dist`,
-    tarball dưới 30 KB.
+  - `pnpm check:render` (sau `pnpm build`): chỉ phụ thuộc `@tingqr/core`, toàn văn giấy phép MIT của Nayuki còn trong
+    `dist`, có `LICENSE` giống của repo, tarball dưới 30 KB.
   - `pnpm -C packages/render scan-sheet`: trang quét thử. Chỉ chủ dự án chạy khi có dữ liệu thật; khi thử, dùng
     `TINGQR_SCAN_INPUTS=../../../conformance/scan-inputs.example.json` (đường dẫn tính từ `packages/render`; file không có thì script chỉ in mẫu, không báo lỗi).
 - `pnpm test` và `pnpm typecheck` tự build trước (`render` đọc `@tingqr/core` qua `dist`, test trang quét thử chạy `dist` của
   `render`), nên chạy được trên clone sạch.
-- `pnpm check:core` (sau `pnpm build`): lõi không có dependency/peer/optional, tarball dưới 40 KB, mỗi subpath CJS `require` được, tầng EMV chỉ có một bản trong CJS.
+- `pnpm check:core` (sau `pnpm build`): lõi không có dependency/peer/optional, có `LICENSE` giống của repo, tarball dưới
+  40 KB, mỗi subpath CJS `require` được, tầng EMV chỉ có một bản trong CJS.
 - **CJS subpath là file một dòng** `module.exports = require('./index.cjs')`, do `onSuccess` trong `tsup.config.ts` ghi
   đè (CJS không tách chunk được, để nguyên thì mỗi subpath tự chứa một bản lõi). ESM vẫn tách chunk bình thường.
   Thêm subpath mới: thêm vào `SUBPATHS` ở `tsup.config.ts` và ở `scripts/check-core-package.mjs`.

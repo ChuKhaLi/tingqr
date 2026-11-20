@@ -61,6 +61,15 @@ const crcCopies = readdirSync(dist)
   .filter((f) => readFileSync(join(dist, f), 'utf8').includes('function crc16('))
 if (crcCopies.length !== 1) problems.push(`the EMV layer is bundled into ${crcCopies.length} CJS files (${crcCopies.join(', ')}); expected 1`)
 
+// npm always packs a LICENSE file that sits in the package directory; it must be the repository's.
+let coreLicense = ''
+try {
+  coreLicense = readFileSync(join(CORE, 'LICENSE'), 'utf8')
+} catch {}
+if (coreLicense !== readFileSync(join(CORE, '..', '..', '..', 'LICENSE'), 'utf8')) {
+  problems.push('packages/core/LICENSE must be a copy of the repository LICENSE')
+}
+
 if (problems.length) {
   for (const p of problems) console.error(`check-core-package: ${p}`)
   process.exit(1)

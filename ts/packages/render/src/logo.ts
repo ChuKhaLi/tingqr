@@ -69,7 +69,9 @@ export function checkLogoHref(href: string): string {
   const ok =
     typeof href === 'string' &&
     href.length > 0 &&
-    (DATA_IMAGE.test(href) || HTTP.test(href) || (RELATIVE.test(href) && !/^\s/.test(href)))
+    (DATA_IMAGE.test(href) ||
+      // Browsers read '\' as '/' in http(s) and relative URLs, so '/\host/x' would load from another host.
+      (!href.includes('\\') && (HTTP.test(href) || (RELATIVE.test(href) && !/^\s/.test(href)))))
   if (!ok) {
     throw invalid('Logo href must be a data:image/(png|jpeg|webp|svg+xml) URI, an http(s) URL or a relative path.')
   }

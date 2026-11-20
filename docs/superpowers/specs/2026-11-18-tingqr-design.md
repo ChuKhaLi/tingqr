@@ -135,7 +135,7 @@ tingqr/
 ├─ docs/
 │  ├─ superpowers/specs, plans
 │  ├─ huong-di/
-│  └─ conformance-matrix.md  ← bảng thử trên app thật (5.7)
+│  └─ (bảng thử trên app thật: conformance/scans.md, 5.7)
 ├─ .github/workflows/        ← ci-ts, ci-dotnet, release-npm, release-nuget
 ├─ package.json              ← lệnh gom chung: test:all, build:all
 └─ CLAUDE.md, ts/CLAUDE.md, dotnet/CLAUDE.md, .claude/
@@ -288,7 +288,8 @@ tree khớp với vietqr.io ở cả 15 app nó có.
 
 ### 5.7 Bảng thử trên app thật **[Claude]**
 
-- **`docs/conformance-matrix.md`:** mỗi dòng ghi:
+- **`conformance/scans.md`** (đổi từ `docs/conformance-matrix.md` ngày 2026-11-20, để bảng nằm cạnh mẫu thử mà nó trỏ
+  tới): mỗi dòng ghi:
   - app và phiên bản app;
   - hệ điều hành;
   - mẫu thử nào (theo `id` trong `conformance/vectors`);
