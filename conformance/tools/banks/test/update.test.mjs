@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { mkdirSync, mkdtempSync, readFileSync, statSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, statSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { run } from '../update.mjs'
@@ -12,7 +12,16 @@ const REDIRECTS = fx('vietqr-dl-redirects.json')
 const LISTS = { android: fx('vietqr-android-app-deeplinks.json'), ios: fx('vietqr-ios-app-deeplinks.json') }
 
 /** A fetch stand-in serving the trimmed fixtures; `banks` and `play` can be swapped per test. */
-function fakeFetch({ banks = BANKS, play = (pkg) => ({ status: 200, body: `id=${pkg}` }) } = {}) {
+const COMMONS = fx('commons-tpbank.json')
+const SAFE_SVG = '<svg xmlns="http://www.w3.org/2000/svg"><path d="M0 0h1v1z"/></svg>'
+
+function fakeFetch({
+  banks = BANKS,
+  play = (pkg) => ({ status: 200, body: `id=${pkg}` }),
+  svg = SAFE_SVG,
+  commons = COMMONS,
+  image = (url) => ({ status: 200, body: `bytes of ${url}` }),
+} = {}) {
   const calls = []
   const fetch = async (url, init = {}) => {
     calls.push(url)
@@ -24,7 +33,14 @@ function fakeFetch({ banks = BANKS, play = (pkg) => ({ status: 200, body: `id=${
       headers: new Headers(headers),
       text: async () => (typeof body === 'string' ? body : JSON.stringify(body)),
       json: async () => body,
+      arrayBuffer: async () => new TextEncoder().encode(typeof body === 'string' ? body : JSON.stringify(body)).buffer,
     })
+    if (url.startsWith('https://commons.wikimedia.org/w/api.php?')) return reply(200, commons)
+    if (url.startsWith('https://upload.wikimedia.org/')) return reply(200, svg)
+    if (url.startsWith('https://cdn.vietqr.io/')) {
+      const r = image(url)
+      return reply(r.status, r.body)
+    }
     if (url === 'https://api.vietqr.io/v2/banks') return reply(200, banks)
     const list = /v2\/(android|ios)-app-deeplinks$/.exec(url)
     if (list) return reply(200, LISTS[list[1]])
@@ -197,4 +213,80 @@ test('seed mode writes banks.json and play-checks.json into outDir only', async 
   assert.ok(JSON.parse(readFileSync(join(outDir, 'play-checks.json'), 'utf8'))['com.mbmobile'])
   assert.ok(JSON.parse(readFileSync(join(outDir, 'vietqr-apps.json'), 'utf8')).find((a) => a.id === 'klb'))
   assert.deepEqual(snapshot(dir), before)
+})
+
+/** makeRoot plus conformance/banks/logos/commons.json mapping MB (970422) to a Commons file. */
+function makeLogoRoot() {
+  const r = makeRoot()
+  mkdirSync(join(r.dir, 'logos'), { recursive: true })
+  writeFileSync(join(r.dir, 'logos', 'commons.json'), JSON.stringify({ logos: { '970422': 'File:Logo TPBank.svg' } }))
+  return r
+}
+const manifestOf = (dir) => JSON.parse(readFileSync(join(dir, 'logos', 'manifest.json'), 'utf8'))
+const opts = (root, fetch, mode = 'write') => ({ mode, root, fetch, today: '2026-11-21', delayMs: 0, fetchLogos: true })
+
+test('fetchLogos takes the Commons SVG when it is PD and safe, the vietqr.io PNG otherwise, and icons by vietqr.io id', async () => {
+  const { root, dir } = makeLogoRoot()
+  await run(opts(root, fakeFetch().fetch))
+  const m = manifestOf(dir)
+  const mb = m.files.find((f) => f.key === '970422' && f.kind === 'logo')
+  assert.equal(mb.file, 'logo/970422.svg')
+  assert.equal(mb.license, 'PD-textlogo')
+  assert.match(mb.pageUrl, /^https:\/\/commons\.wikimedia\.org\/wiki\/File:/)
+  assert.equal(readFileSync(join(dir, 'logos', 'logo', '970422.svg'), 'utf8'), SAFE_SVG)
+  const vcb = m.files.find((f) => f.key === '970436')
+  assert.deepEqual([vcb.file, vcb.license, vcb.sourceUrl, vcb.pageUrl], ['logo/970436.png', 'trademark-no-license', 'https://cdn.vietqr.io/img/VCB.png', null])
+  const vib = m.files.find((f) => f.kind === 'icon' && f.key === 'vib')
+  assert.deepEqual([vib.file, vib.sourceUrl], ['icon/vib.webp', 'https://cdn.vietqr.io/bank-app-icon/vib-2-ios.webp'])
+  assert.equal(m.files.filter((f) => f.kind === 'logo').length, 6)
+  assert.equal(m.files.filter((f) => f.kind === 'icon').length, 4)
+  assert.deepEqual(m.files.map((f) => f.file), [...m.files.map((f) => f.file)].sort())
+})
+
+test('an unsafe Commons SVG is not written; the PNG is used and the report says why', async () => {
+  const { root, dir } = makeLogoRoot()
+  const r = await run(opts(root, fakeFetch({ svg: '<svg><script>x</script></svg>' }).fetch))
+  assert.equal(manifestOf(dir).files.find((f) => f.key === '970422').file, 'logo/970422.png')
+  assert.match(r.report, /970422.*script/)
+})
+
+test('a Commons file without a PD tag falls back to the PNG', async () => {
+  const { root, dir } = makeLogoRoot()
+  const cc = structuredClone(COMMONS)
+  Object.values(cc.query.pages)[0].categories = [{ ns: 14, title: 'Category:CC-BY-SA-4.0' }]
+  await run(opts(root, fakeFetch({ commons: cc }).fetch))
+  assert.equal(manifestOf(dir).files.find((f) => f.key === '970422').license, 'trademark-no-license')
+})
+
+test('an image that fails to download is left out and named in the report', async () => {
+  const { root, dir } = makeLogoRoot()
+  const r = await run(opts(root, fakeFetch({ image: (u) => (u.endsWith('/VCB.png') ? { status: 404, body: '' } : { status: 200, body: u }) }).fetch))
+  assert.equal(manifestOf(dir).files.find((f) => f.key === '970436'), undefined)
+  assert.match(r.report, /970436/)
+})
+
+test('a second run with the same images changes nothing and keeps the first fetched date', async () => {
+  const { root, dir } = makeLogoRoot()
+  await run(opts(root, fakeFetch().fetch))
+  const first = readFileSync(join(dir, 'logos', 'manifest.json'), 'utf8')
+  const r = await run({ ...opts(root, fakeFetch().fetch), today: '2026-12-01' })
+  assert.equal(r.changed, false)
+  assert.equal(readFileSync(join(dir, 'logos', 'manifest.json'), 'utf8'), first)
+})
+
+test('check mode with fetchLogos reports new images but writes nothing', async () => {
+  const { root, dir } = makeLogoRoot()
+  const r = await run(opts(root, fakeFetch().fetch, 'check'))
+  assert.equal(r.changed, true)
+  assert.match(r.report, /logo\/970422\.svg/)
+  assert.equal(existsSync(join(dir, 'logos', 'manifest.json')), false)
+  assert.equal(existsSync(join(dir, 'logos', 'logo')), false)
+})
+
+test('a changed image is reported with its file', async () => {
+  const { root } = makeLogoRoot()
+  await run(opts(root, fakeFetch().fetch))
+  const r = await run(opts(root, fakeFetch({ image: (u) => ({ status: 200, body: `new ${u}` }) }).fetch))
+  assert.equal(r.changed, true)
+  assert.match(r.report, /icon\/mb\.webp/)
 })

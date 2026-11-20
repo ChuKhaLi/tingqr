@@ -3,6 +3,7 @@
 //   node conformance/tools/banks/update.mjs                 fetch and write banks.json and play-checks.json
 //   node conformance/tools/banks/update.mjs --check         fetch and compare only; writes nothing in the repo
 //   node conformance/tools/banks/update.mjs --seed --out D  first run: write everything into D, not the repo
+//   --fetch-logos     also download logos and icons (write mode) or compare them (check mode)
 //   --report <file>   also write the Markdown report to <file>
 //
 // Exit code: 0 = nothing changed, 2 = something changed (or a write was refused), 1 = error.
@@ -12,6 +13,7 @@ import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { diffApps, parseDlRedirects } from './lib/apps.mjs'
 import { fetchVietqr, sleep } from './lib/fetch-vietqr.mjs'
+import { collectLogos } from './lib/fetch-logos.mjs'
 import { classifyPlay, playUrl, updatePlayChecks } from './lib/play.mjs'
 import { renderReport } from './lib/report.mjs'
 import { applyOverrides, parseBanksResponse } from './lib/vietqr.mjs'
@@ -40,9 +42,9 @@ function diffBanks(before, after) {
  * @param {{ mode: 'seed'|'check'|'write', root: string, fetch: typeof fetch, today: string, outDir?: string, delayMs?: number }} o
  * @returns {Promise<{ changed: boolean, report: string }>}
  */
-export async function run({ mode, root, fetch, today, outDir, delayMs = 500 }) {
+export async function run({ mode, root, fetch, today, outDir, delayMs = 500, fetchLogos = false }) {
   const dir = join(root, 'conformance', 'banks')
-  const { banksJson, redirects } = await fetchVietqr(fetch, delayMs)
+  const { banksJson, lists, redirects } = await fetchVietqr(fetch, delayMs)
   const banks = applyOverrides(parseBanksResponse(banksJson), readJson(join(dir, 'overrides.json'), []))
   const current = readJson(join(dir, 'banks.json'), { banks: [] }).banks
   const bankDiff = diffBanks(current, banks)
@@ -68,17 +70,24 @@ export async function run({ mode, root, fetch, today, outDir, delayMs = 500 }) {
     await sleep(delayMs)
   }
 
+  const logos =
+    fetchLogos && mode !== 'seed'
+      ? await collectLogos({ dir, fetch, today, delayMs, write: mode === 'write', banks: refused ? current : banks, apps: curated, lists })
+      : undefined
+
   const report = renderReport({
     today,
     banks: { ...bankDiff, refused },
     apps: appDiffs,
     play: { gone, unknown, checked: packages.length },
+    logos: logos && [...logos.changes, ...logos.notes],
   })
   const changed =
     refused ||
     bankDiff.added.length + bankDiff.removed.length + bankDiff.changed.length > 0 ||
     appDiffs.length > 0 ||
-    gone.length > 0
+    gone.length > 0 ||
+    (logos?.changes.length ?? 0) > 0
 
   const bankFile = { source: 'https://api.vietqr.io/v2/banks', fetchedAt: today, banks }
   if (mode === 'write') {
@@ -100,7 +109,7 @@ async function main(argv) {
   if (mode === 'seed' && !arg('--out')) throw new Error('--seed needs --out <dir>')
   const root = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..', '..')
   const today = new Date().toISOString().slice(0, 10)
-  const r = await run({ mode, root, fetch, today, outDir: arg('--out') && resolve(arg('--out')) })
+  const r = await run({ mode, root, fetch, today, outDir: arg('--out') && resolve(arg('--out')), fetchLogos: has('--fetch-logos') })
   if (arg('--report')) writeFileSync(arg('--report'), r.report)
   process.stdout.write(r.report)
   return r.changed ? 2 : 0

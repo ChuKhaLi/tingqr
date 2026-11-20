@@ -1,0 +1,9 @@
+{
+  "_note": "Commons SVG per BIN, chosen by hand 2026-11-21 (commons-search.mjs). update.mjs --fetch-logos takes a file only if Commons tags it PD textlogo or PD simple and svgProblems() is empty; otherwise the vietqr.io PNG. Not found on Commons: Techcombank, MB, Agribank. 'File:VP Bank Logo.svg' is VP Bank Liechtenstein, not VPBank.",
+  "logos": {
+    "970416": "File:Asia Commercial Bank logo.svg",
+    "970418": "File:Logo Bidv mới.svg",
+    "970423": "File:Logo TPBank.svg",
+    "970432": "File:VPBank logo.svg"
+  }
+}

@@ -4,3 +4,4 @@ conformance/vectors/** -text
 *.webp binary
 conformance/tools/oracle/vendor/** -text
 conformance/banks/sources/** -text
+conformance/banks/logos/** -text

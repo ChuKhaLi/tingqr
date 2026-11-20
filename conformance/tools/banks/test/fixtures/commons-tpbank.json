@@ -1,0 +1,121 @@
+{
+  "continue": {
+    "iistart": "2021-03-20T15:26:51Z",
+    "continue": "||categories"
+  },
+  "query": {
+    "pages": {
+      "101943541": {
+        "pageid": 101943541,
+        "ns": 6,
+        "title": "File:Logo TPBank.svg",
+        "imagerepository": "local",
+        "imageinfo": [
+          {
+            "size": 32739,
+            "width": 526,
+            "height": 160,
+            "url": "https://upload.wikimedia.org/wikipedia/commons/4/48/Logo_TPBank.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+            "descriptionurl": "https://commons.wikimedia.org/wiki/File:Logo_TPBank.svg",
+            "descriptionshorturl": "https://commons.wikimedia.org/wiki/Special:Redirect/page/101943541",
+            "sha1": "5f82afda83b1f83bd120a9aa588b8ee5157c18ee",
+            "extmetadata": {
+              "DateTime": {
+                "value": "2021-03-20 15:30:52",
+                "source": "mediawiki-metadata",
+                "hidden": ""
+              },
+              "ObjectName": {
+                "value": "Logo TPBank",
+                "source": "mediawiki-metadata"
+              },
+              "CommonsMetadataExtension": {
+                "value": 1.2,
+                "source": "extension",
+                "hidden": ""
+              },
+              "Categories": {
+                "value": "With trademark|PD textlogo|SVG text logos|SVG logos of banks in Vietnam|Invalid SVG created with Inkscape:Text logos",
+                "source": "commons-categories",
+                "hidden": ""
+              },
+              "Assessments": {
+                "value": "",
+                "source": "commons-categories",
+                "hidden": ""
+              },
+              "ImageDescription": {
+                "value": "Biểu trưng TPBank",
+                "source": "commons-desc-page"
+              },
+              "DateTimeOriginal": {
+                "value": "2021-03-20",
+                "source": "commons-desc-page"
+              },
+              "Credit": {
+                "value": "Own work using: <a rel=\"nofollow\" class=\"external free\" href=\"https://tpb.vn/\">https://tpb.vn/</a>",
+                "source": "commons-desc-page"
+              },
+              "Artist": {
+                "value": "TPBank",
+                "source": "commons-desc-page"
+              },
+              "LicenseShortName": {
+                "value": "Public domain",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "UsageTerms": {
+                "value": "Public domain",
+                "source": "commons-desc-page"
+              },
+              "AttributionRequired": {
+                "value": "false",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "Copyrighted": {
+                "value": "False",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "Restrictions": {
+                "value": "trademarked",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "License": {
+                "value": "pd",
+                "source": "commons-templates",
+                "hidden": ""
+              }
+            }
+          }
+        ],
+        "categories": [
+          {
+            "ns": 14,
+            "title": "Category:Invalid SVG created with Inkscape:Text logos"
+          },
+          {
+            "ns": 14,
+            "title": "Category:PD textlogo"
+          },
+          {
+            "ns": 14,
+            "title": "Category:SVG logos of banks in Vietnam"
+          },
+          {
+            "ns": 14,
+            "title": "Category:SVG text logos"
+          },
+          {
+            "ns": 14,
+            "title": "Category:With trademark"
+          }
+        ]
+      }
+    }
+  },
+  "_source": "https://commons.wikimedia.org/w/api.php?action=query&titles=File:Logo_TPBank.svg&prop=imageinfo|categories&iiprop=url|extmetadata|size|sha1, captured 2026-11-21"
+}
