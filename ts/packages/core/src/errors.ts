@@ -27,14 +27,28 @@ export interface Warning {
   tag?: string
 }
 
+/** Shared across copies of this module (a CJS subpath bundle carries its own copy of the class). */
+const BRAND: unique symbol = Symbol.for('tingqr.TingQrError') as never
+
 export class TingQrError extends Error {
   readonly code: ErrorCode
   declare readonly tag?: string
   /** Top-level fields already read, when the error is about the payload as a whole (e.g. UNKNOWN_SCHEME). */
   declare readonly fields?: TlvNode[]
 
+  /**
+   * `err instanceof TingQrError` is true for an error thrown by any copy of the class, e.g. one from
+   * `require('@tingqr/core/banks')` checked against `require('@tingqr/core').TingQrError`. Subclasses keep the usual
+   * prototype check.
+   */
+  static override [Symbol.hasInstance](value: unknown): boolean {
+    if (this !== TingQrError) return Function.prototype[Symbol.hasInstance].call(this, value)
+    return typeof value === 'object' && value !== null && (value as Record<symbol, unknown>)[BRAND] === true
+  }
+
   constructor(code: ErrorCode, message: string, tag?: string, fields?: TlvNode[]) {
     super(message)
+    Object.defineProperty(this, BRAND, { value: true })
     this.name = 'TingQrError'
     this.code = code
     if (tag !== undefined) this.tag = tag

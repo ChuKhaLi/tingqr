@@ -31,3 +31,9 @@
 - **CJS subpath là file một dòng** `module.exports = require('./index.cjs')`, do `onSuccess` trong `tsup.config.ts` ghi
   đè (CJS không tách chunk được, để nguyên thì mỗi subpath tự chứa một bản lõi). ESM vẫn tách chunk bình thường.
   Thêm subpath mới: thêm vào `SUBPATHS` ở `tsup.config.ts` và ở `scripts/check-core-package.mjs`.
+- **`@tingqr/core/banks`** là ngoại lệ: không xuất từ gốc. Nó nằm trong `STANDALONE` của `tsup.config.ts`, nên bản CJS là
+  bundle riêng, mang bản `TingQrError` riêng. `instanceof` vẫn đúng giữa các bản nhờ `Symbol.hasInstance` trong
+  `errors.ts`.
+  - `src/banks/data.ts` sinh từ `conformance/banks/` bằng `node conformance/tools/banks/sync-ts.mjs`. Không sửa tay;
+    `banks-sync.spec.ts` báo khi lệch. File này không chạy mutation.
+  - Ngân sách tarball core nâng lên 45 KB ngày 2026-11-20 (chủ dự án duyệt), vì dữ liệu ngân hàng.

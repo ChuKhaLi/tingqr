@@ -58,6 +58,16 @@
         "types": "./dist/khqr.d.cts",
         "default": "./dist/khqr.cjs"
       }
+    },
+    "./banks": {
+      "import": {
+        "types": "./dist/banks.d.ts",
+        "default": "./dist/banks.js"
+      },
+      "require": {
+        "types": "./dist/banks.d.cts",
+        "default": "./dist/banks.cjs"
+      }
     }
   },
   "files": [

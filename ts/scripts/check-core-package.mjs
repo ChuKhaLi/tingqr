@@ -8,7 +8,7 @@ import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const CORE = join(dirname(fileURLToPath(import.meta.url)), '..', 'packages', 'core')
-const MAX_TARBALL_BYTES = 40_000
+const MAX_TARBALL_BYTES = 45_000
 
 const pkg = JSON.parse(readFileSync(join(CORE, 'package.json'), 'utf8'))
 const problems = []
@@ -42,6 +42,8 @@ const SUBPATHS = {
   '@tingqr/core/vnpay': ['decodeVnpayQr'],
   '@tingqr/core/promptpay': ['encodePromptPayQr', 'decodePromptPayQr'],
   '@tingqr/core/khqr': ['encodeKhqr', 'decodeKhqr', 'isKhqrExpired'],
+  // Standalone bundle: not in index.cjs, carries the bank data and its own TingQrError copy.
+  '@tingqr/core/banks': ['findBank', 'findBankApp', 'appsForBank'],
 }
 for (const [id, names] of Object.entries(SUBPATHS)) {
   let mod
