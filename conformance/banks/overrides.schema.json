@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/ChuKhaLi/tingqr/conformance/banks/overrides.schema.json",
+  "title": "Hand corrections applied to the api.vietqr.io bank list after each fetch",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["bin", "field", "value", "reason", "source"],
+    "properties": {
+      "bin": { "type": "string", "pattern": "^\\d{6}$" },
+      "field": { "enum": ["code", "shortName", "name", "swift", "logoUrl"] },
+      "value": { "type": ["string", "null"] },
+      "reason": { "type": "string", "minLength": 1 },
+      "source": { "type": "string", "minLength": 1 }
+    }
+  }
+}

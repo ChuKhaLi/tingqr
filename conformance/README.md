@@ -21,6 +21,23 @@ bộ mẫu thử ở đây, nên hai bản cho cùng kết quả trên mọi hà
   | Nayuki `qrcodegen.ts` | v1.8.0, commit `720f62b` | MIT (header trong file) | Mẫu ma trận (`vendor/`, file gốc không sửa, kiểm SHA-256 trước khi chạy) |
   | `typescript` | 5.9.3 | Apache-2.0 | Dịch file Nayuki gốc trong `gen-render.mjs` |
 - `private/`: QR thật chụp ở máy chủ dự án. **Nằm trong `.gitignore`, không bao giờ commit.**
+- `banks/`: danh sách ngân hàng và app ngân hàng, dùng chung cho mọi ngôn ngữ (thiết kế:
+  `docs/superpowers/specs/2026-11-20-tingqr-banks-design.md`). Mỗi file có `*.schema.json` đi kèm.
+
+  | File | Ai ghi | Nội dung |
+  |---|---|---|
+  | `banks.json` | `tools/banks/update.mjs` | danh sách của `api.vietqr.io/v2/banks`, đã áp `overrides.json`, kèm ngày lấy |
+  | `overrides.json` | sửa tay | sửa một trường của một ngân hàng so với API, kèm lý do và nguồn |
+  | `bank-apps.json` | **sửa tay**; script chỉ báo khác biệt | app mở được bằng scheme: scheme iOS, gói/scheme/host Android, nguồn, chỗ nguồn khác ý, ai đã mở thử trên máy thật |
+  | `play-checks.json` | `tools/banks/update.mjs` | lần kiểm gói Android trên Google Play gần nhất |
+  | `sources/<ngày>/` | chụp tay | bản chụp nguyên văn các nguồn; `NOTES.md` ghi nguồn nào độc lập với nguồn nào |
+
+  - **`confidence: "multi-source"`** khi có ít nhất hai nguồn **độc lập** (`independent: true`).
+    - `qrviet` và Noel tree chép từ vietqr.io, nên không tính là độc lập.
+    - Nguồn độc lập với vietqr.io hiện chỉ có `vietnam-qr-pay` 1.5.1.
+  - **`deviceVerified`** chỉ ghi khi có người mở thử thật trên máy, ghi rõ ai, hệ điều hành nào, ngày nào.
+  - `ignoredVietqrApps` liệt kê app của vietqr.io bị bỏ có chủ ý; `vietqrDiffers` liệt kê chỗ một app cố ý khác
+    vietqr.io. Script cập nhật không báo lại hai loại này.
 
 ## Một file mẫu thử
 

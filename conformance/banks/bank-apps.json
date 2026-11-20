@@ -1,0 +1,1724 @@
+{
+  "ignoredVietqrApps": {
+    "vib": "Bản cũ của MyVIB (scheme myvib, host vib.com.vn/data, cùng gói com.vib.myvib2). Dùng vib-2 (scheme myvib2), như Noel tree.",
+    "vab": "Ghép scheme vabmobilebanking (của VietABank theo vietnam-qr-pay 1.5.1) với gói com.vn.vietbankomni của Vietbank (theo qrviet). Chưa đưa VietABank hay Vietbank vào cho tới khi có nguồn khớp nhau hoặc mở thử trên máy thật."
+  },
+  "apps": [
+    {
+      "id": "abb",
+      "name": "ABBank",
+      "bin": "970425",
+      "ios": {
+        "scheme": "abbankmobile"
+      },
+      "android": {
+        "package": "vn.abbank.retail",
+        "scheme": "abbankmobile",
+        "host": ""
+      },
+      "confidence": "single-source",
+      "sources": [
+        {
+          "name": "vietqr.io",
+          "ref": "abb",
+          "url": "https://dl.vietqr.io/pay?app=abb",
+          "independent": true,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "qrviet",
+          "ref": "ABB",
+          "url": "https://github.com/nghiepdev/qrviet/blob/32667622752626c9efffd1b6b294e077465ee88f/src/data/bank-apps.json",
+          "independent": false,
+          "checked": "2026-11-20"
+        }
+      ],
+      "disagreements": [
+        "qrviet ghi scheme iOS vn.abbank.retail"
+      ],
+      "deviceVerified": [],
+      "vietqrAutofill": false
+    },
+    {
+      "id": "acb",
+      "name": "ACB ONE",
+      "bin": "970416",
+      "ios": {
+        "scheme": "acbone"
+      },
+      "android": {
+        "package": "mobile.acb.com.vn",
+        "scheme": "acbone",
+        "host": ""
+      },
+      "confidence": "multi-source",
+      "sources": [
+        {
+          "name": "vietqr.io",
+          "ref": "acb",
+          "url": "https://dl.vietqr.io/pay?app=acb",
+          "independent": true,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "vietnam-qr-pay",
+          "ref": "acb",
+          "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
+          "independent": true,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "qrviet",
+          "ref": "ACB",
+          "url": "https://github.com/nghiepdev/qrviet/blob/32667622752626c9efffd1b6b294e077465ee88f/src/data/bank-apps.json",
+          "independent": false,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "noel-tree",
+          "ref": "acb",
+          "url": "../noel-tree/src/app/tree/bank-apps.ts",
+          "independent": false,
+          "checked": "2026-11-20"
+        }
+      ],
+      "disagreements": [
+        "vietnam-qr-pay 1.5.1 ghi scheme acbapp"
+      ],
+      "deviceVerified": [],
+      "vietqrAutofill": true
+    },
+    {
+      "id": "acb-biz",
+      "name": "ACB ONE Biz",
+      "bin": "970416",
+      "ios": {
+        "scheme": "abaapp"
+      },
+      "android": {
+        "package": "com.acb.acbb.prod",
+        "scheme": "abaapp",
+        "host": ""
+      },
+      "confidence": "single-source",
+      "sources": [
+        {
+          "name": "vietqr.io",
+          "ref": "acb-biz",
+          "url": "https://dl.vietqr.io/pay?app=acb-biz",
+          "independent": true,
+          "checked": "2026-11-20"
+        }
+      ],
+      "disagreements": [],
+      "deviceVerified": [],
+      "vietqrAutofill": false
+    },
+    {
+      "id": "baovietbank",
+      "name": "BAOVIET Smart",
+      "bin": "970438",
+      "ios": {
+        "scheme": "baovietmobile"
+      },
+      "android": {
+        "package": "com.vnpay.bvbank",
+        "scheme": "baovietmobile",
+        "host": ""
+      },
+      "confidence": "multi-source",
+      "sources": [
+        {
+          "name": "vietqr.io",
+          "ref": "bvb",
+          "url": "https://dl.vietqr.io/pay?app=bvb",
+          "independent": true,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "vietnam-qr-pay",
+          "ref": "baoviet",
+          "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
+          "independent": true,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "qrviet",
+          "ref": "BVB",
+          "url": "https://github.com/nghiepdev/qrviet/blob/32667622752626c9efffd1b6b294e077465ee88f/src/data/bank-apps.json",
+          "independent": false,
+          "checked": "2026-11-20"
+        }
+      ],
+      "disagreements": [
+        "id vietqr.io là bvb nhưng đây là BaoViet Bank (970438), không phải BVBank (Bản Việt, 970454)"
+      ],
+      "deviceVerified": [],
+      "vietqrAutofill": false
+    },
+    {
+      "id": "bidc",
+      "name": "BIDC",
+      "bin": "555666",
+      "ios": {
+        "scheme": "bidcvnmobile"
+      },
+      "android": {
+        "package": "com.vnpay.bidc",
+        "scheme": "bidcvnmobile",
+        "host": ""
+      },
+      "confidence": "single-source",
+      "sources": [
+        {
+          "name": "vietnam-qr-pay",
+          "ref": "bidc",
+          "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
+          "independent": true,
+          "checked": "2026-11-20"
+        }
+      ],
+      "disagreements": [
+        "vietnam-qr-pay ghi một scheme cho cả hai hệ; chưa có nguồn thứ hai"
+      ],
+      "deviceVerified": [],
+      "vietqrAutofill": false
+    },
+    {
+      "id": "bidv",
+      "name": "BIDV SmartBanking",
+      "bin": "970418",
+      "ios": {
+        "scheme": "bidv.smartbanking.partner"
+      },
+      "android": {
+        "package": "com.vnpay.bidv",
+        "scheme": "bidv.smartbanking.partner",
+        "host": "payment"
+      },
+      "confidence": "multi-source",
+      "sources": [
+        {
+          "name": "vietqr.io",
+          "ref": "bidv",
+          "url": "https://dl.vietqr.io/pay?app=bidv",
+          "independent": true,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "vietnam-qr-pay",
+          "ref": "bidv",
+          "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
+          "independent": true,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "qrviet",
+          "ref": "BIDV",
+          "url": "https://github.com/nghiepdev/qrviet/blob/32667622752626c9efffd1b6b294e077465ee88f/src/data/bank-apps.json",
+          "independent": false,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "noel-tree",
+          "ref": "bidv",
+          "url": "../noel-tree/src/app/tree/bank-apps.ts",
+          "independent": false,
+          "checked": "2026-11-20"
+        }
+      ],
+      "disagreements": [
+        "vietnam-qr-pay 1.5.1 ghi scheme bidvsmartbanking"
+      ],
+      "deviceVerified": [],
+      "vietqrAutofill": true
+    },
+    {
+      "id": "cake",
+      "name": "CAKE - Digital Bankin‪g",
+      "bin": "546034",
+      "ios": {
+        "scheme": "cake.vn"
+      },
+      "android": {
+        "package": "xyz.be.cake",
+        "scheme": "cake.vn",
+        "host": ""
+      },
+      "confidence": "multi-source",
+      "sources": [
+        {
+          "name": "vietqr.io",
+          "ref": "cake",
+          "url": "https://dl.vietqr.io/pay?app=cake",
+          "independent": true,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "vietnam-qr-pay",
+          "ref": "cake",
+          "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
+          "independent": true,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "qrviet",
+          "ref": "CAKE",
+          "url": "https://github.com/nghiepdev/qrviet/blob/32667622752626c9efffd1b6b294e077465ee88f/src/data/bank-apps.json",
+          "independent": false,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "noel-tree",
+          "ref": "cake",
+          "url": "../noel-tree/src/app/tree/bank-apps.ts",
+          "independent": false,
+          "checked": "2026-11-20"
+        }
+      ],
+      "disagreements": [],
+      "deviceVerified": [],
+      "vietqrAutofill": false
+    },
+    {
+      "id": "cimb",
+      "name": "OCTO by CIMB Vietnam",
+      "bin": "422589",
+      "ios": {
+        "scheme": "cimb"
+      },
+      "android": {
+        "package": "vn.cimbbank.octo",
+        "scheme": "cimb",
+        "host": ""
+      },
+      "confidence": "multi-source",
+      "sources": [
+        {
+          "name": "vietqr.io",
+          "ref": "cimb",
+          "url": "https://dl.vietqr.io/pay?app=cimb",
+          "independent": true,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "vietnam-qr-pay",
+          "ref": "cimb",
+          "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
+          "independent": true,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "qrviet",
+          "ref": "CIMB",
+          "url": "https://github.com/nghiepdev/qrviet/blob/32667622752626c9efffd1b6b294e077465ee88f/src/data/bank-apps.json",
+          "independent": false,
+          "checked": "2026-11-20"
+        }
+      ],
+      "disagreements": [],
+      "deviceVerified": [],
+      "vietqrAutofill": false
+    },
+    {
+      "id": "coopbank",
+      "name": "Co-opBank Mobile Banking",
+      "bin": "970446",
+      "ios": {
+        "scheme": "coopbankmobile"
+      },
+      "android": {
+        "package": "com.vnpay.coopbank",
+        "scheme": "coopbankmobile",
+        "host": ""
+      },
+      "confidence": "multi-source",
+      "sources": [
+        {
+          "name": "vietqr.io",
+          "ref": "coopbank",
+          "url": "https://dl.vietqr.io/pay?app=coopbank",
+          "independent": true,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "vietnam-qr-pay",
+          "ref": "coopbank",
+          "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
+          "independent": true,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "qrviet",
+          "ref": "COOPBANK",
+          "url": "https://github.com/nghiepdev/qrviet/blob/32667622752626c9efffd1b6b294e077465ee88f/src/data/bank-apps.json",
+          "independent": false,
+          "checked": "2026-11-20"
+        }
+      ],
+      "disagreements": [],
+      "deviceVerified": [],
+      "vietqrAutofill": false
+    },
+    {
+      "id": "eib",
+      "name": "Eximbank EDigi",
+      "bin": "970431",
+      "ios": {
+        "scheme": "eximbankmobile"
+      },
+      "android": {
+        "package": "com.vnpay.EximBankOmni",
+        "scheme": "eximbankmobile",
+        "host": ""
+      },
+      "confidence": "single-source",
+      "sources": [
+        {
+          "name": "vietqr.io",
+          "ref": "eib",
+          "url": "https://dl.vietqr.io/pay?app=eib",
+          "independent": true,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "qrviet",
+          "ref": "EIB",
+          "url": "https://github.com/nghiepdev/qrviet/blob/32667622752626c9efffd1b6b294e077465ee88f/src/data/bank-apps.json",
+          "independent": false,
+          "checked": "2026-11-20"
+        }
+      ],
+      "disagreements": [
+        "qrviet ghi scheme iOS eximbankomnimobile"
+      ],
+      "deviceVerified": [],
+      "vietqrAutofill": false
+    },
+    {
+      "id": "hdb",
+      "name": "HDBank",
+      "bin": "970437",
+      "ios": {
+        "scheme": "hdbankmobile"
+      },
+      "android": {
+        "package": "com.vnpay.hdbank",
+        "scheme": "hdbankmobile",
+        "host": ""
+      },
+      "confidence": "multi-source",
+      "sources": [
+        {
+          "name": "vietqr.io",
+          "ref": "hdb",
+          "url": "https://dl.vietqr.io/pay?app=hdb",
+          "independent": true,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "vietnam-qr-pay",
+          "ref": "hdbank",
+          "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
+          "independent": true,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "qrviet",
+          "ref": "HDB",
+          "url": "https://github.com/nghiepdev/qrviet/blob/32667622752626c9efffd1b6b294e077465ee88f/src/data/bank-apps.json",
+          "independent": false,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "noel-tree",
+          "ref": "hdb",
+          "url": "../noel-tree/src/app/tree/bank-apps.ts",
+          "independent": false,
+          "checked": "2026-11-20"
+        }
+      ],
+      "disagreements": [],
+      "deviceVerified": [],
+      "vietqrAutofill": false
+    },
+    {
+      "id": "ibkhcm",
+      "name": "IBKHCM",
+      "bin": "970456",
+      "ios": {
+        "scheme": "ionebankglobal"
+      },
+      "android": {
+        "package": "com.ibk.neobanking.mini",
+        "scheme": "ionebankglobal",
+        "host": ""
+      },
+      "confidence": "single-source",
+      "sources": [
+        {
+          "name": "vietnam-qr-pay",
+          "ref": "ibkhcm",
+          "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
+          "independent": true,
+          "checked": "2026-11-20"
+        }
+      ],
+      "disagreements": [
+        "vietnam-qr-pay ghi một scheme cho cả hai hệ; chưa có nguồn thứ hai"
+      ],
+      "deviceVerified": [],
+      "vietqrAutofill": false
+    },
+    {
+      "id": "icb",
+      "name": "VietinBank iPay",
+      "bin": "970415",
+      "ios": {
+        "scheme": "vietinbankipay"
+      },
+      "android": {
+        "package": "com.vietinbank.ipay",
+        "scheme": "vietinbankipay",
+        "host": ""
+      },
+      "confidence": "multi-source",
+      "sources": [
+        {
+          "name": "vietqr.io",
+          "ref": "icb",
+          "url": "https://dl.vietqr.io/pay?app=icb",
+          "independent": true,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "vietnam-qr-pay",
+          "ref": "vietinbank",
+          "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
+          "independent": true,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "qrviet",
+          "ref": "ICB",
+          "url": "https://github.com/nghiepdev/qrviet/blob/32667622752626c9efffd1b6b294e077465ee88f/src/data/bank-apps.json",
+          "independent": false,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "noel-tree",
+          "ref": "icb",
+          "url": "../noel-tree/src/app/tree/bank-apps.ts",
+          "independent": false,
+          "checked": "2026-11-20"
+        }
+      ],
+      "disagreements": [
+        "vietnam-qr-pay 1.5.1 ghi scheme vietinbankmobile"
+      ],
+      "deviceVerified": [],
+      "vietqrAutofill": true
+    },
+    {
+      "id": "indovinabank",
+      "name": "IndovinaBank",
+      "bin": "970434",
+      "ios": {
+        "scheme": "ivbmobilebanking"
+      },
+      "android": {
+        "package": "com.vnpay.ivb",
+        "scheme": "ivbmobilebanking",
+        "host": ""
+      },
+      "confidence": "single-source",
+      "sources": [
+        {
+          "name": "vietnam-qr-pay",
+          "ref": "indovinabank",
+          "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
+          "independent": true,
+          "checked": "2026-11-20"
+        }
+      ],
+      "disagreements": [
+        "vietnam-qr-pay ghi một scheme cho cả hai hệ; chưa có nguồn thứ hai"
+      ],
+      "deviceVerified": [],
+      "vietqrAutofill": false
+    },
+    {
+      "id": "klb",
+      "name": "KienlongBank Plus",
+      "bin": "970452",
+      "ios": {
+        "scheme": "kienlongbankmobilebanking"
+      },
+      "android": {
+        "package": "com.sunshine.ksbank",
+        "scheme": "ksbank",
+        "host": "ksbank.co"
+      },
+      "confidence": "multi-source",
+      "sources": [
+        {
+          "name": "vietqr.io",
+          "ref": "klb",
+          "url": "https://dl.vietqr.io/pay?app=klb",
+          "independent": true,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "vietnam-qr-pay",
+          "ref": "kienlongbank",
+          "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
+          "independent": true,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "qrviet",
+          "ref": "KLB",
+          "url": "https://github.com/nghiepdev/qrviet/blob/32667622752626c9efffd1b6b294e077465ee88f/src/data/bank-apps.json",
+          "independent": false,
+          "checked": "2026-11-20"
+        }
+      ],
+      "disagreements": [],
+      "deviceVerified": [],
+      "vietqrAutofill": false
+    },
+    {
+      "id": "liobank",
+      "name": "OCB",
+      "bin": "970448",
+      "ios": {
+        "scheme": "lio"
+      },
+      "android": {
+        "package": "com.ocb.liobank",
+        "scheme": "lio",
+        "host": ""
+      },
+      "confidence": "single-source",
+      "sources": [
+        {
+          "name": "vietnam-qr-pay",
+          "ref": "liobank",
+          "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
+          "independent": true,
+          "checked": "2026-11-20"
+        }
+      ],
+      "disagreements": [
+        "vietnam-qr-pay ghi một scheme cho cả hai hệ; chưa có nguồn thứ hai"
+      ],
+      "deviceVerified": [],
+      "vietqrAutofill": false
+    },
+    {
+      "id": "lpb",
+      "name": "LPBank",
+      "bin": "970449",
+      "ios": {
+        "scheme": "lv24h"
+      },
+      "android": {
+        "package": "vn.com.lpbank.digibank",
+        "scheme": "lv24h",
+        "host": ""
+      },
+      "confidence": "multi-source",
+      "sources": [
+        {
+          "name": "vietqr.io",
+          "ref": "lpb",
+          "url": "https://dl.vietqr.io/pay?app=lpb",
+          "independent": true,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "vietnam-qr-pay",
+          "ref": "lienvietpostbank",
+          "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
+          "independent": true,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "qrviet",
+          "ref": "LPB",
+          "url": "https://github.com/nghiepdev/qrviet/blob/32667622752626c9efffd1b6b294e077465ee88f/src/data/bank-apps.json",
+          "independent": false,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "vietnam-qr-pay",
+          "ref": "lpbank",
+          "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
+          "independent": true,
+          "checked": "2026-11-20"
+        }
+      ],
+      "disagreements": [
+        "vietqr.io và vietnam-qr-pay ghi gói vn.com.lpb.lienviet24h, Google Play trả 404 ngày 2026-11-20; gói vn.com.lpbank.digibank theo qrviet, Google Play còn"
+      ],
+      "deviceVerified": [],
+      "vietqrAutofill": false,
+      "vietqrDiffers": [
+        "package"
+      ]
+    },
+    {
+      "id": "mb",
+      "name": "MB Bank",
+      "bin": "970422",
+      "ios": {
+        "scheme": "mbbank"
+      },
+      "android": {
+        "package": "com.mbmobile",
+        "scheme": "mbbank",
+        "host": ""
+      },
+      "confidence": "multi-source",
+      "sources": [
+        {
+          "name": "vietqr.io",
+          "ref": "mb",
+          "url": "https://dl.vietqr.io/pay?app=mb",
+          "independent": true,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "vietnam-qr-pay",
+          "ref": "mbbank",
+          "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
+          "independent": true,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "qrviet",
+          "ref": "MB",
+          "url": "https://github.com/nghiepdev/qrviet/blob/32667622752626c9efffd1b6b294e077465ee88f/src/data/bank-apps.json",
+          "independent": false,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "noel-tree",
+          "ref": "mb",
+          "url": "../noel-tree/src/app/tree/bank-apps.ts",
+          "independent": false,
+          "checked": "2026-11-20"
+        }
+      ],
+      "disagreements": [
+        "vietnam-qr-pay 1.5.1 ghi scheme mbmobile"
+      ],
+      "deviceVerified": [
+        {
+          "by": "chủ dự án",
+          "os": "Android",
+          "date": "2026-11-18",
+          "via": "Noel tree"
+        }
+      ],
+      "vietqrAutofill": true
+    },
+    {
+      "id": "mbv",
+      "name": "MBV Bank",
+      "bin": "970414",
+      "ios": {
+        "scheme": "mbv"
+      },
+      "android": {
+        "package": "com.mbv.mobilebanking",
+        "scheme": "mbv",
+        "host": ""
+      },
+      "confidence": "single-source",
+      "sources": [
+        {
+          "name": "vietqr.io",
+          "ref": "mbv",
+          "url": "https://dl.vietqr.io/pay?app=mbv",
+          "independent": true,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "qrviet",
+          "ref": "MBV",
+          "url": "https://github.com/nghiepdev/qrviet/blob/32667622752626c9efffd1b6b294e077465ee88f/src/data/bank-apps.json",
+          "independent": false,
+          "checked": "2026-11-20"
+        }
+      ],
+      "disagreements": [],
+      "deviceVerified": [],
+      "vietqrAutofill": false
+    },
+    {
+      "id": "momo",
+      "name": "MoMo",
+      "bin": "971025",
+      "ios": {
+        "scheme": "momo"
+      },
+      "confidence": "single-source",
+      "sources": [
+        {
+          "name": "qrviet",
+          "ref": "MOMO",
+          "url": "https://github.com/nghiepdev/qrviet/blob/32667622752626c9efffd1b6b294e077465ee88f/src/data/bank-apps.json",
+          "independent": true,
+          "checked": "2026-11-20"
+        }
+      ],
+      "disagreements": [
+        "qrviet có gói Android com.mservice.momotransfer nhưng không có scheme Android (qrviet dùng scheme iOS cho Android); chưa đưa phần Android vào"
+      ],
+      "deviceVerified": [],
+      "vietqrAutofill": false
+    },
+    {
+      "id": "msb",
+      "name": "MSB",
+      "bin": "970426",
+      "ios": {
+        "scheme": "msbmobile"
+      },
+      "android": {
+        "package": "vn.com.msb.smartBanking",
+        "scheme": "msbmobile",
+        "host": ""
+      },
+      "confidence": "single-source",
+      "sources": [
+        {
+          "name": "vietnam-qr-pay",
+          "ref": "msb",
+          "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
+          "independent": true,
+          "checked": "2026-11-20"
+        }
+      ],
+      "disagreements": [
+        "vietnam-qr-pay ghi một scheme cho cả hai hệ; chưa có nguồn thứ hai"
+      ],
+      "deviceVerified": [],
+      "vietqrAutofill": false
+    },
+    {
+      "id": "nab",
+      "name": "Nam A Bank Open Banking",
+      "bin": "970428",
+      "android": {
+        "package": "ops.namabank.com.vn",
+        "scheme": "deeplinkapp",
+        "host": "nab/softotp"
+      },
+      "confidence": "multi-source",
+      "sources": [
+        {
+          "name": "vietqr.io",
+          "ref": "nab",
+          "url": "https://dl.vietqr.io/pay?app=nab",
+          "independent": true,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "vietnam-qr-pay",
+          "ref": "namabank",
+          "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
+          "independent": true,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "qrviet",
+          "ref": "NAB",
+          "url": "https://github.com/nghiepdev/qrviet/blob/32667622752626c9efffd1b6b294e077465ee88f/src/data/bank-apps.json",
+          "independent": false,
+          "checked": "2026-11-20"
+        }
+      ],
+      "disagreements": [
+        "qrviet ghi scheme iOS ops.namabank.com.vn"
+      ],
+      "deviceVerified": [],
+      "vietqrAutofill": false
+    },
+    {
+      "id": "ncb",
+      "name": "NCB iziMobile",
+      "bin": "970419",
+      "ios": {
+        "scheme": "ncbizimobile"
+      },
+      "android": {
+        "package": "com.ncb.bank",
+        "scheme": "ncbizimobile",
+        "host": ""
+      },
+      "confidence": "multi-source",
+      "sources": [
+        {
+          "name": "vietqr.io",
+          "ref": "ncb",
+          "url": "https://dl.vietqr.io/pay?app=ncb",
+          "independent": true,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "vietnam-qr-pay",
+          "ref": "ncb",
+          "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
+          "independent": true,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "qrviet",
+          "ref": "NCB",
+          "url": "https://github.com/nghiepdev/qrviet/blob/32667622752626c9efffd1b6b294e077465ee88f/src/data/bank-apps.json",
+          "independent": false,
+          "checked": "2026-11-20"
+        }
+      ],
+      "disagreements": [],
+      "deviceVerified": [],
+      "vietqrAutofill": false
+    },
+    {
+      "id": "nonghyup",
+      "name": "Nonghyup",
+      "bin": "801011",
+      "ios": {
+        "scheme": "newnhsmartbanking"
+      },
+      "android": {
+        "package": "nh.smart.banking",
+        "scheme": "newnhsmartbanking",
+        "host": ""
+      },
+      "confidence": "single-source",
+      "sources": [
+        {
+          "name": "vietnam-qr-pay",
+          "ref": "nonghyup",
+          "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
+          "independent": true,
+          "checked": "2026-11-20"
+        }
+      ],
+      "disagreements": [
+        "vietnam-qr-pay ghi một scheme cho cả hai hệ; chưa có nguồn thứ hai"
+      ],
+      "deviceVerified": [],
+      "vietqrAutofill": false
+    },
+    {
+      "id": "ocb",
+      "name": "OCB OMNI",
+      "bin": "970448",
+      "ios": {
+        "scheme": "newomni-app"
+      },
+      "android": {
+        "package": "vn.com.ocb.awe",
+        "scheme": "newomni-app",
+        "host": ""
+      },
+      "confidence": "single-source",
+      "sources": [
+        {
+          "name": "vietqr.io",
+          "ref": "ocb",
+          "url": "https://dl.vietqr.io/pay?app=ocb",
+          "independent": true,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "qrviet",
+          "ref": "OCB",
+          "url": "https://github.com/nghiepdev/qrviet/blob/32667622752626c9efffd1b6b294e077465ee88f/src/data/bank-apps.json",
+          "independent": false,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "noel-tree",
+          "ref": "ocb",
+          "url": "../noel-tree/src/app/tree/bank-apps.ts",
+          "independent": false,
+          "checked": "2026-11-20"
+        }
+      ],
+      "disagreements": [],
+      "deviceVerified": [],
+      "vietqrAutofill": true
+    },
+    {
+      "id": "pbvn",
+      "name": "PB engage VN",
+      "bin": "970439",
+      "ios": {
+        "scheme": "publicbankmobile"
+      },
+      "android": {
+        "package": "com.vnpay.publicbank",
+        "scheme": "publicbankmobile",
+        "host": ""
+      },
+      "confidence": "multi-source",
+      "sources": [
+        {
+          "name": "vietqr.io",
+          "ref": "pbvn",
+          "url": "https://dl.vietqr.io/pay?app=pbvn",
+          "independent": true,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "vietnam-qr-pay",
+          "ref": "publicbank",
+          "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
+          "independent": true,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "qrviet",
+          "ref": "PBVN",
+          "url": "https://github.com/nghiepdev/qrviet/blob/32667622752626c9efffd1b6b294e077465ee88f/src/data/bank-apps.json",
+          "independent": false,
+          "checked": "2026-11-20"
+        }
+      ],
+      "disagreements": [],
+      "deviceVerified": [],
+      "vietqrAutofill": false
+    },
+    {
+      "id": "pvcb",
+      "name": "PVConnect",
+      "bin": "970412",
+      "ios": {
+        "scheme": "pvcombankapp"
+      },
+      "android": {
+        "package": "com.pvcombank.retail",
+        "scheme": "pvcombankapp",
+        "host": ""
+      },
+      "confidence": "single-source",
+      "sources": [
+        {
+          "name": "vietqr.io",
+          "ref": "pvcb",
+          "url": "https://dl.vietqr.io/pay?app=pvcb",
+          "independent": true,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "qrviet",
+          "ref": "PVCB",
+          "url": "https://github.com/nghiepdev/qrviet/blob/32667622752626c9efffd1b6b294e077465ee88f/src/data/bank-apps.json",
+          "independent": false,
+          "checked": "2026-11-20"
+        }
+      ],
+      "disagreements": [
+        "qrviet ghi scheme iOS pvcapp"
+      ],
+      "deviceVerified": [],
+      "vietqrAutofill": false
+    },
+    {
+      "id": "sacombank",
+      "name": "Sacombank",
+      "bin": "970403",
+      "ios": {
+        "scheme": "sacombankmobile"
+      },
+      "android": {
+        "package": "src.com.sacombank",
+        "scheme": "sacombankmobile",
+        "host": ""
+      },
+      "confidence": "single-source",
+      "sources": [
+        {
+          "name": "vietnam-qr-pay",
+          "ref": "sacombank",
+          "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
+          "independent": true,
+          "checked": "2026-11-20"
+        }
+      ],
+      "disagreements": [
+        "vietnam-qr-pay ghi một scheme cho cả hai hệ; chưa có nguồn thứ hai"
+      ],
+      "deviceVerified": [],
+      "vietqrAutofill": false
+    },
+    {
+      "id": "scb",
+      "name": "SCB Mobile Banking",
+      "bin": "970429",
+      "ios": {
+        "scheme": "scbmobilebanking"
+      },
+      "android": {
+        "package": "com.vnpay.SCB",
+        "scheme": "scbmobilebanking",
+        "host": ""
+      },
+      "confidence": "multi-source",
+      "sources": [
+        {
+          "name": "vietqr.io",
+          "ref": "scb",
+          "url": "https://dl.vietqr.io/pay?app=scb",
+          "independent": true,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "vietnam-qr-pay",
+          "ref": "scb",
+          "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
+          "independent": true,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "qrviet",
+          "ref": "SCB",
+          "url": "https://github.com/nghiepdev/qrviet/blob/32667622752626c9efffd1b6b294e077465ee88f/src/data/bank-apps.json",
+          "independent": false,
+          "checked": "2026-11-20"
+        }
+      ],
+      "disagreements": [],
+      "deviceVerified": [],
+      "vietqrAutofill": false
+    },
+    {
+      "id": "seab",
+      "name": "SeAMobile",
+      "bin": "970440",
+      "ios": {
+        "scheme": "seamobile"
+      },
+      "android": {
+        "package": "vn.com.seabank.mb1",
+        "scheme": "seamobile",
+        "host": "app"
+      },
+      "confidence": "multi-source",
+      "sources": [
+        {
+          "name": "vietqr.io",
+          "ref": "seab",
+          "url": "https://dl.vietqr.io/pay?app=seab",
+          "independent": true,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "vietnam-qr-pay",
+          "ref": "seabank",
+          "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
+          "independent": true,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "qrviet",
+          "ref": "SEAB",
+          "url": "https://github.com/nghiepdev/qrviet/blob/32667622752626c9efffd1b6b294e077465ee88f/src/data/bank-apps.json",
+          "independent": false,
+          "checked": "2026-11-20"
+        }
+      ],
+      "disagreements": [
+        "vietnam-qr-pay 1.5.1 ghi scheme seabankmobile"
+      ],
+      "deviceVerified": [],
+      "vietqrAutofill": false
+    },
+    {
+      "id": "sgicb",
+      "name": "SAIGONBANK Smart Banking",
+      "bin": "970400",
+      "ios": {
+        "scheme": "saigonbankmobilebanking"
+      },
+      "android": {
+        "package": "com.vnpay.sgbank",
+        "scheme": "Sgbmobile",
+        "host": ""
+      },
+      "confidence": "multi-source",
+      "sources": [
+        {
+          "name": "vietqr.io",
+          "ref": "sgicb",
+          "url": "https://dl.vietqr.io/pay?app=sgicb",
+          "independent": true,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "vietnam-qr-pay",
+          "ref": "saigonbank",
+          "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
+          "independent": true,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "qrviet",
+          "ref": "SGICB",
+          "url": "https://github.com/nghiepdev/qrviet/blob/32667622752626c9efffd1b6b294e077465ee88f/src/data/bank-apps.json",
+          "independent": false,
+          "checked": "2026-11-20"
+        }
+      ],
+      "disagreements": [],
+      "deviceVerified": [],
+      "vietqrAutofill": false
+    },
+    {
+      "id": "shb",
+      "name": "SHB SAHA",
+      "bin": "970443",
+      "ios": {
+        "scheme": "shbmobile"
+      },
+      "android": {
+        "package": "vn.shb.saha.mbanking",
+        "scheme": "shbmobile",
+        "host": ""
+      },
+      "confidence": "single-source",
+      "sources": [
+        {
+          "name": "vietqr.io",
+          "ref": "shb",
+          "url": "https://dl.vietqr.io/pay?app=shb",
+          "independent": true,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "qrviet",
+          "ref": "SHB",
+          "url": "https://github.com/nghiepdev/qrviet/blob/32667622752626c9efffd1b6b294e077465ee88f/src/data/bank-apps.json",
+          "independent": false,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "noel-tree",
+          "ref": "shb",
+          "url": "../noel-tree/src/app/tree/bank-apps.ts",
+          "independent": false,
+          "checked": "2026-11-20"
+        }
+      ],
+      "disagreements": [
+        "qrviet ghi scheme iOS saha"
+      ],
+      "deviceVerified": [],
+      "vietqrAutofill": false
+    },
+    {
+      "id": "shbvn",
+      "name": "Shinhan SOL Vietnam",
+      "bin": "970424",
+      "ios": {
+        "scheme": "shinhanglbvnbank"
+      },
+      "android": {
+        "package": "com.shinhan.global.vn.bank",
+        "scheme": "shinhanglbvnbank",
+        "host": ""
+      },
+      "confidence": "multi-source",
+      "sources": [
+        {
+          "name": "vietqr.io",
+          "ref": "shbvn",
+          "url": "https://dl.vietqr.io/pay?app=shbvn",
+          "independent": true,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "vietnam-qr-pay",
+          "ref": "shinhanbank",
+          "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
+          "independent": true,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "qrviet",
+          "ref": "SHBVN",
+          "url": "https://github.com/nghiepdev/qrviet/blob/32667622752626c9efffd1b6b294e077465ee88f/src/data/bank-apps.json",
+          "independent": false,
+          "checked": "2026-11-20"
+        }
+      ],
+      "disagreements": [],
+      "deviceVerified": [],
+      "vietqrAutofill": false
+    },
+    {
+      "id": "tcb",
+      "name": "Techcombank Mobile",
+      "bin": "970407",
+      "ios": {
+        "scheme": "tcb"
+      },
+      "android": {
+        "package": "vn.com.techcombank.bb.app",
+        "scheme": "tcb",
+        "host": "applink"
+      },
+      "confidence": "multi-source",
+      "sources": [
+        {
+          "name": "vietqr.io",
+          "ref": "tcb",
+          "url": "https://dl.vietqr.io/pay?app=tcb",
+          "independent": true,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "vietnam-qr-pay",
+          "ref": "techcombank",
+          "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
+          "independent": true,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "qrviet",
+          "ref": "TCB",
+          "url": "https://github.com/nghiepdev/qrviet/blob/32667622752626c9efffd1b6b294e077465ee88f/src/data/bank-apps.json",
+          "independent": false,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "noel-tree",
+          "ref": "tcb",
+          "url": "../noel-tree/src/app/tree/bank-apps.ts",
+          "independent": false,
+          "checked": "2026-11-20"
+        }
+      ],
+      "disagreements": [],
+      "deviceVerified": [],
+      "vietqrAutofill": false
+    },
+    {
+      "id": "timo",
+      "name": "Timo Digital Bank by BVBank",
+      "bin": "970454",
+      "ios": {
+        "scheme": "plus"
+      },
+      "android": {
+        "package": "io.lifestyle.plus",
+        "scheme": "plus",
+        "host": ""
+      },
+      "confidence": "multi-source",
+      "sources": [
+        {
+          "name": "vietqr.io",
+          "ref": "timo",
+          "url": "https://dl.vietqr.io/pay?app=timo",
+          "independent": true,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "vietnam-qr-pay",
+          "ref": "timo",
+          "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
+          "independent": true,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "qrviet",
+          "ref": "TIMO",
+          "url": "https://github.com/nghiepdev/qrviet/blob/32667622752626c9efffd1b6b294e077465ee88f/src/data/bank-apps.json",
+          "independent": false,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "noel-tree",
+          "ref": "timo",
+          "url": "../noel-tree/src/app/tree/bank-apps.ts",
+          "independent": false,
+          "checked": "2026-11-20"
+        }
+      ],
+      "disagreements": [
+        "qrviet ghi scheme iOS timo"
+      ],
+      "deviceVerified": [],
+      "vietqrAutofill": false
+    },
+    {
+      "id": "tpb",
+      "name": "TPBank Mobile",
+      "bin": "970423",
+      "ios": {
+        "scheme": "hydro"
+      },
+      "android": {
+        "package": "com.tpb.mb.gprsandroid",
+        "scheme": "hydro",
+        "host": "onboarding"
+      },
+      "confidence": "multi-source",
+      "sources": [
+        {
+          "name": "vietqr.io",
+          "ref": "tpb",
+          "url": "https://dl.vietqr.io/pay?app=tpb",
+          "independent": true,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "vietnam-qr-pay",
+          "ref": "tpbank",
+          "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
+          "independent": true,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "qrviet",
+          "ref": "TPB",
+          "url": "https://github.com/nghiepdev/qrviet/blob/32667622752626c9efffd1b6b294e077465ee88f/src/data/bank-apps.json",
+          "independent": false,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "noel-tree",
+          "ref": "tpb",
+          "url": "../noel-tree/src/app/tree/bank-apps.ts",
+          "independent": false,
+          "checked": "2026-11-20"
+        }
+      ],
+      "disagreements": [],
+      "deviceVerified": [],
+      "vietqrAutofill": false
+    },
+    {
+      "id": "uob",
+      "name": "UnitedOverseas",
+      "bin": "970458",
+      "ios": {
+        "scheme": "mightyapp"
+      },
+      "android": {
+        "package": "com.uob.mightyvn",
+        "scheme": "mightyapp",
+        "host": ""
+      },
+      "confidence": "single-source",
+      "sources": [
+        {
+          "name": "vietnam-qr-pay",
+          "ref": "uob",
+          "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
+          "independent": true,
+          "checked": "2026-11-20"
+        }
+      ],
+      "disagreements": [
+        "vietnam-qr-pay ghi một scheme cho cả hai hệ; chưa có nguồn thứ hai"
+      ],
+      "deviceVerified": [],
+      "vietqrAutofill": false
+    },
+    {
+      "id": "vba",
+      "name": "Agribank Plus",
+      "bin": "970405",
+      "ios": {
+        "scheme": "agribankmobile"
+      },
+      "android": {
+        "package": "com.vnpay.Agribank3g",
+        "scheme": "agribankmobile",
+        "host": ""
+      },
+      "confidence": "multi-source",
+      "sources": [
+        {
+          "name": "vietqr.io",
+          "ref": "vba",
+          "url": "https://dl.vietqr.io/pay?app=vba",
+          "independent": true,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "vietnam-qr-pay",
+          "ref": "agribank",
+          "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
+          "independent": true,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "qrviet",
+          "ref": "VBA",
+          "url": "https://github.com/nghiepdev/qrviet/blob/32667622752626c9efffd1b6b294e077465ee88f/src/data/bank-apps.json",
+          "independent": false,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "noel-tree",
+          "ref": "vba",
+          "url": "../noel-tree/src/app/tree/bank-apps.ts",
+          "independent": false,
+          "checked": "2026-11-20"
+        }
+      ],
+      "disagreements": [],
+      "deviceVerified": [],
+      "vietqrAutofill": false
+    },
+    {
+      "id": "vcb",
+      "name": "VCB Digibank",
+      "bin": "970436",
+      "ios": {
+        "scheme": "vietcombankmobile"
+      },
+      "android": {
+        "package": "com.VCB",
+        "scheme": "vietcombankmobile",
+        "host": ""
+      },
+      "confidence": "multi-source",
+      "sources": [
+        {
+          "name": "vietqr.io",
+          "ref": "vcb",
+          "url": "https://dl.vietqr.io/pay?app=vcb",
+          "independent": true,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "vietnam-qr-pay",
+          "ref": "vietcombank",
+          "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
+          "independent": true,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "qrviet",
+          "ref": "VCB",
+          "url": "https://github.com/nghiepdev/qrviet/blob/32667622752626c9efffd1b6b294e077465ee88f/src/data/bank-apps.json",
+          "independent": false,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "noel-tree",
+          "ref": "vcb",
+          "url": "../noel-tree/src/app/tree/bank-apps.ts",
+          "independent": false,
+          "checked": "2026-11-20"
+        }
+      ],
+      "disagreements": [],
+      "deviceVerified": [],
+      "vietqrAutofill": false
+    },
+    {
+      "id": "vib",
+      "name": "MyVIB",
+      "bin": "970441",
+      "ios": {
+        "scheme": "myvib2"
+      },
+      "android": {
+        "package": "com.vib.myvib2",
+        "scheme": "myvib2",
+        "host": "myvib2.com.vn/data"
+      },
+      "confidence": "multi-source",
+      "sources": [
+        {
+          "name": "vietqr.io",
+          "ref": "vib-2",
+          "url": "https://dl.vietqr.io/pay?app=vib-2",
+          "independent": true,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "vietnam-qr-pay",
+          "ref": "vib",
+          "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
+          "independent": true,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "qrviet",
+          "ref": "VIB",
+          "url": "https://github.com/nghiepdev/qrviet/blob/32667622752626c9efffd1b6b294e077465ee88f/src/data/bank-apps.json",
+          "independent": false,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "noel-tree",
+          "ref": "vib",
+          "url": "../noel-tree/src/app/tree/bank-apps.ts",
+          "independent": false,
+          "checked": "2026-11-20"
+        }
+      ],
+      "disagreements": [
+        "vietqr.io còn app vib (scheme myvib, host vib.com.vn/data, cùng gói); dùng vib-2 như Noel tree"
+      ],
+      "deviceVerified": [
+        {
+          "by": "chủ dự án",
+          "os": "Android",
+          "date": "2026-11-18",
+          "via": "Noel tree"
+        }
+      ],
+      "vietqrAutofill": false
+    },
+    {
+      "id": "vikki",
+      "name": "Vikki",
+      "bin": "970406",
+      "ios": {
+        "scheme": "vikki"
+      },
+      "android": {
+        "package": "com.finx.vikki",
+        "scheme": "vikki",
+        "host": ""
+      },
+      "confidence": "single-source",
+      "sources": [
+        {
+          "name": "vietnam-qr-pay",
+          "ref": "vikki",
+          "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
+          "independent": true,
+          "checked": "2026-11-20"
+        }
+      ],
+      "disagreements": [
+        "vietnam-qr-pay ghi một scheme cho cả hai hệ; chưa có nguồn thứ hai"
+      ],
+      "deviceVerified": [],
+      "vietqrAutofill": false
+    },
+    {
+      "id": "vpb",
+      "name": "VPBank NEO",
+      "bin": "970432",
+      "ios": {
+        "scheme": "vpbankneo"
+      },
+      "android": {
+        "package": "com.vnpay.vpbankonline",
+        "scheme": "vpbankneo",
+        "host": ""
+      },
+      "confidence": "multi-source",
+      "sources": [
+        {
+          "name": "vietqr.io",
+          "ref": "vpb",
+          "url": "https://dl.vietqr.io/pay?app=vpb",
+          "independent": true,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "vietnam-qr-pay",
+          "ref": "vpbank",
+          "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
+          "independent": true,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "qrviet",
+          "ref": "VPB",
+          "url": "https://github.com/nghiepdev/qrviet/blob/32667622752626c9efffd1b6b294e077465ee88f/src/data/bank-apps.json",
+          "independent": false,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "noel-tree",
+          "ref": "vpb",
+          "url": "../noel-tree/src/app/tree/bank-apps.ts",
+          "independent": false,
+          "checked": "2026-11-20"
+        }
+      ],
+      "disagreements": [],
+      "deviceVerified": [],
+      "vietqrAutofill": false
+    },
+    {
+      "id": "wvn",
+      "name": "Woori WON Vietnam",
+      "bin": "970457",
+      "ios": {
+        "scheme": "wvbs"
+      },
+      "android": {
+        "package": "vn.com.woori.smart",
+        "scheme": "wvbs",
+        "host": ""
+      },
+      "confidence": "multi-source",
+      "sources": [
+        {
+          "name": "vietqr.io",
+          "ref": "wvn",
+          "url": "https://dl.vietqr.io/pay?app=wvn",
+          "independent": true,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "vietnam-qr-pay",
+          "ref": "wooribank",
+          "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
+          "independent": true,
+          "checked": "2026-11-20"
+        },
+        {
+          "name": "qrviet",
+          "ref": "WVN",
+          "url": "https://github.com/nghiepdev/qrviet/blob/32667622752626c9efffd1b6b294e077465ee88f/src/data/bank-apps.json",
+          "independent": false,
+          "checked": "2026-11-20"
+        }
+      ],
+      "disagreements": [],
+      "deviceVerified": [],
+      "vietqrAutofill": false
+    },
+    {
+      "id": "zalopay",
+      "name": "ZaloPay",
+      "bin": "971101",
+      "ios": {
+        "scheme": "zalopay"
+      },
+      "confidence": "single-source",
+      "sources": [
+        {
+          "name": "qrviet",
+          "ref": "ZALOPAY",
+          "url": "https://github.com/nghiepdev/qrviet/blob/32667622752626c9efffd1b6b294e077465ee88f/src/data/bank-apps.json",
+          "independent": true,
+          "checked": "2026-11-20"
+        }
+      ],
+      "disagreements": [
+        "qrviet có gói Android vn.com.vng.zalopay nhưng không có scheme Android (qrviet dùng scheme iOS cho Android); chưa đưa phần Android vào"
+      ],
+      "deviceVerified": [],
+      "vietqrAutofill": false
+    }
+  ]
+}

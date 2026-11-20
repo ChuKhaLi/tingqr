@@ -40,9 +40,11 @@ export function parseDlRedirects(json) {
 
 /**
  * Compare curated apps (each linked to vietqr.io by `sources[].ref` where `name === 'vietqr.io'`) with the source.
+ * `ignored`: vietqr.io app ids left out on purpose (bank-apps.json `ignoredVietqrApps`). An app's `vietqrDiffers`
+ * lists the kinds ('scheme', 'package', 'host') where it differs from vietqr.io on purpose.
  * @returns {AppDiff[]}
  */
-export function diffApps(curated, source) {
+export function diffApps(curated, source, { ignored = [] } = {}) {
   const diffs = []
   const byRef = new Map()
   for (const app of curated) {
@@ -51,12 +53,15 @@ export function diffApps(curated, source) {
   }
   const seen = new Set()
   for (const s of source) {
+    if (ignored.includes(s.id)) continue
     const app = byRef.get(s.id)
     if (!app) {
       diffs.push({ appId: s.id, kind: 'new', detail: `vietqr.io có app ${s.id}, bank-apps.json chưa có` })
       continue
     }
     seen.add(s.id)
+    const skip = new Set(app.vietqrDiffers ?? [])
+    const before = diffs.length
     for (const p of ['ios', 'android']) {
       const a = app[p]?.scheme
       const b = s[p]?.scheme
@@ -68,6 +73,7 @@ export function diffApps(curated, source) {
     if (app.android && s.android && app.android.host !== s.android.host) {
       diffs.push({ appId: app.id, kind: 'host', detail: `${JSON.stringify(app.android.host)} → ${JSON.stringify(s.android.host)}` })
     }
+    diffs.splice(before, diffs.length - before, ...diffs.slice(before).filter((d) => !skip.has(d.kind)))
   }
   for (const [ref, app] of byRef) {
     if (!seen.has(ref)) diffs.push({ appId: app.id, kind: 'missing', detail: `vietqr.io không còn app ${ref}` })

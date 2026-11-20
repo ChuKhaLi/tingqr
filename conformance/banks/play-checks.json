@@ -1,0 +1,222 @@
+{
+  "com.acb.acbb.prod": {
+    "lastOk": "2026-11-20",
+    "last": "ok",
+    "checked": "2026-11-20"
+  },
+  "com.finx.vikki": {
+    "lastOk": "2026-11-20",
+    "last": "ok",
+    "checked": "2026-11-20"
+  },
+  "com.ibk.neobanking.mini": {
+    "lastOk": "2026-11-20",
+    "last": "ok",
+    "checked": "2026-11-20"
+  },
+  "com.mbmobile": {
+    "lastOk": "2026-11-20",
+    "last": "ok",
+    "checked": "2026-11-20"
+  },
+  "com.mbv.mobilebanking": {
+    "lastOk": "2026-11-20",
+    "last": "ok",
+    "checked": "2026-11-20"
+  },
+  "com.ncb.bank": {
+    "lastOk": "2026-11-20",
+    "last": "ok",
+    "checked": "2026-11-20"
+  },
+  "com.ocb.liobank": {
+    "lastOk": "2026-11-20",
+    "last": "ok",
+    "checked": "2026-11-20"
+  },
+  "com.pvcombank.retail": {
+    "lastOk": "2026-11-20",
+    "last": "ok",
+    "checked": "2026-11-20"
+  },
+  "com.shinhan.global.vn.bank": {
+    "lastOk": "2026-11-20",
+    "last": "ok",
+    "checked": "2026-11-20"
+  },
+  "com.sunshine.ksbank": {
+    "lastOk": "2026-11-20",
+    "last": "ok",
+    "checked": "2026-11-20"
+  },
+  "com.tpb.mb.gprsandroid": {
+    "lastOk": "2026-11-20",
+    "last": "ok",
+    "checked": "2026-11-20"
+  },
+  "com.uob.mightyvn": {
+    "lastOk": "2026-11-20",
+    "last": "ok",
+    "checked": "2026-11-20"
+  },
+  "com.VCB": {
+    "lastOk": "2026-11-20",
+    "last": "ok",
+    "checked": "2026-11-20"
+  },
+  "com.vib.myvib2": {
+    "lastOk": "2026-11-20",
+    "last": "ok",
+    "checked": "2026-11-20"
+  },
+  "com.vietinbank.ipay": {
+    "lastOk": "2026-11-20",
+    "last": "ok",
+    "checked": "2026-11-20"
+  },
+  "com.vn.vietbankomni": {
+    "lastOk": "2026-11-20",
+    "last": "ok",
+    "checked": "2026-11-20"
+  },
+  "com.vnpay.Agribank3g": {
+    "lastOk": "2026-11-20",
+    "last": "ok",
+    "checked": "2026-11-20"
+  },
+  "com.vnpay.bidc": {
+    "lastOk": "2026-11-20",
+    "last": "ok",
+    "checked": "2026-11-20"
+  },
+  "com.vnpay.bidv": {
+    "lastOk": "2026-11-20",
+    "last": "ok",
+    "checked": "2026-11-20"
+  },
+  "com.vnpay.bvbank": {
+    "lastOk": "2026-11-20",
+    "last": "ok",
+    "checked": "2026-11-20"
+  },
+  "com.vnpay.coopbank": {
+    "lastOk": "2026-11-20",
+    "last": "ok",
+    "checked": "2026-11-20"
+  },
+  "com.vnpay.EximBankOmni": {
+    "lastOk": "2026-11-20",
+    "last": "ok",
+    "checked": "2026-11-20"
+  },
+  "com.vnpay.hdbank": {
+    "lastOk": "2026-11-20",
+    "last": "ok",
+    "checked": "2026-11-20"
+  },
+  "com.vnpay.ivb": {
+    "lastOk": "2026-11-20",
+    "last": "ok",
+    "checked": "2026-11-20"
+  },
+  "com.vnpay.publicbank": {
+    "lastOk": "2026-11-20",
+    "last": "ok",
+    "checked": "2026-11-20"
+  },
+  "com.vnpay.SCB": {
+    "lastOk": "2026-11-20",
+    "last": "ok",
+    "checked": "2026-11-20"
+  },
+  "com.vnpay.sgbank": {
+    "lastOk": "2026-11-20",
+    "last": "ok",
+    "checked": "2026-11-20"
+  },
+  "com.vnpay.vpbankonline": {
+    "lastOk": "2026-11-20",
+    "last": "ok",
+    "checked": "2026-11-20"
+  },
+  "io.lifestyle.plus": {
+    "lastOk": "2026-11-20",
+    "last": "ok",
+    "checked": "2026-11-20"
+  },
+  "mobile.acb.com.vn": {
+    "lastOk": "2026-11-20",
+    "last": "ok",
+    "checked": "2026-11-20"
+  },
+  "nh.smart.banking": {
+    "lastOk": "2026-11-20",
+    "last": "ok",
+    "checked": "2026-11-20"
+  },
+  "ops.namabank.com.vn": {
+    "lastOk": "2026-11-20",
+    "last": "ok",
+    "checked": "2026-11-20"
+  },
+  "src.com.sacombank": {
+    "lastOk": "2026-11-20",
+    "last": "ok",
+    "checked": "2026-11-20"
+  },
+  "vn.abbank.retail": {
+    "lastOk": "2026-11-20",
+    "last": "ok",
+    "checked": "2026-11-20"
+  },
+  "vn.cimbbank.octo": {
+    "lastOk": "2026-11-20",
+    "last": "ok",
+    "checked": "2026-11-20"
+  },
+  "vn.com.lpb.lienviet24h": {
+    "lastOk": null,
+    "last": "gone",
+    "checked": "2026-11-20"
+  },
+  "vn.com.lpbank.digibank": {
+    "lastOk": "2026-11-20",
+    "last": "ok",
+    "checked": "2026-11-20"
+  },
+  "vn.com.msb.smartBanking": {
+    "lastOk": "2026-11-20",
+    "last": "ok",
+    "checked": "2026-11-20"
+  },
+  "vn.com.ocb.awe": {
+    "lastOk": "2026-11-20",
+    "last": "ok",
+    "checked": "2026-11-20"
+  },
+  "vn.com.seabank.mb1": {
+    "lastOk": "2026-11-20",
+    "last": "ok",
+    "checked": "2026-11-20"
+  },
+  "vn.com.techcombank.bb.app": {
+    "lastOk": "2026-11-20",
+    "last": "ok",
+    "checked": "2026-11-20"
+  },
+  "vn.com.woori.smart": {
+    "lastOk": "2026-11-20",
+    "last": "ok",
+    "checked": "2026-11-20"
+  },
+  "vn.shb.saha.mbanking": {
+    "lastOk": "2026-11-20",
+    "last": "ok",
+    "checked": "2026-11-20"
+  },
+  "xyz.be.cake": {
+    "lastOk": "2026-11-20",
+    "last": "ok",
+    "checked": "2026-11-20"
+  }
+}

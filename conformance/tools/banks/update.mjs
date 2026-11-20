@@ -49,8 +49,10 @@ export async function run({ mode, root, fetch, today, outDir, delayMs = 500 }) {
   const refused = mode !== 'seed' && bankDiff.removed.length > MAX_REMOVED
 
   const sourceApps = parseDlRedirects(redirects)
-  const curated = readJson(join(dir, 'bank-apps.json'), { apps: [] }).apps
-  const appDiffs = mode === 'seed' ? [] : diffApps(curated, sourceApps)
+  const appsFile = readJson(join(dir, 'bank-apps.json'), { apps: [] })
+  const curated = appsFile.apps
+  const ignored = Object.keys(appsFile.ignoredVietqrApps ?? {})
+  const appDiffs = mode === 'seed' ? [] : diffApps(curated, sourceApps, { ignored })
 
   const packages = [...new Set((mode === 'seed' ? sourceApps : curated).flatMap((a) => (a.android ? [a.android.package] : [])))].sort()
   let checks = mode === 'seed' ? {} : readJson(join(dir, 'play-checks.json'), {})

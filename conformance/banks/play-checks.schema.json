@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/ChuKhaLi/tingqr/conformance/banks/play-checks.schema.json",
+  "title": "Google Play checks per Android package (written by update.mjs)",
+  "type": "object",
+  "additionalProperties": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["lastOk", "last", "checked"],
+    "properties": {
+      "lastOk": { "type": ["string", "null"], "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+      "last": { "enum": ["ok", "gone", "unknown"] },
+      "checked": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" }
+    }
+  }
+}

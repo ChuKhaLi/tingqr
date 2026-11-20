@@ -64,6 +64,19 @@ test('diffApps reports a new source app, a missing one, and scheme, package and 
   assert.deepEqual(kinds.sort(), ['mb:host', 'mb:package', 'mb:scheme', 'vib:missing', 'zzz:new'])
 })
 
+test('diffApps skips vietqr.io apps listed as ignored', () => {
+  const extra = [...source, { id: 'vab', ios: { scheme: 'vabmobilebanking' } }]
+  assert.deepEqual(diffApps(curated, extra, { ignored: ['vab'] }), [])
+  assert.deepEqual(diffApps(curated, extra).map((d) => `${d.appId}:${d.kind}`), ['vab:new'])
+})
+
+test('diffApps skips the fields an app marks with vietqrDiffers', () => {
+  const lpb = [{ ...curated[0], vietqrDiffers: ['package'], android: { ...curated[0].android, package: 'com.mbmobile.new' } }]
+  assert.deepEqual(diffApps(lpb, source.slice(0, 1)), [])
+  lpb[0].vietqrDiffers = []
+  assert.deepEqual(diffApps(lpb, source.slice(0, 1)).map((d) => d.kind), ['package'])
+})
+
 test('diffApps ignores curated apps without a vietqr.io reference', () => {
   const own = [...curated, { id: 'momo', sources: [{ name: 'qrviet', ref: 'MOMO' }], ios: { scheme: 'momo' } }]
   assert.deepEqual(diffApps(own, source), [])
