@@ -1,0 +1,351 @@
+{
+  "capturedAt": "2026-11-20T15:08:45.180Z",
+  "userAgents": {
+    "android": "Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Mobile Safari/537.36",
+    "ios": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1"
+  },
+  "android": {
+    "icb": {
+      "status": 302,
+      "location": "intent://#Intent;scheme=vietinbankipay;package=com.vietinbank.ipay;S.browser_fallback_url=https%3A%2F%2Fdl.vietqr.io%2Fpay%2Ffailed%3Fapp%3Dicb%26os%3Dandroid;end",
+      "openHref": null
+    },
+    "bidv": {
+      "status": 302,
+      "location": "intent://payment#Intent;scheme=bidv.smartbanking.partner;package=com.vnpay.bidv;S.browser_fallback_url=https%3A%2F%2Fdl.vietqr.io%2Fpay%2Ffailed%3Fapp%3Dbidv%26os%3Dandroid;end",
+      "openHref": null
+    },
+    "ocb": {
+      "status": 302,
+      "location": "intent://#Intent;scheme=newomni-app;package=vn.com.ocb.awe;S.browser_fallback_url=https%3A%2F%2Fdl.vietqr.io%2Fpay%2Ffailed%3Fapp%3Docb%26os%3Dandroid;end",
+      "openHref": null
+    },
+    "acb": {
+      "status": 302,
+      "location": "intent://#Intent;scheme=acbone;package=mobile.acb.com.vn;S.browser_fallback_url=https%3A%2F%2Fdl.vietqr.io%2Fpay%2Ffailed%3Fapp%3Dacb%26os%3Dandroid;end",
+      "openHref": null
+    },
+    "mb": {
+      "status": 302,
+      "location": "intent://#Intent;scheme=mbbank;package=com.mbmobile;S.browser_fallback_url=https%3A%2F%2Fdl.vietqr.io%2Fpay%2Ffailed%3Fapp%3Dmb%26os%3Dandroid;end",
+      "openHref": null
+    },
+    "vcb": {
+      "status": 302,
+      "location": "intent://#Intent;scheme=vietcombankmobile;package=com.VCB;S.browser_fallback_url=https%3A%2F%2Fdl.vietqr.io%2Fpay%2Ffailed%3Fapp%3Dvcb%26os%3Dandroid;end",
+      "openHref": null
+    },
+    "tcb": {
+      "status": 302,
+      "location": "intent://applink#Intent;scheme=tcb;package=vn.com.techcombank.bb.app;S.browser_fallback_url=https%3A%2F%2Fdl.vietqr.io%2Fpay%2Ffailed%3Fapp%3Dtcb%26os%3Dandroid;end",
+      "openHref": null
+    },
+    "vpb": {
+      "status": 302,
+      "location": "intent://#Intent;scheme=vpbankneo;package=com.vnpay.vpbankonline;S.browser_fallback_url=https%3A%2F%2Fdl.vietqr.io%2Fpay%2Ffailed%3Fapp%3Dvpb%26os%3Dandroid;end",
+      "openHref": null
+    },
+    "vib-2": {
+      "status": 302,
+      "location": "intent://myvib2.com.vn/data#Intent;scheme=myvib2;package=com.vib.myvib2;S.browser_fallback_url=https%3A%2F%2Fdl.vietqr.io%2Fpay%2Ffailed%3Fapp%3Dvib-2%26os%3Dandroid;end",
+      "openHref": null
+    },
+    "shb": {
+      "status": 302,
+      "location": "intent://#Intent;scheme=shbmobile;package=vn.shb.saha.mbanking;S.browser_fallback_url=https%3A%2F%2Fdl.vietqr.io%2Fpay%2Ffailed%3Fapp%3Dshb%26os%3Dandroid;end",
+      "openHref": null
+    },
+    "lpb": {
+      "status": 302,
+      "location": "intent://#Intent;scheme=lv24h;package=vn.com.lpb.lienviet24h;S.browser_fallback_url=https%3A%2F%2Fdl.vietqr.io%2Fpay%2Ffailed%3Fapp%3Dlpb%26os%3Dandroid;end",
+      "openHref": null
+    },
+    "seab": {
+      "status": 302,
+      "location": "intent://app#Intent;scheme=seamobile;package=vn.com.seabank.mb1;S.browser_fallback_url=https%3A%2F%2Fdl.vietqr.io%2Fpay%2Ffailed%3Fapp%3Dseab%26os%3Dandroid;end",
+      "openHref": null
+    },
+    "scb": {
+      "status": 302,
+      "location": "intent://#Intent;scheme=scbmobilebanking;package=com.vnpay.SCB;S.browser_fallback_url=https%3A%2F%2Fdl.vietqr.io%2Fpay%2Ffailed%3Fapp%3Dscb%26os%3Dandroid;end",
+      "openHref": null
+    },
+    "cake": {
+      "status": 302,
+      "location": "intent://#Intent;scheme=cake.vn;package=xyz.be.cake;S.browser_fallback_url=https%3A%2F%2Fdl.vietqr.io%2Fpay%2Ffailed%3Fapp%3Dcake%26os%3Dandroid;end",
+      "openHref": null
+    },
+    "hdb": {
+      "status": 302,
+      "location": "intent://#Intent;scheme=hdbankmobile;package=com.vnpay.hdbank;S.browser_fallback_url=https%3A%2F%2Fdl.vietqr.io%2Fpay%2Ffailed%3Fapp%3Dhdb%26os%3Dandroid;end",
+      "openHref": null
+    },
+    "vba": {
+      "status": 302,
+      "location": "intent://#Intent;scheme=agribankmobile;package=com.vnpay.Agribank3g;S.browser_fallback_url=https%3A%2F%2Fdl.vietqr.io%2Fpay%2Ffailed%3Fapp%3Dvba%26os%3Dandroid;end",
+      "openHref": null
+    },
+    "tpb": {
+      "status": 302,
+      "location": "intent://onboarding#Intent;scheme=hydro;package=com.tpb.mb.gprsandroid;S.browser_fallback_url=https%3A%2F%2Fdl.vietqr.io%2Fpay%2Ffailed%3Fapp%3Dtpb%26os%3Dandroid;end",
+      "openHref": null
+    },
+    "timo": {
+      "status": 302,
+      "location": "intent://#Intent;scheme=plus;package=io.lifestyle.plus;S.browser_fallback_url=https%3A%2F%2Fdl.vietqr.io%2Fpay%2Ffailed%3Fapp%3Dtimo%26os%3Dandroid;end",
+      "openHref": null
+    },
+    "vib": {
+      "status": 302,
+      "location": "intent://vib.com.vn/data#Intent;scheme=myvib;package=com.vib.myvib2;S.browser_fallback_url=https%3A%2F%2Fdl.vietqr.io%2Fpay%2Ffailed%3Fapp%3Dvib%26os%3Dandroid;end",
+      "openHref": null
+    },
+    "shbvn": {
+      "status": 302,
+      "location": "intent://#Intent;scheme=shinhanglbvnbank;package=com.shinhan.global.vn.bank;S.browser_fallback_url=https%3A%2F%2Fdl.vietqr.io%2Fpay%2Ffailed%3Fapp%3Dshbvn%26os%3Dandroid;end",
+      "openHref": null
+    },
+    "nab": {
+      "status": 302,
+      "location": "intent://nab/softotp#Intent;scheme=deeplinkapp;package=ops.namabank.com.vn;S.browser_fallback_url=https%3A%2F%2Fdl.vietqr.io%2Fpay%2Ffailed%3Fapp%3Dnab%26os%3Dandroid;end",
+      "openHref": null
+    },
+    "abb": {
+      "status": 302,
+      "location": "intent://#Intent;scheme=abbankmobile;package=vn.abbank.retail;S.browser_fallback_url=https%3A%2F%2Fdl.vietqr.io%2Fpay%2Ffailed%3Fapp%3Dabb%26os%3Dandroid;end",
+      "openHref": null
+    },
+    "eib": {
+      "status": 302,
+      "location": "intent://#Intent;scheme=eximbankmobile;package=com.vnpay.EximBankOmni;S.browser_fallback_url=https%3A%2F%2Fdl.vietqr.io%2Fpay%2Ffailed%3Fapp%3Deib%26os%3Dandroid;end",
+      "openHref": null
+    },
+    "coopbank": {
+      "status": 302,
+      "location": "intent://#Intent;scheme=coopbankmobile;package=com.vnpay.coopbank;S.browser_fallback_url=https%3A%2F%2Fdl.vietqr.io%2Fpay%2Ffailed%3Fapp%3Dcoopbank%26os%3Dandroid;end",
+      "openHref": null
+    },
+    "pvcb": {
+      "status": 302,
+      "location": "intent://#Intent;scheme=pvcombankapp;package=com.pvcombank.retail;S.browser_fallback_url=https%3A%2F%2Fdl.vietqr.io%2Fpay%2Ffailed%3Fapp%3Dpvcb%26os%3Dandroid;end",
+      "openHref": null
+    },
+    "wvn": {
+      "status": 302,
+      "location": "intent://#Intent;scheme=wvbs;package=vn.com.woori.smart;S.browser_fallback_url=https%3A%2F%2Fdl.vietqr.io%2Fpay%2Ffailed%3Fapp%3Dwvn%26os%3Dandroid;end",
+      "openHref": null
+    },
+    "klb": {
+      "status": 302,
+      "location": "intent://ksbank.co#Intent;scheme=ksbank;package=com.sunshine.ksbank;S.browser_fallback_url=https%3A%2F%2Fdl.vietqr.io%2Fpay%2Ffailed%3Fapp%3Dklb%26os%3Dandroid;end",
+      "openHref": null
+    },
+    "bvb": {
+      "status": 302,
+      "location": "intent://#Intent;scheme=baovietmobile;package=com.vnpay.bvbank;S.browser_fallback_url=https%3A%2F%2Fdl.vietqr.io%2Fpay%2Ffailed%3Fapp%3Dbvb%26os%3Dandroid;end",
+      "openHref": null
+    },
+    "vab": {
+      "status": 302,
+      "location": "intent://#Intent;scheme=vabmobilebanking;package=com.vn.vietbankomni;S.browser_fallback_url=https%3A%2F%2Fdl.vietqr.io%2Fpay%2Ffailed%3Fapp%3Dvab%26os%3Dandroid;end",
+      "openHref": null
+    },
+    "ncb": {
+      "status": 302,
+      "location": "intent://#Intent;scheme=ncbizimobile;package=com.ncb.bank;S.browser_fallback_url=https%3A%2F%2Fdl.vietqr.io%2Fpay%2Ffailed%3Fapp%3Dncb%26os%3Dandroid;end",
+      "openHref": null
+    },
+    "acb-biz": {
+      "status": 302,
+      "location": "intent://#Intent;scheme=abaapp;package=com.acb.acbb.prod;S.browser_fallback_url=https%3A%2F%2Fdl.vietqr.io%2Fpay%2Ffailed%3Fapp%3Dacb-biz%26os%3Dandroid;end",
+      "openHref": null
+    },
+    "mbv": {
+      "status": 302,
+      "location": "intent://#Intent;scheme=mbv;package=com.mbv.mobilebanking;S.browser_fallback_url=https%3A%2F%2Fdl.vietqr.io%2Fpay%2Ffailed%3Fapp%3Dmbv%26os%3Dandroid;end",
+      "openHref": null
+    },
+    "pbvn": {
+      "status": 302,
+      "location": "intent://#Intent;scheme=publicbankmobile;package=com.vnpay.publicbank;S.browser_fallback_url=https%3A%2F%2Fdl.vietqr.io%2Fpay%2Ffailed%3Fapp%3Dpbvn%26os%3Dandroid;end",
+      "openHref": null
+    },
+    "sgicb": {
+      "status": 302,
+      "location": "intent://#Intent;scheme=Sgbmobile;package=com.vnpay.sgbank;S.browser_fallback_url=https%3A%2F%2Fdl.vietqr.io%2Fpay%2Ffailed%3Fapp%3Dsgicb%26os%3Dandroid;end",
+      "openHref": null
+    },
+    "cimb": {
+      "status": 302,
+      "location": "intent://#Intent;scheme=cimb;package=vn.cimbbank.octo;S.browser_fallback_url=https%3A%2F%2Fdl.vietqr.io%2Fpay%2Ffailed%3Fapp%3Dcimb%26os%3Dandroid;end",
+      "openHref": null
+    }
+  },
+  "ios": {
+    "icb": {
+      "status": 200,
+      "location": null,
+      "openHref": "vietinbankipay://"
+    },
+    "bidv": {
+      "status": 200,
+      "location": null,
+      "openHref": "bidv.smartbanking.partner://"
+    },
+    "acb": {
+      "status": 200,
+      "location": null,
+      "openHref": "acbone://"
+    },
+    "ocb": {
+      "status": 200,
+      "location": null,
+      "openHref": "newomni-app://"
+    },
+    "mb": {
+      "status": 200,
+      "location": null,
+      "openHref": "mbbank://"
+    },
+    "vcb": {
+      "status": 200,
+      "location": null,
+      "openHref": "vietcombankmobile://"
+    },
+    "tcb": {
+      "status": 200,
+      "location": null,
+      "openHref": "tcb://"
+    },
+    "vpb": {
+      "status": 200,
+      "location": null,
+      "openHref": "vpbankneo://"
+    },
+    "vib-2": {
+      "status": 200,
+      "location": null,
+      "openHref": "myvib2://"
+    },
+    "shb": {
+      "status": 200,
+      "location": null,
+      "openHref": "shbmobile://"
+    },
+    "lpb": {
+      "status": 200,
+      "location": null,
+      "openHref": "lv24h://"
+    },
+    "seab": {
+      "status": 200,
+      "location": null,
+      "openHref": "seamobile://"
+    },
+    "scb": {
+      "status": 200,
+      "location": null,
+      "openHref": "scbmobilebanking://"
+    },
+    "cake": {
+      "status": 200,
+      "location": null,
+      "openHref": "cake.vn://"
+    },
+    "hdb": {
+      "status": 200,
+      "location": null,
+      "openHref": "hdbankmobile://"
+    },
+    "vba": {
+      "status": 200,
+      "location": null,
+      "openHref": "agribankmobile://"
+    },
+    "tpb": {
+      "status": 200,
+      "location": null,
+      "openHref": "hydro://"
+    },
+    "timo": {
+      "status": 200,
+      "location": null,
+      "openHref": "plus://"
+    },
+    "shbvn": {
+      "status": 200,
+      "location": null,
+      "openHref": "shinhanglbvnbank://"
+    },
+    "abb": {
+      "status": 200,
+      "location": null,
+      "openHref": "abbankmobile://"
+    },
+    "pvcb": {
+      "status": 200,
+      "location": null,
+      "openHref": "pvcombankapp://"
+    },
+    "eib": {
+      "status": 200,
+      "location": null,
+      "openHref": "eximbankmobile://"
+    },
+    "wvn": {
+      "status": 200,
+      "location": null,
+      "openHref": "wvbs://"
+    },
+    "cimb": {
+      "status": 200,
+      "location": null,
+      "openHref": "cimb://"
+    },
+    "ncb": {
+      "status": 200,
+      "location": null,
+      "openHref": "ncbizimobile://"
+    },
+    "mbv": {
+      "status": 200,
+      "location": null,
+      "openHref": "mbv://"
+    },
+    "sgicb": {
+      "status": 200,
+      "location": null,
+      "openHref": "saigonbankmobilebanking://"
+    },
+    "bvb": {
+      "status": 200,
+      "location": null,
+      "openHref": "baovietmobile://"
+    },
+    "acb-biz": {
+      "status": 200,
+      "location": null,
+      "openHref": "abaapp://"
+    },
+    "klb": {
+      "status": 200,
+      "location": null,
+      "openHref": "kienlongbankmobilebanking://"
+    },
+    "pbvn": {
+      "status": 200,
+      "location": null,
+      "openHref": "publicbankmobile://"
+    },
+    "coopbank": {
+      "status": 200,
+      "location": null,
+      "openHref": "coopbankmobile://"
+    },
+    "vab": {
+      "status": 200,
+      "location": null,
+      "openHref": "vabmobilebanking://"
+    }
+  }
+}

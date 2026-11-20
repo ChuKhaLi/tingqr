@@ -1,0 +1,12 @@
+{
+  "name": "tingqr-banks",
+  "private": true,
+  "type": "module",
+  "description": "Fetch, compare and refresh conformance/banks/ (bank list, bank apps, Google Play checks, logos). Calls the network; tests never do.",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "node --test"
+  }
+}

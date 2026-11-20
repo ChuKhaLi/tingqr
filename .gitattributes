@@ -3,3 +3,4 @@ conformance/vectors/** -text
 *.png binary
 *.webp binary
 conformance/tools/oracle/vendor/** -text
+conformance/banks/sources/** -text

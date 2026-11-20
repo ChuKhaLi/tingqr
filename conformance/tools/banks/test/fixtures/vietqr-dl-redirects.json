@@ -1,0 +1,47 @@
+{
+  "_source": "dl.vietqr.io redirects captured by capture-sources.mjs 2026-11-20 (trimmed to mb, tcb, vib-2, klb)",
+  "android": {
+    "mb": {
+      "status": 302,
+      "location": "intent://#Intent;scheme=mbbank;package=com.mbmobile;S.browser_fallback_url=https%3A%2F%2Fdl.vietqr.io%2Fpay%2Ffailed%3Fapp%3Dmb%26os%3Dandroid;end",
+      "openHref": null
+    },
+    "tcb": {
+      "status": 302,
+      "location": "intent://applink#Intent;scheme=tcb;package=vn.com.techcombank.bb.app;S.browser_fallback_url=https%3A%2F%2Fdl.vietqr.io%2Fpay%2Ffailed%3Fapp%3Dtcb%26os%3Dandroid;end",
+      "openHref": null
+    },
+    "vib-2": {
+      "status": 302,
+      "location": "intent://myvib2.com.vn/data#Intent;scheme=myvib2;package=com.vib.myvib2;S.browser_fallback_url=https%3A%2F%2Fdl.vietqr.io%2Fpay%2Ffailed%3Fapp%3Dvib-2%26os%3Dandroid;end",
+      "openHref": null
+    },
+    "klb": {
+      "status": 302,
+      "location": "intent://ksbank.co#Intent;scheme=ksbank;package=com.sunshine.ksbank;S.browser_fallback_url=https%3A%2F%2Fdl.vietqr.io%2Fpay%2Ffailed%3Fapp%3Dklb%26os%3Dandroid;end",
+      "openHref": null
+    }
+  },
+  "ios": {
+    "mb": {
+      "status": 200,
+      "location": null,
+      "openHref": "mbbank://"
+    },
+    "tcb": {
+      "status": 200,
+      "location": null,
+      "openHref": "tcb://"
+    },
+    "vib-2": {
+      "status": 200,
+      "location": null,
+      "openHref": "myvib2://"
+    },
+    "klb": {
+      "status": 200,
+      "location": null,
+      "openHref": "kienlongbankmobilebanking://"
+    }
+  }
+}

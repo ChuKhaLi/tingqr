@@ -1,0 +1,41 @@
+{
+  "_source": "https://api.vietqr.io/v2/android-app-deeplinks, captured 2026-11-20 (trimmed)",
+  "apps": [
+    {
+      "appId": "mb",
+      "appLogo": "https://cdn.vietqr.io/bank-app-icon/mb-android.webp",
+      "appName": "MB Bank",
+      "bankName": "Ngân hàng TMCP Quân đội",
+      "monthlyInstall": 500000,
+      "deeplink": "https://dl.vietqr.io/pay?app=mb",
+      "autofill": 1
+    },
+    {
+      "appId": "tcb",
+      "appLogo": "https://cdn.vietqr.io/bank-app-icon/tcb-android.webp",
+      "appName": "Techcombank Mobile",
+      "bankName": "Ngân hàng TMCP Kỹ thương Việt Nam",
+      "monthlyInstall": 200000,
+      "deeplink": "https://dl.vietqr.io/pay?app=tcb",
+      "autofill": 0
+    },
+    {
+      "appId": "vib-2",
+      "appLogo": "https://cdn.vietqr.io/bank-app-icon/vib-2-android.webp",
+      "appName": "MyVIB",
+      "bankName": "Ngân hàng TMCP Quốc tế Việt Nam",
+      "monthlyInstall": 30000,
+      "deeplink": "https://dl.vietqr.io/pay?app=vib-2",
+      "autofill": 0
+    },
+    {
+      "appId": "klb",
+      "appLogo": "https://cdn.vietqr.io/bank-app-icon/klb-android.webp",
+      "appName": "KienlongBank Plus",
+      "bankName": "Ngân hàng TMCP Kiên Long",
+      "monthlyInstall": 0,
+      "deeplink": "https://dl.vietqr.io/pay?app=klb",
+      "autofill": 0
+    }
+  ]
+}
