@@ -47,7 +47,8 @@ async function loadLogo(href: string): Promise<LoadedImage> {
   try {
     await img.decode()
   } catch {
-    throw new TingQrError('LOGO_LOAD_FAILED', `The logo ${JSON.stringify(href.slice(0, 80))} could not be loaded or decoded.`)
+    throw new TingQrError('LOGO_LOAD_FAILED', `The logo ${JSON.stringify(href.slice(0, 80))} could not be loaded or decoded` +
+        (/^https?:/.test(href) ? ' (a logo on another origin needs CORS headers; or use a data URI, e.g. from @tingqr/bank-logos).' : '.'))
   }
   if (!(img.naturalWidth > 0 && img.naturalHeight > 0)) {
     throw new TingQrError('LOGO_LOAD_FAILED', 'The logo decoded to an empty image.')
@@ -111,7 +112,7 @@ function exporting<T>(run: () => T): T {
     if ((e as { name?: unknown } | null)?.name === 'SecurityError') {
       throw new TingQrError(
         'CANVAS_TAINTED',
-        'The canvas cannot be exported: a cross-origin logo without CORS tainted it. Use a data URI (e.g. from ' +
+        'The canvas cannot be exported: a cross-origin image tainted it (e.g. a logo redirected to another origin). Use a data URI (e.g. from ' +
           '@tingqr/bank-logos) or a same-origin image.',
       )
     }
@@ -145,7 +146,7 @@ export async function toPngBlob(text: string, options: CanvasOptions = {}): Prom
   return blobOf(await drawn(text, options))
 }
 
-/** Draw `text` on a new canvas and export it as a PNG data URL (long-press savable in in-app browsers). Browser only. */
+/** Draw `text` on a new canvas and export it as a PNG data URL (meant to be long-press savable in in-app browsers; not yet tested in Zalo/Messenger). Browser only. */
 export async function toPngDataUrl(text: string, options: CanvasOptions = {}): Promise<string> {
   const canvas = await drawn(text, options)
   return exporting(() => canvas.toDataURL('image/png'))

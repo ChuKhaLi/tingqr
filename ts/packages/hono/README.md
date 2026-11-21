@@ -1,7 +1,8 @@
 # @tingqr/hono
 
-Serve payment QR codes (VietQR, PromptPay, KHQR…) as SVG from your own [Hono](https://hono.dev) routes. Runs wherever
-Hono runs: Cloudflare Workers, Node, Bun, Deno. No network calls.
+Serve payment QR codes (VietQR, PromptPay, KHQR…) as SVG from your own [Hono](https://hono.dev) routes. Tested on Node (unit
+tests) and Cloudflare Workers (`wrangler dev`, one app); no `node:*` imports, so Bun and Deno are expected to work but
+are untested. No network calls.
 
 > tingqr does **not** confirm payments or receive webhooks. It only builds, reads and draws QR codes.
 

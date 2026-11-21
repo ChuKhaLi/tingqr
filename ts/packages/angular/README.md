@@ -1,7 +1,8 @@
 # @tingqr/angular
 
 Angular component and pipe for payment QR codes (VietQR, PromptPay, KHQR…). Standalone, signals, zoneless, safe in
-server-side rendering. Angular 20 or later.
+server-side rendering. Angular 20 or later: CI tests Angular 20.3; Angular 21.2 was tried in one app (`mode="img"`, in
+the browser, not in CI).
 
 > tingqr does **not** confirm payments or receive webhooks. It only builds, reads and draws QR codes.
 
@@ -36,12 +37,13 @@ export class Pay {
 
 | Output | |
 |---|---|
-| `error` | `TingQrError` for a payload or option that cannot be drawn, or a PNG that cannot be made (`CANVAS_TAINTED`…). Nothing wrong is ever shown: a bad code draws nothing. |
+| `error` | `TingQrError` for a payload or option that cannot be drawn, or a PNG that cannot be made (`CANVAS_TAINTED`…). Input that fails validation draws nothing. |
 | `png` | The `Blob` of the PNG now shown. |
 
-When `payload` changes, the old image disappears at once; a PNG still drawing for an old payload is dropped.
+When `payload` changes, the old image disappears at once; a PNG still drawing for an old payload is dropped. The component
+draws whatever valid payload you give it: building the right payload is up to your code and `@tingqr/core`.
 
-Why PNG: the in-app browsers of chat apps often cannot save an SVG, while a PNG `<img>` can be long-pressed and saved.
+Why PNG: the in-app browsers of chat apps often cannot save an SVG, while a PNG `<img>` is meant to be long-pressed and saved.
 That this works in Zalo and Messenger is **not yet tested** by tingqr.
 
 ## Pipe

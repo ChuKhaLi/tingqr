@@ -22,7 +22,7 @@
     chặt như `core`.
   - `pnpm check:render` (sau `pnpm build`): chỉ phụ thuộc `@tingqr/core`, toàn văn giấy phép MIT của Nayuki còn trong
     mọi file `dist` có bộ mã hoá (bản ESM tách chunk chung), có `LICENSE` giống của repo, tarball dưới 33 000 byte
-    (chủ dự án nâng từ 30 000 ngày 2026-11-21 cho `render/canvas`; đo 32 206, còn rất ít chỗ).
+    (chủ dự án nâng từ 30 000 ngày 2026-11-21 cho `render/canvas`; đo 32 340 ngày 2026-11-21, còn rất ít chỗ).
   - `src/layout.ts`: kiểm tuỳ chọn và tính bố cục, dùng chung cho `toSvg` và canvas. Thêm luật mới về màu, logo hay ECC
     thì sửa ở đây.
   - **`@tingqr/render/canvas`** (`src/canvas.ts`): `drawQr`, `toPng`, `toPngBlob`, `toPngDataUrl`.

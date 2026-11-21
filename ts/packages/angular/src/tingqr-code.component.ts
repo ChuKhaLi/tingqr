@@ -24,11 +24,12 @@ type SvgState = { svg: SafeHtml } | { error: TingQrError } | null
  * A payment QR code. `payload` is a QR string built with @tingqr/core (any scheme).
  *
  * - `mode="svg"`: inline SVG, also in server-side rendering.
- * - `mode="img"`: an `<img>` with a PNG drawn in the browser (long-press savable in chat apps' in-app browsers);
+ * - `mode="img"`: an `<img>` with a PNG drawn in the browser (meant for long-press saving in chat apps' in-app browsers; not yet tested
+ *   in Zalo/Messenger);
  *   nothing on the server.
  * - `mode="auto"` (default): SVG on the server and at first paint, replaced by the PNG once it is drawn in the browser.
  *
- * A bad payload or option draws nothing and emits `error`; an empty payload draws nothing. Never a wrong code: when the
+ * A bad payload or option draws nothing and emits `error`; an empty payload draws nothing. Never an image for input that failed validation, and never one from a previous payload: when the
  * payload changes, the old image goes at once, and a PNG that finishes drawing for an old payload is dropped.
  */
 @Component({

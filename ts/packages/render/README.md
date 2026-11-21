@@ -19,7 +19,7 @@ contrast), `size`, `logo` (provisional limits until scanned with real banking ap
 
 ## PNG in the browser: `@tingqr/render/canvas`
 
-In-app browsers (Zalo, Messenger, Facebook) often cannot save an SVG; a PNG `<img>` can be long-pressed and saved.
+In-app browsers (Zalo, Messenger, Facebook) often cannot save an SVG; a PNG `<img>` is meant to be long-pressed and saved (not yet tested by tingqr in Zalo or Messenger).
 
 ```ts
 import { drawQr, toPng, toPngBlob, toPngDataUrl } from '@tingqr/render/canvas'
@@ -30,9 +30,9 @@ await drawQr(myCanvas, payload)                      // draw on your own canvas,
 ```
 
 - Same options and checks as `toSvg`, plus `scale` (integer 1–64 px per module) instead of `size`.
-- **Browser only, ESM only.** On a server use `toSvg`. Errors: `NO_CANVAS` (no canvas), `LOGO_LOAD_FAILED`,
-  `CANVAS_TAINTED` (a cross-origin logo without CORS: use a data URI such as `@tingqr/bank-logos`, or a same-origin
-  image).
+- **Browser only, ESM only.** On a server use `toSvg`. Errors: `NO_CANVAS` (no canvas, or no PNG encoding),
+  `LOGO_LOAD_FAILED` (also when a logo on another origin has no CORS headers), `CANVAS_TAINTED` (a cross-origin image
+  tainted the canvas, e.g. a logo redirected to another origin). Prefer data URIs such as `@tingqr/bank-logos`.
 - Importing `@tingqr/render` alone never pulls in the canvas code.
 
 ## License

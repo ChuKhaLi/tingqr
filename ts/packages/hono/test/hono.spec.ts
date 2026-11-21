@@ -76,8 +76,10 @@ describe('tingqr route', () => {
   })
 
   test('the route never reads the query string', async () => {
-    const app = new Hono().get('/qr', tingqr({ resolve: () => null }))
-    expect((await app.request('/qr?acc=0123456789&bank=970422&amount=1000')).status).toBe(404)
+    const app = new Hono().get('/qr', tingqr({ resolve: () => PAYLOAD }))
+    const res = await app.request('/qr?acc=9999999999&bank=970436&amount=1&margin=0&foreground=%23ff0000')
+    expect(res.status).toBe(200)
+    expect(await res.text()).toBe(toSvg(PAYLOAD)) // the query changed nothing: same code, default options
   })
 
   test('render options and cacheControl apply', async () => {
@@ -122,7 +124,9 @@ describe('tingqr route', () => {
       '/orders/:id/qr.svg',
       tingqr<AppEnv, '/orders/:id/qr.svg'>({
         resolve: (c) => {
-          const account: string = c.env.ACCOUNT // typed binding (would be any/error without the generic)
+          const account: string = c.env.ACCOUNT
+          // @ts-expect-error -- c.env is the app's Bindings, not any: a misspelled binding does not compile
+          void c.env.ACCOUNTX
           const id: string = c.req.param('id') // typed param (string | undefined without the path generic)
           return id === 'A1' && account === 'ok' ? PAYLOAD : null
         },

@@ -1,6 +1,7 @@
 import { provideZonelessChangeDetection } from '@angular/core'
 import { TestBed, type ComponentFixture } from '@angular/core/testing'
 import { TingQrError } from '@tingqr/core'
+import { toSvg } from '@tingqr/render'
 import { TingQrCode } from '@tingqr/angular'
 import { PAYLOAD, PAYLOAD_2 } from './payload.js'
 
@@ -155,7 +156,9 @@ describe('mode auto (default)', () => {
     f.componentRef.setInput('payload', PAYLOAD_2)
     await f.whenStable()
     expect(img(f)).toBeNull()
-    expect(el(f).querySelector('svg')).not.toBeNull()
+    const svg = document.createElement('div')
+    svg.innerHTML = toSvg(PAYLOAD_2)
+    expect(el(f).querySelector('svg')!.outerHTML).toBe(svg.innerHTML)
   })
 
   test('a drawing error keeps the SVG (still a correct code, only not savable)', async () => {

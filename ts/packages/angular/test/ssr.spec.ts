@@ -1,5 +1,5 @@
 // @vitest-environment node
-// Server-side rendering with @angular/platform-server (its own DOM emulation), zoneless, as on Cloudflare Workers.
+// Server-side rendering with @angular/platform-server (its own DOM emulation), zoneless (the setup Noel tree uses on Cloudflare Workers; this test runs on Node).
 import { Component, provideZonelessChangeDetection } from '@angular/core'
 import { bootstrapApplication, type BootstrapContext } from '@angular/platform-browser'
 import { provideServerRendering, renderApplication } from '@angular/platform-server'
@@ -42,5 +42,6 @@ test('mode img: no SVG and no image on the server (the PNG is drawn in the brows
 test('renders nothing for an invalid payload', async () => {
   const html = await ssr('a'.repeat(5000), 'auto')
   expect(html).toContain('<main>')
+  expect(html).toContain('<tingqr-code')
   expect(qrPart(html)).not.toContain('<svg')
 })

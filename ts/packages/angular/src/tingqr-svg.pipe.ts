@@ -6,7 +6,7 @@ import { toSvg, type SvgOptions } from '@tingqr/render'
 /**
  * Render a payload as an SVG QR code for `[innerHTML]`: `<div [innerHTML]="payload | tingqrSvg"></div>`.
  *
- * A bad payload or option gives an empty result (never a wrong code, never a broken page); in dev mode the TingQrError
+ * A bad payload or option gives an empty result (no image for input that fails validation, never a broken page); in dev mode the TingQrError
  * is logged. Use `<tingqr-code>` to receive errors as an output.
  *
  * Why bypassing the sanitizer is safe here: Angular's sanitizer strips SVG from innerHTML. This SVG is built by toSvg

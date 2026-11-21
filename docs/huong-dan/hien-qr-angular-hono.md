@@ -8,7 +8,7 @@ tingqr **không** xác nhận đã nhận tiền và không nhận webhook. Thư
 ## Vì sao cần PNG
 
 Trình duyệt trong Zalo, Messenger, Facebook thường không cho lưu ảnh SVG. Người trả tiền cần nhấn giữ để lưu QR thành
-ảnh thường, rồi mở bằng app ngân hàng. Ảnh PNG trong thẻ `<img>` thì nhấn giữ được.
+ảnh thường, rồi mở bằng app ngân hàng. Ảnh PNG trong thẻ `<img>` thì thường nhấn giữ được, nên tingqr vẽ PNG.
 
 **Chưa thử:** tingqr chưa tự thử nhấn giữ lưu ảnh trong Zalo hay Messenger. Kết quả thử sẽ ghi ở `conformance/scans.md`.
 
@@ -33,7 +33,8 @@ export class Pay {
     `<img>` PNG;
   - `'svg'`: luôn SVG;
   - `'img'`: chỉ PNG, ở máy chủ không in gì.
-- **Không bao giờ hiện QR sai:**
+- **Không hiện ảnh cho đầu vào sai, không giữ ảnh của chuỗi cũ** (chuỗi hợp lệ nhưng sai ý thì component vẫn vẽ;
+  dựng đúng chuỗi là việc của code gọi `@tingqr/core`):
   - chuỗi hay tuỳ chọn sai thì không vẽ gì, phát `error`;
   - chuỗi rỗng thì không vẽ gì, không phát lỗi;
   - đổi `payload` thì ảnh cũ biến mất ngay; PNG của chuỗi cũ vẽ xong muộn thì bị bỏ.
@@ -56,7 +57,8 @@ await drawQr(canvas, payload) // vẽ lên canvas của mình rồi vẽ thêm s
 - Cùng tuỳ chọn và cùng cách kiểm như `toSvg`; thay `size` bằng `scale` (số nguyên 1–64, số px mỗi ô).
 - **Logo:**
   - nên dùng data URI, ví dụ từ `@tingqr/bank-logos`;
-  - logo ở tên miền khác mà không có CORS làm canvas bị khoá, khi đó báo `CANVAS_TAINTED`;
+  - logo ở tên miền khác mà máy chủ không gửi header CORS thì không nạp được, báo `LOGO_LOAD_FAILED`;
+  - ảnh khác nguồn làm canvas bị khoá (ví dụ logo bị chuyển hướng sang tên miền khác) thì báo `CANVAS_TAINTED`;
   - logo nạp hỏng thì báo `LOGO_LOAD_FAILED`, không âm thầm xuất QR không logo.
 - Không có canvas (ví dụ gọi ở máy chủ) thì báo `NO_CANVAS`.
 
