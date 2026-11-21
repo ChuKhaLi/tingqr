@@ -59,14 +59,19 @@ TypeScript và bản .NET, kèm tích hợp sẵn cho Angular, NestJS và ASP.NE
     có số tiền, có và không có logo thử (`conformance/scans.md`). Chưa thử iPhone, app khác. VNPAY, PromptPay, KHQR
     chưa quét bằng app thật.
   - **Plan 6** (2026-11-21, nhánh `plan-6`): `docs/superpowers/plans/2026-11-21-plan-6-angular-hono.md`, thiết kế
-    `docs/superpowers/specs/2026-11-21-tingqr-angular-hono-design.md`, hướng dẫn `docs/huong-dan/hien-qr-angular-hono.md`.
+    `docs/superpowers/specs/2026-11-21-tingqr-angular-hono-design.md`, hướng dẫn `docs/huong-dan/hien-qr-angular-hono-nestjs.md`.
     - Chủ dự án chia: Plan 6 là `@tingqr/render/canvas`, `@tingqr/angular`, `@tingqr/hono` (gói mới, Noel tree dùng Hono);
       **Plan 6b** là `@tingqr/nestjs`, vẫn thuộc v0.1.
     - Ba mã lỗi mới: `LOGO_LOAD_FAILED`, `CANVAS_TAINTED`, `NO_CANVAS` (bản .NET khai báo, không bao giờ ném).
     - **Không có route mở** dựng QR từ tham số URL (chủ dự án quyết; lý do lừa đảo).
     - **Chưa thử:** nhấn giữ lưu PNG trong Zalo/Messenger, app ngân hàng quét ảnh đã lưu.
-  - Tiếp theo: chủ dự án quét thử VietQR (kể cả bản có icon ngân hàng) và điền `conformance/scans.md`; Plan 6b (NestJS);
-    hoặc làm nốt Plan 2 Task 5–6 khi có QR thật.
+  - **Plan 6b** (2026-11-21, nhánh `plan-6b`): `docs/superpowers/plans/2026-11-21-plan-6b-nestjs.md`, thiết kế
+    `docs/superpowers/specs/2026-11-21-tingqr-nestjs-design.md`. `@tingqr/nestjs`: `TingQrModule.forRoot`/`forRootAsync`
+    (tài khoản nhận, cấu hình sai thì app không khởi động), `TingQrService.paymentQr`, `@TingQrSvg()` (interceptor, cùng
+    hợp đồng HTTP với Hono). Đã thử NestJS 12.6 trên Express và Fastify; chưa có người dùng thật.
+  - **Cần chủ dự án quyết trước Plan 7:** ngân sách `render` (32 391 / 33 000 byte; README đầy đủ sẽ vượt).
+  - Tiếp theo: Plan 7 (README, bảng thử, phát hành npm → v0.1); chủ dự án quét thử VietQR (kể cả bản có icon ngân hàng)
+    và thử PNG trong Zalo/Messenger; hoặc làm nốt Plan 2 Task 5–6 khi có QR thật.
 - **Chủ dự án đã quyết:**
   - Mục đích chính là một thư viện mã nguồn mở có tiếng; dùng phụ trong Noel tree (`../noel-tree`, Angular 21 SSR trên
     Cloudflare Workers).

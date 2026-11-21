@@ -1,7 +1,7 @@
-# Hiện QR trong Angular, trả ảnh QR từ Hono, PNG ở trình duyệt
+# Hiện QR trong Angular, trả ảnh QR từ Hono và NestJS, PNG ở trình duyệt
 
-Hướng dẫn cho dev dùng `@tingqr/angular`, `@tingqr/hono` và `@tingqr/render/canvas`. Thiết kế:
-`docs/superpowers/specs/2026-11-21-tingqr-angular-hono-design.md`.
+Hướng dẫn cho dev dùng `@tingqr/angular`, `@tingqr/hono`, `@tingqr/nestjs` và `@tingqr/render/canvas`. Thiết kế:
+`docs/superpowers/specs/2026-11-21-tingqr-angular-hono-design.md` và `docs/superpowers/specs/2026-11-21-tingqr-nestjs-design.md`.
 
 tingqr **không** xác nhận đã nhận tiền và không nhận webhook. Thư viện chỉ tạo, đọc và vẽ QR.
 
@@ -96,3 +96,38 @@ nên đặt gì vào QR.
 
 **Ảnh SVG từ route có thể không nhấn giữ lưu được** trong app chat. Phía trình duyệt nên dùng PNG (`<tingqr-code>` hay
 `@tingqr/render/canvas`), còn route dùng làm phương án dự phòng.
+
+## NestJS: tài khoản nhận tiền và ảnh QR từ controller
+
+```ts
+@Module({ imports: [TingQrModule.forRoot({ bank: 'MB', accountNumber: '0123456789' })] })
+export class AppModule {}
+
+@Controller()
+export class OrdersController {
+  constructor(@Inject(TingQrService) private readonly tingqr: TingQrService) {}
+
+  @Get('orders/:id/qr.svg')
+  @TingQrSvg()
+  async qr(@Param('id') id: string) {
+    const order = await this.orders.findPending(id)
+    return order ? this.tingqr.paymentQr({ amount: order.amount, purpose: order.code }) : null
+  }
+}
+```
+
+- **Cấu hình một lần:**
+  - `forRoot`, hoặc `forRootAsync` để đọc biến môi trường qua `ConfigService`;
+  - `bank` là mã hay BIN, tra bằng `findBank`.
+- **Cấu hình sai thì app không khởi động** (`INVALID_VALUE`): ngân hàng không tra ra, tài khoản sai, logo không phải data
+  URI, màu sai.
+- `paymentQr({ amount, purpose })` tạo VietQR tới tài khoản đã cấu hình; không có `amount` thì là QR tĩnh.
+- **`@TingQrSvg()`:** handler trả chuỗi QR thì ra 200 SVG, header như Hono.
+  - Trả `null`, `undefined` hay `''` thì 404.
+  - `TingQrError` thì 400 `{ error: { code, message } }`.
+  - Lỗi khác do exception filter của app quyết (mặc định 500).
+  - 404 và 400 đi qua lớp exception của NestJS, nên filter của app có thể đổi thân lỗi.
+- `@TingQrSvg()` dùng được cả khi không có `TingQrModule`, ví dụ để trả QR PromptPay. Chỉ `TingQrService` mới cần
+  `forRoot`.
+- Mọi chỗ inject trong gói dùng `@Inject(...)` tường minh, nên app build bằng esbuild hay SWC vẫn chạy.
+- Đã thử: NestJS 12.6, trên cả Express và Fastify (CI). Bản 10 và 11 chưa thử.

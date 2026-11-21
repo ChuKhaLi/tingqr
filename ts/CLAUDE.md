@@ -69,4 +69,14 @@
   - jsdom không có canvas: `test/component-img.spec.ts` thay `document.createElement('canvas')` bằng canvas giả.
   - `pnpm check:angular` (sau `pnpm build`): đóng gói từ `dist`, peer Angular `>=20.0.0`, không còn `workspace:`, tarball
     dưới 10 000 byte.
-- `pnpm typecheck` build mọi gói trước (`pnpm -r build`), vì test Angular đọc kiểu `@tingqr/angular` từ `dist`.
+- **`@tingqr/nestjs`:** tsup, ESM + CJS. NestJS 12 là ESM thuần, nên bản CJS của gói dựa vào `require(esm)` của Node
+  (≥ 20.19).
+  - **Mọi tham số inject dùng `@Inject(TOKEN)` tường minh**, vì tsup/esbuild không phát decorator metadata. Code test
+    (biên dịch bằng esbuild) cũng phải làm vậy.
+  - Test chạy trên `dist` (alias `@tingqr/nestjs` trong `vitest.config.ts`). `test/app.spec.ts` dựng app mẫu
+    (`test/sample-app.ts`) trên cả Express và Fastify, gọi qua cổng thật; header so từng chữ.
+  - Cấu hình kiểm trong `resolveOptions` (`src/options.ts`) lúc khởi động. Hợp đồng HTTP (header, 404/400, logo phải
+    là data URI) phải giữ giống `@tingqr/hono`.
+  - `pnpm check:nestjs` (sau `pnpm build`): chỉ phụ thuộc `core` + `render`, peer NestJS `>=10.0.0`, tarball dưới
+    10 000 byte.
+- `pnpm typecheck` build mọi gói trước (`pnpm -r build`), vì test Angular và NestJS đọc kiểu gói từ `dist`.
