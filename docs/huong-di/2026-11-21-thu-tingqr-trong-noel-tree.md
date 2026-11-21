@@ -29,7 +29,8 @@ Ngày: 2026-11-21. Plan: `docs/superpowers/plans/2026-11-21-plan-6-angular-hono.
 
 ## Kết quả (chạy 2026-11-21, máy của chủ dự án, Windows)
 
-Log nằm trong thư mục làm việc của Plan 6 (`.superpowers/sdd/2026-11-21-plan-6-angular-hono/`, không commit):
+Log từng nằm trong thư mục làm việc của Plan 6 (`.superpowers/sdd/2026-11-21-plan-6-angular-hono/`, không commit; đã xoá
+khi dọn dẹp ngày 2026-11-21, sau khi evidence-review đối chiếu số liệu với log):
 `noel-test-before.log`, `noel-api-2.log`, `noel-web-3.log`, `noel-measure.log` (tsc, build, budget, tổng JS, đo trước
 và sau bằng cùng script), `noel-e2e.log`, `noel-e2e-all.log`, `noel-vietqr-equal.log`.
 
@@ -93,5 +94,5 @@ theo quy trình bên Noel tree.
 
 ## Dọn dẹp
 
-- Worktree `../noel-tree-try-tingqr` và nhánh `try/tingqr` (chỉ ở máy) vẫn còn, để chủ dự án xem. Xoá bằng
-  `git -C ../noel-tree worktree remove ../noel-tree-try-tingqr` rồi `git -C ../noel-tree branch -D try/tingqr`.
+- Worktree `../noel-tree-try-tingqr` và nhánh `try/tingqr` (chỉ ở máy, chưa push) đã xoá ngày 2026-11-21 theo yêu cầu chủ
+  dự án. Code thử không còn; thay đổi được mô tả ở mục "Đã đổi trong Noel tree".
