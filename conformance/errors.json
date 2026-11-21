@@ -14,7 +14,7 @@
     { "code": "UNKNOWN_SCHEME", "en": "No supported scheme recognises this payload.", "vi": "Không loại QR nào được hỗ trợ nhận ra chuỗi này." },
     { "code": "LOGO_LOAD_FAILED", "en": "The logo image could not be loaded or decoded (canvas rendering in a browser only).", "vi": "Không nạp hoặc không giải mã được ảnh logo (chỉ khi vẽ trên canvas ở trình duyệt)." },
     { "code": "CANVAS_TAINTED", "en": "The canvas cannot be exported because a cross-origin logo without CORS tainted it; use a data URI or a same-origin image.", "vi": "Không xuất được canvas vì logo khác nguồn, không có CORS, làm canvas bị khoá; dùng data URI hoặc ảnh cùng nguồn." },
-    { "code": "NO_CANVAS", "en": "No canvas is available in this environment (canvas rendering needs a browser).", "vi": "Môi trường này không có canvas (vẽ canvas cần trình duyệt)." }
+    { "code": "NO_CANVAS", "en": "No usable canvas or image support in this environment, or the canvas could not be encoded as PNG (browser canvas rendering only).", "vi": "Môi trường này không có canvas hay không nạp được ảnh, hoặc không mã hoá được canvas thành PNG (chỉ khi vẽ canvas ở trình duyệt)." }
   ],
   "warnings": [
     { "code": "TRIMMED_WHITESPACE", "en": "Whitespace around the payload was removed before parsing.", "vi": "Đã bỏ khoảng trắng hai đầu chuỗi trước khi đọc." },
