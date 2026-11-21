@@ -5,6 +5,8 @@
 //   node conformance/tools/banks/update.mjs --seed --out D  first run: write everything into D, not the repo
 //   --fetch-logos     also download logos and icons (write mode) or compare them (check mode)
 //   --report <file>   also write the Markdown report to <file>
+//   --root <dir>      repository root to read conformance/banks/ from (default: this checkout; tests use a copy)
+//   --delay-ms <n>    pause between requests (default 500)
 //
 // Exit code: 0 = nothing changed, 2 = something changed (or a write was refused), 1 = error.
 // bank-apps.json and overrides.json are curated by hand; this script never writes them.
@@ -115,9 +117,9 @@ async function main(argv) {
   const arg = (f) => (argv.indexOf(f) >= 0 ? argv[argv.indexOf(f) + 1] : undefined)
   const mode = has('--seed') ? 'seed' : has('--check') ? 'check' : 'write'
   if (mode === 'seed' && !arg('--out')) throw new Error('--seed needs --out <dir>')
-  const root = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..', '..')
+  const root = arg('--root') ? resolve(arg('--root')) : resolve(dirname(fileURLToPath(import.meta.url)), '..', '..', '..')
   const today = new Date().toISOString().slice(0, 10)
-  const r = await run({ mode, root, fetch, today, outDir: arg('--out') && resolve(arg('--out')), fetchLogos: has('--fetch-logos') })
+  const r = await run({ mode, root, fetch, today, outDir: arg('--out') && resolve(arg('--out')), fetchLogos: has('--fetch-logos'), delayMs: arg('--delay-ms') === undefined ? undefined : Number(arg('--delay-ms')) })
   if (arg('--report')) writeFileSync(arg('--report'), r.report)
   process.stdout.write(r.report)
   return r.changed ? 2 : 0

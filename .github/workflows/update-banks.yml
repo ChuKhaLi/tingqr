@@ -1,0 +1,46 @@
+name: Check bank list (monthly)
+
+# Compares conformance/banks/ with vietqr.io, Google Play and the logo sources, and opens (or comments on) one issue
+# labelled update-banks when something changed. It never writes to the repository: fixing the data is done locally
+# with the update-banks skill (.claude/skills/update-banks/SKILL.md), then a normal PR.
+on:
+  schedule:
+    - cron: '0 2 1 * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      # No install: --check never resizes images, so the tool needs nothing beyond Node.
+      - name: Compare with upstream
+        id: check
+        run: |
+          set +e
+          node conformance/tools/banks/update.mjs --check --fetch-logos --report report.md 2> error.txt
+          code=$?
+          echo "code=$code" >> "$GITHUB_OUTPUT"
+          if [ "$code" = 1 ]; then { echo '# Kiểm danh sách ngân hàng: lỗi'; echo; echo '```'; cat error.txt; echo '```'; } > report.md; fi
+          exit 0
+      - name: Open or update the update-banks issue
+        if: steps.check.outputs.code != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CODE: ${{ steps.check.outputs.code }}
+        run: |
+          gh label create update-banks --color 0e8a16 --description "Monthly bank-list check" --force
+          kind=$([ "$CODE" = 1 ] && echo "lỗi" || echo "có thay đổi")
+          open=$(gh issue list --label update-banks --state open --json number --jq '.[0].number // empty')
+          if [ -n "$open" ]; then
+            gh issue comment "$open" --body-file report.md
+          else
+            gh issue create --label update-banks --title "Danh sách ngân hàng $(date -u +%Y-%m-%d): $kind" --body-file report.md
+          fi
