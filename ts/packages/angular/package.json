@@ -1,0 +1,38 @@
+{
+  "name": "@tingqr/angular",
+  "version": "0.0.0",
+  "description": "Angular component and pipe for payment QR codes (VietQR, PromptPay, KHQR…): SVG in SSR, PNG <img> in the browser. Signals, zoneless.",
+  "license": "MIT",
+  "sideEffects": false,
+  "peerDependencies": {
+    "@angular/common": ">=20.0.0",
+    "@angular/core": ">=20.0.0",
+    "@angular/platform-browser": ">=20.0.0"
+  },
+  "dependencies": {
+    "@tingqr/core": "workspace:*",
+    "@tingqr/render": "workspace:*",
+    "tslib": "^2.3.0"
+  },
+  "scripts": {
+    "build": "ng-packagr -p ng-package.json -c tsconfig.lib.json",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit -p tsconfig.spec.json"
+  },
+  "devDependencies": {
+    "@angular/common": "~20.3.35",
+    "@angular/compiler": "~20.3.35",
+    "@angular/compiler-cli": "~20.3.35",
+    "@angular/core": "~20.3.35",
+    "@angular/platform-browser": "~20.3.35",
+    "@angular/platform-server": "~20.3.35",
+    "jsdom": "^26.1.0",
+    "ng-packagr": "~20.3.2",
+    "rxjs": "^7.8.2"
+  },
+  "type": "module",
+  "publishConfig": {
+    "directory": "dist",
+    "linkDirectory": false
+  }
+}

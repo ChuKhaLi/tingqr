@@ -5,6 +5,8 @@ bộ mẫu thử ở đây, nên hai bản cho cùng kết quả trên mọi hà
 
 - `vectors.schema.json`: JSON Schema của một file mẫu thử.
 - `errors.json`: bảng mã lỗi và mã cảnh báo dùng chung. Không ngôn ngữ nào được có mã ngoài bảng.
+  - `LOGO_LOAD_FAILED`, `CANVAS_TAINTED`, `NO_CANVAS` chỉ đến từ phần vẽ PNG trên canvas ở trình duyệt
+    (`@tingqr/render/canvas`). Mọi ngôn ngữ vẫn khai báo đủ ba mã; bản nào không có phần vẽ đó thì không bao giờ ném chúng.
 - `schemes/<id>.md`: mô tả từng loại QR (tag, GUID, quy tắc, nguồn).
 - `vectors/<id>/*.json`: mẫu thử, mỗi file một mẫu, tên file trùng `id`.
 - `tools/crc16.py`: CRC-16/CCITT-FALSE viết bằng Python, độc lập với tingqr, để tính lại CRC của mẫu dựng tay hoặc sửa.

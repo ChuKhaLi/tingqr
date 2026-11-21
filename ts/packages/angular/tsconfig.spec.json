@@ -1,0 +1,20 @@
+{
+  "extends": "./tsconfig.lib.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "declaration": false,
+    "types": [
+      "node",
+      "vitest/globals"
+    ],
+    "paths": {
+      "@tingqr/angular": [
+        "./dist/index.d.ts"
+      ]
+    }
+  },
+  "include": [
+    "src/**/*.ts",
+    "test/**/*.ts"
+  ]
+}

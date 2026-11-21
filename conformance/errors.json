@@ -11,7 +11,10 @@
     { "code": "MISSING_TAG", "en": "A required tag is missing.", "vi": "Thiếu một tag bắt buộc." },
     { "code": "INVALID_VALUE", "en": "A value does not match the format the scheme requires.", "vi": "Giá trị không đúng định dạng loại QR yêu cầu." },
     { "code": "UNSUPPORTED_SCHEME", "en": "The payload belongs to a different scheme than the function expects.", "vi": "Chuỗi thuộc loại QR khác với loại hàm này xử lý." },
-    { "code": "UNKNOWN_SCHEME", "en": "No supported scheme recognises this payload.", "vi": "Không loại QR nào được hỗ trợ nhận ra chuỗi này." }
+    { "code": "UNKNOWN_SCHEME", "en": "No supported scheme recognises this payload.", "vi": "Không loại QR nào được hỗ trợ nhận ra chuỗi này." },
+    { "code": "LOGO_LOAD_FAILED", "en": "The logo image could not be loaded or decoded, e.g. a cross-origin logo whose server sends no CORS headers (canvas rendering in a browser only).", "vi": "Không nạp hoặc không giải mã được ảnh logo, ví dụ logo ở tên miền khác mà máy chủ không gửi header CORS (chỉ khi vẽ trên canvas ở trình duyệt)." },
+    { "code": "CANVAS_TAINTED", "en": "The canvas cannot be exported because a cross-origin image tainted it (e.g. a logo redirected to another origin); use a data URI or a same-origin image.", "vi": "Không xuất được canvas vì một ảnh khác nguồn làm canvas bị khoá (ví dụ logo bị chuyển hướng sang tên miền khác); dùng data URI hoặc ảnh cùng nguồn." },
+    { "code": "NO_CANVAS", "en": "No usable canvas or image support in this environment, or the canvas could not be encoded as PNG (browser canvas rendering only).", "vi": "Môi trường này không có canvas hay không nạp được ảnh, hoặc không mã hoá được canvas thành PNG (chỉ khi vẽ canvas ở trình duyệt)." }
   ],
   "warnings": [
     { "code": "TRIMMED_WHITESPACE", "en": "Whitespace around the payload was removed before parsing.", "vi": "Đã bỏ khoảng trắng hai đầu chuỗi trước khi đọc." },

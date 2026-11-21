@@ -106,7 +106,8 @@ Mục ghi **[chủ dự án]** là chủ dự án đã quyết; mục **[Claude]
 - Chạy ở trình duyệt. Gọi trên máy chủ (không có canvas) thì báo lỗi rõ, không crash khó hiểu.
 - **Mã lỗi mới** cho canvas bẩn và logo nạp hỏng **[Claude]**: thêm vào bảng chung `conformance/errors.json` như mọi mã
   khác, không đổi schema của bảng, không có phần riêng theo nền tảng. Bản .NET (Plan 8) vẫn khai báo đủ các mã trong bảng,
-  chỉ là không bao giờ ném hai mã này (không có canvas). Như vậy hai bản dùng đúng một bảng mã và `parity-review` không
+  chỉ là không bao giờ ném ba mã `LOGO_LOAD_FAILED`, `CANVAS_TAINTED`, `NO_CANVAS` (không có canvas; `NO_CANVAS` thêm lúc
+  làm plan, cho trường hợp không có canvas hay không xuất được PNG). Như vậy hai bản dùng đúng một bảng mã và `parity-review` không
   phải có ngoại lệ. Mô tả của mã ghi rõ chỉ xảy ra khi vẽ trên canvas ở trình duyệt.
 
 ### 5.2 `@tingqr/angular` **[chủ dự án: B; chi tiết: Claude]**
