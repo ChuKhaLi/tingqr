@@ -91,6 +91,43 @@ describe('logo on canvas', () => {
     expect(created[0]?.crossOrigin).toBe('anonymous')
   })
 
+  test.each([
+    ['http://example.com/l.png', 'anonymous'],
+    ['/img?u=https://example.com/l.png', null],
+    ['logo.png', null],
+  ])('crossOrigin for %s is %o', async (href, expected) => {
+    const { created } = installDom()
+    await drawQr(new FakeCanvas(), TEXT, { minVersion: 5, logo: { href } })
+    expect(created[0]?.crossOrigin).toBe(expected)
+  })
+
+  test('the logo background covers exactly the cleared box', async () => {
+    installDom()
+    const c = new FakeCanvas()
+    await drawQr(c, TEXT, { minVersion: 5, scale: 3, logo: { href: DATA_HREF, background: '#eeeeee' } })
+    const box = boxOf(TEXT)
+    const s = (box.clearStart + 4) * 3
+    expect(c.calls.filter((k) => k.op === 'fillRect' && k.fill === '#eeeeee')).toEqual([
+      { op: 'fillRect', x: s, y: s, w: box.clearSide * 3, h: box.clearSide * 3, fill: '#eeeeee' },
+    ])
+  })
+
+  test('a transparent logo background paints nothing behind the logo', async () => {
+    installDom()
+    const c = new FakeCanvas()
+    await drawQr(c, TEXT, { minVersion: 5, logo: { href: DATA_HREF, background: 'transparent' } })
+    expect(c.calls.filter((k) => k.op === 'fillRect' && k.fill !== '#000000')).toHaveLength(1) // the QR background only
+    expect(c.calls.at(-1)?.op).toBe('drawImage')
+  })
+
+  test.each([
+    [10, 0],
+    [0, 10],
+  ])('a logo of %i×%i after decoding is LOGO_LOAD_FAILED', async (width, height) => {
+    installDom(fakeImageClass({ width, height }))
+    expect(await code(drawQr(new FakeCanvas(), TEXT, { minVersion: 5, logo: { href: DATA_HREF } }))).toBe('LOGO_LOAD_FAILED')
+  })
+
   test('a logo that fails to load is LOGO_LOAD_FAILED and nothing is drawn', async () => {
     installDom(fakeImageClass({ width: 10, height: 10 }, true))
     const c = new FakeCanvas()
@@ -138,6 +175,21 @@ describe('PNG export', () => {
     })
     await expect(toPngBlob(TEXT)).rejects.toThrow(RangeError)
     await expect(toPngDataUrl(TEXT)).rejects.toThrow(RangeError)
+  })
+
+  test('a thrown null is passed on, not mistaken for a SecurityError', async () => {
+    installDom(undefined, (c) => {
+      c.exportError = null
+    })
+    const original = ExportingCanvas.prototype.toDataURL
+    ExportingCanvas.prototype.toDataURL = function () {
+      throw null
+    }
+    try {
+      await expect(toPngDataUrl(TEXT)).rejects.toBeNull()
+    } finally {
+      ExportingCanvas.prototype.toDataURL = original
+    }
   })
 
   test('toBlob giving null is NO_CANVAS', async () => {

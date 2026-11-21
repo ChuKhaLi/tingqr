@@ -25,10 +25,10 @@ export interface CanvasOptions extends LayoutOptions {
 }
 
 function checkScale(scale: unknown): number {
-  if (typeof scale !== 'number' || !Number.isInteger(scale) || scale < 1 || scale > 64) {
-    throw invalid('Option scale must be an integer 1–64 (pixels per module).')
-  }
-  return scale
+  // Number.isInteger is false for every non-number, so no typeof check is needed.
+  const n = scale as number
+  if (!Number.isInteger(n) || n < 1 || n > 64) throw invalid('Option scale must be an integer 1–64 (pixels per module).')
+  return n
 }
 
 interface LoadedImage {
@@ -42,7 +42,7 @@ async function loadLogo(href: string): Promise<LoadedImage> {
   if (ImageCtor === undefined) throw new TingQrError('NO_CANVAS', 'No Image constructor: drawing a logo needs a browser.')
   const img = new ImageCtor()
   // Ask for CORS so a cooperating server keeps the canvas exportable; data: and same-origin paths need nothing.
-  if (/^https?:/i.test(href)) img.crossOrigin = 'anonymous'
+  if (/^https?:/.test(href)) img.crossOrigin = 'anonymous' // checkLogoHref accepts lowercase schemes only
   img.src = href
   try {
     await img.decode()
@@ -63,7 +63,7 @@ export async function drawQr(canvas: CanvasLike, text: string, options: CanvasOp
   const { scale: rawScale = 8, ...layoutOptions } = options
   const scale = checkScale(rawScale)
   const l = layout(text, layoutOptions)
-  const image = l.logo === undefined ? undefined : await loadLogo(l.logo.href)
+  const logo = l.logo === undefined ? undefined : { ...l.logo, image: await loadLogo(l.logo.href) }
   const ctx = canvas.getContext('2d')
   if (ctx === null) throw new TingQrError('NO_CANVAS', 'The canvas has no 2D context.')
 
@@ -80,11 +80,11 @@ export async function drawQr(canvas: CanvasLike, text: string, options: CanvasOp
   forEachRun(l.modules, l.cleared, (x, y, length) => {
     ctx.fillRect((x + l.margin) * scale, (y + l.margin) * scale, length * scale, scale)
   })
-  if (l.logo === undefined || image === undefined) return
+  if (logo === undefined) return
 
-  const { box } = l.logo
-  if (l.logo.background !== 'transparent') {
-    ctx.fillStyle = l.logo.background
+  const { box, image } = logo
+  if (logo.background !== 'transparent') {
+    ctx.fillStyle = logo.background
     const c = (box.clearStart + l.margin) * scale
     ctx.fillRect(c, c, box.clearSide * scale, box.clearSide * scale)
   }
