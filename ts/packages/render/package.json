@@ -18,6 +18,12 @@
         "types": "./dist/index.d.cts",
         "default": "./dist/index.cjs"
       }
+    },
+    "./canvas": {
+      "import": {
+        "types": "./dist/canvas.d.ts",
+        "default": "./dist/canvas.js"
+      }
     }
   },
   "files": [
@@ -28,7 +34,7 @@
     "node": ">=20"
   },
   "scripts": {
-    "build": "tsup",
+    "build": "tsup && node scripts/esm-only-canvas.mjs",
     "test": "vitest run",
     "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.test.json",
     "scan-sheet": "pnpm build && node scripts/scan-sheet.mjs",
@@ -39,6 +45,7 @@
   },
   "devDependencies": {
     "@stryker-mutator/core": "^10.1.1",
-    "@stryker-mutator/vitest-runner": "^10.1.1"
+    "@stryker-mutator/vitest-runner": "^10.1.1",
+    "esbuild": "0.27.7"
   }
 }

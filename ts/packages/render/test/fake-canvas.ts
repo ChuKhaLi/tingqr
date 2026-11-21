@@ -34,6 +34,46 @@ export function paintedCells(calls: Call[], colour: string, scale: number, margi
   return cells
 }
 
+/** A fake canvas that can export: `toBlob`/`toDataURL` succeed, or throw `exportError` when set. */
+export class ExportingCanvas extends FakeCanvas {
+  exportError: unknown = undefined
+  blobResult: 'blob' | 'null' = 'blob'
+  toBlob(cb: (b: Blob | null) => void, type?: string): void {
+    if (this.exportError !== undefined) throw this.exportError
+    cb(this.blobResult === 'null' ? null : new Blob([`png ${this.width}`], { type: type ?? 'image/png' }))
+  }
+  toDataURL(type?: string): string {
+    if (this.exportError !== undefined) throw this.exportError
+    return `data:${type ?? 'image/png'};base64,${Buffer.from(`png ${this.width}`).toString('base64')}`
+  }
+}
+
+export interface FakeImage {
+  src: string
+  crossOrigin: string | null
+  naturalWidth: number
+  naturalHeight: number
+  decode(): Promise<void>
+}
+
+/** A fake Image class: decode() resolves with the given natural size, or rejects when `fail` is set. */
+export function fakeImageClass(natural: { width: number; height: number }, fail = false) {
+  const created: FakeImage[] = []
+  class Img implements FakeImage {
+    src = ''
+    crossOrigin: string | null = null
+    naturalWidth = natural.width
+    naturalHeight = natural.height
+    constructor() {
+      created.push(this)
+    }
+    decode(): Promise<void> {
+      return fail ? Promise.reject(new Error('EncodingError')) : Promise.resolve()
+    }
+  }
+  return { FakeImage: Img, created }
+}
+
 export function darkCells(modules: boolean[][], skip: (x: number, y: number) => boolean = () => false): Set<string> {
   const cells = new Set<string>()
   modules.forEach((row, y) => row.forEach((dark, x) => dark && !skip(x, y) && cells.add(`${x},${y}`)))

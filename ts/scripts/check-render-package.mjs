@@ -9,7 +9,8 @@ import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const RENDER = join(dirname(fileURLToPath(import.meta.url)), '..', 'packages', 'render')
-const MAX_TARBALL_BYTES = 30_000
+// 30 000 until 2026-11-21; owner approved 33 000 for render/canvas (Plan 6).
+const MAX_TARBALL_BYTES = 33_000
 
 const pkg = JSON.parse(readFileSync(join(RENDER, 'package.json'), 'utf8'))
 const problems = []
@@ -29,7 +30,11 @@ const words = (t) => t.replace(/[*\s]+/g, ' ').trim()
 const header = readFileSync(join(RENDER, 'src', 'qrcodegen.ts'), 'utf8')
 const notice = words(header.slice(header.indexOf('Copyright (c) Project Nayuki'), header.indexOf('Software.') + 'Software.'.length))
 if (!notice.includes('Permission is hereby granted')) problems.push('could not read the Nayuki notice from src/qrcodegen.ts')
-for (const file of ['index.js', 'index.cjs']) {
+// The ESM build splits the encoder into a shared chunk, so check every built file that carries encoder code.
+const bundles = readdirSync(join(RENDER, 'dist')).filter((f) => /.(c?js)$/.test(f))
+const withEncoder = bundles.filter((f) => readFileSync(join(RENDER, 'dist', f), 'utf8').includes('encodeSegments'))
+if (!withEncoder.includes('index.cjs') || withEncoder.length < 2) problems.push(`encoder found only in ${JSON.stringify(withEncoder)}`)
+for (const file of withEncoder) {
   if (!words(readFileSync(join(RENDER, 'dist', file), 'utf8')).includes(notice)) {
     problems.push(`dist/${file} lost the full Nayuki MIT notice`)
   }
