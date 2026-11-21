@@ -7,10 +7,10 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { parseBanksResponse } from '../lib/vietqr.mjs'
-import { BANKS, makeRoot, snapshot } from './helpers.mjs'
+import { BANKS, makeRoot, snapshot } from '../testing/helpers.mjs'
 
 const UPDATE = fileURLToPath(new URL('../update.mjs', import.meta.url))
-const MOCK = new URL('./mock-fetch.mjs', import.meta.url).href
+const MOCK = new URL('../testing/mock-fetch.mjs', import.meta.url).href
 
 function cli(root, env = {}) {
   const report = join(mkdtempSync(join(tmpdir(), 'tingqr-report-')), 'report.md')

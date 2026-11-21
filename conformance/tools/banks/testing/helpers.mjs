@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { parseBanksResponse } from '../lib/vietqr.mjs'
 
-export const fx = (name) => JSON.parse(readFileSync(new URL(`./fixtures/${name}`, import.meta.url), 'utf8'))
+export const fx = (name) => JSON.parse(readFileSync(new URL(`../test/fixtures/${name}`, import.meta.url), 'utf8'))
 export const BANKS = fx('vietqr-banks.json')
 const REDIRECTS = fx('vietqr-dl-redirects.json')
 const LISTS = { android: fx('vietqr-android-app-deeplinks.json'), ios: fx('vietqr-ios-app-deeplinks.json') }

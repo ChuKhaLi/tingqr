@@ -6,7 +6,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { run } from '../update.mjs'
 import { parseBanksResponse } from '../lib/vietqr.mjs'
-import { BANKS, COMMONS, CURATED, SAFE_SVG, fakeFetch, makeRoot, snapshot } from './helpers.mjs'
+import { BANKS, COMMONS, CURATED, SAFE_SVG, fakeFetch, makeRoot, snapshot } from '../testing/helpers.mjs'
 
 test('a package Google Play has not confirmed for more than 90 days is a change, even when every check is blocked', async () => {
   const blocked = fakeFetch({ play: () => ({ status: 429, body: '' }) })
