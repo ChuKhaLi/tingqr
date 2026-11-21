@@ -36,7 +36,7 @@
 - `pnpm test` và `pnpm typecheck` tự build trước (`render` đọc `@tingqr/core` qua `dist`, test trang quét thử chạy `dist` của
   `render`), nên chạy được trên clone sạch.
 - `pnpm check:core` (sau `pnpm build`): lõi không có dependency/peer/optional, có `LICENSE` giống của repo, tarball dưới
-  45 KB, mỗi subpath CJS `require` được, tầng EMV chỉ có một bản trong CJS.
+  48 000 byte, mỗi subpath CJS `require` được, tầng EMV chỉ có một bản trong CJS.
 - **CJS subpath là file một dòng** `module.exports = require('./index.cjs')`, do `onSuccess` trong `tsup.config.ts` ghi
   đè (CJS không tách chunk được, để nguyên thì mỗi subpath tự chứa một bản lõi). ESM vẫn tách chunk bình thường.
   Thêm subpath mới: thêm vào `SUBPATHS` ở `tsup.config.ts` và ở `scripts/check-core-package.mjs`.
@@ -45,7 +45,8 @@
   `errors.ts`.
   - `src/banks/data.ts` sinh từ `conformance/banks/` bằng `node conformance/tools/banks/sync-ts.mjs`. Không sửa tay;
     `banks-sync.spec.ts` báo khi lệch. File này không chạy mutation.
-  - Ngân sách tarball core nâng lên 45 KB ngày 2026-11-20 (chủ dự án duyệt), vì dữ liệu ngân hàng.
+  - Ngân sách tarball core: 45 KB ngày 2026-11-20 (dữ liệu ngân hàng), 48 000 byte ngày 2026-11-21 cho README đầy đủ
+    (chủ dự án duyệt cả hai lần).
 - **`@tingqr/bank-logos`:** không có `src/`.
   - `scripts/gen.mjs` sinh `dist/` (mỗi ảnh một module), `files/` (gitignore) và `LOGOS-NOTICE.md` (commit) từ
     `conformance/banks/logos/`.
