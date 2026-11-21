@@ -5,6 +5,9 @@ server-side rendering. Angular 20 or later: CI tests Angular 20.3; Angular 21.2 
 the browser, not in CI).
 
 > tingqr does **not** confirm payments or receive webhooks. It only builds, reads and draws QR codes.
+>
+> **Not released yet.** See the [repository README](https://github.com/ChuKhaLi/tingqr#readme) for status and for which
+> codes have been scanned with real banking apps.
 
 ```sh
 npm i @tingqr/angular @tingqr/core
