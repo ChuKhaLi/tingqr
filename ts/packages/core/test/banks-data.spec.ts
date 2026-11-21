@@ -76,6 +76,16 @@ describe('bank-apps.json', () => {
   const list: any[] = apps.apps
   const bins = new Set(banks.banks.map((b: any) => b.bin))
 
+  test('apps are sorted by id, ordinal (the API keeps file order)', () => {
+    const ids = list.map((a) => a.id)
+    expect(ids).toEqual([...ids].sort((x, y) => (x < y ? -1 : x > y ? 1 : 0)))
+  })
+
+  test('banks are sorted by bin, ordinal', () => {
+    const bins = banks.banks.map((b: any) => b.bin)
+    expect(bins).toEqual([...bins].sort())
+  })
+
   test('ids are unique', () => {
     expect(new Set(list.map((a) => a.id)).size).toBe(list.length)
   })

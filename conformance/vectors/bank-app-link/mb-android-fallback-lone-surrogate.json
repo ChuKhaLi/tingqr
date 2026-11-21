@@ -1,0 +1,14 @@
+{
+  "id": "mb-android-fallback-lone-surrogate",
+  "scheme": "bank-app-link",
+  "kind": "link",
+  "input": {
+    "appId": "mb",
+    "platform": "android",
+    "fallbackUrl": "https://a.vn/\ud800"
+  },
+  "expected": {
+    "link": "intent://#Intent;scheme=mbbank;package=com.mbmobile;S.browser_fallback_url=https%3A%2F%2Fa.vn%2F%25EF%25BF%25BD;end"
+  },
+  "source": "quy tắc conformance/README.md (Mẫu link mở app) + conformance/banks/bank-apps.json; chuỗi mong đợi tính bằng WHATWG URL (new URL(x).href của Node v22.23.3) rồi encodeURIComponent (ECMAScript), không chạy code tingqr. Lone surrogate thành U+FFFD (%EF%BF%BD) khi phân tích URL; không ném lỗi."
+}

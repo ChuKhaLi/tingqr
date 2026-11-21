@@ -23,7 +23,7 @@ export function parseBanksResponse(json) {
       logoUrl: b.logo,
     }
   })
-  return banks.sort((a, b) => a.bin.localeCompare(b.bin))
+  return banks.sort((a, b) => (a.bin < b.bin ? -1 : a.bin > b.bin ? 1 : 0))
 }
 
 /** Returns a new list with each override applied; an override for a bin that is not in the list is an error. */

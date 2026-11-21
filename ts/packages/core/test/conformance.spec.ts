@@ -16,10 +16,10 @@ import {
   type ParseMode,
   type Result,
 } from '../src/index.js'
-import { bankAppLink } from '../src/banks.js'
+import { appsForBank, bankAppLink, findBank } from '../src/banks.js'
 
 interface SchemeRunner {
-  encode?: (input: any) => string
+  encode?: (input: any) => unknown
   decode: (payload: string, options?: { mode?: ParseMode }) => Result<unknown>
 }
 
@@ -42,12 +42,25 @@ const SCHEMES: Record<string, SchemeRunner> = {
       throw new Error('bank-app-link vectors have no payload to decode')
     },
   },
+  // `lookup` vectors: findBank(query) → its bin or null; appsForBank(bin) → app ids in order.
+  'bank-lookup': {
+    encode: (i) => findBank(i.query)?.bin ?? null,
+    decode: () => {
+      throw new Error('bank-lookup vectors have no payload to decode')
+    },
+  },
+  'bank-apps-for-bank': {
+    encode: (i) => appsForBank(i.bin).map((a) => a.id),
+    decode: () => {
+      throw new Error('bank-apps-for-bank vectors have no payload to decode')
+    },
+  },
 }
 
 interface Vector {
   id: string
   scheme: string
-  kind: 'valid' | 'invalid' | 'lenient' | 'encode-invalid' | 'link'
+  kind: 'valid' | 'invalid' | 'lenient' | 'encode-invalid' | 'link' | 'lookup'
   payload: string
   input?: unknown
   roundTrip?: boolean
@@ -153,6 +166,11 @@ describe.each(vectors.map((v) => [v.id, v] as const))('%s', (_id, v) => {
   if (v.kind === 'link') {
     test('builds exactly the expected link from input', () => {
       expect(runner(v).encode!(v.input)).toBe((v.expected as { link: string }).link)
+    })
+  }
+  if (v.kind === 'lookup') {
+    test('looks up exactly the expected result', () => {
+      expect(runner(v).encode!(v.input)).toEqual((v.expected as { result: unknown }).result)
     })
   }
 })

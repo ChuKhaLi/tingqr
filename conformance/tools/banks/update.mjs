@@ -29,7 +29,7 @@ const PLAY_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (K
 
 const readJson = (path, fallback) => (existsSync(path) ? JSON.parse(readFileSync(path, 'utf8')) : fallback)
 const writeJson = (path, value) => writeFileSync(path, JSON.stringify(value, null, 2) + '\n')
-const sortKeys = (o) => Object.fromEntries(Object.entries(o).sort(([a], [b]) => a.localeCompare(b)))
+const sortKeys = (o) => Object.fromEntries(Object.entries(o).sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0)))
 
 function diffBanks(before, after) {
   const old = new Map(before.map((b) => [b.bin, b]))

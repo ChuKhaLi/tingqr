@@ -1,0 +1,12 @@
+{
+  "id": "fallback-empty",
+  "scheme": "bank-app-link",
+  "kind": "encode-invalid",
+  "input": {
+    "appId": "mb",
+    "platform": "android",
+    "fallbackUrl": ""
+  },
+  "error": "INVALID_VALUE",
+  "source": "quy tắc conformance/README.md (Mẫu link mở app) + conformance/banks/bank-apps.json. Chuỗi rỗng không phải URL."
+}

@@ -141,3 +141,26 @@ test('schema rejects a link vector without expected, without input, or with a pa
   expect(validate({ ...link, expected: { url: 'x' } })).toBe(false)
   expect(validate({ ...link, expected: { link: 1 } })).toBe(false)
 })
+
+const lookup = {
+  id: 'x',
+  scheme: 'bank-lookup',
+  kind: 'lookup',
+  input: { query: 'mb' },
+  expected: { result: '970422' },
+  source: 'test fixture inside conformance-format.spec.ts',
+}
+
+test('schema accepts a lookup vector whose expected.result is a string, null or a list', () => {
+  expect(validate(lookup), ajv.errorsText(validate.errors)).toBe(true)
+  expect(validate({ ...lookup, expected: { result: null } })).toBe(true)
+  expect(validate({ ...lookup, expected: { result: ['acb'] } })).toBe(true)
+})
+
+test('schema rejects a lookup vector without expected.result, or with a payload or error', () => {
+  expect(validate({ ...lookup, expected: {} })).toBe(false)
+  expect(validate({ ...lookup, payload: '000201' })).toBe(false)
+  expect(validate({ ...lookup, error: 'INVALID_VALUE' })).toBe(false)
+  const { input: _i, ...noInput } = lookup
+  expect(validate(noInput)).toBe(false)
+})

@@ -35,7 +35,7 @@ export function parseDlRedirects(json) {
     const scheme = schemeOf(r.openHref)
     if (scheme && scheme !== 'http' && scheme !== 'https') get(id).ios = { scheme }
   }
-  return [...apps.values()].sort((a, b) => a.id.localeCompare(b.id))
+  return [...apps.values()].sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0))
 }
 
 /**

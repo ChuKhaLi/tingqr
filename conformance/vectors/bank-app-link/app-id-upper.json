@@ -1,0 +1,11 @@
+{
+  "id": "app-id-upper",
+  "scheme": "bank-app-link",
+  "kind": "encode-invalid",
+  "input": {
+    "appId": "MB",
+    "platform": "android"
+  },
+  "error": "INVALID_VALUE",
+  "source": "quy tắc conformance/README.md (Mẫu link mở app) + conformance/banks/bank-apps.json. appId so khớp đúng từng ký tự."
+}

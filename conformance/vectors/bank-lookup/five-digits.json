@@ -1,0 +1,12 @@
+{
+  "id": "five-digits",
+  "scheme": "bank-lookup",
+  "kind": "lookup",
+  "input": {
+    "query": "97042"
+  },
+  "expected": {
+    "result": null
+  },
+  "source": "quy tắc conformance/README.md (Mẫu tra cứu ngân hàng) + conformance/banks/banks.json, bank-apps.json ngày 2026-11-20. 5 chữ số không phải BIN, cũng không phải code."
+}

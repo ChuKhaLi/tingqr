@@ -1,0 +1,14 @@
+{
+  "id": "mb-android-fallback-unicode",
+  "scheme": "bank-app-link",
+  "kind": "link",
+  "input": {
+    "appId": "mb",
+    "platform": "android",
+    "fallbackUrl": "https://ví-dụ.vn/a b?c=đ"
+  },
+  "expected": {
+    "link": "intent://#Intent;scheme=mbbank;package=com.mbmobile;S.browser_fallback_url=https%3A%2F%2Fxn--v-d-rma6749a.vn%2Fa%2520b%3Fc%3D%25C4%2591;end"
+  },
+  "source": "quy tắc conformance/README.md (Mẫu link mở app) + conformance/banks/bank-apps.json; chuỗi mong đợi tính bằng WHATWG URL (new URL(x).href của Node v22.23.3) rồi encodeURIComponent (ECMAScript), không chạy code tingqr. Tên miền có dấu thành punycode, dấu cách và chữ có dấu thành %XX trước khi mã hoá lần hai."
+}

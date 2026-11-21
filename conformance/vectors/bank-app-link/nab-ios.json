@@ -1,0 +1,11 @@
+{
+  "id": "nab-ios",
+  "scheme": "bank-app-link",
+  "kind": "encode-invalid",
+  "input": {
+    "appId": "nab",
+    "platform": "ios"
+  },
+  "error": "INVALID_VALUE",
+  "source": "quy tắc conformance/README.md (Mẫu link mở app) + conformance/banks/bank-apps.json. nab (Nam A Bank) chỉ có scheme Android trong dữ liệu."
+}

@@ -26,7 +26,8 @@
         "lenient",
         "encode-invalid",
         "matrix",
-        "link"
+        "link",
+        "lookup"
       ]
     },
     "payload": {
@@ -104,7 +105,8 @@
             "kind": {
               "enum": [
                 "matrix",
-                "link"
+                "link",
+                "lookup"
               ]
             }
           }
@@ -305,6 +307,62 @@
               "link": {
                 "type": "string",
                 "minLength": 1
+              }
+            }
+          }
+        },
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "payload"
+              ]
+            },
+            {
+              "required": [
+                "error"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "lookup"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "input",
+          "expected"
+        ],
+        "properties": {
+          "expected": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "result"
+            ],
+            "properties": {
+              "result": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                ]
               }
             }
           }

@@ -1,0 +1,12 @@
+{
+  "id": "empty",
+  "scheme": "bank-lookup",
+  "kind": "lookup",
+  "input": {
+    "query": ""
+  },
+  "expected": {
+    "result": null
+  },
+  "source": "quy tắc conformance/README.md (Mẫu tra cứu ngân hàng) + conformance/banks/banks.json, bank-apps.json ngày 2026-11-20. Chuỗi rỗng."
+}

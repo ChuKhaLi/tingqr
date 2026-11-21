@@ -1,0 +1,12 @@
+{
+  "id": "code-lower",
+  "scheme": "bank-lookup",
+  "kind": "lookup",
+  "input": {
+    "query": "mb"
+  },
+  "expected": {
+    "result": "970422"
+  },
+  "source": "quy tắc conformance/README.md (Mẫu tra cứu ngân hàng) + conformance/banks/banks.json, bank-apps.json ngày 2026-11-20. code không phân biệt hoa thường."
+}

@@ -1,0 +1,12 @@
+{
+  "id": "ios-fallback-javascript",
+  "scheme": "bank-app-link",
+  "kind": "encode-invalid",
+  "input": {
+    "appId": "mb",
+    "platform": "ios",
+    "fallbackUrl": "javascript:alert(1)"
+  },
+  "error": "INVALID_VALUE",
+  "source": "quy tắc conformance/README.md (Mẫu link mở app) + conformance/banks/bank-apps.json. fallbackUrl vẫn được kiểm trên iOS dù bị bỏ qua."
+}

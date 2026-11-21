@@ -1,0 +1,14 @@
+{
+  "id": "mb-android-fallback-no-slashes",
+  "scheme": "bank-app-link",
+  "kind": "link",
+  "input": {
+    "appId": "mb",
+    "platform": "android",
+    "fallbackUrl": "https:example.com"
+  },
+  "expected": {
+    "link": "intent://#Intent;scheme=mbbank;package=com.mbmobile;S.browser_fallback_url=https%3A%2F%2Fexample.com%2F;end"
+  },
+  "source": "quy tắc conformance/README.md (Mẫu link mở app) + conformance/banks/bank-apps.json; chuỗi mong đợi tính bằng WHATWG URL (new URL(x).href của Node v22.23.3) rồi encodeURIComponent (ECMAScript), không chạy code tingqr. WHATWG nhận https:example.com và chuẩn hoá thành https://example.com/."
+}

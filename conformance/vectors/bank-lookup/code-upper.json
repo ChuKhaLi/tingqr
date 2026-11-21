@@ -1,0 +1,12 @@
+{
+  "id": "code-upper",
+  "scheme": "bank-lookup",
+  "kind": "lookup",
+  "input": {
+    "query": "MB"
+  },
+  "expected": {
+    "result": "970422"
+  },
+  "source": "quy tắc conformance/README.md (Mẫu tra cứu ngân hàng) + conformance/banks/banks.json, bank-apps.json ngày 2026-11-20. code đúng như trong dữ liệu."
+}

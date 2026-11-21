@@ -44,8 +44,10 @@ TypeScript và bản .NET, kèm tích hợp sẵn cho Angular, NestJS và ASP.NE
     - **Nguồn:** `qrviet` và Noel tree chép từ vietqr.io, nên không tính là nguồn độc lập. Nguồn độc lập duy nhất ngoài
       vietqr.io là `vietnam-qr-pay` 1.5.1, đã cũ.
     - **Chưa đưa vào:** VietABank, Vietbank, BVBank (các nguồn ghi khác nhau), phần Android của MoMo và ZaloPay.
+    - `multi-source` (18/44 app): hai nguồn độc lập ghi **đúng** scheme, gói và host mà tingqr tạo ra (`agrees`).
     - **Chưa kiểm:**
-      - chỉ MB Bank và MyVIB đã mở thử trên máy thật;
+      - **mở thử trên máy thật:** chỉ có MyVIB mở đúng chuỗi của tingqr. MB mở qua `dl.vietqr.io`, nên mới xác nhận
+        scheme và gói;
       - Action chưa chạy thật trên GitHub;
       - icon giữa QR chưa quét thử.
     - Chủ dự án duyệt (2026-11-20/21):

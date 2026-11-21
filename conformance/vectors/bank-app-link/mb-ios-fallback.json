@@ -1,0 +1,14 @@
+{
+  "id": "mb-ios-fallback",
+  "scheme": "bank-app-link",
+  "kind": "link",
+  "input": {
+    "appId": "mb",
+    "platform": "ios",
+    "fallbackUrl": "https://example.com/x"
+  },
+  "expected": {
+    "link": "mbbank://"
+  },
+  "source": "quy tắc conformance/README.md (Mẫu link mở app) + conformance/banks/bank-apps.json. iOS bỏ qua fallbackUrl hợp lệ."
+}

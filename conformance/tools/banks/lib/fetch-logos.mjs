@@ -136,7 +136,7 @@ export async function collectLogos({ dir, fetch, today, delayMs = 500, write, ba
       writeFileSync(path, f.bytes)
     }
     for (const e of dropped) rmSync(join(logosDir, e.file), { force: true })
-    entries.sort((a, b) => a.file.localeCompare(b.file))
+    entries.sort((a, b) => (a.file < b.file ? -1 : a.file > b.file ? 1 : 0))
     writeFileSync(join(logosDir, 'manifest.json'), JSON.stringify({ files: entries }, null, 2) + '\n')
   }
   return { changes, notes }

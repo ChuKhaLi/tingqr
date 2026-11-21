@@ -150,7 +150,7 @@ Mục ghi **[chủ dự án]** là chủ dự án đã quyết; mục **[Claude]
   - Trước khi chạy, nói với chủ dự án là sẽ gọi mạng.
   - Giá trị nào không có nguồn thì để trống, không đoán. Gồm cả cặp VietABank/Vietbank: phải lấy từ nguồn, kèm Google
     Play.
-  - **Nguồn tính là "nguồn khác"** cho `multi-source`: `qrviet`, tài liệu ZaloPay, tài liệu Bao Kim.
+  - **"Nguồn khác" cho `multi-source`** (sửa 2026-11-21 sau evidence-review): phải là nguồn **độc lập** với vietqr.io **và ghi đúng** scheme, gói, host mà tingqr tạo ra (`agrees`). `qrviet` và Noel tree chép từ vietqr.io; tài liệu ZaloPay, Bao Kim không công khai bảng scheme. Nguồn độc lập duy nhất lúc này là `vietnam-qr-pay` 1.5.1. Xem `conformance/README.md`.
   - `vietnam-qr-pay` chỉ tính là nguồn cho scheme. Tên gói Android lấy từ đó thì phải có `playVerified`.
 - **Không sao chép icon từ Noel tree.** Icon tải mới để manifest có URL và SHA-256 tự lấy. Có thể so với file của Noel tree
   để bắt sai. **[Claude]**
@@ -213,7 +213,7 @@ function bankAppLink(appId: string, platform: AppPlatform, options?: { fallbackU
 
 ```
 conformance/banks/logos/
-├─ logo/<bin>.svg | <bin>.png      ← logo ngang theo ngân hàng
+├─ logo/<bin>.svg | <bin>.webp     ← logo ngang theo ngân hàng (PNG của vietqr.io thu về WebP 128 px, chủ dự án chọn 2026-11-21)
 ├─ icon/<appId>.webp               ← icon vuông theo app
 └─ manifest.json                   ← mỗi file: nguồn (URL), nhãn giấy phép (PD-textlogo, PD-simple, hoặc "trademark,
                                      no license" với cdn.vietqr.io), ngày tải, SHA-256
@@ -272,7 +272,7 @@ conformance/banks/logos/
 
    Ngày kiểm nằm ở **file riêng do script quản lý**, `conformance/banks/play-checks.json` (gói → ngày kiểm được gần nhất,
    kết quả lần gần nhất). Nhờ vậy script không phải đụng `bank-apps.json`. Trường `playVerified` ở mục 5.2 chuyển sang file
-   này; `sync-ts` và test đọc từ đây. **[Claude]**
+   này; test đọc từ đây (`sync-ts` không đưa file này vào API). **[Claude]**
 4. Kiểm link ảnh (`logoUrl`, URL trong manifest) còn sống; với `--fetch-logos` thì tải ảnh của ngân hàng/app mới và ảnh có
    SHA-256 đổi, cập nhật manifest. Ảnh đổi được nêu trong báo cáo.
 5. Chạy `sync-ts.mjs`.

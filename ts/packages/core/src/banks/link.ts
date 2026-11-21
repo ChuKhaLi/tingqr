@@ -2,20 +2,25 @@ import { TingQrError } from '../errors.js'
 import type { AppPlatform, BankApp } from './types.js'
 
 // WHATWG URL exists in every runtime core supports (browsers, Node, Workers); core's lib settings carry no DOM or
-// Node types, so declare the one member used here.
-declare const URL: new (url: string) => { readonly protocol: string }
+// Node types, so declare the members used here.
+declare const URL: new (url: string) => { readonly protocol: string; readonly href: string }
 
+/**
+ * Parsed with the WHATWG URL Standard; the scheme must be http: or https:. The *serialised* URL (`href`) is what gets
+ * percent-encoded, so surrounding spaces, letter case of scheme and host, and lone surrogates are normalised first
+ * and the result is always ASCII (rules and vectors: conformance/README.md, "Mẫu link mở app").
+ */
 function fallbackOf(url: string): string {
-  let protocol: string
+  let parsed: { protocol: string; href: string }
   try {
-    protocol = new URL(url).protocol
+    parsed = new URL(url)
   } catch {
     throw new TingQrError('INVALID_VALUE', `fallbackUrl must be an absolute http(s) URL, got ${JSON.stringify(url)}`)
   }
-  if (protocol !== 'https:' && protocol !== 'http:') {
-    throw new TingQrError('INVALID_VALUE', `fallbackUrl must use https: or http:, got ${protocol}`)
+  if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') {
+    throw new TingQrError('INVALID_VALUE', `fallbackUrl must use https: or http:, got ${parsed.protocol}`)
   }
-  return encodeURIComponent(url)
+  return encodeURIComponent(parsed.href)
 }
 
 /**

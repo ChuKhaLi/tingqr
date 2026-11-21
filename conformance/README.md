@@ -83,7 +83,56 @@ Dành cho `bankAppLink` (`@tingqr/core/banks`). Mẫu nằm ở `vectors/bank-ap
   - Không truyền `fallbackUrl` khi `input` không có trường này.
 - Mẫu `encode-invalid` cùng `scheme` có `input` giống vậy. `bankAppLink` phải ném lỗi có đúng mã `error`.
 - Chuỗi mong đợi dựa trên `conformance/banks/bank-apps.json`. Đổi dữ liệu của một app thì phải sửa mẫu tương ứng.
-- Chỉ ghi "đã mở thử" trong `source` khi `deviceVerified` của app đó có dòng tương ứng.
+- Chỉ ghi "đã mở thử" trong `source` khi `deviceVerified` của app đó có dòng tương ứng, và lần thử đó mở đúng chuỗi
+  này.
+- **Cách tạo link** (bản .NET phải làm y hệt):
+  - `appId` và `platform` so khớp đúng từng ký tự: `"MB"` hay `"Android"` đều là lỗi.
+  - Android: `intent://<host>#Intent;scheme=<scheme>;package=<package>;` + (`S.browser_fallback_url=<f>;` nếu có
+    `fallbackUrl`) + `end`. iOS: `<scheme>://`.
+  - App không có scheme cho hệ được hỏi: lỗi `INVALID_VALUE`.
+  - `fallbackUrl` được kiểm **cả trên iOS**, dù iOS bỏ qua nó.
+- **Cách kiểm và mã hoá `fallbackUrl`:**
+  1. Phân tích theo [WHATWG URL Standard](https://url.spec.whatwg.org/). Không phân tích được, hoặc scheme sau khi phân
+     tích không phải `http:` hay `https:`, thì lỗi `INVALID_VALUE`.
+  2. Lấy chuỗi đã chuẩn hoá (`href`), không lấy chuỗi gốc. Kết quả: bỏ khoảng trắng đầu cuối, scheme và host thành chữ
+     thường, tên miền có dấu thành punycode, `https:a.vn` thành `https://a.vn/`, lone surrogate thành `%EF%BF%BD`.
+  3. Mã hoá như `encodeURIComponent` của ECMAScript: giữ `A–Z a–z 0–9 - _ . ! ~ * ' ( )`, mọi byte UTF-8 khác thành
+     `%XX` chữ hoa. `Uri.EscapeDataString` của .NET mã hoá cả `! * ' ( )`, nên không dùng thẳng được.
+
+## Mẫu tra cứu ngân hàng (`kind: "lookup"`)
+
+Dành cho `findBank` và `appsForBank` (`@tingqr/core/banks`).
+
+- **`scheme: "bank-lookup"`** (`vectors/bank-lookup/`):
+  - `input` là `{ query }`; `expected` là `{ result }`, với `result` là `bin` của ngân hàng tìm thấy, hoặc `null`.
+  - **Luật tra cứu:**
+    - `query` khớp `^[0-9]{6}$` (đúng 6 chữ số ASCII) thì so bằng với `bin`.
+    - Ngược lại, so với `code`, rồi mới tới `shortName`. So khớp ordinal sau khi chuyển chữ thường theo invariant
+      culture (không theo ngôn ngữ máy, ví dụ chữ `I` của tiếng Thổ Nhĩ Kỳ).
+    - Mã của ngân hàng này thắng tên ngắn của ngân hàng khác.
+    - Không cắt khoảng trắng.
+- **`scheme: "bank-apps-for-bank"`** (`vectors/bank-apps-for-bank/`):
+  - `input` là `{ bin }`; `expected` là `{ result }`, với `result` là mảng `id` app có `bin` đó, theo thứ tự trong
+    `bank-apps.json`. Không có app nào thì là `[]`.
+- **Quy tắc so sánh:** kết quả phải bằng `expected.result` (chuỗi, `null`, hoặc mảng đúng thứ tự).
+
+## Logo và icon (`banks/logos/`)
+
+Nguồn cho `@tingqr/bank-logos` và `TingQR.BankLogos` sau này.
+
+- `manifest.json` là chỉ mục. Mỗi mục có:
+  - `file`: `logo/<bin>.svg|webp` hoặc `icon/<id>.webp`;
+  - `kind`;
+  - `key`: khoá công khai, là `bin` hay `id` app. Lấy `key` từ manifest, không đoán từ tên file nguồn: ví dụ icon
+    `baovietbank` tải từ `bvb` của vietqr.io;
+  - nguồn, giấy phép, SHA-256;
+  - `sourceSha256` và `processed`, khi ảnh đã được thu nhỏ.
+- **MIME** đoán từ nội dung và phải khớp đuôi file; lệch thì dừng build.
+  - Bắt đầu bằng `RIFF`, byte 8–11 là `WEBP`: `image/webp`.
+  - Có `<svg` theo sau bởi khoảng trắng hoặc `>`, trong 4096 byte UTF-8 đầu: `image/svg+xml`.
+- **Data URI:** `data:<mime>;base64,` + base64 chuẩn RFC 4648, có padding.
+- **Danh sách khoá** (`LOGO_BINS`, `ICON_IDS`) xếp ordinal.
+- Bản CJS của gói npm trả đường dẫn file thay vì data URI. Đây là chi tiết đóng gói riêng của JavaScript.
 
 ## Mẫu ma trận (`kind: "matrix"`, `scheme: "render"`)
 

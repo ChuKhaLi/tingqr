@@ -32,7 +32,8 @@ test('accented characters and spaces in fallbackUrl are percent-encoded', () => 
   expect(link).toMatch(/;end$/)
   expect(link).not.toMatch(/[\s\u0080-￿]/)
   const value = /S\.browser_fallback_url=([^;]*);end$/.exec(link)![1]!
-  expect(decodeURIComponent(value)).toBe('https://ví-dụ.vn/a b?c=đ')
+  expect(decodeURIComponent(value)).toBe(new URL('https://ví-dụ.vn/a b?c=đ').href)
+  expect(decodeURIComponent(value)).toMatch(/^https:\/\/xn--/)
 })
 
 test.each(['data:text/html,x', 'intent://x#Intent;end', 'javascript:alert(1)', 'ftp://example.com/', '/relative', ''])(

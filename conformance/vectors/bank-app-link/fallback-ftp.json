@@ -1,0 +1,12 @@
+{
+  "id": "fallback-ftp",
+  "scheme": "bank-app-link",
+  "kind": "encode-invalid",
+  "input": {
+    "appId": "mb",
+    "platform": "android",
+    "fallbackUrl": "ftp://example.com/"
+  },
+  "error": "INVALID_VALUE",
+  "source": "quy tắc conformance/README.md (Mẫu link mở app) + conformance/banks/bank-apps.json. Chỉ nhận http: và https:."
+}
