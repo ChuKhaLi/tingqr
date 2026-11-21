@@ -33,6 +33,19 @@ Nguồn các điều về npm (đọc ngày 2026-11-21; nên đọc lại trư�
 - người duyệt của environment trên repo riêng tư cần gói Enterprise:
   https://docs.github.com/actions/deployment/targeting-different-environments/using-environments-for-deployment
 
+0. **Rà lịch sử commit trước khi mở công khai** (chủ dự án làm).
+   - Mở công khai thì **mọi commit** đều công khai, kể cả nội dung đã xoá ở commit sau.
+   - Những gì đã biết đang nằm trong lịch sử:
+     - commit `e3b0a39` (file kết quả thử Noel tree) có số tài khoản ảo nhận tiền của Noel tree. Bản hiện tại đã bỏ số
+       này, nhưng commit cũ vẫn còn. Số này vốn hiện cho người trả tiền trên trang thanh toán của Noel tree; bạn quyết
+       có cần xoá khỏi lịch sử không;
+     - email tác giả trong mọi commit;
+     - các ghi chú bàn giao và kế hoạch nội bộ trong `docs/superpowers/`.
+   - Nên chạy thêm một công cụ dò bí mật trên toàn bộ lịch sử (ví dụ `gitleaks detect` hay `trufflehog git`), và kiểm
+     rằng không commit nào từng chứa `conformance/private/` hay `ts/packages/render/scan-sheet/index.html` (dữ liệu
+     quét thật). Claude không đọc được `conformance/private/`, nên việc kiểm này phải do chủ dự án làm.
+   - Muốn xoá thứ gì khỏi lịch sử thì phải viết lại lịch sử (ví dụ `git filter-repo`) và force-push. Việc này không rút
+     lại được và làm hỏng mọi bản clone cũ. Làm **trước** khi mở công khai, sau khi đã sao lưu repo.
 1. **Mở công khai repo** `ChuKhaLi/tingqr`.
    - Đây là điều kiện bắt buộc: job `publish` từ chối chạy khi repo còn riêng tư. Với repo riêng tư, bước duyệt của
      GitHub environment chỉ có ở gói Enterprise, nên chỉ cần đẩy tag là gói phát hành luôn.
