@@ -147,7 +147,7 @@ test('bank-logos must not claim MIT (its images are trademarks)', () => {
 test('a release tag is refused while a README still says "Not released yet"', () => {
   const root = fakeRepo('1.2.3')
   try {
-    writeFileSync(join(root, 'README.md'), '# tingqr\n\n**Status: not released yet.**\n')
+    writeFileSync(join(root, 'README.md'), '# tingqr\n\n<!-- status:npm -->\n**Status: not released yet.**\n')
     writeFileSync(join(root, 'ts', 'packages', 'hono', 'README.md'), '> **Not released yet.** See the repository README.\n')
     const r = run('check-release.mjs', ['--tag', 'ts-v1.2.3'], root)
     assert.equal(r.code, 1)
@@ -155,6 +155,46 @@ test('a release tag is refused while a README still says "Not released yet"', ()
     assert.match(r.out, /hono/)
     // Without --tag (CI on every push) the status line is expected and fine.
     assert.equal(run('check-release.mjs', [], root).code, 0)
+  } finally {
+    rmSync(root, { recursive: true, force: true })
+  }
+})
+
+test('in the root READMEs only the npm status line counts, so another language may say "not released yet"', () => {
+  const root = fakeRepo('1.2.3')
+  try {
+    writeFileSync(join(root, 'README.md'), '# tingqr\n\n<!-- status:npm -->\n**npm: 1.2.3.**\n\n.NET: not released yet.\n')
+    writeFileSync(join(root, 'README.vi.md'), '# tingqr\n\n<!-- status:npm -->\n**npm: 1.2.3.**\n\nBản .NET chưa phát hành.\n')
+    assert.equal(run('check-release.mjs', ['--tag', 'ts-v1.2.3'], root).code, 0)
+    // A root README without the marker cannot be checked: refuse rather than guess.
+    writeFileSync(join(root, 'README.md'), '# tingqr\n')
+    const r = run('check-release.mjs', ['--tag', 'ts-v1.2.3'], root)
+    assert.equal(r.code, 1)
+    assert.match(r.out, /status:npm/)
+  } finally {
+    rmSync(root, { recursive: true, force: true })
+  }
+})
+
+test('a release tag for 0.0.0 is refused (the in-repo placeholder version)', () => {
+  const root = fakeRepo('0.0.0')
+  try {
+    const r = run('check-release.mjs', ['--tag', 'ts-v0.0.0'], root)
+    assert.equal(r.code, 1)
+    assert.match(r.out, /0\.0\.0/)
+  } finally {
+    rmSync(root, { recursive: true, force: true })
+  }
+})
+
+test('the Vietnamese status line is checked too', () => {
+  const root = fakeRepo('1.2.3')
+  try {
+    writeFileSync(join(root, 'README.md'), '# tingqr\n\n<!-- status:npm -->\n**npm: 1.2.3.**\n')
+    writeFileSync(join(root, 'README.vi.md'), '# tingqr\n\n<!-- status:npm -->\n**Trạng thái: chưa phát hành.**\n')
+    const r = run('check-release.mjs', ['--tag', 'ts-v1.2.3'], root)
+    assert.equal(r.code, 1)
+    assert.match(r.out, /README\.vi\.md/)
   } finally {
     rmSync(root, { recursive: true, force: true })
   }

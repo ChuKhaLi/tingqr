@@ -136,7 +136,7 @@ tingqr/
 │  ├─ superpowers/specs, plans
 │  ├─ huong-di/
 │  └─ (bảng thử trên app thật: conformance/scans.md, 5.7)
-├─ .github/workflows/        ← ci-ts, ci-dotnet, release-npm, release-nuget
+├─ .github/workflows/        ← ci-ts, ci-dotnet, release-ts, release-dotnet
 ├─ package.json              ← lệnh gom chung: test:all, build:all
 └─ CLAUDE.md, ts/CLAUDE.md, dotnet/CLAUDE.md, .claude/
 ```

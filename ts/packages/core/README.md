@@ -6,7 +6,8 @@ payload. Vietnamese banks and banking-app links. No dependencies; runs in browse
 > **tingqr does not confirm payments or receive webhooks.** It only builds, reads and draws QR codes.
 >
 > **Not released yet.** See the [repository README](https://github.com/ChuKhaLi/tingqr#readme) for status and for which
-> codes have been scanned with real banking apps (VietQR to an account: MB Bank, MyVIB; the others: not yet).
+> codes have been scanned with real banking apps (VietQR to an account: MB Bank, MyVIB; VietQR to a card: MB Bank read it, MyVIB did not;
+> VNPAY, PromptPay, KHQR: not yet).
 
 ## VietQR
 
@@ -67,8 +68,9 @@ if (r.ok) {
   ([`conformance/errors.json`](https://github.com/ChuKhaLi/tingqr/blob/main/conformance/errors.json)): `INVALID_VALUE`,
   `NON_ASCII`, `FIELD_TOO_LONG`…
 - **Readers return** `{ ok: true, value, warnings }` or `{ ok: false, error }`, never throw on bad input.
-- **Readers accept small deviations by default**, because real codes in the wild often have them: a missing tag 52 or
-  60, lowercase CRC, surrounding whitespace. Each one is listed in `warnings`. Pass `{ mode: 'strict' }` to refuse them.
+- **By default readers accept codes missing tags the standard requires but real codes often omit** (VNPAY codes
+  usually lack tags 52 and 60), each listed in `warnings`. `{ mode: 'strict' }` refuses them.
+- A lowercase CRC and surrounding whitespace are accepted in **both** modes, always with a warning.
 - A wrong CRC is always an error.
 
 ## Banks and banking apps: `@tingqr/core/banks`

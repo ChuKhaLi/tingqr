@@ -42,7 +42,7 @@ body:
       options:
         - "no logo / không logo"
         - "test logo from the scan sheet / logo thử của trang quét thử"
-        - "bank icon from @tingqr/bank-logos / icon ngân hàng của @tingqr/bank-logos"
+        - "real bank icon from tingqr's bank logos / icon ngân hàng thật của tingqr"
     validations:
       required: true
   - type: dropdown

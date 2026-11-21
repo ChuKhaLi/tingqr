@@ -214,7 +214,8 @@ console.log('ok')`,
     ),
   )
 
-  if (outDir) {
+  // Tarballs leave the drill only when every check passed: they are the files a release publishes.
+  if (outDir && results.length === 8 && results.every((r) => r.ok)) {
     mkdirSync(outDir, { recursive: true })
     for (const p of PACKAGES) copyFileSync(tarballOf(p), join(outDir, basename(tarballOf(p))))
   }

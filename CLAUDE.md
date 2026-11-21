@@ -75,7 +75,8 @@ TypeScript và bản .NET, kèm tích hợp sẵn cho Angular, NestJS và ASP.NE
       - README gốc (tiếng Anh, `README.vi.md`) và README cho cả 6 gói;
       - mẫu issue báo kết quả quét;
       - `set-version`, `check-release`;
-      - workflow `release-ts.yml`: tag `ts-v*`, duyệt qua environment `npm-release`, OIDC, dry-run trên PR;
+      - workflow `release-ts.yml`: chỉ tag `ts-v*` mới phát hành, qua environment `npm-release`, OIDC; chạy tay và PR chỉ
+        dry-run. **Job `publish` chưa chạy lần nào** (OIDC, bước duyệt, chặn repo riêng tư mới đọc, chưa chạy);
       - skill `release-drill`;
       - `docs/RELEASING.md`, `CHANGELOG.md`.
     - **Chưa phát hành gì.** Chủ dự án hoãn v0.1 cho tới khi có MoMo/ZaloPay và quét thêm app. Repo giữ `0.0.0`.

@@ -40,13 +40,28 @@ const tagIndex = process.argv.indexOf('--tag')
 if (tagIndex !== -1) {
   const tag = process.argv[tagIndex + 1] ?? ''
   if (tag !== `ts-v${version}`) problems.push(`tag ${JSON.stringify(tag)} must be exactly ts-v${version}`)
+  if (version === '0.0.0') problems.push('version 0.0.0 is the in-repo placeholder: run set-version first')
   // npm publishes each README verbatim and a published version's page never changes: a release must not ship the
   // pre-release status line (docs/RELEASING.md says what to write instead).
-  const readmes = [join(ROOT, 'README.md'), join(ROOT, 'README.vi.md'), ...PACKAGES.map((p) => join(ROOT, 'ts', 'packages', p, 'README.md'))]
-  for (const file of readmes) {
-    if (existsSync(file) && /not released yet|chưa phát hành/i.test(readFileSync(file, 'utf8'))) {
+  // Package READMEs are npm-only: the whole file counts. The root READMEs also speak for other languages (.NET), so
+  // only the paragraph after the `<!-- status:npm -->` marker counts there.
+  const UNRELEASED = /not released yet|chưa phát hành/i
+  const packageReadmes = PACKAGES.map((p) => join(ROOT, 'ts', 'packages', p, 'README.md'))
+  for (const file of packageReadmes) {
+    if (existsSync(file) && UNRELEASED.test(readFileSync(file, 'utf8'))) {
       problems.push(`${relative(ROOT, file)} still says "not released yet": update the status line before a release`)
     }
+  }
+  for (const file of [join(ROOT, 'README.md'), join(ROOT, 'README.vi.md')]) {
+    if (!existsSync(file)) continue
+    const text = readFileSync(file, 'utf8')
+    const at = text.indexOf('<!-- status:npm -->')
+    if (at === -1) {
+      problems.push(`${relative(ROOT, file)} has no <!-- status:npm --> marker before its npm status paragraph`)
+      continue
+    }
+    const paragraph = text.slice(at).split(/\r?\n\s*\r?\n/)[0]
+    if (UNRELEASED.test(paragraph)) problems.push(`${relative(ROOT, file)}: the npm status still says "not released yet"`)
   }
 }
 

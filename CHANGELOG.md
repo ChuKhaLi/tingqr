@@ -1,6 +1,7 @@
 # Changelog
 
-All six npm packages share one version. Nothing has been published yet; see `docs/RELEASING.md`.
+All six npm packages share one version. Nothing has been published yet; see `docs/RELEASING.md`. Whether the .NET
+packages (Plan 8) share that version or have their own is decided in Plan 8.
 
 ## Unreleased
 
@@ -10,7 +11,8 @@ Planned as 0.1.0, after MoMo and ZaloPay recognition and scans with more banking
 
 - Build and read VietQR (to an account or a card, static or with an amount), read VNPAY-QR, build and read PromptPay
   and KHQR; `detect()` for any payload.
-- Readers accept common real-world deviations by default and report each in `warnings`; `{ mode: 'strict' }` refuses them.
+- By default readers accept codes missing tags real codes often omit (each reported in `warnings`); `{ mode: 'strict' }`
+  refuses them. Lowercase CRC and surrounding whitespace are accepted in both modes, with a warning.
 - Shared error and warning codes (`conformance/errors.json`).
 - `@tingqr/core/banks`: Vietnamese banks (`findBank`), banking apps (`findBankApp`, `appsForBank`) and links that open
   them (`bankAppLink`).

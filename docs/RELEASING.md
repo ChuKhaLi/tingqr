@@ -25,17 +25,28 @@ Mọi lệnh phát hành thật chỉ chạy trong CI, sau khi chủ dự án du
 npm chỉ cho cấu hình trusted publishing trên gói **đã có**. Vì vậy phải phát hành tay một bản giữ chỗ trước, rồi mới
 gắn workflow vào.
 
+Nguồn các điều về npm (đọc ngày 2026-11-21; nên đọc lại trước khi làm):
+- trusted publishing, provenance chỉ cho repo công khai, npm ≥ 11.5.1: https://docs.npmjs.com/trusted-publishers/
+- gói phải có sẵn trước khi cấu hình: https://docs.npmjs.com/cli/v11/commands/npm-trust/
+- cấu hình mới hết hạn sau 2 ngày nếu chưa phát hành thành công: kết quả tìm kiếm trên docs.npmjs.com ngày 2026-11-21;
+  chưa tìm lại được trang gốc, **kiểm lại trên npmjs.com trước bước 4**.
+- người duyệt của environment trên repo riêng tư cần gói Enterprise:
+  https://docs.github.com/actions/deployment/targeting-different-environments/using-environments-for-deployment
+
 1. **Mở công khai repo** `ChuKhaLi/tingqr`.
    - Đây là điều kiện bắt buộc: job `publish` từ chối chạy khi repo còn riêng tư. Với repo riêng tư, bước duyệt của
      GitHub environment chỉ có ở gói Enterprise, nên chỉ cần đẩy tag là gói phát hành luôn.
    - Provenance trên npm cũng chỉ có khi repo công khai.
 2. **Tạo GitHub environment `npm-release`** (Settings → Environments). Đặt chủ dự án là người duyệt bắt buộc
    (required reviewer). Tên environment phải đúng `npm-release`.
+   - **Kiểm lại trước tag đầu tiên:** mở environment, thấy dòng "Required reviewers" có tên chủ dự án. Nếu environment
+     chưa có hay không có người duyệt, GitHub vẫn chạy job `publish` mà không chờ ai, tức là đẩy tag là phát hành luôn.
 3. **Bản giữ chỗ 0.0.1**, phát hành tay:
    1. `node ts/scripts/set-version.mjs 0.0.1`.
-   2. Trong 7 README (`README.md`, `README.vi.md`, `ts/packages/*/README.md`), thay dòng trạng thái "Not released yet" /
+   2. Trong 8 README (`README.md`, `README.vi.md` và 6 file `ts/packages/*/README.md`; ở hai README gốc là đoạn ngay
+      sau `<!-- status:npm -->`), thay dòng trạng thái "Not released yet" /
       "chưa phát hành" bằng: **"0.0.1 is a placeholder published to set up trusted publishing. Do not use it; wait for
-      0.1.0."** README tiếng Việt viết câu tương ứng.
+      0.1.0."** README tiếng Việt viết câu tương ứng. Đường phát hành tay này không có bước kiểm tự động: đếm đủ 8 file.
    3. Chạy diễn tập, lấy tarball: `node .claude/skills/release-drill/scripts/drill.mjs --out release-0.0.1`
       (thư mục này không commit). Mọi mục phải đạt.
    4. Đăng nhập npm (`npm login`), rồi phát hành **theo đúng thứ tự** từng file:
@@ -60,8 +71,9 @@ gắn workflow vào.
 ## Mỗi lần phát hành (từ 0.1.0)
 
 1. `node ts/scripts/set-version.mjs X.Y.Z`.
-2. **Sửa dòng trạng thái trong 7 README** cho đúng với bản sắp phát hành. Không còn "not released yet" / "chưa phát hành".
-   - `check-release --tag` (chạy trong job `verify`) sẽ từ chối phát hành nếu còn câu đó.
+2. **Sửa dòng trạng thái trong 8 README** (hai README gốc: đoạn sau `<!-- status:npm -->`) cho đúng với bản sắp phát hành. Không còn "not released yet" / "chưa phát hành".
+   - `check-release --tag` (chạy trong job `verify` khi chạy bằng tag) sẽ từ chối phát hành nếu còn câu đó, nếu tag lệch
+     số phiên bản, hay nếu số phiên bản là `0.0.0`.
    - Kiểm lại bảng bằng chứng trong README gốc theo `conformance/scans.md`.
 3. Viết mục `X.Y.Z` trong `CHANGELOG.md`, chuyển nội dung từ "Unreleased" xuống.
 4. Chạy diễn tập: `node .claude/skills/release-drill/scripts/drill.mjs`. Bước này gọi mạng tới registry npm.
@@ -72,8 +84,12 @@ gắn workflow vào.
 7. Xem job `verify` của `Release (TypeScript)`. Job này chạy lại mọi kiểm tra, diễn tập, và `npm publish --dry-run`.
 8. Duyệt job `publish` trong environment `npm-release`. Job này phát hành đúng các tarball mà `verify` đã diễn tập.
 
-Muốn chạy thử cả quy trình mà không phát hành: Actions → Release (TypeScript) → Run workflow, để `dry_run` bật (mặc
-định). PR nào sửa workflow, script phát hành hay diễn tập cũng tự chạy dry-run.
+**Chỉ tag mới phát hành.** Chạy bằng tay (Actions → Release (TypeScript) → Run workflow) và PR sửa workflow, script
+phát hành hay diễn tập đều chỉ chạy job `verify` (kiểm, diễn tập, `npm publish --dry-run`). Hai đường này không kiểm
+dòng trạng thái README hay tag, vì chúng không phát hành.
+
+**Job `publish` chưa chạy lần nào** (tính tới 2026-11-21): OIDC, bước duyệt, bước từ chối repo riêng tư, việc tải
+tarball từ artifact chỉ mới được đọc, chưa được chạy. Lần đầu (0.1.0) cần xem kỹ log của job này.
 
 ## Khi phát hành hỏng giữa chừng
 
