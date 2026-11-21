@@ -253,6 +253,19 @@ interface LogoOptions {
 - **Logo che mất phần cần thiết của mã:** ở phiên bản ≥ 7, chính giữa có pattern căn chỉnh; xoá ô ở đó có thể làm một
   số máy quét khó đọc. Kiểm bằng trang quét thử: mỗi mã có bản có logo. Nếu app thật quét lỗi, hạ `size` tối đa hoặc
   không xoá ô thuộc pattern căn chỉnh. Quyết định lúc đó ghi vào spec này.
+  - **Kết quả 2026-11-21** (`conformance/scans.md`):
+    - **Điều kiện quét:**
+      - logo thử của trang quét thử, `size` mặc định 0.2, `padding` 1, mức H;
+      - in 40 mm;
+      - Samsung Galaxy S22 Ultra, Android 16, quét cả trên màn hình lẫn giấy.
+    - **Kết quả:** MB Bank 6.5.31 và MyVIB 1.80.3 đọc bản có logo giống hệt bản không logo, ở mọi mã VietQR của trang.
+    - **Quyết định:** giữ nguyên giới hạn (`size` ≤ 0.25, xoá ≤ 10%).
+    - **Chưa thử:**
+      - `size` 0.25;
+      - icon ngân hàng thật của `@tingqr/bank-logos`;
+      - iPhone và app khác.
+
+      Muốn nới giới hạn thì phải thử những trường hợp đó trước.
 - **Lộ thông tin tài khoản thật:** đầu vào thật chỉ nằm trong thư mục riêng tư, trang HTML nằm ở thư mục bị gitignore,
   bảng `scans.md` chỉ ghi `id`. Claude không chạy script với dữ liệu thật.
 - **App ngân hàng từ chối QR chế độ chữ-số:** chưa thấy báo cáo nào, nhưng chưa ai kiểm cho VietQR. Trang quét thử có

@@ -58,6 +58,6 @@ QR cá nhân không có tag `52`, `59`, `60`. Khi đọc, tingqr trả lại cá
 
 ## Chưa được kiểm
 
-- **Chưa quét thử bằng app ngân hàng thật.** Bảng thử trên app thật làm ở Plan 7.
+- **Đã quét bằng app thật** (chủ dự án, 2026-11-21, Samsung Galaxy S22 Ultra, Android 16, trên màn hình và trên giấy; xem `conformance/scans.md`): MB Bank 6.5.31 và MyVIB 1.80.3 đọc đúng QR tĩnh và QR có số tiền tạo cho tài khoản thật, cả bản có logo giữa lẫn không logo. App VIB báo "lỗi không xác định" với mẫu chuyển vào thẻ (`QRIBFTTC`, số thẻ bịa). Chưa thử app ngân hàng nào khác, chưa thử iPhone.
 - **Chưa có QR thật nào ngoài mẫu README.** Các biến thể ngoài đời (sub-tag 62 khác, tag 59/60) sẽ thêm ở Plan 2 từ QR
   chụp thật.

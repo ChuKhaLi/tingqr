@@ -17,5 +17,6 @@
     "country": "VN",
     "amount": "1234567890123"
   },
-  "source": "vietqr@1.2.0 genQRText + vietnam-qr-pay@1.5.1 QRPay.initVietQR (both MIT), agree; fake account"
+  "source": "vietqr@1.2.0 genQRText + vietnam-qr-pay@1.5.1 QRPay.initVietQR (both MIT), agree; fake account",
+  "note": "Quét ngày 2026-11-21: số tài khoản 970436/1234567890 trùng một tài khoản thật (app hiện người nhận). Không chuyển tiền tới mã này."
 }

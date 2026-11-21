@@ -49,13 +49,15 @@ TypeScript và bản .NET, kèm tích hợp sẵn cho Angular, NestJS và ASP.NE
       - **mở thử trên máy thật:** chỉ có MyVIB mở đúng chuỗi của tingqr. MB mở qua `dl.vietqr.io`, nên mới xác nhận
         scheme và gói;
       - Action chưa chạy thật trên GitHub;
-      - icon giữa QR chưa quét thử.
+      - icon ngân hàng thật giữa QR chưa quét thử (lần quét 2026-11-21 dùng logo thử của trang quét thử).
     - Chủ dự án duyệt (2026-11-20/21):
       - ngân sách core 45 KB;
       - logo PNG thu về WebP lossless cao 128 px;
       - gói `bank-logos` khoảng 1,8 MB.
   - Repo GitHub riêng tư `ChuKhaLi/tingqr`; CI (`ci-ts.yml`) và mutation (`mutation-ts.yml`, ngưỡng 90%) chạy trên PR.
-  - **Chưa quét thử bằng app thật** cho VietQR, VNPAY, PromptPay lẫn KHQR.
+  - **VietQR đã quét bằng app thật** (2026-11-21, Android 16, màn hình và giấy): MB Bank và MyVIB đọc đúng QR tĩnh và QR
+    có số tiền, có và không có logo thử (`conformance/scans.md`). Chưa thử iPhone, app khác. VNPAY, PromptPay, KHQR
+    chưa quét bằng app thật.
   - Tiếp theo: chủ dự án quét thử VietQR (kể cả bản có icon ngân hàng) và điền `conformance/scans.md`; Plan 6 (Angular,
     NestJS); hoặc làm nốt Plan 2 Task 5–6 khi có QR thật.
 - **Chủ dự án đã quyết:**
