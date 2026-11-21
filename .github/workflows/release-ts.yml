@@ -1,0 +1,123 @@
+name: Release (TypeScript)
+
+# Publishes the six @tingqr npm packages. See docs/RELEASING.md before the first release.
+#
+# - A tag `ts-vX.Y.Z` starts a release; `workflow_dispatch` runs it by hand (dry run by default); a pull request that
+#   touches the release machinery runs it as a dry run. Nothing but a tag or a dispatch with dry_run=false publishes.
+# - The irreversible step needs a deliberate act (the tag) and then a human approval on the `npm-release` environment,
+#   given with the verify results already visible. Required reviewers exist only on public repositories (or private ones
+#   on GitHub Enterprise), so `publish` refuses to run from a private repository: there the tag alone would publish.
+# - npm authentication is trusted publishing (OIDC): no NPM_TOKEN exists or should exist. The trusted publisher on
+#   npmjs.com is configured against THIS FILE NAME and the `npm-release` environment: renaming either breaks publishing
+#   until every package's trusted publisher is updated.
+# - `publish` uploads exactly the tarballs `verify` packed and drilled (artifact), in dependency order.
+
+on:
+  push:
+    tags: ['ts-v*']
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Run every check and stop before publishing'
+        type: boolean
+        default: true
+  pull_request:
+    paths:
+      - '.github/workflows/release-ts.yml'
+      - 'ts/scripts/set-version.mjs'
+      - 'ts/scripts/check-release.mjs'
+      - 'ts/scripts/release-common.mjs'
+      - '.claude/skills/release-drill/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-ts-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: ts/pnpm-lock.yaml
+      - run: pnpm -C ts install --frozen-lockfile
+      - run: pnpm -C ts typecheck
+      - run: pnpm -C ts build
+      - run: pnpm -C ts test
+      - name: Package checks
+        run: |
+          set -euo pipefail
+          for c in core render bank-logos hono angular nestjs; do node "ts/scripts/check-$c-package.mjs"; done
+      - run: node --test ts/scripts/test/release.test.mjs
+
+      # The tag is the version claim, so it is checked, not trusted. Prereleases are refused until a dist-tag flow
+      # (publishing an rc as `latest` would be a real footgun) is built and tested.
+      - name: The tag must be exactly ts-v<version>, shared by all six packages
+        if: github.ref_type == 'tag'
+        run: |
+          set -euo pipefail
+          case "$GITHUB_REF_NAME" in *-*) echo "::error::prerelease tags are not supported: $GITHUB_REF_NAME"; exit 1;; esac
+          node ts/scripts/check-release.mjs --tag "$GITHUB_REF_NAME"
+      - name: All six packages share one version and carry the release metadata
+        if: github.ref_type != 'tag'
+        run: node ts/scripts/check-release.mjs
+
+      # Installs the packed tarballs into a clean directory and uses them as a consumer would (calls the npm registry
+      # for peers). --out keeps the exact files that will be published.
+      - name: Release drill
+        run: node .claude/skills/release-drill/scripts/drill.mjs --out tarballs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tarballs
+          path: tarballs/*.tgz
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: npm publish --dry-run, in publish order
+        run: |
+          set -euo pipefail
+          for p in core render bank-logos hono nestjs angular; do
+            npm publish --dry-run --access public tarballs/tingqr-$p-*.tgz
+          done
+
+  publish:
+    needs: verify
+    if: >-
+      (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/ts-v')) ||
+      (github.event_name == 'workflow_dispatch' && inputs.dry_run == false)
+    runs-on: ubuntu-latest
+    environment: npm-release
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Refuse to publish from a private repository
+        if: github.event.repository.private
+        run: |
+          echo "::error::This repository is private: the npm-release approval gate does not apply, so publishing is refused. See docs/RELEASING.md."
+          exit 1
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          registry-url: 'https://registry.npmjs.org'
+      # Trusted publishing needs npm 11.5.1 or later.
+      - run: npm install -g npm@^11.5.1
+      - uses: actions/download-artifact@v4
+        with:
+          name: tarballs
+          path: tarballs
+      - name: npm publish, in dependency order
+        run: |
+          set -euo pipefail
+          for p in core render bank-logos hono nestjs angular; do
+            npm publish --access public tarballs/tingqr-$p-*.tgz
+          done
