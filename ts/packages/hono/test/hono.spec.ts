@@ -149,3 +149,32 @@ describe('tingqr route', () => {
     expect(((await res.json()) as { error: { code: string } }).error.code).toBe('NON_ASCII')
   })
 })
+
+describe('logos over HTTP', () => {
+  // An SVG served as an image never loads outside resources (and the CSP allows only data: images): a path or URL
+  // logo would come out as an empty square. tingqr never serves a code without the logo that was asked for.
+  test.each(['/logo.png', 'https://example.com/logo.png'])('tingqrSvg rejects logo %s with INVALID_VALUE', async (href) => {
+    let thrown: unknown
+    const app = new Hono().get('/qr.svg', (c) => {
+      try {
+        return tingqrSvg(c, PAYLOAD, { minVersion: 5, logo: { href } })
+      } catch (e) {
+        thrown = e
+        return c.text('caught', 500)
+      }
+    })
+    await app.request('/qr.svg')
+    expect((thrown as TingQrError).code).toBe('INVALID_VALUE')
+    expect((thrown as TingQrError).message).toMatch(/data:image/)
+  })
+
+  test('a data: URI logo is served', async () => {
+    const href = 'data:image/png;base64,AAAA'
+    const app = new Hono().get('/qr.svg', (c) => tingqrSvg(c, PAYLOAD, { minVersion: 5, logo: { href } }))
+    expect((await app.request('/qr.svg')).status).toBe(200)
+  })
+
+  test('the route rejects a non-data: logo when it is created, not on every request', () => {
+    expect(() => tingqr({ resolve: () => PAYLOAD, logo: { href: '/logo.png' } })).toThrow(TingQrError)
+  })
+})

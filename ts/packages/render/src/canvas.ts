@@ -135,6 +135,15 @@ function blobOf(canvas: HTMLCanvasElement): Promise<Blob> {
   })
 }
 
+/** PNG data URL of the canvas. Browsers return "data:," (no throw) for a canvas over their size limit. */
+function dataUrlOf(canvas: HTMLCanvasElement): string {
+  const url = exporting(() => canvas.toDataURL('image/png'))
+  if (!url.startsWith('data:image/png')) {
+    throw new TingQrError('NO_CANVAS', 'The browser could not encode the canvas as PNG (too large? use a smaller scale).')
+  }
+  return url
+}
+
 async function drawn(text: string, options: CanvasOptions): Promise<HTMLCanvasElement> {
   const canvas = newCanvasChecked(text, options)
   await drawQr(canvas, text, options)
@@ -149,13 +158,13 @@ export async function toPngBlob(text: string, options: CanvasOptions = {}): Prom
 /** Draw `text` on a new canvas and export it as a PNG data URL (meant to be long-press savable in in-app browsers; not yet tested in Zalo/Messenger). Browser only. */
 export async function toPngDataUrl(text: string, options: CanvasOptions = {}): Promise<string> {
   const canvas = await drawn(text, options)
-  return exporting(() => canvas.toDataURL('image/png'))
+  return dataUrlOf(canvas)
 }
 
 /** Draw once and export both: a data URL to show in an `<img>` and a Blob to share or download. Browser only. */
 export async function toPng(text: string, options: CanvasOptions = {}): Promise<{ blob: Blob; dataUrl: string }> {
   const canvas = await drawn(text, options)
-  const dataUrl = exporting(() => canvas.toDataURL('image/png'))
+  const dataUrl = dataUrlOf(canvas)
   return { blob: await blobOf(canvas), dataUrl }
 }
 

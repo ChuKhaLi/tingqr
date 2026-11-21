@@ -24,10 +24,26 @@ export interface TingQrRouteOptions<E extends Env = any, P extends string = any>
 const CSP = "default-src 'none'; img-src data:; style-src 'unsafe-inline'"
 
 /**
+ * An SVG used as an image never loads outside resources (and the CSP above allows only data: images), so a path or URL
+ * logo would be served as an empty square. Never serve a code without the logo that was asked for.
+ */
+function checkServedLogo(options: SvgOptions): void {
+  const href: unknown = options.logo?.href
+  if (options.logo !== undefined && !(typeof href === 'string' && href.startsWith('data:image/'))) {
+    throw new TingQrError(
+      'INVALID_VALUE',
+      'A logo in an SVG served over HTTP must be a data:image/ URI (e.g. from @tingqr/bank-logos): an SVG shown as an ' +
+        'image cannot load a path or URL, so the logo would be blank.',
+    )
+  }
+}
+
+/**
  * Respond with `payload` rendered as an SVG QR code. Throws TingQrError (e.g. INVALID_VALUE) for a payload or option
  * that cannot be rendered; it never returns a broken image.
  */
 export function tingqrSvg<E extends Env>(c: Context<E>, payload: string, options: TingQrSvgOptions = {}): Response {
+  checkServedLogo(options)
   const { cacheControl = 'private, max-age=300', ...svgOptions } = options
   const svg = toSvg(payload, svgOptions)
   return c.body(svg, 200, {
@@ -45,6 +61,7 @@ export function tingqrSvg<E extends Env>(c: Context<E>, payload: string, options
  */
 export function tingqr<E extends Env = any, P extends string = any>(options: TingQrRouteOptions<E, P>): Handler<E, P> {
   const { resolve, ...svgOptions } = options
+  checkServedLogo(svgOptions) // a config mistake fails when the route is created, not as a 400 on every request
   return async (c) => {
     try {
       const payload = await resolve(c)

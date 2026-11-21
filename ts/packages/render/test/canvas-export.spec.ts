@@ -208,6 +208,14 @@ describe('PNG export', () => {
     }
   })
 
+  test('a canvas over the browser size limit ("data:," from toDataURL) is NO_CANVAS, never a blank image', async () => {
+    installDom(undefined, (c) => {
+      c.emptyDataUrl = true
+    })
+    expect(await code(toPngDataUrl(TEXT))).toBe('NO_CANVAS')
+    expect(await code(toPng(TEXT))).toBe('NO_CANVAS')
+  })
+
   test('toBlob giving null is NO_CANVAS', async () => {
     installDom(undefined, (c) => {
       c.blobResult = 'null'

@@ -3,6 +3,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  DestroyRef,
   effect,
   inject,
   input,
@@ -50,7 +51,8 @@ type SvgState = { svg: SafeHtml } | { error: TingQrError } | null
   `,
 })
 export class TingQrCode {
-  readonly payload = input.required<string>()
+  /** `null`/`undefined` (e.g. from the async pipe before the first value) are treated like `''`: nothing is drawn. */
+  readonly payload = input.required<string | null | undefined>()
   readonly options = input<CanvasOptions>({})
   readonly mode = input<TingQrMode>('auto')
   /** Accessible name of the code (e.g. the amount and the order); also the PNG's alt text. */
@@ -69,7 +71,7 @@ export class TingQrCode {
   /** The SVG for the current payload and options, or the error; null for an empty payload. */
   protected readonly svgState = computed<SvgState>(() => {
     const payload = this.payload()
-    if (payload === '') return null
+    if (payload === null || payload === undefined || payload === '') return null
     const { scale: _scale, ...svgOptions } = this.options()
     try {
       // Safe to bypass the sanitizer: see TingQrSvgPipe for why toSvg output contains no unescaped caller text.
@@ -81,6 +83,8 @@ export class TingQrCode {
   })
 
   constructor() {
+    // A drawing that finishes after the component is gone must not emit (Angular warns on outputs of destroyed views).
+    inject(DestroyRef).onDestroy(() => this.drawing++)
     effect(() => {
       const state = this.svgState()
       if (state !== null && 'error' in state) untracked(() => this.error.emit(state.error))
@@ -94,7 +98,7 @@ export class TingQrCode {
       const run = ++this.drawing
       untracked(() => {
         this.pngUrl.set(null)
-        if (wantPng) void this.draw(run, payload, options)
+        if (wantPng && payload) void this.draw(run, payload, options)
       })
     })
   }

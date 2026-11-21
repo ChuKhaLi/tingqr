@@ -39,7 +39,9 @@ app.get(
 - Any other error from `resolve` goes to `app.onError` unchanged.
 
 Render options (`margin`, `foreground`, `background`, `size`, `logo`, `ecc`…) are those of `toSvg` from
-`@tingqr/render`.
+`@tingqr/render`. A `logo` must be a `data:image/` URI (e.g. from `@tingqr/bank-logos`): an SVG shown as an
+image cannot load a path or URL, so tingqr rejects those (`INVALID_VALUE`, when the route is created) instead of serving a
+blank logo.
 
 Pass your app's Hono env and the route path as type arguments so `resolve` sees typed bindings and params:
 `tingqr<AppEnv, '/orders/:id/qr.svg'>({ resolve: (c) => … c.env.DB … c.req.param('id') … })`.

@@ -83,3 +83,14 @@ describe('mode svg', () => {
     expect(host(f).querySelector('svg')).not.toBeNull()
   })
 })
+
+describe('null or undefined payload (e.g. `[payload]="order$ | async"` before the first value)', () => {
+  test.each([null, undefined])('%o draws nothing and emits no error, like an empty payload', async (payload) => {
+    const { f, errors } = await create({ payload, mode: 'svg' })
+    expect(host(f).querySelector('svg')).toBeNull()
+    expect(errors).toEqual([])
+    f.componentRef.setInput('payload', PAYLOAD)
+    await f.whenStable()
+    expect(host(f).querySelector('svg')).not.toBeNull()
+  })
+})

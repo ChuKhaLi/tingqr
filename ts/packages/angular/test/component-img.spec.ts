@@ -176,3 +176,15 @@ test('mode svg never draws a PNG', async () => {
   await new Promise((r) => setTimeout(r, 20))
   expect(created).toBe(0)
 })
+
+test('destroyed while drawing: no late png or error, no Angular warning', async () => {
+  const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+  const { f, pngs, errors } = await create({ payload: PAYLOAD, mode: 'img' })
+  await vi.waitFor(() => expect(pending.length).toBe(1))
+  f.destroy()
+  releaseAll()
+  await new Promise((r) => setTimeout(r, 20))
+  expect(pngs).toEqual([])
+  expect(errors).toEqual([])
+  expect(warn).not.toHaveBeenCalled()
+})

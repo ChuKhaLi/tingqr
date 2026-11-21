@@ -42,8 +42,11 @@ export class ExportingCanvas extends FakeCanvas {
     if (this.exportError !== undefined) throw this.exportError
     cb(this.blobResult === 'null' ? null : new Blob([`png ${this.width}`], { type: type ?? 'image/png' }))
   }
+  /** Browsers return "data:," instead of throwing when the canvas is over their size limit. */
+  emptyDataUrl = false
   toDataURL(type?: string): string {
     if (this.exportError !== undefined) throw this.exportError
+    if (this.emptyDataUrl) return 'data:,'
     return `data:${type ?? 'image/png'};base64,${Buffer.from(`png ${this.width}`).toString('base64')}`
   }
 }
