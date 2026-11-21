@@ -13,7 +13,8 @@ export interface TingQrModuleAsyncOptions {
 
 /**
  * Configure the receiving account once. The configuration is checked when the app starts: an unknown bank, an invalid
- * account or bad SVG options stop the app with a TingQrError.
+ * account, a non-data: logo or SVG options that cannot render the account's static code stop the app with a TingQrError.
+ * Options that depend on payload length (maxVersion, ecc) are only checked per request.
  */
 @Module({})
 export class TingQrModule {

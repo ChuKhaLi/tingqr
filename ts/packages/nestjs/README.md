@@ -37,8 +37,10 @@ TingQrModule.forRootAsync({
 
 - `bank`: a bank code or BIN (`'MB'`, `'vcb'`, `'970422'`…), looked up with `findBank` of `@tingqr/core/banks`.
 - `service: 'card'` for a card number; `svg` for default image options; `isGlobal: true` to use the service everywhere.
-- **The configuration is checked when the app starts.** An unknown bank, an invalid account or bad `svg` options stop
-  the app with a `TingQrError` (`INVALID_VALUE`), instead of failing at the first request.
+- **The configuration is checked when the app starts.** An unknown bank, an invalid account, a logo that is not a data
+  URI, or `svg` options that cannot render the account's static code (colours, margin, logo size…) stop the app with a
+  `TingQrError` (`INVALID_VALUE`). Options that depend on the payload length (`maxVersion`, `ecc`) are only checked per
+  request (400).
 
 ## Build a code
 
@@ -64,13 +66,14 @@ async qr(@Param('id') id: string) {
 
 | The handler returns | Response |
 |---|---|
-| a QR string (any scheme) | `200`, SVG |
+| any non-empty string (not validated: build it with tingqr's encoders, e.g. `paymentQr`) | `200`, SVG |
 | `null`, `undefined`, `''` | `404` (`NotFoundException`) |
 | throws a `TingQrError`, or the string / options cannot be drawn | `400` (`BadRequestException`, body `{ "error": { "code", "message" } }`) |
 | throws anything else | unchanged: your exception filters decide (`500` by default) |
 
 - 404 and 400 go through Nest's exception layer, so your filters and logging apply (and a global filter may change the
-  body). Status codes, image headers and error codes match `@tingqr/hono`.
+  body). Status codes, the image headers and the 400 error code follow the contract shared with `@tingqr/hono`
+  (`conformance/http/svg-response.json`); the 404 body differs.
 - Image headers: `Content-Type: image/svg+xml; charset=utf-8`, `X-Content-Type-Options: nosniff`,
   `Content-Security-Policy: default-src 'none'; img-src data:; style-src 'unsafe-inline'`, and
   `Cache-Control: private, max-age=300` (the code carries an account number and often an amount; change it with
@@ -89,8 +92,10 @@ is what scammers need. Your controller always decides what goes into the code.
 
 ## Builds without decorator metadata
 
-The package injects everything with explicit `@Inject(...)`, so it works in apps built with esbuild or SWC. In such an
-app, inject the service the same way: `@Inject(TingQrService)`.
+The package injects everything with explicit `@Inject(...)`, so it works without decorator metadata (tested with an
+esbuild build). In such an app, inject the service the same way: `@Inject(TingQrService)`.
+
+The CommonJS entry loads NestJS 12 (ESM only) through Node's `require(esm)`: Node 20.19+ or 22.12+.
 
 ## License
 

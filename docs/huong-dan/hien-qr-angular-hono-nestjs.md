@@ -120,14 +120,18 @@ export class OrdersController {
   - `forRoot`, hoặc `forRootAsync` để đọc biến môi trường qua `ConfigService`;
   - `bank` là mã hay BIN, tra bằng `findBank`.
 - **Cấu hình sai thì app không khởi động** (`INVALID_VALUE`): ngân hàng không tra ra, tài khoản sai, logo không phải data
-  URI, màu sai.
+  URI, tuỳ chọn `svg` không vẽ được QR tĩnh của tài khoản (màu, viền, cỡ logo…). Tuỳ chọn phụ thuộc độ dài chuỗi
+  (`maxVersion`, `ecc`) chỉ được kiểm ở từng request (400).
 - `paymentQr({ amount, purpose })` tạo VietQR tới tài khoản đã cấu hình; không có `amount` thì là QR tĩnh.
-- **`@TingQrSvg()`:** handler trả chuỗi QR thì ra 200 SVG, header như Hono.
+- **`@TingQrSvg()`:** handler trả chuỗi khác rỗng thì ra 200 SVG (chuỗi không được kiểm; dựng bằng `paymentQr` hay bộ tạo
+  của tingqr). Status, header và mã lỗi 400 theo hợp đồng chung với Hono (`conformance/http/svg-response.json`).
   - Trả `null`, `undefined` hay `''` thì 404.
   - `TingQrError` thì 400 `{ error: { code, message } }`.
   - Lỗi khác do exception filter của app quyết (mặc định 500).
   - 404 và 400 đi qua lớp exception của NestJS, nên filter của app có thể đổi thân lỗi.
 - `@TingQrSvg()` dùng được cả khi không có `TingQrModule`, ví dụ để trả QR PromptPay. Chỉ `TingQrService` mới cần
   `forRoot`.
-- Mọi chỗ inject trong gói dùng `@Inject(...)` tường minh, nên app build bằng esbuild hay SWC vẫn chạy.
+- Mọi chỗ inject trong gói dùng `@Inject(...)` tường minh, nên chạy được khi app build không có decorator metadata (đã thử
+  với esbuild).
+- Bản CommonJS nạp NestJS 12 (chỉ ESM) qua `require(esm)` của Node: cần Node 20.19+ hoặc 22.12+.
 - Đã thử: NestJS 12.6, trên cả Express và Fastify (CI). Bản 10 và 11 chưa thử.

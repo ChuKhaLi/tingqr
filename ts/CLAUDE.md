@@ -76,7 +76,7 @@
   - Test chạy trên `dist` (alias `@tingqr/nestjs` trong `vitest.config.ts`). `test/app.spec.ts` dựng app mẫu
     (`test/sample-app.ts`) trên cả Express và Fastify, gọi qua cổng thật; header so từng chữ.
   - Cấu hình kiểm trong `resolveOptions` (`src/options.ts`) lúc khởi động. Hợp đồng HTTP (header, 404/400, logo phải
-    là data URI) phải giữ giống `@tingqr/hono`.
+    là data URI) theo `conformance/http/svg-response.json`, chung với `@tingqr/hono`; test của cả hai gói đọc file đó.
   - `pnpm check:nestjs` (sau `pnpm build`): chỉ phụ thuộc `core` + `render`, peer NestJS `>=10.0.0`, tarball dưới
     10 000 byte.
 - `pnpm typecheck` build mọi gói trước (`pnpm -r build`), vì test Angular và NestJS đọc kiểu gói từ `dist`.

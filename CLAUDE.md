@@ -67,8 +67,8 @@ TypeScript và bản .NET, kèm tích hợp sẵn cho Angular, NestJS và ASP.NE
     - **Chưa thử:** nhấn giữ lưu PNG trong Zalo/Messenger, app ngân hàng quét ảnh đã lưu.
   - **Plan 6b** (2026-11-21, nhánh `plan-6b`): `docs/superpowers/plans/2026-11-21-plan-6b-nestjs.md`, thiết kế
     `docs/superpowers/specs/2026-11-21-tingqr-nestjs-design.md`. `@tingqr/nestjs`: `TingQrModule.forRoot`/`forRootAsync`
-    (tài khoản nhận, cấu hình sai thì app không khởi động), `TingQrService.paymentQr`, `@TingQrSvg()` (interceptor, cùng
-    hợp đồng HTTP với Hono). Đã thử NestJS 12.6 trên Express và Fastify; chưa có người dùng thật.
+    (tài khoản nhận, cấu hình sai thì app không khởi động), `TingQrService.paymentQr`, `@TingQrSvg()` (interceptor, theo
+    hợp đồng HTTP chung với Hono ở `conformance/http/svg-response.json`; thân 404 khác). Đã thử NestJS 12.6 trên Express và Fastify; chưa có người dùng thật.
   - **Cần chủ dự án quyết trước Plan 7:** ngân sách `render` (32 391 / 33 000 byte; README đầy đủ sẽ vượt).
   - Tiếp theo: Plan 7 (README, bảng thử, phát hành npm → v0.1); chủ dự án quét thử VietQR (kể cả bản có icon ngân hàng)
     và thử PNG trong Zalo/Messenger; hoặc làm nốt Plan 2 Task 5–6 khi có QR thật.

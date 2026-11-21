@@ -4,15 +4,10 @@ import { ExpressAdapter } from '@nestjs/platform-express'
 import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { TingQrError } from '@tingqr/core'
 import { toSvg } from '@tingqr/render'
-import { PROMPTPAY, VIETQR } from './payload.js'
+import { PROMPTPAY, SVG_HEADERS_LOWER, VIETQR } from './payload.js'
 import { appModule } from './sample-app.js'
 
-const HEADERS = {
-  'content-type': 'image/svg+xml; charset=utf-8',
-  'x-content-type-options': 'nosniff',
-  'content-security-policy': "default-src 'none'; img-src data:; style-src 'unsafe-inline'",
-  'cache-control': 'private, max-age=300',
-}
+const HEADERS = SVG_HEADERS_LOWER
 const ADAPTERS = [
   ['express', () => new ExpressAdapter()],
   ['fastify', () => new FastifyAdapter()],

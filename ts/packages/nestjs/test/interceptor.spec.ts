@@ -4,15 +4,10 @@ import { TingQrError } from '@tingqr/core'
 import { toSvg } from '@tingqr/render'
 import { TingQrSvg, TingQrSvgInterceptor, TINGQR_OPTIONS } from '@tingqr/nestjs'
 import { defer, firstValueFrom, from, of, throwError } from 'rxjs'
-import { VIETQR } from './payload.js'
+import { SVG_HEADERS, VIETQR } from './payload.js'
 
 const PAYLOAD = VIETQR.payload
-const HEADERS = {
-  'Content-Type': 'image/svg+xml; charset=utf-8',
-  'X-Content-Type-Options': 'nosniff',
-  'Content-Security-Policy': "default-src 'none'; img-src data:; style-src 'unsafe-inline'",
-  'Cache-Control': 'private, max-age=300',
-}
+const HEADERS = SVG_HEADERS
 
 class Routes {
   @TingQrSvg()
@@ -67,7 +62,8 @@ test.each([
 })
 
 test('route options override module svg options, key by key', async () => {
-  const { body, headers } = await run(() => of(PAYLOAD), { route: 'noStore', moduleSvg: { margin: 2 } })
+  // Overlapping key (cacheControl): the route wins; other module keys (margin) still apply.
+  const { body, headers } = await run(() => of(PAYLOAD), { route: 'noStore', moduleSvg: { margin: 2, cacheControl: 'public, max-age=60' } })
   expect(body).toBe(toSvg(PAYLOAD, { margin: 2 }))
   expect(headers['Cache-Control']).toBe('no-store')
 })
