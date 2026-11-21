@@ -1,17 +1,34 @@
 // Logos and icons for conformance/banks/logos/: SVG safety, Commons licence tags, manifest entries.
 import { createHash } from 'node:crypto'
 
+/** Static drawing elements only: no script, style, animation, foreignObject, image or link targets. */
+const ALLOWED_ELEMENTS = new Set(
+  'svg g defs path rect circle ellipse line polyline polygon text tspan use linearGradient radialGradient stop clipPath mask symbol pattern title desc metadata'.split(
+    ' ',
+  ),
+)
+/** Editor metadata that browsers ignore (Inkscape, Sodipodi, RDF, Creative Commons, Dublin Core). */
+const METADATA_PREFIXES = ['sodipodi:', 'inkscape:', 'rdf:', 'cc:', 'dc:']
+
 /**
- * Reasons an SVG is unsafe to embed in a web page, or [] when it is fine. tingqr rejects such a file (and falls back
- * to the PNG) instead of rewriting it.
+ * Reasons an SVG is unsafe to embed in a web page, or [] when it is fine. Deliberately strict (a regex scan, not a
+ * parser): anything outside an allowlist of static drawing elements, any event attribute, any declaration that could
+ * define entities, any `attributeName`, and any `href` or `url()` that does not point inside the file count as
+ * problems. tingqr then rejects the file and falls back to the PNG; it never rewrites an SVG. False positives only
+ * cost an SVG.
  */
 export function svgProblems(svg) {
   const problems = []
-  if (/<\s*script\b/i.test(svg)) problems.push('<script>')
-  if (/<\s*foreignObject\b/i.test(svg)) problems.push('<foreignObject>')
-  if (/\son[a-z]+\s*=/i.test(svg)) problems.push('on* event attribute')
-  for (const m of svg.matchAll(/\b(?:xlink:)?href\s*=\s*(["'])(.*?)\1/gi)) {
-    if (!m[2].startsWith('#')) problems.push(`href to ${m[2].slice(0, 40)}`)
+  for (const m of svg.matchAll(/<\s*([A-Za-z][\w:.-]*)/g)) {
+    const name = m[1]
+    if (!ALLOWED_ELEMENTS.has(name) && !METADATA_PREFIXES.some((p) => name.startsWith(p))) problems.push(`<${name}>`)
+  }
+  if (/<!(?!--)/.test(svg)) problems.push('<! declaration (DOCTYPE, ENTITY or CDATA)')
+  if (/(?:^|[\s/"'])on[a-z]+\s*=/i.test(svg)) problems.push('on* event attribute')
+  if (/\battributeName\s*=/i.test(svg)) problems.push('attributeName')
+  for (const m of svg.matchAll(/\b(?:xlink:)?href\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]*))/gi)) {
+    const value = m[1] ?? m[2] ?? m[3]
+    if (!/^#[\w.-]*$/.test(value)) problems.push(`href to ${value.slice(0, 40)}`)
   }
   for (const m of svg.matchAll(/url\(\s*(['"]?)(.*?)\1\s*\)/gi)) {
     if (!m[2].startsWith('#')) problems.push(`url(${m[2].slice(0, 40)})`)

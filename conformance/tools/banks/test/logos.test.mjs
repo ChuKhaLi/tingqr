@@ -24,6 +24,16 @@ const BAD = {
   'uppercase SCRIPT': '<svg><SCRIPT>x</SCRIPT></svg>',
   'onclick with spaces': '<svg><g  onclick = "x"/></svg>',
   'external url() in style': '<svg><rect style="fill:url(https://x/p.svg#a)"/></svg>',
+  'onload after a slash': '<svg/onload=alert(1)>',
+  'on* after a newline': '<svg\nonload="x"></svg>',
+  'animate on href': '<svg><a><animate attributeName="href" to="javascript:alert(1)"/></a></svg>',
+  'set element': '<svg><set attributeName="xlink:href" to="javascript:x"/></svg>',
+  'animateTransform element': '<svg><animateTransform/></svg>',
+  'DOCTYPE with entity': '<!DOCTYPE svg [<!ENTITY x "y">]><svg>&x;</svg>',
+  'style element': '<svg><style>@import url(x.css)</style></svg>',
+  'iframe': '<svg><iframe src="x"/></svg>',
+  'unquoted external href': '<svg><image href=https://x/a.png /></svg>',
+  'entity-encoded javascript href': '<svg><a href="&#106;avascript:x"/></svg>',
 }
 for (const [name, svg] of Object.entries(BAD)) {
   test(`svgProblems flags ${name}`, () => {
