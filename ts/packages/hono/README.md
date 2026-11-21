@@ -40,6 +40,9 @@ app.get(
 Render options (`margin`, `foreground`, `background`, `size`, `logo`, `ecc`…) are those of `toSvg` from
 `@tingqr/render`.
 
+Pass your app's Hono env and the route path as type arguments so `resolve` sees typed bindings and params:
+`tingqr<AppEnv, '/orders/:id/qr.svg'>({ resolve: (c) => … c.env.DB … c.req.param('id') … })`.
+
 ## In your own handler
 
 ```ts

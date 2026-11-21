@@ -116,6 +116,21 @@ describe('tingqr route', () => {
     expect(seen).toBe(boom)
   })
 
+  test('resolve sees the app bindings and route params with their types', async () => {
+    type AppEnv = { Bindings: { ACCOUNT: string } }
+    const app = new Hono<AppEnv>().get(
+      '/orders/:id/qr.svg',
+      tingqr<AppEnv, '/orders/:id/qr.svg'>({
+        resolve: (c) => {
+          const account: string = c.env.ACCOUNT // typed binding (would be any/error without the generic)
+          const id: string = c.req.param('id') // typed param (string | undefined without the path generic)
+          return id === 'A1' && account === 'ok' ? PAYLOAD : null
+        },
+      }),
+    )
+    expect((await app.request('/orders/A1/qr.svg', {}, { ACCOUNT: 'ok' })).status).toBe(200)
+  })
+
   test('a TingQrError thrown by resolve itself is also 400', async () => {
     const app = new Hono().get(
       '/qr.svg',
