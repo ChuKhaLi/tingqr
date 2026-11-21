@@ -34,10 +34,28 @@ TypeScript và bản .NET, kèm tích hợp sẵn cho Angular, NestJS và ASP.NE
       tới khi có kết quả quét.
     - Đầu vào quét thật của chủ dự án ở `conformance/private/scan-inputs.json`; chỉ chủ dự án chạy `scan-sheet` với dữ
       liệu thật.
+  - **Plan 5** (2026-11-20, nhánh `plan-5`): `docs/superpowers/plans/2026-11-20-plan-5-banks.md`, thiết kế
+    `docs/superpowers/specs/2026-11-20-tingqr-banks-design.md`, hướng dẫn `docs/huong-dan/ngan-hang-va-mo-app.md`.
+    - Xong:
+      - dữ liệu `conformance/banks/` (76 ngân hàng, 44 app, kiểm Google Play, bản chụp nguồn);
+      - `@tingqr/core/banks` (`findBank`, `findBankApp`, `appsForBank`, `bankAppLink`), mẫu `kind: "link"`;
+      - gói `@tingqr/bank-logos` (mỗi ảnh một module, tree-shake được);
+      - công cụ `conformance/tools/banks/`, Action hằng tháng mở issue, skill `update-banks`.
+    - **Nguồn:** `qrviet` và Noel tree chép từ vietqr.io, nên không tính là nguồn độc lập. Nguồn độc lập duy nhất ngoài
+      vietqr.io là `vietnam-qr-pay` 1.5.1, đã cũ.
+    - **Chưa đưa vào:** VietABank, Vietbank, BVBank (các nguồn ghi khác nhau), phần Android của MoMo và ZaloPay.
+    - **Chưa kiểm:**
+      - chỉ MB Bank và MyVIB đã mở thử trên máy thật;
+      - Action chưa chạy thật trên GitHub;
+      - icon giữa QR chưa quét thử.
+    - Chủ dự án duyệt (2026-11-20/21):
+      - ngân sách core 45 KB;
+      - logo PNG thu về WebP lossless cao 128 px;
+      - gói `bank-logos` khoảng 1,8 MB.
   - Repo GitHub riêng tư `ChuKhaLi/tingqr`; CI (`ci-ts.yml`) và mutation (`mutation-ts.yml`, ngưỡng 90%) chạy trên PR.
   - **Chưa quét thử bằng app thật** cho VietQR, VNPAY, PromptPay lẫn KHQR.
-  - Tiếp theo: chủ dự án quét thử VietQR và điền `conformance/scans.md`; Plan 5 (danh sách ngân hàng, link mở app,
-    `@tingqr/bank-logos`); hoặc làm nốt Plan 2 Task 5–6 khi có QR thật.
+  - Tiếp theo: chủ dự án quét thử VietQR (kể cả bản có icon ngân hàng) và điền `conformance/scans.md`; Plan 6 (Angular,
+    NestJS); hoặc làm nốt Plan 2 Task 5–6 khi có QR thật.
 - **Chủ dự án đã quyết:**
   - Mục đích chính là một thư viện mã nguồn mở có tiếng; dùng phụ trong Noel tree (`../noel-tree`, Angular 21 SSR trên
     Cloudflare Workers).

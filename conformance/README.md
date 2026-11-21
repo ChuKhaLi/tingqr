@@ -20,6 +20,10 @@ bộ mẫu thử ở đây, nên hai bản cho cùng kết quả trên mọi hà
   | `bakong-khqr` | 1.0.20 | ISC khai báo trong `package.json`, không có file LICENSE (SDK của Ngân hàng Quốc gia Campuchia) | KHQR |
   | Nayuki `qrcodegen.ts` | v1.8.0, commit `720f62b` | MIT (header trong file) | Mẫu ma trận (`vendor/`, file gốc không sửa, kiểm SHA-256 trước khi chạy) |
   | `typescript` | 5.9.3 | Apache-2.0 | Dịch file Nayuki gốc trong `gen-render.mjs` |
+- `tools/banks/`: tải, so sánh và cập nhật `banks/`, có `package.json` riêng (`sharp` để thu nhỏ logo).
+  - Có gọi mạng: `update.mjs`, `capture-sources.mjs`, `play-check.mjs`, `commons-search.mjs`.
+  - `sync-ts.mjs` sinh `ts/packages/core/src/banks/data.ts`.
+  - Test không gọi mạng. Cách dùng: skill `update-banks`.
 - `private/`: QR thật chụp ở máy chủ dự án. **Nằm trong `.gitignore`, không bao giờ commit.**
 - `banks/`: danh sách ngân hàng và app ngân hàng, dùng chung cho mọi ngôn ngữ (thiết kế:
   `docs/superpowers/specs/2026-11-20-tingqr-banks-design.md`). Mỗi file có `*.schema.json` đi kèm.

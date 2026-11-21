@@ -4,7 +4,7 @@
   "scripts": {
     "test": "pnpm -r build && pnpm -r test",
     "build": "pnpm -r build",
-    "typecheck": "pnpm -C packages/core build && pnpm -r typecheck",
+    "typecheck": "pnpm -C packages/core build && pnpm -C packages/render build && pnpm -r typecheck",
     "check:core": "node scripts/check-core-package.mjs",
     "check:render": "node scripts/check-render-package.mjs",
     "check:bank-logos": "node scripts/check-bank-logos-package.mjs"

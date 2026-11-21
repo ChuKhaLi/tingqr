@@ -37,3 +37,12 @@
   - `src/banks/data.ts` sinh từ `conformance/banks/` bằng `node conformance/tools/banks/sync-ts.mjs`. Không sửa tay;
     `banks-sync.spec.ts` báo khi lệch. File này không chạy mutation.
   - Ngân sách tarball core nâng lên 45 KB ngày 2026-11-20 (chủ dự án duyệt), vì dữ liệu ngân hàng.
+- **`@tingqr/bank-logos`:** không có `src/`.
+  - `scripts/gen.mjs` sinh `dist/` (mỗi ảnh một module), `files/` (gitignore) và `LOGOS-NOTICE.md` (commit) từ
+    `conformance/banks/logos/`.
+  - Bản ESM là data URI. Bản CJS là đường dẫn tới file ảnh, vì chủ dự án chọn không chứa base64 hai lần.
+  - Test chạy trên `dist` đã build, gồm cả test tree-shaking bằng esbuild.
+  - `pnpm check:bank-logos` (sau `pnpm build`): không dependency, có `LICENSE` và `LOGOS-NOTICE.md`, tarball dưới
+    2 270 000 byte.
+- **Dữ liệu ngân hàng:** sửa theo skill `update-banks`; công cụ ở `conformance/tools/banks/`
+  (`pnpm -C conformance/tools/banks test`, không gọi mạng).
