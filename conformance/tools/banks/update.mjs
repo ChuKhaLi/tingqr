@@ -102,7 +102,9 @@ export async function run({ mode, root, fetch, today, outDir, delayMs = 500, fet
   const bankFile = { source: 'https://api.vietqr.io/v2/banks', fetchedAt: today, banks }
   if (mode === 'write') {
     if (!refused) writeJson(join(dir, 'banks.json'), bankFile)
-    writeJson(join(dir, 'play-checks.json'), sortKeys(checks))
+    // Keep only packages that bank-apps.json still lists; an app dropped or moved to a new package leaves no stale row.
+    const current = Object.fromEntries(Object.entries(checks).filter(([pkg]) => packages.includes(pkg)))
+    writeJson(join(dir, 'play-checks.json'), sortKeys(current))
   } else if (mode === 'seed') {
     mkdirSync(outDir, { recursive: true })
     writeJson(join(outDir, 'banks.json'), bankFile)

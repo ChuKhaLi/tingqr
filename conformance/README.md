@@ -111,6 +111,7 @@ Dành cho `findBank` và `appsForBank` (`@tingqr/core/banks`).
       culture (không theo ngôn ngữ máy, ví dụ chữ `I` của tiếng Thổ Nhĩ Kỳ).
     - Mã của ngân hàng này thắng tên ngắn của ngân hàng khác.
     - Không cắt khoảng trắng.
+    - `query` không phải chuỗi (ví dụ BIN lưu dạng số) là lỗi lập trình: ném `INVALID_VALUE` (mẫu `encode-invalid`), không trả `null`.
 - **`scheme: "bank-apps-for-bank"`** (`vectors/bank-apps-for-bank/`):
   - `input` là `{ bin }`; `expected` là `{ result }`, với `result` là mảng `id` app có `bin` đó, theo thứ tự trong
     `bank-apps.json`. Không có app nào thì là `[]`.

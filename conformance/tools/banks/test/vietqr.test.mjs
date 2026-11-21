@@ -43,6 +43,12 @@ test('parseBanksResponse rejects a bank with a malformed bin', () => {
   assert.throws(() => parseBanksResponse(bad), /bin/)
 })
 
+test('parseBanksResponse rejects a list with the same bin twice', () => {
+  const dup = structuredClone(fixture)
+  dup.data.push({ ...dup.data[0], code: 'OTHER' })
+  assert.throws(() => parseBanksResponse(dup), new RegExp(`${dup.data[0].bin}.*twice`))
+})
+
 test('applyOverrides replaces the named field of the named bank', () => {
   const banks = parseBanksResponse(fixture)
   const out = applyOverrides(banks, [{ bin: '970422', field: 'shortName', value: 'MB Bank', reason: 'r', source: 's' }])

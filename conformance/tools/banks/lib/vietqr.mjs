@@ -23,6 +23,11 @@ export function parseBanksResponse(json) {
       logoUrl: b.logo,
     }
   })
+  const seen = new Set()
+  for (const b of banks) {
+    if (seen.has(b.bin)) throw new Error(`vietqr.io banks: bin ${b.bin} appears twice`)
+    seen.add(b.bin)
+  }
   return banks.sort((a, b) => (a.bin < b.bin ? -1 : a.bin > b.bin ? 1 : 0))
 }
 

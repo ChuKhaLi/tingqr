@@ -1,0 +1,10 @@
+{
+  "id": "number-query",
+  "scheme": "bank-lookup",
+  "kind": "encode-invalid",
+  "input": {
+    "query": 970422
+  },
+  "error": "INVALID_VALUE",
+  "source": "quy tắc conformance/README.md (Mẫu tra cứu ngân hàng): query phải là chuỗi; số (BIN lưu dạng số trong code JavaScript) là lỗi lập trình, không trả null."
+}

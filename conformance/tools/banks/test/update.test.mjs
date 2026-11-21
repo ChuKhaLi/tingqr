@@ -65,6 +65,24 @@ test('write mode rewrites banks.json and play-checks.json but never bank-apps.js
   assert.deepEqual(play['com.mbmobile'], { lastOk: '2026-11-20', last: 'ok', checked: '2026-11-20' })
 })
 
+test('write mode drops play-checks entries for packages no longer in bank-apps.json', async () => {
+  const { root, dir } = makeRoot()
+  const checks = JSON.parse(readFileSync(join(dir, 'play-checks.json'), 'utf8'))
+  checks['vn.com.old.package'] = { lastOk: null, last: 'gone', checked: '2026-10-01' }
+  writeFileSync(join(dir, 'play-checks.json'), JSON.stringify(checks))
+  await run({ mode: 'write', root, fetch: fakeFetch().fetch, today: '2026-11-20', delayMs: 0 })
+  const after = JSON.parse(readFileSync(join(dir, 'play-checks.json'), 'utf8'))
+  assert.deepEqual(Object.keys(after).sort(), CURATED.apps.map((a) => a.android.package).sort())
+})
+
+test('the Play section does not say every package is fine when some are stale', async () => {
+  const { root } = makeRoot({ lastOk: '2026-01-01' })
+  const r = await run({ mode: 'check', root, fetch: fakeFetch({ play: () => ({ status: 429, body: '' }) }).fetch, today: '2026-11-20', delayMs: 0 })
+  assert.doesNotMatch(r.report, /Mọi gói còn trên Google Play/)
+  const ok = makeRoot()
+  assert.match((await run({ mode: 'check', root: ok.root, fetch: fakeFetch().fetch, today: '2026-11-20', delayMs: 0 })).report, /Mọi gói còn trên Google Play/)
+})
+
 test('write mode applies overrides.json after fetching', async () => {
   const { root, dir } = makeRoot()
   writeFileSync(

@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { CONFORMANCE_DIR } from './conformance-root.js'
+import { TingQrError } from '../src/index.js'
 import { BANKS, BANK_APPS, appsForBank, findBank, findBankApp } from '../src/banks.js'
 import { findBankIn } from '../src/banks/lookup.js'
 import type { Bank } from '../src/banks.js'
@@ -30,6 +31,18 @@ test('findBank does not trim and needs a whole BIN', () => {
   expect(findBank('')).toBeUndefined()
   expect(findBank('97042')).toBeUndefined()
   expect(findBank('9704220')).toBeUndefined()
+})
+
+test.each([970422, null, undefined, { bin: '970422' }])('findBank(%j) throws INVALID_VALUE, not a TypeError or a silent miss', (q) => {
+  let thrown: unknown
+  try {
+    findBank(q as never)
+  } catch (e) {
+    thrown = e
+  }
+  expect(thrown).toBeInstanceOf(TingQrError)
+  expect((thrown as TingQrError).code).toBe('INVALID_VALUE')
+  expect((thrown as TingQrError).message).toMatch(/string/)
 })
 
 test('a code wins over another bank short name that spells the same', () => {
