@@ -34,7 +34,18 @@ const BAD = {
   'iframe': '<svg><iframe src="x"/></svg>',
   'unquoted external href': '<svg><image href=https://x/a.png /></svg>',
   'entity-encoded javascript href': '<svg><a href="&#106;avascript:x"/></svg>',
+  'metadata prefix rebound to SVG': '<svg xmlns:dc="http://www.w3.org/2000/svg"><dc:script>alert(1)</dc:script></svg>',
+  'metadata prefix rebound to XHTML': "<svg xmlns:inkscape='http://www.w3.org/1999/xhtml'><inkscape:iframe/></svg>",
+  'default namespace on a metadata element': '<svg><sodipodi:namedview xmlns="http://www.w3.org/2000/svg"><script/></sodipodi:namedview></svg>',
 }
+
+test('svgProblems accepts the real Inkscape metadata namespaces', () => {
+  const svg =
+    '<svg xmlns="http://www.w3.org/2000/svg" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" ' +
+    'xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" ' +
+    'xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/"><sodipodi:namedview/><metadata><rdf:RDF><cc:Work><dc:title/></cc:Work></rdf:RDF></metadata></svg>'
+  assert.deepEqual(svgProblems(svg), [])
+})
 for (const [name, svg] of Object.entries(BAD)) {
   test(`svgProblems flags ${name}`, () => {
     assert.ok(svgProblems(svg).length > 0, svg)

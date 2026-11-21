@@ -1,6 +1,12 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { classifyPlay, updatePlayChecks } from '../lib/play.mjs'
+import { classifyPlay, playUrl, updatePlayChecks } from '../lib/play.mjs'
+
+test('playUrl asks for the Vietnam store, so a VN-only app is not a 404 from a runner abroad', () => {
+  const url = new URL(playUrl('com.mbmobile'))
+  assert.equal(url.searchParams.get('gl'), 'VN')
+  assert.equal(url.searchParams.get('id'), 'com.mbmobile')
+})
 
 const PKG = 'com.mbmobile'
 const PAGE = 'https://play.google.com/store/apps/details?id=com.mbmobile&hl=en'

@@ -170,6 +170,59 @@ test('an image that fails to download is left out and named in the report', asyn
   assert.match(r.report, /970436/)
 })
 
+test('a download that fails on a later run keeps the committed image and is not a change', async () => {
+  const { root, dir } = makeLogoRoot()
+  await run(opts(root, fakeFetch().fetch))
+  const first = readFileSync(join(dir, 'logos', 'manifest.json'), 'utf8')
+  const flaky = fakeFetch({ image: (u) => (u.endsWith('/VCB.png') || u.includes('/mb-') ? { status: 503, body: '' } : { status: 200, body: `bytes of ${u}` }) })
+  for (const mode of ['check', 'write']) {
+    const r = await run(opts(root, flaky.fetch, mode))
+    assert.equal(r.changed, false, mode)
+    assert.match(r.report, /970436.*503/, mode)
+  }
+  assert.equal(readFileSync(join(dir, 'logos', 'manifest.json'), 'utf8'), first)
+  assert.ok(existsSync(join(dir, 'logos', 'logo', '970436.webp')))
+  assert.ok(existsSync(join(dir, 'logos', 'icon', 'mb.webp')))
+})
+
+test('a fetch that throws (network down) is treated like a failed download, not a crash', async () => {
+  const { root, dir } = makeLogoRoot()
+  await run(opts(root, fakeFetch().fetch))
+  const inner = fakeFetch().fetch
+  const down = async (url, init) => {
+    if (url.startsWith('https://cdn.vietqr.io/img/VCB')) throw new TypeError('fetch failed')
+    return inner(url, init)
+  }
+  const r = await run(opts(root, down))
+  assert.equal(r.changed, false)
+  assert.ok(manifestOf(dir).files.find((f) => f.key === '970436'))
+})
+
+test('a Commons outage keeps the committed SVG instead of swapping it for the PNG', async () => {
+  const { root, dir } = makeLogoRoot()
+  await run(opts(root, fakeFetch().fetch))
+  const inner = fakeFetch().fetch
+  const outage = async (url, init) => {
+    if (url.startsWith('https://commons.wikimedia.org/')) return { status: 503, ok: false, url, headers: new Headers(), text: async () => '', json: async () => ({}) }
+    return inner(url, init)
+  }
+  const r = await run(opts(root, outage))
+  assert.equal(r.changed, false)
+  assert.equal(manifestOf(dir).files.find((f) => f.key === '970422').file, 'logo/970422.svg')
+  assert.ok(existsSync(join(dir, 'logos', 'logo', '970422.svg')))
+})
+
+test('a bank that left the list has its logo dropped', async () => {
+  const { root, dir } = makeLogoRoot()
+  await run(opts(root, fakeFetch().fetch))
+  const fewer = structuredClone(BANKS)
+  fewer.data = fewer.data.filter((b) => b.bin !== '970436')
+  const r = await run(opts(root, fakeFetch({ banks: fewer }).fetch))
+  assert.match(r.report, /logo\/970436\.webp: bỏ/)
+  assert.equal(manifestOf(dir).files.find((f) => f.key === '970436'), undefined)
+  assert.equal(existsSync(join(dir, 'logos', 'logo', '970436.webp')), false)
+})
+
 test('a second run with the same images changes nothing and keeps the first fetched date', async () => {
   const { root, dir } = makeLogoRoot()
   await run(opts(root, fakeFetch().fetch))

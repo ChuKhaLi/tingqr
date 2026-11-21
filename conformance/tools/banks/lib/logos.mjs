@@ -9,6 +9,20 @@ const ALLOWED_ELEMENTS = new Set(
 )
 /** Editor metadata that browsers ignore (Inkscape, Sodipodi, RDF, Creative Commons, Dublin Core). */
 const METADATA_PREFIXES = ['sodipodi:', 'inkscape:', 'rdf:', 'cc:', 'dc:']
+const SVG_NS = 'http://www.w3.org/2000/svg'
+/**
+ * The only namespace each prefix may be bound to. Without this check `<dc:script xmlns:dc="…/svg">` would pass the
+ * prefix allowlist yet be a real SVG script element.
+ */
+const NAMESPACES = {
+  sodipodi: 'http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd',
+  inkscape: 'http://www.inkscape.org/namespaces/inkscape',
+  rdf: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
+  cc: 'http://creativecommons.org/ns#',
+  dc: 'http://purl.org/dc/elements/1.1/',
+  xlink: 'http://www.w3.org/1999/xlink',
+  svg: SVG_NS,
+}
 
 /**
  * Reasons an SVG is unsafe to embed in a web page, or [] when it is fine. Deliberately strict (a regex scan, not a
@@ -22,6 +36,12 @@ export function svgProblems(svg) {
   for (const m of svg.matchAll(/<\s*([A-Za-z][\w:.-]*)/g)) {
     const name = m[1]
     if (!ALLOWED_ELEMENTS.has(name) && !METADATA_PREFIXES.some((p) => name.startsWith(p))) problems.push(`<${name}>`)
+  }
+  for (const m of svg.matchAll(/\bxmlns(?::([\w.-]+))?\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]*))/gi)) {
+    const prefix = m[1]
+    const uri = m[2] ?? m[3] ?? m[4]
+    const allowed = prefix === undefined ? SVG_NS : NAMESPACES[prefix]
+    if (uri !== allowed) problems.push(`xmlns${prefix ? `:${prefix}` : ''}="${uri.slice(0, 40)}"`)
   }
   if (/<!(?!--)/.test(svg)) problems.push('<! declaration (DOCTYPE, ENTITY or CDATA)')
   if (/(?:^|[\s/"'])on[a-z]+\s*=/i.test(svg)) problems.push('on* event attribute')

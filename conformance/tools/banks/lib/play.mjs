@@ -2,7 +2,9 @@
 
 /** @typedef {'ok'|'gone'|'unknown'} PlayResult */
 
-export const playUrl = (pkg) => `https://play.google.com/store/apps/details?id=${encodeURIComponent(pkg)}&hl=en`
+// gl=VN: pin the Vietnam store. Without it Play picks the country from the requester's IP, CI runners are abroad, and
+// an app not distributed there may answer 404 (reported by the code review of 2026-11-21; not tested from abroad).
+export const playUrl = (pkg) => `https://play.google.com/store/apps/details?id=${encodeURIComponent(pkg)}&hl=en&gl=VN`
 
 /**
  * ok only when the final page is still on play.google.com and names the package; 404 is gone; anything else
