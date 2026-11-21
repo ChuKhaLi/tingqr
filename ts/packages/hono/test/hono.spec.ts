@@ -11,12 +11,11 @@ const PAYLOAD: string = JSON.parse(
   readFileSync(join(CONFORMANCE_DIR, 'vectors', 'vietqr', 'vietqr-dynamic-amount-purpose.json'), 'utf8'),
 ).payload
 
-const SVG_HEADERS = {
-  'content-type': 'image/svg+xml; charset=utf-8',
-  'x-content-type-options': 'nosniff',
-  'content-security-policy': "default-src 'none'; img-src data:; style-src 'unsafe-inline'",
-  'cache-control': 'private, max-age=300',
+// The shared HTTP contract of the SVG integrations (conformance/http/svg-response.json), header names lowercased.
+const CONTRACT = JSON.parse(readFileSync(join(CONFORMANCE_DIR, 'http', 'svg-response.json'), 'utf8')) as {
+  success: { headers: Record<string, string> }
 }
+const SVG_HEADERS = Object.fromEntries(Object.entries(CONTRACT.success.headers).map(([k, v]) => [k.toLowerCase(), v]))
 
 function headersOf(res: Response, names: string[]): Record<string, string | null> {
   return Object.fromEntries(names.map((n) => [n, res.headers.get(n)]))

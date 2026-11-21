@@ -1,0 +1,32 @@
+{
+  "description": "HTTP contract of every tingqr framework integration that serves a QR code as an SVG image (TypeScript: @tingqr/hono, @tingqr/nestjs; .NET: TingQR.AspNetCore). The app decides the payload (a resolve callback or a handler); no integration ever builds a QR from URL or query parameters.",
+  "success": {
+    "when": "the app gives a non-empty QR payload that renders",
+    "status": 200,
+    "body": "toSvg(payload, options)",
+    "headers": {
+      "Content-Type": "image/svg+xml; charset=utf-8",
+      "X-Content-Type-Options": "nosniff",
+      "Content-Security-Policy": "default-src 'none'; img-src data:; style-src 'unsafe-inline'",
+      "Cache-Control": "private, max-age=300"
+    },
+    "overridable": ["Cache-Control"]
+  },
+  "empty": {
+    "when": "the app gives null, undefined/absent or an empty string",
+    "status": 404,
+    "body": "not fixed (framework default); never an image"
+  },
+  "tingQrError": {
+    "when": "the app throws a TingQrError, or the payload or an option cannot be rendered",
+    "status": 400,
+    "body": { "error": { "code": "<a code from errors.json>", "message": "<the error message>" } },
+    "note": "Integrations whose framework routes errors through app filters (NestJS) guarantee the status and error.code only when the app does not rewrite the body."
+  },
+  "otherErrors": "left to the framework's normal error handling, unchanged",
+  "logo": {
+    "rule": "a logo href must start with data:image/ (an SVG shown as an image cannot load a path or URL); anything else is INVALID_VALUE when the route or service is configured, not per request",
+    "mustStartWith": "data:image/"
+  },
+  "notInContract": ["the 404 body", "the status for a handler result that is not a string (a programming error)"]
+}

@@ -7,6 +7,9 @@ bộ mẫu thử ở đây, nên hai bản cho cùng kết quả trên mọi hà
 - `errors.json`: bảng mã lỗi và mã cảnh báo dùng chung. Không ngôn ngữ nào được có mã ngoài bảng.
   - `LOGO_LOAD_FAILED`, `CANVAS_TAINTED`, `NO_CANVAS` chỉ đến từ phần vẽ PNG trên canvas ở trình duyệt
     (`@tingqr/render/canvas`). Mọi ngôn ngữ vẫn khai báo đủ ba mã; bản nào không có phần vẽ đó thì không bao giờ ném chúng.
+- `http/svg-response.json`: hợp đồng HTTP chung của mọi gói tích hợp trả QR dạng ảnh SVG (`@tingqr/hono`,
+  `@tingqr/nestjs`, sau này `TingQR.AspNetCore`): status, header, thân lỗi 400, luật logo. Test của từng gói đọc file
+  này, không tự chép header.
 - `schemes/<id>.md`: mô tả từng loại QR (tag, GUID, quy tắc, nguồn).
 - `vectors/<id>/*.json`: mẫu thử, mỗi file một mẫu, tên file trùng `id`.
 - `tools/crc16.py`: CRC-16/CCITT-FALSE viết bằng Python, độc lập với tingqr, để tính lại CRC của mẫu dựng tay hoặc sửa.
