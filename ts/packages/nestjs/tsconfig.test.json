@@ -1,0 +1,19 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "types": [
+      "node",
+      "vitest/globals"
+    ],
+    "experimentalDecorators": true,
+    "paths": {
+      "@tingqr/nestjs": [
+        "./dist/index.d.ts"
+      ]
+    }
+  },
+  "include": [
+    "src",
+    "test"
+  ]
+}
