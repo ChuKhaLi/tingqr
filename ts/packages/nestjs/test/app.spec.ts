@@ -1,5 +1,5 @@
 import type { INestApplication } from '@nestjs/common'
-import { NestFactory } from '@nestjs/core'
+import { NestFactory, type AbstractHttpAdapter } from '@nestjs/core'
 import { ExpressAdapter } from '@nestjs/platform-express'
 import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { TingQrError } from '@tingqr/core'
@@ -22,7 +22,7 @@ describe.each(ADAPTERS)('same contract on %s', (_name, adapter) => {
   let app: INestApplication
   let base: string
   beforeAll(async () => {
-    app = await NestFactory.create(appModule({ bank: 'MB', accountNumber: '0123456789' }), adapter() as never, { logger: false })
+    app = await NestFactory.create(appModule({ bank: 'MB', accountNumber: '0123456789' }), adapter() as AbstractHttpAdapter, { logger: false })
     await app.listen(0, '127.0.0.1')
     base = (await app.getUrl()).replace('[::1]', '127.0.0.1')
   })
@@ -74,7 +74,7 @@ describe.each(ADAPTERS)('same contract on %s', (_name, adapter) => {
 test.each(ADAPTERS)('a bad bank stops the app before it serves anything (%s)', async (_name, adapter) => {
   let error: unknown
   try {
-    const app = await NestFactory.create(appModule({ bank: 'NOPE', accountNumber: '0123456789' }), adapter() as never, {
+    const app = await NestFactory.create(appModule({ bank: 'NOPE', accountNumber: '0123456789' }), adapter() as AbstractHttpAdapter, {
       logger: false,
       abortOnError: false,
     })
