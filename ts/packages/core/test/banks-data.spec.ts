@@ -88,10 +88,24 @@ describe('bank-apps.json', () => {
     expect(list.filter((a) => !a.ios && !a.android).map((a) => a.id)).toEqual([])
   })
 
-  test('multi-source means at least two sources independent of each other', () => {
+  test('multi-source means two distinct independent sources that agree with the emitted scheme and package', () => {
     for (const a of list) {
-      const independent = a.sources.filter((s: any) => s.independent).length
-      expect([a.id, a.confidence]).toEqual([a.id, independent >= 2 ? 'multi-source' : 'single-source'])
+      const agreeing = new Set(a.sources.filter((s: any) => s.independent && s.agrees).map((s: any) => s.name))
+      expect([a.id, a.confidence]).toEqual([a.id, agreeing.size >= 2 ? 'multi-source' : 'single-source'])
+    }
+  })
+
+  test('a source is listed once per app', () => {
+    for (const a of list) {
+      const names = a.sources.map((s: any) => s.name)
+      expect([a.id, names.length]).toEqual([a.id, new Set(names).size])
+    }
+  })
+
+  test('every source that disagrees with the emitted values is explained in disagreements', () => {
+    for (const a of list) {
+      const disagreeing = a.sources.filter((s: any) => !s.agrees).map((s: any) => s.name)
+      for (const name of disagreeing) expect(a.disagreements.join(' '), `${a.id}: ${name}`).toContain(name)
     }
   })
 

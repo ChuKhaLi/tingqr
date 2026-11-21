@@ -27,8 +27,9 @@ import bidv from '@tingqr/bank-logos/logo/970418'
 - import một icon thì có đúng một ảnh;
 - import gốc của gói thì không có ảnh nào.
 
-Chọn ảnh theo lựa chọn của người dùng thì dùng `import()` động. Bundler sẽ tách mỗi ảnh thành một chunk và chỉ tải chunk
-được dùng:
+Chọn ảnh theo lựa chọn của người dùng thì dùng `import()` động. Bundler hỗ trợ import động theo mẫu (Vite, webpack)
+thường tách mỗi ảnh khớp mẫu thành một chunk, rồi chỉ tải chunk được dùng. tingqr chưa có test cho cách này: kiểm
+bundler của bạn trước khi dựa vào nó.
 
 ```ts
 import { ICON_IDS } from '@tingqr/bank-logos'

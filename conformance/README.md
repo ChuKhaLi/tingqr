@@ -36,9 +36,22 @@ bộ mẫu thử ở đây, nên hai bản cho cùng kết quả trên mọi hà
   | `play-checks.json` | `tools/banks/update.mjs` | lần kiểm gói Android trên Google Play gần nhất |
   | `sources/<ngày>/` | chụp tay | bản chụp nguyên văn các nguồn; `NOTES.md` ghi nguồn nào độc lập với nguồn nào |
 
-  - **`confidence: "multi-source"`** khi có ít nhất hai nguồn **độc lập** (`independent: true`).
-    - `qrviet` và Noel tree chép từ vietqr.io, nên không tính là độc lập.
+  - **`confidence: "multi-source"`** khi có ít nhất hai nguồn **khác tên**, đều `independent: true` và `agrees: true`.
+    - `agrees`: nguồn ghi đúng scheme (iOS, Android), gói và host mà tingqr tạo ra.
+    - `test/sources.test.mjs` tính lại cờ này từ bản chụp trong `sources/<ngày>/`.
+    - `qrviet` và Noel tree chép từ vietqr.io, nên không tính là độc lập. Ngoại lệ: các mục `qrviet` tự thêm tay
+      (MoMo, ZaloPay).
     - Nguồn độc lập với vietqr.io hiện chỉ có `vietnam-qr-pay` 1.5.1.
+    - Nguồn nào ghi khác thì phải có dòng giải thích trong `disagreements`.
+  - **Thứ tự:** `banks.json` xếp theo `bin`, `bank-apps.json` theo `id`, đều so từng mã ký tự (ordinal). API giữ
+    nguyên thứ tự trong file.
+  - **Trường công khai** (bản .NET sinh dữ liệu phải chọn đúng các trường này):
+    - `Bank`: `bin`, `code`, `shortName`, `name`, `swift`, `logoUrl`. `overrides.json` đã được áp sẵn trong `banks.json`,
+      không áp lại.
+    - `BankApp`: `id`, `name`, `bin`, `ios.scheme`, `android.{package, scheme, host}`, `confidence`, `vietqrAutofill`. App
+      thiếu `ios` hay `android` thì không có khoá đó (null bên .NET).
+    - Không công khai: `sources`, `disagreements`, `deviceVerified`, `vietqrDiffers`, `ignoredVietqrApps`,
+      `play-checks.json`.
   - **`deviceVerified`** chỉ ghi khi có người mở thử thật trên máy, ghi rõ ai, hệ điều hành nào, ngày nào.
   - `ignoredVietqrApps` liệt kê app của vietqr.io bị bỏ có chủ ý; `vietqrDiffers` liệt kê chỗ một app cố ý khác
     vietqr.io. Script cập nhật không báo lại hai loại này.

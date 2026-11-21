@@ -24,7 +24,7 @@ test('each file matches its SHA-256 and size', () => {
   }
 })
 
-test('every SVG passes svgProblems and comes from a PD-tagged Commons page', () => {
+test('every SVG passes svgProblems and is labelled PD in the manifest (the Commons check itself ran at fetch time)', () => {
   for (const e of manifest.filter((x) => x.file.endsWith('.svg'))) {
     assert.deepEqual(svgProblems(readFileSync(join(LOGOS, e.file), 'utf8')), [], e.file)
     assert.ok(['PD-textlogo', 'PD-simple'].includes(e.license), e.file)

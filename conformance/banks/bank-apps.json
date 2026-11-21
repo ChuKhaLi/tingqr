@@ -23,6 +23,7 @@
           "ref": "abb",
           "url": "https://dl.vietqr.io/pay?app=abb",
           "independent": true,
+          "agrees": true,
           "checked": "2026-11-20"
         },
         {
@@ -30,6 +31,7 @@
           "ref": "ABB",
           "url": "https://github.com/nghiepdev/qrviet/blob/32667622752626c9efffd1b6b294e077465ee88f/src/data/bank-apps.json",
           "independent": false,
+          "agrees": false,
           "checked": "2026-11-20"
         }
       ],
@@ -51,13 +53,14 @@
         "scheme": "acbone",
         "host": ""
       },
-      "confidence": "multi-source",
+      "confidence": "single-source",
       "sources": [
         {
           "name": "vietqr.io",
           "ref": "acb",
           "url": "https://dl.vietqr.io/pay?app=acb",
           "independent": true,
+          "agrees": true,
           "checked": "2026-11-20"
         },
         {
@@ -65,6 +68,7 @@
           "ref": "acb",
           "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
           "independent": true,
+          "agrees": false,
           "checked": "2026-11-20"
         },
         {
@@ -72,6 +76,7 @@
           "ref": "ACB",
           "url": "https://github.com/nghiepdev/qrviet/blob/32667622752626c9efffd1b6b294e077465ee88f/src/data/bank-apps.json",
           "independent": false,
+          "agrees": true,
           "checked": "2026-11-20"
         },
         {
@@ -79,6 +84,7 @@
           "ref": "acb",
           "url": "../noel-tree/src/app/tree/bank-apps.ts",
           "independent": false,
+          "agrees": true,
           "checked": "2026-11-20"
         }
       ],
@@ -107,6 +113,7 @@
           "ref": "acb-biz",
           "url": "https://dl.vietqr.io/pay?app=acb-biz",
           "independent": true,
+          "agrees": true,
           "checked": "2026-11-20"
         }
       ],
@@ -133,6 +140,7 @@
           "ref": "bvb",
           "url": "https://dl.vietqr.io/pay?app=bvb",
           "independent": true,
+          "agrees": true,
           "checked": "2026-11-20"
         },
         {
@@ -140,6 +148,7 @@
           "ref": "baoviet",
           "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
           "independent": true,
+          "agrees": true,
           "checked": "2026-11-20"
         },
         {
@@ -147,6 +156,7 @@
           "ref": "BVB",
           "url": "https://github.com/nghiepdev/qrviet/blob/32667622752626c9efffd1b6b294e077465ee88f/src/data/bank-apps.json",
           "independent": false,
+          "agrees": true,
           "checked": "2026-11-20"
         }
       ],
@@ -175,6 +185,7 @@
           "ref": "bidc",
           "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
           "independent": true,
+          "agrees": true,
           "checked": "2026-11-20"
         }
       ],
@@ -196,13 +207,14 @@
         "scheme": "bidv.smartbanking.partner",
         "host": "payment"
       },
-      "confidence": "multi-source",
+      "confidence": "single-source",
       "sources": [
         {
           "name": "vietqr.io",
           "ref": "bidv",
           "url": "https://dl.vietqr.io/pay?app=bidv",
           "independent": true,
+          "agrees": true,
           "checked": "2026-11-20"
         },
         {
@@ -210,6 +222,7 @@
           "ref": "bidv",
           "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
           "independent": true,
+          "agrees": false,
           "checked": "2026-11-20"
         },
         {
@@ -217,6 +230,7 @@
           "ref": "BIDV",
           "url": "https://github.com/nghiepdev/qrviet/blob/32667622752626c9efffd1b6b294e077465ee88f/src/data/bank-apps.json",
           "independent": false,
+          "agrees": true,
           "checked": "2026-11-20"
         },
         {
@@ -224,6 +238,7 @@
           "ref": "bidv",
           "url": "../noel-tree/src/app/tree/bank-apps.ts",
           "independent": false,
+          "agrees": true,
           "checked": "2026-11-20"
         }
       ],
@@ -252,6 +267,7 @@
           "ref": "cake",
           "url": "https://dl.vietqr.io/pay?app=cake",
           "independent": true,
+          "agrees": true,
           "checked": "2026-11-20"
         },
         {
@@ -259,6 +275,7 @@
           "ref": "cake",
           "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
           "independent": true,
+          "agrees": true,
           "checked": "2026-11-20"
         },
         {
@@ -266,6 +283,7 @@
           "ref": "CAKE",
           "url": "https://github.com/nghiepdev/qrviet/blob/32667622752626c9efffd1b6b294e077465ee88f/src/data/bank-apps.json",
           "independent": false,
+          "agrees": true,
           "checked": "2026-11-20"
         },
         {
@@ -273,6 +291,7 @@
           "ref": "cake",
           "url": "../noel-tree/src/app/tree/bank-apps.ts",
           "independent": false,
+          "agrees": true,
           "checked": "2026-11-20"
         }
       ],
@@ -299,6 +318,7 @@
           "ref": "cimb",
           "url": "https://dl.vietqr.io/pay?app=cimb",
           "independent": true,
+          "agrees": true,
           "checked": "2026-11-20"
         },
         {
@@ -306,6 +326,7 @@
           "ref": "cimb",
           "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
           "independent": true,
+          "agrees": true,
           "checked": "2026-11-20"
         },
         {
@@ -313,6 +334,7 @@
           "ref": "CIMB",
           "url": "https://github.com/nghiepdev/qrviet/blob/32667622752626c9efffd1b6b294e077465ee88f/src/data/bank-apps.json",
           "independent": false,
+          "agrees": true,
           "checked": "2026-11-20"
         }
       ],
@@ -339,6 +361,7 @@
           "ref": "coopbank",
           "url": "https://dl.vietqr.io/pay?app=coopbank",
           "independent": true,
+          "agrees": true,
           "checked": "2026-11-20"
         },
         {
@@ -346,6 +369,7 @@
           "ref": "coopbank",
           "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
           "independent": true,
+          "agrees": true,
           "checked": "2026-11-20"
         },
         {
@@ -353,6 +377,7 @@
           "ref": "COOPBANK",
           "url": "https://github.com/nghiepdev/qrviet/blob/32667622752626c9efffd1b6b294e077465ee88f/src/data/bank-apps.json",
           "independent": false,
+          "agrees": true,
           "checked": "2026-11-20"
         }
       ],
@@ -379,6 +404,7 @@
           "ref": "eib",
           "url": "https://dl.vietqr.io/pay?app=eib",
           "independent": true,
+          "agrees": true,
           "checked": "2026-11-20"
         },
         {
@@ -386,6 +412,7 @@
           "ref": "EIB",
           "url": "https://github.com/nghiepdev/qrviet/blob/32667622752626c9efffd1b6b294e077465ee88f/src/data/bank-apps.json",
           "independent": false,
+          "agrees": false,
           "checked": "2026-11-20"
         }
       ],
@@ -414,6 +441,7 @@
           "ref": "hdb",
           "url": "https://dl.vietqr.io/pay?app=hdb",
           "independent": true,
+          "agrees": true,
           "checked": "2026-11-20"
         },
         {
@@ -421,6 +449,7 @@
           "ref": "hdbank",
           "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
           "independent": true,
+          "agrees": true,
           "checked": "2026-11-20"
         },
         {
@@ -428,6 +457,7 @@
           "ref": "HDB",
           "url": "https://github.com/nghiepdev/qrviet/blob/32667622752626c9efffd1b6b294e077465ee88f/src/data/bank-apps.json",
           "independent": false,
+          "agrees": true,
           "checked": "2026-11-20"
         },
         {
@@ -435,6 +465,7 @@
           "ref": "hdb",
           "url": "../noel-tree/src/app/tree/bank-apps.ts",
           "independent": false,
+          "agrees": true,
           "checked": "2026-11-20"
         }
       ],
@@ -461,6 +492,7 @@
           "ref": "ibkhcm",
           "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
           "independent": true,
+          "agrees": true,
           "checked": "2026-11-20"
         }
       ],
@@ -482,13 +514,14 @@
         "scheme": "vietinbankipay",
         "host": ""
       },
-      "confidence": "multi-source",
+      "confidence": "single-source",
       "sources": [
         {
           "name": "vietqr.io",
           "ref": "icb",
           "url": "https://dl.vietqr.io/pay?app=icb",
           "independent": true,
+          "agrees": true,
           "checked": "2026-11-20"
         },
         {
@@ -496,6 +529,7 @@
           "ref": "vietinbank",
           "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
           "independent": true,
+          "agrees": false,
           "checked": "2026-11-20"
         },
         {
@@ -503,6 +537,7 @@
           "ref": "ICB",
           "url": "https://github.com/nghiepdev/qrviet/blob/32667622752626c9efffd1b6b294e077465ee88f/src/data/bank-apps.json",
           "independent": false,
+          "agrees": true,
           "checked": "2026-11-20"
         },
         {
@@ -510,6 +545,7 @@
           "ref": "icb",
           "url": "../noel-tree/src/app/tree/bank-apps.ts",
           "independent": false,
+          "agrees": true,
           "checked": "2026-11-20"
         }
       ],
@@ -538,6 +574,7 @@
           "ref": "indovinabank",
           "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
           "independent": true,
+          "agrees": true,
           "checked": "2026-11-20"
         }
       ],
@@ -559,13 +596,14 @@
         "scheme": "ksbank",
         "host": "ksbank.co"
       },
-      "confidence": "multi-source",
+      "confidence": "single-source",
       "sources": [
         {
           "name": "vietqr.io",
           "ref": "klb",
           "url": "https://dl.vietqr.io/pay?app=klb",
           "independent": true,
+          "agrees": true,
           "checked": "2026-11-20"
         },
         {
@@ -573,6 +611,7 @@
           "ref": "kienlongbank",
           "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
           "independent": true,
+          "agrees": false,
           "checked": "2026-11-20"
         },
         {
@@ -580,10 +619,13 @@
           "ref": "KLB",
           "url": "https://github.com/nghiepdev/qrviet/blob/32667622752626c9efffd1b6b294e077465ee88f/src/data/bank-apps.json",
           "independent": false,
+          "agrees": true,
           "checked": "2026-11-20"
         }
       ],
-      "disagreements": [],
+      "disagreements": [
+        "vietnam-qr-pay 1.5.1 ghi scheme kienlongbankmobilebanking cho cả hai hệ, gói com.sunshine.ksbank"
+      ],
       "deviceVerified": [],
       "vietqrAutofill": false
     },
@@ -606,6 +648,7 @@
           "ref": "liobank",
           "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
           "independent": true,
+          "agrees": true,
           "checked": "2026-11-20"
         }
       ],
@@ -627,13 +670,14 @@
         "scheme": "lv24h",
         "host": ""
       },
-      "confidence": "multi-source",
+      "confidence": "single-source",
       "sources": [
         {
           "name": "vietqr.io",
           "ref": "lpb",
           "url": "https://dl.vietqr.io/pay?app=lpb",
           "independent": true,
+          "agrees": false,
           "checked": "2026-11-20"
         },
         {
@@ -641,6 +685,7 @@
           "ref": "lienvietpostbank",
           "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
           "independent": true,
+          "agrees": false,
           "checked": "2026-11-20"
         },
         {
@@ -648,13 +693,7 @@
           "ref": "LPB",
           "url": "https://github.com/nghiepdev/qrviet/blob/32667622752626c9efffd1b6b294e077465ee88f/src/data/bank-apps.json",
           "independent": false,
-          "checked": "2026-11-20"
-        },
-        {
-          "name": "vietnam-qr-pay",
-          "ref": "lpbank",
-          "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
-          "independent": true,
+          "agrees": true,
           "checked": "2026-11-20"
         }
       ],
@@ -679,13 +718,14 @@
         "scheme": "mbbank",
         "host": ""
       },
-      "confidence": "multi-source",
+      "confidence": "single-source",
       "sources": [
         {
           "name": "vietqr.io",
           "ref": "mb",
           "url": "https://dl.vietqr.io/pay?app=mb",
           "independent": true,
+          "agrees": true,
           "checked": "2026-11-20"
         },
         {
@@ -693,6 +733,7 @@
           "ref": "mbbank",
           "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
           "independent": true,
+          "agrees": false,
           "checked": "2026-11-20"
         },
         {
@@ -700,6 +741,7 @@
           "ref": "MB",
           "url": "https://github.com/nghiepdev/qrviet/blob/32667622752626c9efffd1b6b294e077465ee88f/src/data/bank-apps.json",
           "independent": false,
+          "agrees": true,
           "checked": "2026-11-20"
         },
         {
@@ -707,6 +749,7 @@
           "ref": "mb",
           "url": "../noel-tree/src/app/tree/bank-apps.ts",
           "independent": false,
+          "agrees": true,
           "checked": "2026-11-20"
         }
       ],
@@ -718,7 +761,7 @@
           "by": "chủ dự án",
           "os": "Android",
           "date": "2026-11-18",
-          "via": "Noel tree"
+          "via": "Noel tree, qua https://dl.vietqr.io/pay (Noel tree điền sẵn cho MB): xác nhận scheme mbbank và gói com.mbmobile qua redirect intent:// của vietqr.io, chưa mở đúng chuỗi của bankAppLink"
         }
       ],
       "vietqrAutofill": true
@@ -742,6 +785,7 @@
           "ref": "mbv",
           "url": "https://dl.vietqr.io/pay?app=mbv",
           "independent": true,
+          "agrees": true,
           "checked": "2026-11-20"
         },
         {
@@ -749,6 +793,7 @@
           "ref": "MBV",
           "url": "https://github.com/nghiepdev/qrviet/blob/32667622752626c9efffd1b6b294e077465ee88f/src/data/bank-apps.json",
           "independent": false,
+          "agrees": true,
           "checked": "2026-11-20"
         }
       ],
@@ -770,6 +815,7 @@
           "ref": "MOMO",
           "url": "https://github.com/nghiepdev/qrviet/blob/32667622752626c9efffd1b6b294e077465ee88f/src/data/bank-apps.json",
           "independent": true,
+          "agrees": true,
           "checked": "2026-11-20"
         }
       ],
@@ -798,6 +844,7 @@
           "ref": "msb",
           "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
           "independent": true,
+          "agrees": true,
           "checked": "2026-11-20"
         }
       ],
@@ -823,6 +870,7 @@
           "ref": "nab",
           "url": "https://dl.vietqr.io/pay?app=nab",
           "independent": true,
+          "agrees": true,
           "checked": "2026-11-20"
         },
         {
@@ -830,6 +878,7 @@
           "ref": "namabank",
           "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
           "independent": true,
+          "agrees": true,
           "checked": "2026-11-20"
         },
         {
@@ -837,6 +886,7 @@
           "ref": "NAB",
           "url": "https://github.com/nghiepdev/qrviet/blob/32667622752626c9efffd1b6b294e077465ee88f/src/data/bank-apps.json",
           "independent": false,
+          "agrees": true,
           "checked": "2026-11-20"
         }
       ],
@@ -865,6 +915,7 @@
           "ref": "ncb",
           "url": "https://dl.vietqr.io/pay?app=ncb",
           "independent": true,
+          "agrees": true,
           "checked": "2026-11-20"
         },
         {
@@ -872,6 +923,7 @@
           "ref": "ncb",
           "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
           "independent": true,
+          "agrees": true,
           "checked": "2026-11-20"
         },
         {
@@ -879,6 +931,7 @@
           "ref": "NCB",
           "url": "https://github.com/nghiepdev/qrviet/blob/32667622752626c9efffd1b6b294e077465ee88f/src/data/bank-apps.json",
           "independent": false,
+          "agrees": true,
           "checked": "2026-11-20"
         }
       ],
@@ -905,6 +958,7 @@
           "ref": "nonghyup",
           "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
           "independent": true,
+          "agrees": true,
           "checked": "2026-11-20"
         }
       ],
@@ -933,6 +987,7 @@
           "ref": "ocb",
           "url": "https://dl.vietqr.io/pay?app=ocb",
           "independent": true,
+          "agrees": true,
           "checked": "2026-11-20"
         },
         {
@@ -940,6 +995,7 @@
           "ref": "OCB",
           "url": "https://github.com/nghiepdev/qrviet/blob/32667622752626c9efffd1b6b294e077465ee88f/src/data/bank-apps.json",
           "independent": false,
+          "agrees": true,
           "checked": "2026-11-20"
         },
         {
@@ -947,6 +1003,7 @@
           "ref": "ocb",
           "url": "../noel-tree/src/app/tree/bank-apps.ts",
           "independent": false,
+          "agrees": true,
           "checked": "2026-11-20"
         }
       ],
@@ -973,6 +1030,7 @@
           "ref": "pbvn",
           "url": "https://dl.vietqr.io/pay?app=pbvn",
           "independent": true,
+          "agrees": true,
           "checked": "2026-11-20"
         },
         {
@@ -980,6 +1038,7 @@
           "ref": "publicbank",
           "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
           "independent": true,
+          "agrees": true,
           "checked": "2026-11-20"
         },
         {
@@ -987,6 +1046,7 @@
           "ref": "PBVN",
           "url": "https://github.com/nghiepdev/qrviet/blob/32667622752626c9efffd1b6b294e077465ee88f/src/data/bank-apps.json",
           "independent": false,
+          "agrees": true,
           "checked": "2026-11-20"
         }
       ],
@@ -1013,6 +1073,7 @@
           "ref": "pvcb",
           "url": "https://dl.vietqr.io/pay?app=pvcb",
           "independent": true,
+          "agrees": true,
           "checked": "2026-11-20"
         },
         {
@@ -1020,6 +1081,7 @@
           "ref": "PVCB",
           "url": "https://github.com/nghiepdev/qrviet/blob/32667622752626c9efffd1b6b294e077465ee88f/src/data/bank-apps.json",
           "independent": false,
+          "agrees": false,
           "checked": "2026-11-20"
         }
       ],
@@ -1048,6 +1110,7 @@
           "ref": "sacombank",
           "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
           "independent": true,
+          "agrees": true,
           "checked": "2026-11-20"
         }
       ],
@@ -1076,6 +1139,7 @@
           "ref": "scb",
           "url": "https://dl.vietqr.io/pay?app=scb",
           "independent": true,
+          "agrees": true,
           "checked": "2026-11-20"
         },
         {
@@ -1083,6 +1147,7 @@
           "ref": "scb",
           "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
           "independent": true,
+          "agrees": true,
           "checked": "2026-11-20"
         },
         {
@@ -1090,6 +1155,7 @@
           "ref": "SCB",
           "url": "https://github.com/nghiepdev/qrviet/blob/32667622752626c9efffd1b6b294e077465ee88f/src/data/bank-apps.json",
           "independent": false,
+          "agrees": true,
           "checked": "2026-11-20"
         }
       ],
@@ -1109,13 +1175,14 @@
         "scheme": "seamobile",
         "host": "app"
       },
-      "confidence": "multi-source",
+      "confidence": "single-source",
       "sources": [
         {
           "name": "vietqr.io",
           "ref": "seab",
           "url": "https://dl.vietqr.io/pay?app=seab",
           "independent": true,
+          "agrees": true,
           "checked": "2026-11-20"
         },
         {
@@ -1123,6 +1190,7 @@
           "ref": "seabank",
           "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
           "independent": true,
+          "agrees": false,
           "checked": "2026-11-20"
         },
         {
@@ -1130,6 +1198,7 @@
           "ref": "SEAB",
           "url": "https://github.com/nghiepdev/qrviet/blob/32667622752626c9efffd1b6b294e077465ee88f/src/data/bank-apps.json",
           "independent": false,
+          "agrees": true,
           "checked": "2026-11-20"
         }
       ],
@@ -1151,13 +1220,14 @@
         "scheme": "Sgbmobile",
         "host": ""
       },
-      "confidence": "multi-source",
+      "confidence": "single-source",
       "sources": [
         {
           "name": "vietqr.io",
           "ref": "sgicb",
           "url": "https://dl.vietqr.io/pay?app=sgicb",
           "independent": true,
+          "agrees": true,
           "checked": "2026-11-20"
         },
         {
@@ -1165,6 +1235,7 @@
           "ref": "saigonbank",
           "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
           "independent": true,
+          "agrees": false,
           "checked": "2026-11-20"
         },
         {
@@ -1172,10 +1243,13 @@
           "ref": "SGICB",
           "url": "https://github.com/nghiepdev/qrviet/blob/32667622752626c9efffd1b6b294e077465ee88f/src/data/bank-apps.json",
           "independent": false,
+          "agrees": true,
           "checked": "2026-11-20"
         }
       ],
-      "disagreements": [],
+      "disagreements": [
+        "vietnam-qr-pay 1.5.1 ghi scheme Sgbmobile cho cả hai hệ, gói com.vnpay.sgbank"
+      ],
       "deviceVerified": [],
       "vietqrAutofill": false
     },
@@ -1198,6 +1272,7 @@
           "ref": "shb",
           "url": "https://dl.vietqr.io/pay?app=shb",
           "independent": true,
+          "agrees": true,
           "checked": "2026-11-20"
         },
         {
@@ -1205,6 +1280,7 @@
           "ref": "SHB",
           "url": "https://github.com/nghiepdev/qrviet/blob/32667622752626c9efffd1b6b294e077465ee88f/src/data/bank-apps.json",
           "independent": false,
+          "agrees": false,
           "checked": "2026-11-20"
         },
         {
@@ -1212,6 +1288,7 @@
           "ref": "shb",
           "url": "../noel-tree/src/app/tree/bank-apps.ts",
           "independent": false,
+          "agrees": true,
           "checked": "2026-11-20"
         }
       ],
@@ -1240,6 +1317,7 @@
           "ref": "shbvn",
           "url": "https://dl.vietqr.io/pay?app=shbvn",
           "independent": true,
+          "agrees": true,
           "checked": "2026-11-20"
         },
         {
@@ -1247,6 +1325,7 @@
           "ref": "shinhanbank",
           "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
           "independent": true,
+          "agrees": true,
           "checked": "2026-11-20"
         },
         {
@@ -1254,6 +1333,7 @@
           "ref": "SHBVN",
           "url": "https://github.com/nghiepdev/qrviet/blob/32667622752626c9efffd1b6b294e077465ee88f/src/data/bank-apps.json",
           "independent": false,
+          "agrees": true,
           "checked": "2026-11-20"
         }
       ],
@@ -1280,6 +1360,7 @@
           "ref": "tcb",
           "url": "https://dl.vietqr.io/pay?app=tcb",
           "independent": true,
+          "agrees": true,
           "checked": "2026-11-20"
         },
         {
@@ -1287,6 +1368,7 @@
           "ref": "techcombank",
           "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
           "independent": true,
+          "agrees": true,
           "checked": "2026-11-20"
         },
         {
@@ -1294,6 +1376,7 @@
           "ref": "TCB",
           "url": "https://github.com/nghiepdev/qrviet/blob/32667622752626c9efffd1b6b294e077465ee88f/src/data/bank-apps.json",
           "independent": false,
+          "agrees": true,
           "checked": "2026-11-20"
         },
         {
@@ -1301,6 +1384,7 @@
           "ref": "tcb",
           "url": "../noel-tree/src/app/tree/bank-apps.ts",
           "independent": false,
+          "agrees": true,
           "checked": "2026-11-20"
         }
       ],
@@ -1327,6 +1411,7 @@
           "ref": "timo",
           "url": "https://dl.vietqr.io/pay?app=timo",
           "independent": true,
+          "agrees": true,
           "checked": "2026-11-20"
         },
         {
@@ -1334,6 +1419,7 @@
           "ref": "timo",
           "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
           "independent": true,
+          "agrees": true,
           "checked": "2026-11-20"
         },
         {
@@ -1341,6 +1427,7 @@
           "ref": "TIMO",
           "url": "https://github.com/nghiepdev/qrviet/blob/32667622752626c9efffd1b6b294e077465ee88f/src/data/bank-apps.json",
           "independent": false,
+          "agrees": false,
           "checked": "2026-11-20"
         },
         {
@@ -1348,6 +1435,7 @@
           "ref": "timo",
           "url": "../noel-tree/src/app/tree/bank-apps.ts",
           "independent": false,
+          "agrees": true,
           "checked": "2026-11-20"
         }
       ],
@@ -1376,6 +1464,7 @@
           "ref": "tpb",
           "url": "https://dl.vietqr.io/pay?app=tpb",
           "independent": true,
+          "agrees": true,
           "checked": "2026-11-20"
         },
         {
@@ -1383,6 +1472,7 @@
           "ref": "tpbank",
           "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
           "independent": true,
+          "agrees": true,
           "checked": "2026-11-20"
         },
         {
@@ -1390,6 +1480,7 @@
           "ref": "TPB",
           "url": "https://github.com/nghiepdev/qrviet/blob/32667622752626c9efffd1b6b294e077465ee88f/src/data/bank-apps.json",
           "independent": false,
+          "agrees": true,
           "checked": "2026-11-20"
         },
         {
@@ -1397,6 +1488,7 @@
           "ref": "tpb",
           "url": "../noel-tree/src/app/tree/bank-apps.ts",
           "independent": false,
+          "agrees": true,
           "checked": "2026-11-20"
         }
       ],
@@ -1423,6 +1515,7 @@
           "ref": "uob",
           "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
           "independent": true,
+          "agrees": true,
           "checked": "2026-11-20"
         }
       ],
@@ -1451,6 +1544,7 @@
           "ref": "vba",
           "url": "https://dl.vietqr.io/pay?app=vba",
           "independent": true,
+          "agrees": true,
           "checked": "2026-11-20"
         },
         {
@@ -1458,6 +1552,7 @@
           "ref": "agribank",
           "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
           "independent": true,
+          "agrees": true,
           "checked": "2026-11-20"
         },
         {
@@ -1465,6 +1560,7 @@
           "ref": "VBA",
           "url": "https://github.com/nghiepdev/qrviet/blob/32667622752626c9efffd1b6b294e077465ee88f/src/data/bank-apps.json",
           "independent": false,
+          "agrees": true,
           "checked": "2026-11-20"
         },
         {
@@ -1472,6 +1568,7 @@
           "ref": "vba",
           "url": "../noel-tree/src/app/tree/bank-apps.ts",
           "independent": false,
+          "agrees": true,
           "checked": "2026-11-20"
         }
       ],
@@ -1498,6 +1595,7 @@
           "ref": "vcb",
           "url": "https://dl.vietqr.io/pay?app=vcb",
           "independent": true,
+          "agrees": true,
           "checked": "2026-11-20"
         },
         {
@@ -1505,6 +1603,7 @@
           "ref": "vietcombank",
           "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
           "independent": true,
+          "agrees": true,
           "checked": "2026-11-20"
         },
         {
@@ -1512,6 +1611,7 @@
           "ref": "VCB",
           "url": "https://github.com/nghiepdev/qrviet/blob/32667622752626c9efffd1b6b294e077465ee88f/src/data/bank-apps.json",
           "independent": false,
+          "agrees": true,
           "checked": "2026-11-20"
         },
         {
@@ -1519,6 +1619,7 @@
           "ref": "vcb",
           "url": "../noel-tree/src/app/tree/bank-apps.ts",
           "independent": false,
+          "agrees": true,
           "checked": "2026-11-20"
         }
       ],
@@ -1545,6 +1646,7 @@
           "ref": "vib-2",
           "url": "https://dl.vietqr.io/pay?app=vib-2",
           "independent": true,
+          "agrees": true,
           "checked": "2026-11-20"
         },
         {
@@ -1552,6 +1654,7 @@
           "ref": "vib",
           "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
           "independent": true,
+          "agrees": true,
           "checked": "2026-11-20"
         },
         {
@@ -1559,6 +1662,7 @@
           "ref": "VIB",
           "url": "https://github.com/nghiepdev/qrviet/blob/32667622752626c9efffd1b6b294e077465ee88f/src/data/bank-apps.json",
           "independent": false,
+          "agrees": true,
           "checked": "2026-11-20"
         },
         {
@@ -1566,6 +1670,7 @@
           "ref": "vib",
           "url": "../noel-tree/src/app/tree/bank-apps.ts",
           "independent": false,
+          "agrees": true,
           "checked": "2026-11-20"
         }
       ],
@@ -1577,7 +1682,7 @@
           "by": "chủ dự án",
           "os": "Android",
           "date": "2026-11-18",
-          "via": "Noel tree"
+          "via": "Noel tree, qua appLink (cùng chuỗi intent:// với bankAppLink)"
         }
       ],
       "vietqrAutofill": false
@@ -1601,6 +1706,7 @@
           "ref": "vikki",
           "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
           "independent": true,
+          "agrees": true,
           "checked": "2026-11-20"
         }
       ],
@@ -1629,6 +1735,7 @@
           "ref": "vpb",
           "url": "https://dl.vietqr.io/pay?app=vpb",
           "independent": true,
+          "agrees": true,
           "checked": "2026-11-20"
         },
         {
@@ -1636,6 +1743,7 @@
           "ref": "vpbank",
           "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
           "independent": true,
+          "agrees": true,
           "checked": "2026-11-20"
         },
         {
@@ -1643,6 +1751,7 @@
           "ref": "VPB",
           "url": "https://github.com/nghiepdev/qrviet/blob/32667622752626c9efffd1b6b294e077465ee88f/src/data/bank-apps.json",
           "independent": false,
+          "agrees": true,
           "checked": "2026-11-20"
         },
         {
@@ -1650,6 +1759,7 @@
           "ref": "vpb",
           "url": "../noel-tree/src/app/tree/bank-apps.ts",
           "independent": false,
+          "agrees": true,
           "checked": "2026-11-20"
         }
       ],
@@ -1676,6 +1786,7 @@
           "ref": "wvn",
           "url": "https://dl.vietqr.io/pay?app=wvn",
           "independent": true,
+          "agrees": true,
           "checked": "2026-11-20"
         },
         {
@@ -1683,6 +1794,7 @@
           "ref": "wooribank",
           "url": "https://www.npmjs.com/package/vietnam-qr-pay/v/1.5.1",
           "independent": true,
+          "agrees": true,
           "checked": "2026-11-20"
         },
         {
@@ -1690,6 +1802,7 @@
           "ref": "WVN",
           "url": "https://github.com/nghiepdev/qrviet/blob/32667622752626c9efffd1b6b294e077465ee88f/src/data/bank-apps.json",
           "independent": false,
+          "agrees": true,
           "checked": "2026-11-20"
         }
       ],
@@ -1711,6 +1824,7 @@
           "ref": "ZALOPAY",
           "url": "https://github.com/nghiepdev/qrviet/blob/32667622752626c9efffd1b6b294e077465ee88f/src/data/bank-apps.json",
           "independent": true,
+          "agrees": true,
           "checked": "2026-11-20"
         }
       ],

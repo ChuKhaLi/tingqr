@@ -20,7 +20,11 @@ ngày mới.
   - với iPhone là trang HTML có nút `id="open"`, link `scheme://`.
 - **`qrviet` không độc lập với vietqr.io.** Script `scripts/sync-banks.ts` của nó lấy scheme và gói từ chính
   `dl.vietqr.io` (và từ `vietqr-discovery.json` của `Ngochiendev/vietqr-core`). Chỗ nó khớp vietqr.io không phải bằng chứng
-  thứ hai. Nó có thêm vài app tự thêm tay (MoMo, ZaloPay…) và mã App Store.
+  thứ hai. Nó có thêm vài app tự thêm tay (MoMo, ZaloPay…) và mã App Store. Chỉ các mục tự thêm tay đó mới được ghi
+  `independent: true` trong `bank-apps.json`.
+- **Noel tree** (`noel-tree-bank-apps.json`, chép từ repo của chủ dự án ngày 2026-11-20): dùng một scheme cho cả hai
+  hệ. App có `autofill: true` (MB, BIDV, VietinBank, ACB, OCB) được Noel tree mở qua `dl.vietqr.io/pay`, không qua
+  `appLink`.
 - **`vietnam-qr-pay` 1.5.1 độc lập** nhưng cũ: một số scheme và gói khác vietqr.io (ví dụ ACB `acbapp`, ABBANK
   `com.vnpay.abbank`).
 - **Noel tree** (`../noel-tree/src/app/tree/bank-apps.ts`): 15 app, chép từ vietqr.io ngày 2026-11-18, nên cũng không

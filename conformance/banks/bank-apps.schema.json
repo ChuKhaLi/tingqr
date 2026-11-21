@@ -113,6 +113,7 @@
               "ref",
               "url",
               "independent",
+              "agrees",
               "checked"
             ],
             "properties": {
@@ -133,10 +134,15 @@
                 "minLength": 1
               },
               "independent": {
-                "type": "boolean"
+                "type": "boolean",
+                "description": "true when this source did not copy its data from another listed source (see sources/<date>/NOTES.md)"
               },
               "checked": {
                 "$ref": "#/$defs/date"
+              },
+              "agrees": {
+                "type": "boolean",
+                "description": "true when this source gives exactly the scheme(s), package and host tingqr emits (checked against the snapshot by conformance/tools/banks/test/sources.test.mjs)"
               }
             }
           }

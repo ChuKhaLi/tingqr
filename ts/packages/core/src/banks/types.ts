@@ -26,7 +26,10 @@ export interface BankApp {
   readonly bin: string | null
   readonly ios?: { readonly scheme: string }
   readonly android?: BankAppAndroid
-  /** `multi-source`: at least two independent sources list the app. See conformance/banks/bank-apps.json for them. */
+  /**
+   * `multi-source`: at least two independent sources give exactly the scheme(s), package and host emitted here.
+   * Sources, and where they differ, are in conformance/banks/bank-apps.json. Neither label means anyone opened the app.
+   */
   readonly confidence: 'multi-source' | 'single-source'
   /** dl.vietqr.io can pre-fill amount and message for this app (per vietqr.io). tingqr itself only opens apps. */
   readonly vietqrAutofill: boolean

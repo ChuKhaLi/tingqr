@@ -47,17 +47,23 @@ bankAppLink('mb', 'ios') // mbbank://
 ### Danh sách app tin được tới đâu
 
 - Mỗi app có `confidence`:
-  - `multi-source`: ít nhất hai nguồn độc lập liệt kê app đó;
-  - `single-source`: chỉ có một nguồn.
+  - `multi-source`: ít nhất hai nguồn độc lập ghi **đúng** scheme, gói và host mà tingqr tạo ra (18 trên 44 app);
+  - `single-source`: các trường hợp còn lại, kể cả khi nguồn thứ hai có liệt kê app nhưng ghi giá trị khác.
+
+  Cả hai nhãn đều không có nghĩa là đã có người mở thử app.
 - Nguồn, chỗ các nguồn khác nhau, và kết quả kiểm Google Play nằm trong `conformance/banks/`. Xem
   `sources/<ngày>/NOTES.md` để biết nguồn nào độc lập với nguồn nào.
-- **Chỉ MB Bank và MyVIB đã được mở thử trên máy thật** (Android, chủ dự án, 2026-11-18, qua Noel tree); xem
-  `deviceVerified`. Mọi app khác chỉ dựa trên nguồn: tên gói đã kiểm trên Google Play, nhưng scheme chưa ai mở thử.
+- **Mở thử trên máy thật** (Android, chủ dự án, 2026-11-18, qua Noel tree; xem `deviceVerified`):
+  - **MyVIB:** đúng chuỗi `intent://` mà `bankAppLink` tạo ra.
+  - **MB Bank:** Noel tree mở MB qua `dl.vietqr.io/pay`. Lần thử này chỉ xác nhận scheme và gói, chưa mở đúng chuỗi
+    của `bankAppLink`.
+  - **Mọi app khác:** chỉ dựa trên nguồn. Tên gói đã kiểm trên Google Play, scheme thì chưa ai mở thử.
 - **Chưa có:**
   - VietABank, Vietbank, BVBank (Bản Việt): các nguồn ghi khác nhau;
   - phần Android của MoMo và ZaloPay: chưa có nguồn cho scheme Android;
   - ví không có scheme công khai (Viettel Money, ShopeePay, VNPAY).
-- Danh sách được kiểm tự động hằng tháng; có thay đổi thì mở issue (`.github/workflows/update-banks.yml`).
+- Có Action kiểm danh sách hằng tháng, có thay đổi thì mở issue (`.github/workflows/update-banks.yml`). Action này
+  **chưa chạy lần nào trên GitHub**.
 
 ## Logo và icon
 

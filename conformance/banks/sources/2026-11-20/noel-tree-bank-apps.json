@@ -1,0 +1,125 @@
+{
+  "_source": "../noel-tree/src/app/tree/bank-apps.ts (owner repo), BANK_APPS copied 2026-11-20. In Noel tree, apps with autofill=true open through https://dl.vietqr.io/pay (payLink); the others through appLink (intent:// or scheme://).",
+  "apps": [
+    {
+      "id": "mb",
+      "name": "MB Bank",
+      "scheme": "mbbank",
+      "android": "com.mbmobile",
+      "androidHost": "",
+      "autofill": true
+    },
+    {
+      "id": "vcb",
+      "name": "Vietcombank",
+      "scheme": "vietcombankmobile",
+      "android": "com.VCB",
+      "androidHost": "",
+      "autofill": false
+    },
+    {
+      "id": "tcb",
+      "name": "Techcombank",
+      "scheme": "tcb",
+      "android": "vn.com.techcombank.bb.app",
+      "androidHost": "applink",
+      "autofill": false
+    },
+    {
+      "id": "bidv",
+      "name": "BIDV SmartBanking",
+      "scheme": "bidv.smartbanking.partner",
+      "android": "com.vnpay.bidv",
+      "androidHost": "payment",
+      "autofill": true
+    },
+    {
+      "id": "icb",
+      "name": "VietinBank iPay",
+      "scheme": "vietinbankipay",
+      "android": "com.vietinbank.ipay",
+      "androidHost": "",
+      "autofill": true
+    },
+    {
+      "id": "acb",
+      "name": "ACB ONE",
+      "scheme": "acbone",
+      "android": "mobile.acb.com.vn",
+      "androidHost": "",
+      "autofill": true
+    },
+    {
+      "id": "vpb",
+      "name": "VPBank NEO",
+      "scheme": "vpbankneo",
+      "android": "com.vnpay.vpbankonline",
+      "androidHost": "",
+      "autofill": false
+    },
+    {
+      "id": "tpb",
+      "name": "TPBank Mobile",
+      "scheme": "hydro",
+      "android": "com.tpb.mb.gprsandroid",
+      "androidHost": "onboarding",
+      "autofill": false
+    },
+    {
+      "id": "vba",
+      "name": "Agribank",
+      "scheme": "agribankmobile",
+      "android": "com.vnpay.Agribank3g",
+      "androidHost": "",
+      "autofill": false
+    },
+    {
+      "id": "cake",
+      "name": "Cake",
+      "scheme": "cake.vn",
+      "android": "xyz.be.cake",
+      "androidHost": "",
+      "autofill": false
+    },
+    {
+      "id": "ocb",
+      "name": "OCB OMNI",
+      "scheme": "newomni-app",
+      "android": "vn.com.ocb.awe",
+      "androidHost": "",
+      "autofill": true
+    },
+    {
+      "id": "shb",
+      "name": "SHB Mobile",
+      "scheme": "shbmobile",
+      "android": "vn.shb.saha.mbanking",
+      "androidHost": "",
+      "autofill": false
+    },
+    {
+      "id": "hdb",
+      "name": "HDBank",
+      "scheme": "hdbankmobile",
+      "android": "com.vnpay.hdbank",
+      "androidHost": "",
+      "autofill": false
+    },
+    {
+      "id": "vib",
+      "name": "MyVIB",
+      "scheme": "myvib2",
+      "android": "com.vib.myvib2",
+      "androidHost": "myvib2.com.vn/data",
+      "autofill": false
+    },
+    {
+      "id": "timo",
+      "name": "Timo",
+      "scheme": "plus",
+      "android": "io.lifestyle.plus",
+      "androidHost": "",
+      "autofill": false
+    }
+  ]
+}
