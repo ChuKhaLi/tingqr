@@ -3,6 +3,31 @@
   "version": "0.0.0",
   "description": "Encode, decode and detect payment QR codes (VietQR first). Zero dependencies.",
   "license": "MIT",
+  "author": "Chung Nguyen",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ChuKhaLi/tingqr.git",
+    "directory": "ts/packages/core"
+  },
+  "homepage": "https://github.com/ChuKhaLi/tingqr/tree/main/ts/packages/core#readme",
+  "bugs": {
+    "url": "https://github.com/ChuKhaLi/tingqr/issues"
+  },
+  "keywords": [
+    "vietqr",
+    "napas",
+    "emvco",
+    "qr",
+    "payment",
+    "promptpay",
+    "khqr",
+    "vnpay",
+    "bakong",
+    "vietnam",
+    "thailand",
+    "cambodia",
+    "bank"
+  ],
   "type": "module",
   "sideEffects": false,
   "main": "./dist/index.cjs",
@@ -86,5 +111,8 @@
     "@stryker-mutator/core": "^10.1.1",
     "@stryker-mutator/vitest-runner": "^10.1.1",
     "ajv": "^8.20.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

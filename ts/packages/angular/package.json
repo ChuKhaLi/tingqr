@@ -3,6 +3,24 @@
   "version": "0.0.0",
   "description": "Angular component and pipe for payment QR codes (VietQR, PromptPay, KHQR…): SVG in SSR, PNG <img> in the browser. Signals, zoneless.",
   "license": "MIT",
+  "author": "Chung Nguyen",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ChuKhaLi/tingqr.git",
+    "directory": "ts/packages/angular"
+  },
+  "homepage": "https://github.com/ChuKhaLi/tingqr/tree/main/ts/packages/angular#readme",
+  "bugs": {
+    "url": "https://github.com/ChuKhaLi/tingqr/issues"
+  },
+  "keywords": [
+    "angular",
+    "qr",
+    "vietqr",
+    "payment",
+    "ssr",
+    "signals"
+  ],
   "sideEffects": false,
   "peerDependencies": {
     "@angular/common": ">=20.0.0",
@@ -33,6 +51,7 @@
   "type": "module",
   "publishConfig": {
     "directory": "dist",
-    "linkDirectory": false
+    "linkDirectory": false,
+    "access": "public"
   }
 }

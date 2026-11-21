@@ -9,8 +9,8 @@ import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const RENDER = join(dirname(fileURLToPath(import.meta.url)), '..', 'packages', 'render')
-// 30 000 until 2026-11-21; owner approved 33 000 for render/canvas (Plan 6).
-const MAX_TARBALL_BYTES = 33_000
+// 30 000 until 2026-11-21; owner approved 33 000 for render/canvas (Plan 6), then 36 000 for a full README (Plan 7).
+const MAX_TARBALL_BYTES = 36_000
 
 const pkg = JSON.parse(readFileSync(join(RENDER, 'package.json'), 'utf8'))
 const problems = []

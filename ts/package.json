@@ -10,7 +10,10 @@
     "check:bank-logos": "node scripts/check-bank-logos-package.mjs",
     "check:hono": "node scripts/check-hono-package.mjs",
     "check:angular": "node scripts/check-angular-package.mjs",
-    "check:nestjs": "node scripts/check-nestjs-package.mjs"
+    "check:nestjs": "node scripts/check-nestjs-package.mjs",
+    "check:release": "node scripts/check-release.mjs",
+    "set-version": "node scripts/set-version.mjs",
+    "test:scripts": "node --test scripts/test/release.test.mjs"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",
