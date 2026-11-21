@@ -58,8 +58,15 @@ TypeScript và bản .NET, kèm tích hợp sẵn cho Angular, NestJS và ASP.NE
   - **VietQR đã quét bằng app thật** (2026-11-21, Android 16, màn hình và giấy): MB Bank và MyVIB đọc đúng QR tĩnh và QR
     có số tiền, có và không có logo thử (`conformance/scans.md`). Chưa thử iPhone, app khác. VNPAY, PromptPay, KHQR
     chưa quét bằng app thật.
-  - Tiếp theo: chủ dự án quét thử VietQR (kể cả bản có icon ngân hàng) và điền `conformance/scans.md`; Plan 6 (Angular,
-    NestJS); hoặc làm nốt Plan 2 Task 5–6 khi có QR thật.
+  - **Plan 6** (2026-11-21, nhánh `plan-6`): `docs/superpowers/plans/2026-11-21-plan-6-angular-hono.md`, thiết kế
+    `docs/superpowers/specs/2026-11-21-tingqr-angular-hono-design.md`, hướng dẫn `docs/huong-dan/hien-qr-angular-hono.md`.
+    - Chủ dự án chia: Plan 6 là `@tingqr/render/canvas`, `@tingqr/angular`, `@tingqr/hono` (gói mới, Noel tree dùng Hono);
+      **Plan 6b** là `@tingqr/nestjs`, vẫn thuộc v0.1.
+    - Ba mã lỗi mới: `LOGO_LOAD_FAILED`, `CANVAS_TAINTED`, `NO_CANVAS` (bản .NET khai báo, không bao giờ ném).
+    - **Không có route mở** dựng QR từ tham số URL (chủ dự án quyết; lý do lừa đảo).
+    - **Chưa thử:** nhấn giữ lưu PNG trong Zalo/Messenger, app ngân hàng quét ảnh đã lưu.
+  - Tiếp theo: chủ dự án quét thử VietQR (kể cả bản có icon ngân hàng) và điền `conformance/scans.md`; Plan 6b (NestJS);
+    hoặc làm nốt Plan 2 Task 5–6 khi có QR thật.
 - **Chủ dự án đã quyết:**
   - Mục đích chính là một thư viện mã nguồn mở có tiếng; dùng phụ trong Noel tree (`../noel-tree`, Angular 21 SSR trên
     Cloudflare Workers).

@@ -21,7 +21,16 @@
   - File port có `// @ts-nocheck` và không chạy mutation (`stryker.config.json` loại trừ); code còn lại của gói vẫn
     chặt như `core`.
   - `pnpm check:render` (sau `pnpm build`): chỉ phụ thuộc `@tingqr/core`, toàn văn giấy phép MIT của Nayuki còn trong
-    `dist`, có `LICENSE` giống của repo, tarball dưới 30 KB.
+    mọi file `dist` có bộ mã hoá (bản ESM tách chunk chung), có `LICENSE` giống của repo, tarball dưới 33 000 byte
+    (chủ dự án nâng từ 30 000 ngày 2026-11-21 cho `render/canvas`; đo 32 206, còn rất ít chỗ).
+  - `src/layout.ts`: kiểm tuỳ chọn và tính bố cục, dùng chung cho `toSvg` và canvas. Thêm luật mới về màu, logo hay ECC
+    thì sửa ở đây.
+  - **`@tingqr/render/canvas`** (`src/canvas.ts`): `drawQr`, `toPng`, `toPngBlob`, `toPngDataUrl`.
+    - **Chỉ ESM:** `scripts/esm-only-canvas.mjs` xoá `dist/canvas.cjs` sau tsup. Lý do: CJS không tách chunk, sẽ chép
+      thêm cả bộ mã hoá và vượt ngân sách. `onSuccess` của tsup không làm được, vì chạy trước khi bước `.d.cts` xong.
+    - Kiểu DOM chỉ khai báo qua `/// <reference lib="dom" />` ở `canvas.ts`. Test dùng canvas giả
+      (`test/fake-canvas.ts`), không có trình duyệt thật.
+    - `test/package.spec.ts` chạy trên `dist`: import gốc không kéo code canvas, chỉ một bản bộ mã hoá.
   - `pnpm -C packages/render scan-sheet`: trang quét thử. Chỉ chủ dự án chạy khi có dữ liệu thật; khi thử, dùng
     `TINGQR_SCAN_INPUTS=../../../conformance/scan-inputs.example.json` (đường dẫn tính từ `packages/render`; file không có thì script chỉ in mẫu, không báo lỗi).
 - `pnpm test` và `pnpm typecheck` tự build trước (`render` đọc `@tingqr/core` qua `dist`, test trang quét thử chạy `dist` của
@@ -46,3 +55,18 @@
     2 270 000 byte.
 - **Dữ liệu ngân hàng:** sửa theo skill `update-banks`; công cụ ở `conformance/tools/banks/`
   (`pnpm -C conformance/tools/banks test`, không gọi mạng).
+- **`@tingqr/hono`:** tsup, ESM + CJS. `hono` là peer `^4.0.0`; `src` type-check với lib `WebWorker` (có `Response`,
+  không có `document`).
+  - `pnpm check:hono` (sau `pnpm build`): chỉ phụ thuộc `core` + `render`, không import `node:*`, tarball dưới 6 250 byte.
+- **`@tingqr/angular`:** build bằng `ng-packagr` (toolchain Angular 20.3, biên dịch partial) ra `dist/`.
+  - `publishConfig.directory: "dist"`, nên `pnpm pack`/`publish` lấy từ `dist` và thay `workspace:*` bằng số phiên bản.
+  - **Test chạy trên `dist`** (alias `@tingqr/angular` trong `vitest.config.ts`): `@angular/compiler` ở `test/setup.ts`
+    biên dịch JIT các khai báo partial lúc chạy. Vì vậy phải build trước khi test (`pnpm test` ở `ts/` tự build).
+    - Không dùng `@analogjs/vite-plugin-angular`: plugin này không nhận ra signal input (lỗi NG0303).
+    - Component host viết trong file test được biên dịch JIT từ mã nguồn, nên **không dùng `input()`** ở đó; dùng
+      `signal()` thường.
+  - `test/ssr.spec.ts` render bằng `@angular/platform-server`, môi trường `node`, zoneless.
+  - jsdom không có canvas: `test/component-img.spec.ts` thay `document.createElement('canvas')` bằng canvas giả.
+  - `pnpm check:angular` (sau `pnpm build`): đóng gói từ `dist`, peer Angular `>=20.0.0`, không còn `workspace:`, tarball
+    dưới 10 000 byte.
+- `pnpm typecheck` build mọi gói trước (`pnpm -r build`), vì test Angular đọc kiểu `@tingqr/angular` từ `dist`.

@@ -7,7 +7,9 @@
     "typecheck": "pnpm -r build && pnpm -r typecheck",
     "check:core": "node scripts/check-core-package.mjs",
     "check:render": "node scripts/check-render-package.mjs",
-    "check:bank-logos": "node scripts/check-bank-logos-package.mjs"
+    "check:bank-logos": "node scripts/check-bank-logos-package.mjs",
+    "check:hono": "node scripts/check-hono-package.mjs",
+    "check:angular": "node scripts/check-angular-package.mjs"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",

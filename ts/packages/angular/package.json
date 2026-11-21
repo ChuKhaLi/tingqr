@@ -30,5 +30,9 @@
     "ng-packagr": "~20.3.2",
     "rxjs": "^7.8.2"
   },
-  "type": "module"
+  "type": "module",
+  "publishConfig": {
+    "directory": "dist",
+    "linkDirectory": false
+  }
 }
