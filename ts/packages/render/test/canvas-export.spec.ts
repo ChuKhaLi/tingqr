@@ -1,5 +1,5 @@
 import { TingQrError } from '@tingqr/core'
-import { drawQr, toPngBlob, toPngDataUrl } from '../src/canvas.js'
+import { drawQr, toPng, toPngBlob, toPngDataUrl } from '../src/canvas.js'
 import { toMatrix } from '../src/index.js'
 import { logoBox } from '../src/logo.js'
 import { ExportingCanvas, FakeCanvas, fakeImageClass } from './fake-canvas.js'
@@ -153,6 +153,22 @@ describe('PNG export', () => {
     expect(await blob.text()).toBe(`png ${(toMatrix(TEXT).size + 8) * 2}`)
     expect(canvases).toHaveLength(1)
     expect(canvases[0]?.calls.length).toBeGreaterThan(1)
+  })
+
+  test('toPng draws once and returns both the blob and the data URL of that canvas', async () => {
+    const { canvases } = installDom()
+    const { blob, dataUrl } = await toPng(TEXT, { scale: 2 })
+    const side = (toMatrix(TEXT).size + 8) * 2
+    expect(canvases).toHaveLength(1)
+    expect(await blob.text()).toBe(`png ${side}`)
+    expect(dataUrl).toBe(`data:image/png;base64,${Buffer.from(`png ${side}`).toString('base64')}`)
+  })
+
+  test('toPng maps a tainted canvas to CANVAS_TAINTED', async () => {
+    installDom(undefined, (c) => {
+      c.exportError = new DOMException('tainted', 'SecurityError')
+    })
+    expect(await code(toPng(TEXT))).toBe('CANVAS_TAINTED')
   })
 
   test('toPngDataUrl returns a PNG data URL of the drawn canvas', async () => {

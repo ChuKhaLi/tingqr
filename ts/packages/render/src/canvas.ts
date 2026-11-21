@@ -119,10 +119,7 @@ function exporting<T>(run: () => T): T {
   }
 }
 
-/** Draw `text` on a new canvas and export it as a PNG Blob. Browser only. */
-export async function toPngBlob(text: string, options: CanvasOptions = {}): Promise<Blob> {
-  const canvas = newCanvasChecked(text, options)
-  await drawQr(canvas, text, options)
+function blobOf(canvas: HTMLCanvasElement): Promise<Blob> {
   return new Promise((resolve, reject) => {
     try {
       exporting(() =>
@@ -137,11 +134,28 @@ export async function toPngBlob(text: string, options: CanvasOptions = {}): Prom
   })
 }
 
-/** Draw `text` on a new canvas and export it as a PNG data URL (long-press savable in in-app browsers). Browser only. */
-export async function toPngDataUrl(text: string, options: CanvasOptions = {}): Promise<string> {
+async function drawn(text: string, options: CanvasOptions): Promise<HTMLCanvasElement> {
   const canvas = newCanvasChecked(text, options)
   await drawQr(canvas, text, options)
+  return canvas
+}
+
+/** Draw `text` on a new canvas and export it as a PNG Blob. Browser only. */
+export async function toPngBlob(text: string, options: CanvasOptions = {}): Promise<Blob> {
+  return blobOf(await drawn(text, options))
+}
+
+/** Draw `text` on a new canvas and export it as a PNG data URL (long-press savable in in-app browsers). Browser only. */
+export async function toPngDataUrl(text: string, options: CanvasOptions = {}): Promise<string> {
+  const canvas = await drawn(text, options)
   return exporting(() => canvas.toDataURL('image/png'))
+}
+
+/** Draw once and export both: a data URL to show in an `<img>` and a Blob to share or download. Browser only. */
+export async function toPng(text: string, options: CanvasOptions = {}): Promise<{ blob: Blob; dataUrl: string }> {
+  const canvas = await drawn(text, options)
+  const dataUrl = exporting(() => canvas.toDataURL('image/png'))
+  return { blob: await blobOf(canvas), dataUrl }
 }
 
 /** Report bad options as INVALID_VALUE even where there is no canvas. */
