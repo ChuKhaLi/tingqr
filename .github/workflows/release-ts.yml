@@ -10,6 +10,7 @@ name: Release (TypeScript)
 # - npm authentication is trusted publishing (OIDC): no NPM_TOKEN exists or should exist. The trusted publisher on
 #   npmjs.com is configured against THIS FILE NAME and the `npm-release` environment: renaming either breaks publishing
 #   until every package's trusted publisher is updated.
+# - Tarball paths start with ./ : npm reads "tarballs/x.tgz" as the GitHub shorthand user/repo.
 # - `publish` uploads exactly the tarballs `verify` packed and drilled (artifact), in dependency order.
 
 on:
@@ -86,7 +87,7 @@ jobs:
         run: |
           set -euo pipefail
           for p in core render bank-logos hono nestjs angular; do
-            npm publish --dry-run --access public tarballs/tingqr-$p-*.tgz
+            npm publish --dry-run --access public ./tarballs/tingqr-$p-*.tgz
           done
 
   publish:
@@ -119,5 +120,5 @@ jobs:
         run: |
           set -euo pipefail
           for p in core render bank-logos hono nestjs angular; do
-            npm publish --access public tarballs/tingqr-$p-*.tgz
+            npm publish --access public ./tarballs/tingqr-$p-*.tgz
           done
