@@ -6,6 +6,8 @@ khi bảng có dòng tương ứng.
 
 - **Cách làm:** chạy `pnpm -C ts/packages/render scan-sheet`, mở `ts/packages/render/scan-sheet/index.html`, quét từng
   mã trên màn hình hoặc in trang ra giấy rồi quét. Xem `conformance/README.md`, mục "Trang quét thử".
+- **Người ngoài báo kết quả** qua mẫu issue "Scan report / Báo kết quả quét" (`.github/ISSUE_TEMPLATE/scan-report.yml`,
+  nhãn `scan-report`). Chủ dự án chép dòng từ issue vào bảng; không có gì tự động thêm dòng.
 - **An toàn:** dừng ở màn hình xác nhận chuyển khoản. Nếu chuyển thì chỉ chuyển cho chính mình, số tiền nhỏ. Mã có nhãn
   "tài khoản mẫu, không phải của bạn" chỉ dùng để kiểm app đọc được mã, không bao giờ chuyển tiền. Phần lớn là tài
   khoản bịa; mẫu lấy từ README của `vietnam-qr-pay` có thể là tài khoản thật của người khác.
