@@ -35,7 +35,8 @@ try {
     const size = statSync(join(out, tarball)).size
     console.log(`@tingqr/bank-logos tarball: ${size} bytes (budget ${MAX_TARBALL_BYTES})`)
     if (size > MAX_TARBALL_BYTES) problems.push(`tarball is ${size} bytes, over the ${MAX_TARBALL_BYTES}-byte budget`)
-    const listing = execFileSync('tar', ['-tzf', tarball], { cwd: out, encoding: 'utf8' }).split('\n')
+    // Windows' tar.exe ends each line with CRLF; split on both so exact matches below work on every OS.
+    const listing = execFileSync('tar', ['-tzf', tarball], { cwd: out, encoding: 'utf8' }).split(/\r?\n/)
     for (const need of ['package/LICENSE', 'package/LOGOS-NOTICE.md', 'package/README.md', 'package/dist/index.js']) {
       if (!listing.includes(need)) problems.push(`tarball lacks ${need}`)
     }
