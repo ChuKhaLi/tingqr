@@ -46,8 +46,8 @@ Mục ghi **[chủ dự án]** là chủ dự án đã quyết; mục **[Claude]
   - trang người dùng `~tingqr` trả 404;
   - chưa có gói nào.
 
-  Vậy là có vẻ còn trống. Ai cũng có thể lấy bất cứ lúc nào, nên `RELEASING.md` khuyên tạo org `tingqr` sớm. Việc tạo
-  org miễn phí và chưa phải phát hành gì.
+  Vậy là có vẻ còn trống.
+- **Chủ dự án đã tạo org `tingqr` trên npm** (báo 2026-11-21). Scope `@tingqr` đã được giữ. **[chủ dự án]**
 - Bản .NET và đường phát hành NuGet (`dotnet-v*`): Plan 8.
 - Trang web tài liệu riêng, tên miền.
 
@@ -199,7 +199,7 @@ Mục ghi **[chủ dự án]** là chủ dự án đã quyết; mục **[Claude]
   - có nhận diện MoMo và ZaloPay;
   - quét thêm app;
   - chủ dự án quyết phát hành.
-- **Làm sớm được, không cần đợi** (chủ dự án làm): tạo tài khoản npm, bật 2FA, tạo org `tingqr` để giữ scope.
+- **Đã làm:** org `tingqr` trên npm (chủ dự án, 2026-11-21). Nên bật 2FA cho tài khoản npm.
 - **Một lần, khi quyết phát hành** (chủ dự án làm):
   1. mở công khai repo (cần cho provenance và bước duyệt; workflow từ chối phát hành từ repo riêng tư);
   2. trong GitHub, tạo environment `npm-release` có người duyệt;
