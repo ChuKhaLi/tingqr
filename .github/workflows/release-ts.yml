@@ -44,7 +44,9 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v5
-      - uses: pnpm/action-setup@v6
+      # Pinned to a commit: this job packs the tarballs that `publish` uploads, so a moved tag of a third-party action
+      # must not be able to change them. Bump the SHA deliberately (Dependabot or by hand), keeping the tag comment.
+      - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
       - uses: actions/setup-node@v5
         with:
           node-version: 24
