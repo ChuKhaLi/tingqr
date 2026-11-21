@@ -1,0 +1,63 @@
+{
+  "name": "@tingqr/bank-logos",
+  "version": "0.0.0",
+  "description": "Vietnamese bank logos and bank-app icons, one tree-shakeable module each (data URI), for tingqr. Logos are trademarks of their owners, not MIT: see LOGOS-NOTICE.md.",
+  "license": "SEE LICENSE IN LOGOS-NOTICE.md",
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./logo/*": {
+      "import": {
+        "types": "./dist/logo/*.d.ts",
+        "default": "./dist/logo/*.js"
+      },
+      "require": {
+        "types": "./dist/logo/*.d.cts",
+        "default": "./dist/logo/*.cjs"
+      }
+    },
+    "./icon/*": {
+      "import": {
+        "types": "./dist/icon/*.d.ts",
+        "default": "./dist/icon/*.js"
+      },
+      "require": {
+        "types": "./dist/icon/*.d.cts",
+        "default": "./dist/icon/*.cjs"
+      }
+    },
+    "./files/*": "./files/*"
+  },
+  "files": [
+    "dist",
+    "files",
+    "LICENSE",
+    "LOGOS-NOTICE.md",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "node scripts/gen.mjs",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit -p tsconfig.test.json"
+  },
+  "devDependencies": {
+    "@tingqr/render": "workspace:*",
+    "esbuild": "0.27.7"
+  }
+}

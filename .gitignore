@@ -19,3 +19,4 @@ __pycache__/
 ts/packages/render/scan-sheet/
 
 .claude/worktrees/
+ts/packages/bank-logos/files/

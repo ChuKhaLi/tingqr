@@ -21,6 +21,15 @@ importers:
         specifier: ^2.1.8
         version: 2.1.9(@types/node@22.20.5)
 
+  packages/bank-logos:
+    devDependencies:
+      '@tingqr/render':
+        specifier: workspace:*
+        version: link:../render
+      esbuild:
+        specifier: 0.27.7
+        version: 0.27.7
+
   packages/core:
     devDependencies:
       '@stryker-mutator/core':

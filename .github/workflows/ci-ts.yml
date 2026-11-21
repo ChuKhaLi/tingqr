@@ -47,7 +47,14 @@ jobs:
         run: node ts/scripts/check-core-package.mjs
       - name: '@tingqr/render depends only on @tingqr/core, keeps the Nayuki notice and fits the size budget'
         run: node ts/scripts/check-render-package.mjs
+      - name: '@tingqr/bank-logos has no dependencies, ships LOGOS-NOTICE.md and LICENSE, and fits the size budget'
+        run: node ts/scripts/check-bank-logos-package.mjs
       - run: pnpm -C ts test
+      # The bank-list tool (conformance/tools/banks) never calls the network in its tests; sharp resizes a generated image.
+      - run: pnpm -C conformance/tools/banks install --frozen-lockfile
+      - run: pnpm -C conformance/tools/banks test
+      - name: 'src/banks/data.ts matches conformance/banks/'
+        run: node conformance/tools/banks/sync-ts.mjs --check
       # The recipe tool guards privacy (masking, never printing payloads); its tests use public README samples only.
       - run: pnpm -C conformance/tools/recipe install --frozen-lockfile
       - run: pnpm -C conformance/tools/recipe test
