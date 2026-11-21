@@ -20,6 +20,9 @@ import { applyOverrides, parseBanksResponse } from './lib/vietqr.mjs'
 
 /** Refuse to write a bank list that loses more than this many banks in one go. */
 export const MAX_REMOVED = 5
+/** A package whose last ok Google Play check is older than this counts as a change (see run). */
+export const MAX_UNCONFIRMED_DAYS = 90
+const daysBetween = (from, to) => Math.round((Date.parse(to) - Date.parse(from)) / 86_400_000)
 const PLAY_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36'
 
 const readJson = (path, fallback) => (existsSync(path) ? JSON.parse(readFileSync(path, 'utf8')) : fallback)
@@ -42,7 +45,7 @@ function diffBanks(before, after) {
  * @param {{ mode: 'seed'|'check'|'write', root: string, fetch: typeof fetch, today: string, outDir?: string, delayMs?: number }} o
  * @returns {Promise<{ changed: boolean, report: string }>}
  */
-export async function run({ mode, root, fetch, today, outDir, delayMs = 500, fetchLogos = false }) {
+export async function run({ mode, root, fetch, today, outDir, delayMs = 500, fetchLogos = false, shrink }) {
   const dir = join(root, 'conformance', 'banks')
   const { banksJson, lists, redirects } = await fetchVietqr(fetch, delayMs)
   const banks = applyOverrides(parseBanksResponse(banksJson), readJson(join(dir, 'overrides.json'), []))
@@ -69,17 +72,21 @@ export async function run({ mode, root, fetch, today, outDir, delayMs = 500, fet
     checks = updatePlayChecks(checks, pkg, result, today)
     await sleep(delayMs)
   }
+  // Google Play often blocks CI machines, so "unknown" alone is not a change; but a package not confirmed for more
+  // than MAX_UNCONFIRMED_DAYS is, so a removed app cannot hide behind blocked checks forever.
+  const stale =
+    mode === 'seed' ? [] : packages.filter((p) => !checks[p]?.lastOk || daysBetween(checks[p].lastOk, today) > MAX_UNCONFIRMED_DAYS)
 
   const logos =
     fetchLogos && mode !== 'seed'
-      ? await collectLogos({ dir, fetch, today, delayMs, write: mode === 'write', banks: refused ? current : banks, apps: curated, lists })
+      ? await collectLogos({ dir, fetch, today, delayMs, write: mode === 'write', banks: refused ? current : banks, apps: curated, lists, shrink })
       : undefined
 
   const report = renderReport({
     today,
     banks: { ...bankDiff, refused },
     apps: appDiffs,
-    play: { gone, unknown, checked: packages.length },
+    play: { gone, unknown, stale, checked: packages.length },
     logos: logos && [...logos.changes, ...logos.notes],
   })
   const changed =
@@ -87,6 +94,7 @@ export async function run({ mode, root, fetch, today, outDir, delayMs = 500, fet
     bankDiff.added.length + bankDiff.removed.length + bankDiff.changed.length > 0 ||
     appDiffs.length > 0 ||
     gone.length > 0 ||
+    stale.length > 0 ||
     (logos?.changes.length ?? 0) > 0
 
   const bankFile = { source: 'https://api.vietqr.io/v2/banks', fetchedAt: today, banks }

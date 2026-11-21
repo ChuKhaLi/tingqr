@@ -26,6 +26,11 @@ export function renderReport(r) {
   lines.push('', `## Google Play (${r.play.checked} gói)`, '')
   list('Gói không còn (404)', r.play.gone)
   if (r.play.unknown.length) lines.push(`- ${r.play.unknown.length} gói chưa kiểm được: ${r.play.unknown.join(', ')}`)
+  if (r.play.stale?.length) {
+    lines.push(
+      `- **Quá 90 ngày chưa xác nhận được trên Google Play** (chạy \`node conformance/tools/banks/update.mjs\` ở máy): ${r.play.stale.join(', ')}`,
+    )
+  }
   if (!r.play.gone.length && !r.play.unknown.length) lines.push('- Mọi gói còn trên Google Play.')
   if (r.logos) {
     lines.push('', '## Ảnh', '')

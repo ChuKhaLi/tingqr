@@ -23,6 +23,7 @@ describe('schemas', () => {
     ['bank-apps.schema.json', apps],
     ['play-checks.schema.json', play],
     ['overrides.schema.json', overrides],
+    ['logos/manifest.schema.json', read('logos/manifest.json')],
   ]
   test.each(cases)('%s accepts the committed file', (schema, data) => {
     const validate = validator(schema)
@@ -39,6 +40,17 @@ describe('schemas', () => {
     const bad = structuredClone(apps)
     bad.apps[0].confidence = 'verified'
     expect(validator('bank-apps.schema.json')(bad)).toBe(false)
+  })
+
+  test('manifest schema rejects a PNG logo, a short BIN, and processed without sourceSha256', () => {
+    const entry = read('logos/manifest.json').files.find((f: any) => f.processed)
+    const check = (e: object) => validator('logos/manifest.schema.json')({ files: [e] })
+    expect(check(entry)).toBe(true)
+    expect(check({ ...entry, file: 'logo/970422.png' })).toBe(false)
+    expect(check({ ...entry, file: 'logo/97042.webp' })).toBe(false)
+    expect(check({ ...entry, file: 'logo/970422xwebp' })).toBe(false)
+    const { sourceSha256: _s, ...noSource } = entry
+    expect(check(noSource)).toBe(false)
   })
 
   test('banks schema rejects a 5-digit bin', () => {

@@ -1,6 +1,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, statSync, writeFileSync } from 'node:fs'
+import { createHash } from 'node:crypto'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { run } from '../update.mjs'
@@ -99,7 +100,7 @@ const CURATED = {
 }
 
 /** A repo root holding conformance/banks/ in sync with the fixtures. */
-function makeRoot({ banks = parseBanksResponse(BANKS) } = {}) {
+function makeRoot({ banks = parseBanksResponse(BANKS), lastOk = '2026-11-01' } = {}) {
   const root = mkdtempSync(join(tmpdir(), 'tingqr-banks-'))
   const dir = join(root, 'conformance', 'banks')
   mkdirSync(dir, { recursive: true })
@@ -107,9 +108,23 @@ function makeRoot({ banks = parseBanksResponse(BANKS) } = {}) {
   write('banks.json', { source: 'https://api.vietqr.io/v2/banks', fetchedAt: '2026-11-01', banks })
   write('bank-apps.json', CURATED)
   write('overrides.json', [])
-  write('play-checks.json', {})
+  const checks = Object.fromEntries(CURATED.apps.map((a) => [a.android.package, { lastOk, last: lastOk ? 'ok' : 'unknown', checked: '2026-11-01' }]))
+  write('play-checks.json', checks)
   return { root, dir }
 }
+
+test('a package Google Play has not confirmed for more than 90 days is a change, even when every check is blocked', async () => {
+  const blocked = fakeFetch({ play: () => ({ status: 429, body: '' }) })
+  const stale = makeRoot({ lastOk: '2026-08-21' })
+  const r = await run({ mode: 'check', root: stale.root, fetch: blocked.fetch, today: '2026-11-20', delayMs: 0 })
+  assert.equal(r.changed, true)
+  assert.match(r.report, /90 ngày/)
+  assert.match(r.report, /com\.mbmobile/)
+  const never = makeRoot({ lastOk: null })
+  assert.equal((await run({ mode: 'check', root: never.root, fetch: blocked.fetch, today: '2026-11-20', delayMs: 0 })).changed, true)
+  const fresh = makeRoot({ lastOk: '2026-08-22' })
+  assert.equal((await run({ mode: 'check', root: fresh.root, fetch: blocked.fetch, today: '2026-11-20', delayMs: 0 })).changed, false)
+})
 
 const snapshot = (dir) =>
   Object.fromEntries(
@@ -223,7 +238,9 @@ function makeLogoRoot() {
   return r
 }
 const manifestOf = (dir) => JSON.parse(readFileSync(join(dir, 'logos', 'manifest.json'), 'utf8'))
-const opts = (root, fetch, mode = 'write') => ({ mode, root, fetch, today: '2026-11-21', delayMs: 0, fetchLogos: true })
+/** Stand-in for the sharp resize: marks the bytes so tests can tell a shrunk file from the source. */
+const fakeShrink = async (bytes) => Buffer.concat([Buffer.from('small:'), bytes])
+const opts = (root, fetch, mode = 'write', shrink = fakeShrink) => ({ mode, root, fetch, today: '2026-11-21', delayMs: 0, fetchLogos: true, shrink })
 
 test('fetchLogos takes the Commons SVG when it is PD and safe, the vietqr.io PNG otherwise, and icons by vietqr.io id', async () => {
   const { root, dir } = makeLogoRoot()
@@ -235,7 +252,7 @@ test('fetchLogos takes the Commons SVG when it is PD and safe, the vietqr.io PNG
   assert.match(mb.pageUrl, /^https:\/\/commons\.wikimedia\.org\/wiki\/File:/)
   assert.equal(readFileSync(join(dir, 'logos', 'logo', '970422.svg'), 'utf8'), SAFE_SVG)
   const vcb = m.files.find((f) => f.key === '970436')
-  assert.deepEqual([vcb.file, vcb.license, vcb.sourceUrl, vcb.pageUrl], ['logo/970436.png', 'trademark-no-license', 'https://cdn.vietqr.io/img/VCB.png', null])
+  assert.deepEqual([vcb.file, vcb.license, vcb.sourceUrl, vcb.pageUrl], ['logo/970436.webp', 'trademark-no-license', 'https://cdn.vietqr.io/img/VCB.png', null])
   const vib = m.files.find((f) => f.kind === 'icon' && f.key === 'vib')
   assert.deepEqual([vib.file, vib.sourceUrl], ['icon/vib.webp', 'https://cdn.vietqr.io/bank-app-icon/vib-2-ios.webp'])
   assert.equal(m.files.filter((f) => f.kind === 'logo').length, 6)
@@ -246,7 +263,7 @@ test('fetchLogos takes the Commons SVG when it is PD and safe, the vietqr.io PNG
 test('an unsafe Commons SVG is not written; the PNG is used and the report says why', async () => {
   const { root, dir } = makeLogoRoot()
   const r = await run(opts(root, fakeFetch({ svg: '<svg><script>x</script></svg>' }).fetch))
-  assert.equal(manifestOf(dir).files.find((f) => f.key === '970422').file, 'logo/970422.png')
+  assert.equal(manifestOf(dir).files.find((f) => f.key === '970422').file, 'logo/970422.webp')
   assert.match(r.report, /970422.*script/)
 })
 
@@ -289,4 +306,33 @@ test('a changed image is reported with its file', async () => {
   const r = await run(opts(root, fakeFetch({ image: (u) => ({ status: 200, body: `new ${u}` }) }).fetch))
   assert.equal(r.changed, true)
   assert.match(r.report, /icon\/mb\.webp/)
+})
+
+test('a vietqr.io PNG is stored shrunk; the manifest keeps the source hash and says how it was processed', async () => {
+  const { root, dir } = makeLogoRoot()
+  await run(opts(root, fakeFetch().fetch))
+  const vcb = manifestOf(dir).files.find((f) => f.key === '970436')
+  const source = Buffer.from('bytes of https://cdn.vietqr.io/img/VCB.png')
+  assert.equal(readFileSync(join(dir, 'logos', vcb.file), 'utf8'), `small:${source}`)
+  assert.equal(vcb.sourceSha256, createHash('sha256').update(source).digest('hex'))
+  assert.match(vcb.processed, /128 px.*WebP/)
+  assert.equal(vcb.bytes, source.length + 'small:'.length)
+})
+
+test('SVGs and icons are stored as downloaded, without processed or sourceSha256', async () => {
+  const { root, dir } = makeLogoRoot()
+  await run(opts(root, fakeFetch().fetch))
+  for (const f of manifestOf(dir).files.filter((x) => !x.file.startsWith('logo/') || x.file.endsWith('.svg'))) {
+    assert.equal('processed' in f, false, f.file)
+    assert.equal('sourceSha256' in f, false, f.file)
+  }
+})
+
+test('a different shrink output for the same source is not a change (sharp versions differ)', async () => {
+  const { root, dir } = makeLogoRoot()
+  await run(opts(root, fakeFetch().fetch))
+  const first = readFileSync(join(dir, 'logos', 'manifest.json'), 'utf8')
+  const r = await run(opts(root, fakeFetch().fetch, 'write', async (b) => Buffer.concat([Buffer.from('other:'), b])))
+  assert.equal(r.changed, false)
+  assert.equal(readFileSync(join(dir, 'logos', 'manifest.json'), 'utf8'), first)
 })

@@ -38,7 +38,10 @@ async function commonsSvg(fetch, title) {
  * @returns {Promise<{ changes: string[], notes: string[] }>} `changes`: files added, changed or dropped (the run
  * counts as changed when there is any); `notes`: fallbacks and failed downloads.
  */
-export async function collectLogos({ dir, fetch, today, delayMs = 500, write, banks, apps, lists }) {
+export async function collectLogos({ dir, fetch, today, delayMs = 500, write, banks, apps, lists, shrink }) {
+  // Raster logos from vietqr.io are stored shrunk (lib/shrink.mjs); sharp loads only when a file must be written.
+  const shrinkFn = shrink ?? (async (b) => (await import('./shrink.mjs')).shrinkLogo(b))
+  const shrinkNote = shrink ? 'resized to 128 px high (never enlarged), lossless WebP, test stand-in' : undefined
   const logosDir = join(dir, 'logos')
   const commons = readJson(join(logosDir, 'commons.json'), { logos: {} }).logos ?? {}
   const old = readJson(join(logosDir, 'manifest.json'), { files: [] }).files
@@ -56,7 +59,7 @@ export async function collectLogos({ dir, fetch, today, delayMs = 500, write, ba
     }
     if (!found) {
       const got = await download(fetch, bank.logoUrl)
-      if (got.bytes) found = { file: `logo/${bank.bin}.png`, sourceUrl: bank.logoUrl, pageUrl: null, license: 'trademark-no-license', bytes: got.bytes }
+      if (got.bytes) found = { file: `logo/${bank.bin}.webp`, sourceUrl: bank.logoUrl, pageUrl: null, license: 'trademark-no-license', bytes: got.bytes, shrink: true }
       else notes.push(`logo ${bank.bin}: không tải được ${bank.logoUrl} (HTTP ${got.status})`)
     }
     if (found) fresh.push({ kind: 'logo', key: bank.bin, ...found })
@@ -69,21 +72,35 @@ export async function collectLogos({ dir, fetch, today, delayMs = 500, write, ba
     else notes.push(`icon ${app.id}: không tải được ${url} (HTTP ${got.status})`)
   }
 
+  // A shrunk file is compared by the hash of what was downloaded, so a new sharp version alone is not a change.
   const changes = []
-  const entries = fresh.map((f) => {
+  const toWrite = []
+  const entries = []
+  for (const f of fresh) {
     const prev = oldByKey.get(`${f.kind}:${f.key}`)
-    const entry = manifestEntry({ ...f, fetched: today })
-    const same = prev && prev.file === entry.file && prev.sha256 === entry.sha256 && prev.sourceUrl === entry.sourceUrl
-    if (same) return { ...entry, fetched: prev.fetched }
-    changes.push(`${entry.file}: ${prev ? 'đổi' : 'mới'}`)
-    return entry
-  })
+    const source = manifestEntry({ ...f, fetched: today })
+    const prevSource = prev?.sourceSha256 ?? prev?.sha256
+    if (prev && prev.file === f.file && prev.sourceUrl === f.sourceUrl && prevSource === source.sha256) {
+      entries.push(prev)
+      continue
+    }
+    changes.push(`${f.file}: ${prev ? 'đổi' : 'mới'}`)
+    if (!f.shrink) {
+      entries.push(source)
+      toWrite.push({ file: f.file, bytes: f.bytes })
+    } else if (write) {
+      const bytes = await shrinkFn(f.bytes)
+      const note = shrinkNote ?? (await import('./shrink.mjs')).SHRINK_NOTE
+      entries.push({ ...manifestEntry({ ...f, bytes, fetched: today }), sourceSha256: source.sha256, processed: note })
+      toWrite.push({ file: f.file, bytes })
+    }
+  }
   const keep = new Set(entries.map((e) => e.file))
   const dropped = old.filter((e) => !keep.has(e.file))
   for (const e of dropped) if (!fresh.some((f) => `${f.kind}:${f.key}` === `${e.kind}:${e.key}`)) changes.push(`${e.file}: bỏ`)
 
   if (write) {
-    for (const f of fresh) {
+    for (const f of toWrite) {
       const path = join(logosDir, f.file)
       mkdirSync(dirname(path), { recursive: true })
       writeFileSync(path, f.bytes)

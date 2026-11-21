@@ -1,6 +1,6 @@
 {
   "source": "https://api.vietqr.io/v2/banks",
-  "fetchedAt": "2026-11-20",
+  "fetchedAt": "2026-11-21",
   "banks": [
     {
       "bin": "168999",

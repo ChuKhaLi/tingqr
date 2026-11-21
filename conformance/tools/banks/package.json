@@ -8,5 +8,8 @@
   },
   "scripts": {
     "test": "node --test"
+  },
+  "devDependencies": {
+    "sharp": "0.34.5"
   }
 }
