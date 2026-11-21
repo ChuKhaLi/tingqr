@@ -14,6 +14,9 @@ export const ERROR_CODES = [
   'INVALID_VALUE',
   'UNSUPPORTED_SCHEME',
   'UNKNOWN_SCHEME',
+  'LOGO_LOAD_FAILED',
+  'CANVAS_TAINTED',
+  'NO_CANVAS',
 ] as const
 export type ErrorCode = (typeof ERROR_CODES)[number]
 
