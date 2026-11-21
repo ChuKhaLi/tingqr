@@ -51,7 +51,7 @@ TypeScript và bản .NET, kèm tích hợp sẵn cho Angular, NestJS và ASP.NE
       - Action chưa chạy thật trên GitHub;
       - icon ngân hàng thật giữa QR chưa quét thử (lần quét 2026-11-21 dùng logo thử của trang quét thử).
     - Chủ dự án duyệt (2026-11-20/21):
-      - ngân sách core 45 KB;
+      - ngân sách core 45 KB (nâng lên 48 000 byte ở Plan 7);
       - logo PNG thu về WebP lossless cao 128 px;
       - gói `bank-logos` khoảng 1,8 MB.
   - Repo GitHub riêng tư `ChuKhaLi/tingqr`; CI (`ci-ts.yml`) và mutation (`mutation-ts.yml`, ngưỡng 90%) chạy trên PR.
@@ -69,9 +69,22 @@ TypeScript và bản .NET, kèm tích hợp sẵn cho Angular, NestJS và ASP.NE
     `docs/superpowers/specs/2026-11-21-tingqr-nestjs-design.md`. `@tingqr/nestjs`: `TingQrModule.forRoot`/`forRootAsync`
     (tài khoản nhận, cấu hình sai thì app không khởi động), `TingQrService.paymentQr`, `@TingQrSvg()` (interceptor, theo
     hợp đồng HTTP chung với Hono ở `conformance/http/svg-response.json`; thân 404 khác). Đã thử NestJS 12.6 trên Express và Fastify; chưa có người dùng thật.
-  - **Cần chủ dự án quyết trước Plan 7:** ngân sách `render` (32 391 / 33 000 byte; README đầy đủ sẽ vượt).
-  - Tiếp theo: Plan 7 (README, bảng thử, phát hành npm → v0.1); chủ dự án quét thử VietQR (kể cả bản có icon ngân hàng)
-    và thử PNG trong Zalo/Messenger; hoặc làm nốt Plan 2 Task 5–6 khi có QR thật.
+  - **Plan 7** (2026-11-21, nhánh `plan-7`): `docs/superpowers/plans/2026-11-21-plan-7-release.md`, thiết kế
+    `docs/superpowers/specs/2026-11-21-tingqr-release-design.md`.
+    - Xong:
+      - README gốc (tiếng Anh, `README.vi.md`) và README cho cả 6 gói;
+      - mẫu issue báo kết quả quét;
+      - `set-version`, `check-release`;
+      - workflow `release-ts.yml`: tag `ts-v*`, duyệt qua environment `npm-release`, OIDC, dry-run trên PR;
+      - skill `release-drill`;
+      - `docs/RELEASING.md`, `CHANGELOG.md`.
+    - **Chưa phát hành gì.** Chủ dự án hoãn v0.1 cho tới khi có MoMo/ZaloPay và quét thêm app. Repo giữ `0.0.0`.
+    - Đã có: org `tingqr` trên npm (chủ dự án, 2026-11-21).
+    - Ngân sách nâng (chủ dự án duyệt 2026-11-21): `render` 36 000 byte, `core` 48 000 byte (vì README).
+    - Còn phải làm để phát hành: xem `docs/RELEASING.md`. Mở công khai repo là điều kiện bắt buộc; bản giữ chỗ 0.0.1
+      phát hành tay, 0.1.0 qua CI trong vòng 2 ngày.
+  - Tiếp theo: Plan 2 Task 5–6 (MoMo, ZaloPay) khi có QR thật; chủ dự án quét thêm app (kể cả bản có icon ngân hàng) và
+    thử PNG trong Zalo/Messenger; Plan 8 (.NET).
 - **Chủ dự án đã quyết:**
   - Mục đích chính là một thư viện mã nguồn mở có tiếng; dùng phụ trong Noel tree (`../noel-tree`, Angular 21 SSR trên
     Cloudflare Workers).

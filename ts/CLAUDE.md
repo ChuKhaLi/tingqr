@@ -21,8 +21,9 @@
   - File port có `// @ts-nocheck` và không chạy mutation (`stryker.config.json` loại trừ); code còn lại của gói vẫn
     chặt như `core`.
   - `pnpm check:render` (sau `pnpm build`): chỉ phụ thuộc `@tingqr/core`, toàn văn giấy phép MIT của Nayuki còn trong
-    mọi file `dist` có bộ mã hoá (bản ESM tách chunk chung), có `LICENSE` giống của repo, tarball dưới 33 000 byte
-    (chủ dự án nâng từ 30 000 ngày 2026-11-21 cho `render/canvas`; đo 32 340 ngày 2026-11-21, còn rất ít chỗ).
+    mọi file `dist` có bộ mã hoá (bản ESM tách chunk chung), có `LICENSE` giống của repo, tarball dưới 36 000 byte
+    (chủ dự án nâng 30 000 → 33 000 cho `render/canvas` ở Plan 6, → 36 000 cho README đầy đủ ở Plan 7; đo 32 625 ngày
+    2026-11-21).
   - `src/layout.ts`: kiểm tuỳ chọn và tính bố cục, dùng chung cho `toSvg` và canvas. Thêm luật mới về màu, logo hay ECC
     thì sửa ở đây.
   - **`@tingqr/render/canvas`** (`src/canvas.ts`): `drawQr`, `toPng`, `toPngBlob`, `toPngDataUrl`.
@@ -81,3 +82,17 @@
   - `pnpm check:nestjs` (sau `pnpm build`): chỉ phụ thuộc `core` + `render`, peer NestJS `>=10.0.0`, tarball dưới
     10 000 byte.
 - `pnpm typecheck` build mọi gói trước (`pnpm -r build`), vì test Angular và NestJS đọc kiểu gói từ `dist`.
+- **Phát hành** (Plan 7; quy trình đầy đủ ở `../docs/RELEASING.md`, chưa phát hành gì):
+  - Sáu gói luôn cùng một số phiên bản. Đổi số bằng `node scripts/set-version.mjs X.Y.Z`, lệnh này đổi cả `VERSION` của
+    core. Không sửa `version` bằng tay.
+  - `node scripts/check-release.mjs [--tag ts-vX.Y.Z]` kiểm:
+    - cùng số phiên bản, và metadata npm (`author`, `repository`, `publishConfig.access`…);
+    - `bank-logos` phải có `license` `SEE LICENSE IN LOGOS-NOTICE.md`, không phải MIT;
+    - khi có `--tag`: tag khớp số phiên bản, và không README nào còn "not released yet".
+
+    Test: `node --test scripts/test/release.test.mjs` (đường dẫn file, vì Node không nhận thư mục cho `--test`).
+  - Thứ tự phát hành: `core`, `render`, `bank-logos`, `hono`, `nestjs`, `angular` (`scripts/release-common.mjs`).
+  - Skill `release-drill` (gọi mạng tới registry npm): cài tarball vào thư mục sạch rồi chạy thử. Bắt buộc chạy trước khi
+    phát hành, và sau khi sửa `exports`, `files` hay build.
+  - Workflow `.github/workflows/release-ts.yml`. **Không đổi tên file này hay environment `npm-release`**: trusted
+    publisher trên npm gắn với hai tên đó.
