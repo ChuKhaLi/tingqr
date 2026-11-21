@@ -1,8 +1,9 @@
 // Release readiness of the six @tingqr packages: one shared version (equal to core's VERSION), the tag matches it, and
 // the npm metadata every published package needs.
 // Usage: node ts/scripts/check-release.mjs [--tag ts-vX.Y.Z]
-import { readFileSync } from 'node:fs'
-import { coreIndexPath, PACKAGES, readPackage, VERSION_LINE } from './release-common.mjs'
+import { existsSync, readFileSync } from 'node:fs'
+import { join, relative } from 'node:path'
+import { coreIndexPath, PACKAGES, readPackage, ROOT, VERSION_LINE } from './release-common.mjs'
 
 const REPO_URL = 'git+https://github.com/ChuKhaLi/tingqr.git'
 const AUTHOR = 'Chung Nguyen'
@@ -39,6 +40,14 @@ const tagIndex = process.argv.indexOf('--tag')
 if (tagIndex !== -1) {
   const tag = process.argv[tagIndex + 1] ?? ''
   if (tag !== `ts-v${version}`) problems.push(`tag ${JSON.stringify(tag)} must be exactly ts-v${version}`)
+  // npm publishes each README verbatim and a published version's page never changes: a release must not ship the
+  // pre-release status line (docs/RELEASING.md says what to write instead).
+  const readmes = [join(ROOT, 'README.md'), join(ROOT, 'README.vi.md'), ...PACKAGES.map((p) => join(ROOT, 'ts', 'packages', p, 'README.md'))]
+  for (const file of readmes) {
+    if (existsSync(file) && /not released yet|chưa phát hành/i.test(readFileSync(file, 'utf8'))) {
+      problems.push(`${relative(ROOT, file)} still says "not released yet": update the status line before a release`)
+    }
+  }
 }
 
 if (problems.length) {

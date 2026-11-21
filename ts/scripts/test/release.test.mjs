@@ -143,3 +143,19 @@ test('bank-logos must not claim MIT (its images are trademarks)', () => {
     rmSync(root, { recursive: true, force: true })
   }
 })
+
+test('a release tag is refused while a README still says "Not released yet"', () => {
+  const root = fakeRepo('1.2.3')
+  try {
+    writeFileSync(join(root, 'README.md'), '# tingqr\n\n**Status: not released yet.**\n')
+    writeFileSync(join(root, 'ts', 'packages', 'hono', 'README.md'), '> **Not released yet.** See the repository README.\n')
+    const r = run('check-release.mjs', ['--tag', 'ts-v1.2.3'], root)
+    assert.equal(r.code, 1)
+    assert.match(r.out, /README\.md/)
+    assert.match(r.out, /hono/)
+    // Without --tag (CI on every push) the status line is expected and fine.
+    assert.equal(run('check-release.mjs', [], root).code, 0)
+  } finally {
+    rmSync(root, { recursive: true, force: true })
+  }
+})
