@@ -37,8 +37,24 @@ class FeatureController {
 @Module({ controllers: [FeatureController] })
 class FeatureModule {}
 
+/** @TingQrSvg on the class (default for every route) and again on a method (override). */
+@Controller('both')
+@TingQrSvg()
+class BothLevelsController {
+  @Get('plain.svg')
+  plain(): string {
+    return PROMPTPAY
+  }
+
+  @Get('override.svg')
+  @TingQrSvg({ cacheControl: 'no-store' })
+  override(): string {
+    return PROMPTPAY
+  }
+}
+
 export function appModule(options: TingQrModuleOptions) {
-  @Module({ imports: [TingQrModule.forRoot(options), FeatureModule], controllers: [OrdersController] })
+  @Module({ imports: [TingQrModule.forRoot(options), FeatureModule], controllers: [OrdersController, BothLevelsController] })
   class AppModule {}
   return AppModule
 }

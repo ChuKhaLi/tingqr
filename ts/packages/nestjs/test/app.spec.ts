@@ -80,3 +80,35 @@ test.each(ADAPTERS)('a bad bank stops the app before it serves anything (%s)', a
   expect(error).toBeInstanceOf(TingQrError)
   expect((error as TingQrError).code).toBe('INVALID_VALUE')
 })
+
+describe.each(ADAPTERS)('module svg options and decorator levels on %s', (_name, adapter) => {
+  let app: INestApplication
+  let base: string
+  beforeAll(async () => {
+    const module = appModule({ bank: 'MB', accountNumber: '0123456789', svg: { margin: 1, cacheControl: 'no-cache' } })
+    app = await NestFactory.create(module, adapter() as AbstractHttpAdapter, { logger: false })
+    await app.listen(0, '127.0.0.1')
+    base = (await app.getUrl()).replace('[::1]', '127.0.0.1')
+  })
+  afterAll(() => app.close())
+  const get = (path: string) => fetch(base + path)
+
+  test('a feature module that does not import TingQrModule still gets the module svg options', async () => {
+    const res = await get('/feature/qr.svg')
+    expect(await res.text()).toBe(toSvg(PROMPTPAY, { margin: 1 }))
+    expect(res.headers.get('cache-control')).toBe('no-cache')
+  })
+
+  test('@TingQrSvg on the class only: rendered once, with the module options', async () => {
+    const res = await get('/both/plain.svg')
+    expect(res.status).toBe(200)
+    expect(await res.text()).toBe(toSvg(PROMPTPAY, { margin: 1 }))
+  })
+
+  test('@TingQrSvg on the class and the method: rendered once, the method options win', async () => {
+    const res = await get('/both/override.svg')
+    expect(res.status).toBe(200)
+    expect(await res.text()).toBe(toSvg(PROMPTPAY, { margin: 1 }))
+    expect(res.headers.get('cache-control')).toBe('no-store')
+  })
+})

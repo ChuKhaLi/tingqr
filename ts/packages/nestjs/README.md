@@ -82,6 +82,9 @@ async qr(@Param('id') id: string) {
   by key. A `logo` must be a `data:image/` URI (e.g. from `@tingqr/bank-logos`): an SVG shown as an image cannot load a
   path or URL, so other logos are rejected when the decorator runs.
 - `@TingQrSvg()` works without `TingQrModule` (e.g. to serve PromptPay codes); only `TingQrService` needs `forRoot`.
+- The module `svg` options apply to every `@TingQrSvg` route in the app, also in modules that do not import
+  `TingQrModule`. `@TingQrSvg` may be put on a controller class and on its methods; each request is rendered once,
+  with the method options winning.
 - An SVG `<img>` may not be savable by long-press in chat apps' in-app browsers (not tested). In the browser, draw a PNG
   with `@tingqr/render/canvas` or `@tingqr/angular`.
 

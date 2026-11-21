@@ -23,11 +23,12 @@ async function run(
 ) {
   const headers: Record<string, string> = opts.headers ?? {}
   const response = { fake: 'response' }
+  const request = { fake: 'request' }
   const host = { httpAdapter: { setHeader: (res: unknown, name: string, value: string) => (expect(res).toBe(response), (headers[name] = value)) } }
   const options = opts.moduleSvg === null ? undefined : { bank: 'MB', accountNumber: '0123456789', bin: '970422', svg: opts.moduleSvg ?? undefined }
   const interceptor = new TingQrSvgInterceptor(host as unknown as HttpAdapterHost, new Reflector(), options as never)
   const context = {
-    switchToHttp: () => ({ getResponse: () => response }),
+    switchToHttp: () => ({ getResponse: () => response, getRequest: () => request }),
     getHandler: () => Routes.prototype[opts.route ?? 'plain'],
     getClass: () => Routes,
   } as unknown as ExecutionContext

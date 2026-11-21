@@ -35,9 +35,15 @@ export class TingQrModule {
     return {
       module: TingQrModule,
       global,
-      imports,
-      providers: [optionsProvider, TingQrService],
-      exports: [TINGQR_OPTIONS, TingQrService],
+      // The options live in an always-global module, so @TingQrSvg in any module (one that never imports TingQrModule)
+      // gets the module's svg defaults. TingQrService itself is global only with isGlobal.
+      imports: [{ module: TingQrOptionsModule, global: true, imports, providers: [optionsProvider], exports: [TINGQR_OPTIONS] }],
+      providers: [TingQrService],
+      exports: [TingQrService],
     }
   }
 }
+
+/** Holds the validated options (TINGQR_OPTIONS) for the whole app. Internal. */
+@Module({})
+class TingQrOptionsModule {}

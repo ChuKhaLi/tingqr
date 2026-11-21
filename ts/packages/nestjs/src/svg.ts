@@ -21,6 +21,9 @@ import { TINGQR_OPTIONS } from './tokens.js'
 /** Metadata key of the per-route options set by @TingQrSvg. */
 export const TINGQR_SVG_ROUTE = 'tingqr:svg-route'
 
+/** Requests whose response a TingQrSvgInterceptor is already rendering. */
+const RENDERING = new WeakSet<object>()
+
 /** SVG served directly is a document: no scripts, no external loads, only inline styles and data: images. */
 const CSP = "default-src 'none'; img-src data:; style-src 'unsafe-inline'"
 
@@ -40,6 +43,11 @@ export class TingQrSvgInterceptor implements NestInterceptor {
   ) {}
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<string> {
+    // @TingQrSvg on a class and on one of its methods adds this interceptor twice. Render once per request (the outer
+    // instance, which runs first); otherwise the SVG markup would be rendered again as if it were the payload.
+    const request = context.switchToHttp().getRequest<object>()
+    if (RENDERING.has(request)) return next.handle() as Observable<string>
+    RENDERING.add(request)
     const route = this.reflector.getAllAndOverride<TingQrSvgOptions | undefined>(TINGQR_SVG_ROUTE, [
       context.getHandler(),
       context.getClass(),
