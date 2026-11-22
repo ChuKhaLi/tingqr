@@ -81,7 +81,8 @@ app.get(
 - `resolve` trả chuỗi thì trả về 200 SVG; trả `null`, `undefined` hay `''` thì 404.
 - `TingQrError` (kể cả do `resolve` ném) thì 500 JSON `{ error: { code } }`; thông báo ghi bằng `console.error`, không
   gửi cho khách (payload do app dựng, nên lỗi này là lỗi phía máy chủ, thông báo có thể lộ cấu hình). Muốn trả 400 cho
-  lỗi do khách gây ra thì tự bắt lỗi trong `resolve`. Lỗi khác đi tới `app.onError`.
+  lỗi do khách gây ra thì tự kiểm hoặc dựng QR từ dữ liệu của khách trong `resolve` rồi tự trả 400; lỗi khi vẽ payload
+  `resolve` trả về (quá dài, logo quá to) luôn là 500. Lỗi khác đi tới `app.onError`.
 - Header:
   - `Content-Type: image/svg+xml`;
   - `X-Content-Type-Options: nosniff`;
@@ -123,7 +124,8 @@ export class OrdersController {
   - `bank` là mã hay BIN, tra bằng `findBank`.
 - **Cấu hình sai thì app không khởi động** (`INVALID_VALUE`): ngân hàng không tra ra, tài khoản sai, logo không phải data
   URI, tuỳ chọn `svg` không vẽ được QR tĩnh của tài khoản (màu, viền, cỡ logo…). Tuỳ chọn phụ thuộc độ dài chuỗi
-  (`maxVersion`, `ecc`) chỉ được kiểm ở từng request (500).
+  (`maxVersion`, logo quá to cho mã nhỏ) chỉ được kiểm ở từng request (500). Tuỳ chọn của `@TingQrSvg(options)` được
+  kiểm lúc khởi động; chỗ vênh giữa tuỳ chọn của module và của route chỉ lộ ở từng request.
 - `paymentQr({ amount, purpose })` tạo VietQR tới tài khoản đã cấu hình; không có `amount` thì là QR tĩnh.
 - **`@TingQrSvg()`:** handler trả chuỗi khác rỗng thì ra 200 SVG (chuỗi không được kiểm; dựng bằng `paymentQr` hay bộ tạo
   của tingqr). Status, header và mã lỗi theo hợp đồng chung với Hono (`conformance/http/svg-response.json`).

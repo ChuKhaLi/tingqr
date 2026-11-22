@@ -52,7 +52,8 @@ async function loadLogo(href: string): Promise<LoadedImage> {
         (/^https?:/.test(href) ? ' (a logo on another origin needs CORS headers; or use a data URI, e.g. from @tingqr/bank-logos).' : '.'))
   }
   if (img.naturalWidth > 0 && img.naturalHeight > 0) return { image: img, width: img.naturalWidth, height: img.naturalHeight }
-  // An SVG without width/height has no natural size (0×0 in browsers) but draws fine at any size: fill the logo square.
+  // An SVG without width/height may report no natural size (0×0); it is drawn to fill the logo square. Tested with a fake
+  // canvas only, not yet in a real browser (an engine that draws nothing here would give a code without its logo).
   if (href.startsWith('data:image/svg+xml')) return { image: img, width: 1, height: 1 }
   throw new TingQrError('LOGO_LOAD_FAILED', 'The logo decoded to an empty image.')
 }

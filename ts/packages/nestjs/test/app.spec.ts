@@ -54,7 +54,7 @@ describe.each(ADAPTERS)('same contract on %s', (_name, adapter) => {
     expect(await res.text()).toBe(toSvg(VIETQR.payload))
   })
 
-  test.each(['POST', 'PUT'])('%s: 200 with the SVG (not the 201 Nest gives POST)', async (method) => {
+  test.each(['POST', 'PUT', 'PATCH'])('%s: 200 with the SVG (not the 201 Nest gives POST)', async (method) => {
     const res = await fetch(base + '/pp.svg', { method })
     expect(res.status).toBe(200)
     expect(await res.text()).toBe(toSvg(PROMPTPAY))

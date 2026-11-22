@@ -122,7 +122,7 @@ test('a non-data: logo on a route is rejected when the decorator is applied', ()
   )
 })
 
-test.each([{ margin: -1 }, { foreground: '#ffffff' }, { size: 'big' }, { logo: { href: 'data:image/png;base64,AA', size: 0.9 } }])(
+test.each([{ margin: -1 }, { foreground: '#ffffff', background: '#ffffff' }, { size: 'big' }, { logo: { href: 'data:image/png;base64,AA', size: 0.9 } }])(
   'a bad route option %o is rejected when the decorator is applied, not per request',
   (options) => {
     expect(() => TingQrSvg(options as never)).toThrow(expect.objectContaining({ code: 'INVALID_VALUE' }))
@@ -131,4 +131,19 @@ test.each([{ margin: -1 }, { foreground: '#ffffff' }, { size: 'big' }, { logo: {
 
 test('TINGQR_OPTIONS is exported for advanced wiring', () => {
   expect(typeof TINGQR_OPTIONS).toBe('symbol')
+})
+
+describe('route colours are checked at startup only as far as the route alone decides them', () => {
+  test('a route foreground that needs the module background (transparent) is accepted', () => {
+    expect(() => TingQrSvg({ foreground: '#888888' })).not.toThrow()
+    expect(() => toSvg(PAYLOAD, { background: 'transparent', foreground: '#888888' })).not.toThrow()
+  })
+  test('a route foreground that is not a colour is still rejected', () => {
+    expect(() => TingQrSvg({ foreground: 'grey' })).toThrow(expect.objectContaining({ code: 'INVALID_VALUE' }))
+  })
+  test('both colours on the route: the contrast is checked', () => {
+    expect(() => TingQrSvg({ foreground: '#888888', background: '#999999' })).toThrow(
+      expect.objectContaining({ code: 'INVALID_VALUE' }),
+    )
+  })
 })

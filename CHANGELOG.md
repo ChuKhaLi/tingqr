@@ -22,8 +22,8 @@ Planned as 0.1.0, after MoMo and ZaloPay recognition and scans with more banking
 ### @tingqr/render
 
 - `toMatrix`, `toSvg` (browser, Node, Workers, SSR), with an optional centre logo (provisional limits).
-- `@tingqr/render/canvas` (browser, ESM only): `drawQr`, `toPng`, `toPngBlob`, `toPngDataUrl`. An SVG logo without
-  `width`/`height` fills the logo box.
+- `@tingqr/render/canvas` (browser, ESM only): `drawQr`, `toPng`, `toPngBlob`, `toPngDataUrl`. An SVG logo that
+  reports no size (no `width`/`height`) fills the logo box; tested with a fake canvas only, not yet in a browser.
 - `checkSvgOptions(options)`: check render options without rendering (used by the HTTP integrations at startup).
 - QR encoder ported from Project Nayuki's QR Code generator v1.8.0 (MIT).
 
@@ -52,4 +52,5 @@ Planned as 0.1.0, after MoMo and ZaloPay recognition and scans with more banking
 
 ### Release workflow
 
-- Only a tag that points to a commit on `main` publishes; tags pushed together publish one at a time.
+- Only a tag that points to a commit on `main` publishes, and two releases never run at once (GitHub keeps one waiting
+  run per group, so push one tag at a time). Not yet run on GitHub.

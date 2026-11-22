@@ -99,7 +99,11 @@ export function TingQrSvg(options?: TingQrSvgOptions): MethodDecorator & ClassDe
   checkServedLogo(options)
   if (options !== undefined) {
     const { cacheControl: _cacheControl, ...svgOptions } = options
-    checkSvgOptions(svgOptions) // a bad option stops the app at startup, not every request
+    // A bad option stops the app at startup, not every request. The route is merged over the module's `svg` options,
+    // so a route foreground alone is checked as a colour only: its contrast depends on the module's background. (A
+    // route background alone is checked against black, the darkest foreground, so that check holds for any module.)
+    const routeOnly = svgOptions.foreground !== undefined && svgOptions.background === undefined
+    checkSvgOptions(routeOnly ? { ...svgOptions, background: 'transparent' } : svgOptions)
   }
   return applyDecorators(SetMetadata(TINGQR_SVG_ROUTE, options), UseInterceptors(TingQrSvgInterceptor))
 }

@@ -71,6 +71,9 @@ async qr(@Param('id') id: string) {
 - Options passed to `@TingQrSvg(options)` are checked when the decorator runs, so a bad colour, margin, size or logo
   stops the app at startup. Only what depends on the payload (too long for `maxVersion`, a logo too big for a small
   code) is known per request.
+- Route options are merged over the module's `svg` options per request, and each set is checked on its own. A route
+  `foreground` without a route `background` is checked only as a colour, since its contrast depends on the module's
+  background; a clash between the two sets (for example a module `logo` and a route `ecc: 'L'`) is found per request.
 
 | The handler returns | Response |
 |---|---|
@@ -81,7 +84,8 @@ async qr(@Param('id') id: string) {
 
 - Your app builds the payload, so a `TingQrError` is a server-side mistake (for example a misconfigured account): its
   message may describe your configuration and stays in the log. If you build a QR from client input and want a `400`,
-  catch the error in the handler.
+  validate or encode that input in the handler and answer `400` yourself; errors from drawing the string you return
+  (too long, a logo too big) are always `500`.
 - 404 and 500 go through Nest's exception layer, so your filters apply (and a global filter may change the body).
   Status codes, the image headers and the error code follow the contract shared with `@tingqr/hono`
   (`conformance/http/svg-response.json`); the 404 body differs.

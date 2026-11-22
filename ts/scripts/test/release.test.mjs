@@ -268,7 +268,7 @@ test('the release workflow publishes only tags on main, one tag at a time', () =
   const workflow = readFileSync(join(SCRIPTS, '..', '..', '.github', 'workflows', 'release-ts.yml'), 'utf8')
   assert.match(workflow, /git merge-base --is-ancestor "\$GITHUB_SHA" FETCH_HEAD/)
   assert.match(workflow, /fetch-depth: 0/)
-  // Every tag shares one concurrency group, queued (not cancelled); PR and manual dry-runs keep a group per ref.
+  // Every tag shares one concurrency group and a running release is not cancelled; PR dry-runs keep a group per ref.
   assert.match(workflow, /group: \$\{\{ github\.ref_type == 'tag' && 'release-ts-publish' \|\| format\('release-ts-\{0\}', github\.ref\) \}\}/)
   assert.match(workflow, /cancel-in-progress: false/)
 })

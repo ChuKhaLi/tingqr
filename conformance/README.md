@@ -78,9 +78,13 @@ bộ mẫu thử ở đây, nên hai bản cho cùng kết quả trên mọi hà
 | `derived`, `derivedFrom` | khi sửa từ mẫu khác | `derivedFrom` là `id` mẫu gốc |
 | `note` | không | ghi đã sửa gì, đã chạy lệnh gì |
 
-`input` của mẫu luôn là object, nên mẫu thử không diễn tả được một lời gọi không có đầu vào. Luật chung cho mọi bản: hàm
-tạo mã nhận `undefined`, `null` hay giá trị không phải object thì báo `INVALID_VALUE`, không kèm tag, thông báo
-`<tên hàm> needs an input object; got <kiểu>.` (bản TypeScript: test `*-encode.spec.ts`).
+`input` của mẫu luôn là object, nên mẫu thử không diễn tả được một lời gọi không có đầu vào. Luật chung cho mọi bản, áp
+dụng cho các hàm tạo mã VietQR, PromptPay và KHQR (VNPAY không có hàm tạo): đầu vào vắng hoặc không phải object thì báo
+`TingQrError` mã `INVALID_VALUE`, không kèm tag (bản TypeScript: test `*-encode.spec.ts`).
+- Bản .NET: trường hợp thật duy nhất là `null`; phải ném `TingQrError` `INVALID_VALUE`, không phải `ArgumentNullException`.
+- Thông báo (TypeScript: `<tên hàm> needs an input object; got <typeof>.`) không bắt buộc giống từng chữ giữa các bản.
+- Mảng là object trong JavaScript, nên không bị luật này chặn; nó hỏng ở bước kiểm trường đầu tiên, vẫn là
+  `INVALID_VALUE`.
 
 ## Mẫu link mở app (`kind: "link"`, `scheme: "bank-app-link"`)
 
