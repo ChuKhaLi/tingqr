@@ -32,8 +32,9 @@ function checkScale(scale: unknown): number {
 }
 
 interface LoadedImage {
-  naturalWidth: number
-  naturalHeight: number
+  image: unknown
+  width: number
+  height: number
 }
 
 /** Load and decode the logo before anything is drawn: a code must never come out without the logo that was asked for. */
@@ -50,10 +51,10 @@ async function loadLogo(href: string): Promise<LoadedImage> {
     throw new TingQrError('LOGO_LOAD_FAILED', `The logo ${JSON.stringify(href.slice(0, 80))} could not be loaded or decoded` +
         (/^https?:/.test(href) ? ' (a logo on another origin needs CORS headers; or use a data URI, e.g. from @tingqr/bank-logos).' : '.'))
   }
-  if (!(img.naturalWidth > 0 && img.naturalHeight > 0)) {
-    throw new TingQrError('LOGO_LOAD_FAILED', 'The logo decoded to an empty image.')
-  }
-  return img
+  if (img.naturalWidth > 0 && img.naturalHeight > 0) return { image: img, width: img.naturalWidth, height: img.naturalHeight }
+  // An SVG without width/height has no natural size (0×0 in browsers) but draws fine at any size: fill the logo square.
+  if (href.startsWith('data:image/svg+xml')) return { image: img, width: 1, height: 1 }
+  throw new TingQrError('LOGO_LOAD_FAILED', 'The logo decoded to an empty image.')
 }
 
 /**
@@ -83,7 +84,7 @@ export async function drawQr(canvas: CanvasLike, text: string, options: CanvasOp
   })
   if (logo === undefined) return
 
-  const { box, image } = logo
+  const { box, image: loaded } = logo
   if (logo.background !== 'transparent') {
     ctx.fillStyle = logo.background
     const c = (box.clearStart + l.margin) * scale
@@ -91,11 +92,11 @@ export async function drawQr(canvas: CanvasLike, text: string, options: CanvasOp
   }
   // Fit inside the logo square keeping the aspect ratio, centred: SVG's preserveAspectRatio="xMidYMid meet".
   const logoSide = box.logoSide * scale
-  const k = Math.min(logoSide / image.naturalWidth, logoSide / image.naturalHeight)
-  const w = image.naturalWidth * k
-  const h = image.naturalHeight * k
+  const k = Math.min(logoSide / loaded.width, logoSide / loaded.height)
+  const w = loaded.width * k
+  const h = loaded.height * k
   const p = (box.logoStart + l.margin) * scale
-  ctx.drawImage(image, p + (logoSide - w) / 2, p + (logoSide - h) / 2, w, h)
+  ctx.drawImage(loaded.image, p + (logoSide - w) / 2, p + (logoSide - h) / 2, w, h)
 }
 
 function newCanvas(): HTMLCanvasElement {

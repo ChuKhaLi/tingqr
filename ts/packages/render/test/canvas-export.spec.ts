@@ -140,6 +140,20 @@ describe('logo on canvas', () => {
     expect(await code(drawQr(new FakeCanvas(), TEXT, { minVersion: 5, logo: { href: DATA_HREF } }))).toBe('LOGO_LOAD_FAILED')
   })
 
+  test.each([
+    [0, 0],
+    [10, 0],
+  ])('an SVG data URI logo of %i×%i (no width/height) fills the logo box', async (width, height) => {
+    const svgHref = 'data:image/svg+xml;base64,PHN2Zy8+'
+    const { created } = installDom(fakeImageClass({ width, height }))
+    const c = new FakeCanvas()
+    await drawQr(c, TEXT, { minVersion: 5, scale: 3, logo: { href: svgHref } })
+    const box = boxOf(TEXT)
+    const p = (box.logoStart + 4) * 3
+    const draws = c.calls.filter((k) => k.op === 'drawImage')
+    expect(draws).toEqual([{ op: 'drawImage', image: created[0], x: p, y: p, w: box.logoSide * 3, h: box.logoSide * 3 }])
+  })
+
   test('no Image constructor when a logo is needed is NO_CANVAS', async () => {
     expect(await code(drawQr(new FakeCanvas(), TEXT, { minVersion: 5, logo: { href: DATA_HREF } }))).toBe('NO_CANVAS')
   })
