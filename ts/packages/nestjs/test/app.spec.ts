@@ -60,6 +60,12 @@ describe.each(ADAPTERS)('same contract on %s', (_name, adapter) => {
     expect(await res.text()).toBe(toSvg(PROMPTPAY))
   })
 
+  test('an explicit @HttpCode(202) is kept', async () => {
+    const res = await fetch(base + '/pp-accepted.svg', { method: 'POST' })
+    expect(res.status).toBe(202)
+    expect(await res.text()).toBe(toSvg(PROMPTPAY))
+  })
+
   test('any QR (PromptPay) with route options', async () => {
     const res = await get('/pp.svg')
     expect(res.status).toBe(200)

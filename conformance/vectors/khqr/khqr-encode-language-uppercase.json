@@ -34,5 +34,5 @@
   "source": "mutation of khqr-encode-individual-khmer (bakong-khqr@1.0.20 output); upper-case KM as written by the SDK in khqr-sdk-merchant-acleda",
   "derived": true,
   "derivedFrom": "khqr-encode-individual-khmer",
-  "note": "64.00 changed from km to KM; CRC recomputed with an independent Python CRC-16/CCITT-FALSE routine, not with tingqr. Pins that the encoder keeps the case."
+  "note": "64.00 changed from km to KM; CRC recomputed outside tingqr; checked with python conformance/tools/crc16.py --check. Pins that the encoder keeps the case."
 }

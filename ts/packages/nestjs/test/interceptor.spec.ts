@@ -23,11 +23,12 @@ async function run(
 ) {
   const headers: Record<string, string> = opts.headers ?? {}
   const response = { fake: 'response' }
+  const statuses: number[] = []
   const request = { fake: 'request' }
   const host = {
     httpAdapter: {
       setHeader: (res: unknown, name: string, value: string) => (expect(res).toBe(response), (headers[name] = value)),
-      status: (res: unknown, code: number) => (expect(res).toBe(response), expect(code).toBe(200)),
+      status: (res: unknown, code: number) => (expect(res).toBe(response), statuses.push(code)),
     },
   }
   const options = opts.moduleSvg === null ? undefined : { bank: 'MB', accountNumber: '0123456789', bin: '970422', svg: opts.moduleSvg ?? undefined }
@@ -38,7 +39,7 @@ async function run(
     getClass: () => Routes,
   } as unknown as ExecutionContext
   const body = await firstValueFrom(interceptor.intercept(context, { handle: result }))
-  return { body, headers }
+  return { body, headers, statuses }
 }
 
 async function failure(result: () => ReturnType<CallHandler['handle']>, opts?: Parameters<typeof run>[1]): Promise<{ error: unknown; headers: Record<string, string> }> {
@@ -52,9 +53,10 @@ async function failure(result: () => ReturnType<CallHandler['handle']>, opts?: P
 }
 
 test('a payload becomes the SVG of toSvg with the four headers', async () => {
-  const { body, headers } = await run(() => of(PAYLOAD))
+  const { body, headers, statuses } = await run(() => of(PAYLOAD))
   expect(body).toBe(toSvg(PAYLOAD))
   expect(headers).toEqual(HEADERS)
+  expect(statuses).toEqual([200])
 })
 
 test.each([

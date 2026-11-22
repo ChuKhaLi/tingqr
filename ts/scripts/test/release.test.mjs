@@ -269,6 +269,10 @@ test('the release workflow publishes only tags on main, one tag at a time', () =
   assert.match(workflow, /git merge-base --is-ancestor "\$GITHUB_SHA" FETCH_HEAD/)
   assert.match(workflow, /fetch-depth: 0/)
   // Every tag shares one concurrency group and a running release is not cancelled; PR dry-runs keep a group per ref.
-  assert.match(workflow, /group: \$\{\{ github\.ref_type == 'tag' && 'release-ts-publish' \|\| format\('release-ts-\{0\}', github\.ref\) \}\}/)
+  // Only a tag push (the one event that publishes) joins the shared group; a manual run on a tag ref is a dry run.
+  assert.match(
+    workflow,
+    /group: \$\{\{ github\.event_name == 'push' && github\.ref_type == 'tag' && 'release-ts-publish' \|\| format\('release-ts-\{0\}-\{1\}', github\.event_name, github\.ref\) \}\}/,
+  )
   assert.match(workflow, /cancel-in-progress: false/)
 })

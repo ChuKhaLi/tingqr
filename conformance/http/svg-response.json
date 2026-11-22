@@ -3,7 +3,7 @@
   "success": {
     "when": "the app gives a non-empty QR payload that renders",
     "status": 200,
-    "method": "200 for every HTTP method the app routes to it (GET, POST, PUT, PATCH…), never a framework default such as 201 for POST",
+    "method": "200 for every HTTP method the app routes to it (GET, POST, PUT, PATCH…), never a framework default such as 201 for POST; a status the app sets explicitly on the route (NestJS @HttpCode) is kept",
     "body": "toSvg(payload, options)",
     "headers": {
       "Content-Type": "image/svg+xml; charset=utf-8",

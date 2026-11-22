@@ -1,6 +1,6 @@
 // A small NestJS app using @tingqr/nestjs as a developer would. Explicit @Inject everywhere: these test files are
 // compiled by esbuild, which emits no decorator metadata.
-import { Controller, Get, Inject, Module, Param, Patch, Post, Put } from '@nestjs/common'
+import { Controller, Get, HttpCode, Inject, Module, Param, Patch, Post, Put } from '@nestjs/common'
 import { TingQrModule, TingQrService, TingQrSvg, type TingQrModuleOptions } from '@tingqr/nestjs'
 import { PROMPTPAY } from './payload.js'
 
@@ -40,6 +40,14 @@ class OrdersController {
   @Patch('pp.svg')
   @TingQrSvg()
   promptpayPatch(): string {
+    return PROMPTPAY
+  }
+
+  /** An explicit @HttpCode is the app's choice and is kept. */
+  @Post('pp-accepted.svg')
+  @HttpCode(202)
+  @TingQrSvg()
+  promptpayAccepted(): string {
     return PROMPTPAY
   }
 }
