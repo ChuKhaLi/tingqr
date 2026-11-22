@@ -36,7 +36,7 @@ QR cá nhân không có tag `52`, `59`, `60`. Khi đọc, tingqr trả lại cá
 - Không có tag 38 với GUID `A000000727`: `UNSUPPORTED_SCHEME`.
 - Thiếu `38.01.00`, `38.01.01` hay `38.02`: `MISSING_TAG`. Mã dịch vụ lạ: `INVALID_VALUE`.
 - Tag `00` khác `01` hoặc vắng: `INVALID_VALUE` `00`. Tag `01` vắng: `MISSING_TAG` `01` (mẫu `vietqr-missing-poi`); có
-  nhưng khác `11`/`12`: `INVALID_VALUE` `01`. Cả hai chế độ đều vậy. PromptPay và KHQR theo đúng luật này.
+  nhưng khác `11`/`12`: `INVALID_VALUE` `01`. Cả hai chế độ đều vậy. VNPAY, PromptPay và KHQR theo đúng luật này.
 - Tag không phải hai chữ số: `BAD_TAG`. Tag 63 không phải đúng 4 chữ hex: `CRC_MISSING`.
 - Tag trùng ở cấp đầu hoặc trong `38`, `38.01`, `62`: `DUPLICATE_TAG`, ở cả hai chế độ.
 - Chế độ chấp nhận lệch chuẩn (mặc định): thiếu `53` hoặc `58` thì điền `704` / `VN` và cảnh báo `MISSING_OPTIONAL_TAG`.

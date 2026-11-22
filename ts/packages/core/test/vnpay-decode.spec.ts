@@ -142,11 +142,11 @@ test('tag 26 with another GUID, or without sub-tag 00, is UNSUPPORTED_SCHEME', (
   }
 })
 
-test('missing tag 00 or 01 is INVALID_VALUE on that tag', () => {
+test('missing tag 00 is INVALID_VALUE on 00; missing tag 01 is MISSING_TAG on 01', () => {
   const no00 = decodeVnpayQr(rebuild((f) => f.filter((x) => x.tag !== '00')))
   expect(!no00.ok && [no00.error.code, no00.error.tag]).toEqual(['INVALID_VALUE', '00'])
   const no01 = decodeVnpayQr(rebuild((f) => f.filter((x) => x.tag !== '01')))
-  expect(!no01.ok && [no01.error.code, no01.error.tag]).toEqual(['INVALID_VALUE', '01'])
+  expect(!no01.ok && [no01.error.code, no01.error.tag]).toEqual(['MISSING_TAG', '01'])
 })
 
 test('a VNPAY QR without tag 62 has no additionalData and no named 62 fields', () => {
