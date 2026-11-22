@@ -90,6 +90,24 @@ dụng cho các hàm tạo mã VietQR, PromptPay và KHQR (VNPAY không có hàm
 - Mảng là object trong JavaScript, nên không bị luật này chặn; nó hỏng ở bước kiểm trường đầu tiên, vẫn là
   `INVALID_VALUE`.
 
+Ba luật chung nữa, cùng loại:
+
+- **Hàm đọc nhận thứ không phải chuỗi** (`null`, `undefined`, số...): `decodeVietQr`, `decodeVnpayQr`,
+  `decodePromptPayQr`, `decodeKhqr` và `detect` trả kết quả lỗi `INVALID_VALUE`, không kèm tag, không ném. Bản
+  TypeScript kiểm lúc chạy ở `parsePayload` (test `payload.spec.ts`); bản có kiểu tĩnh chỉ cần cổng vào nhận được
+  `null`.
+- **Mẫu kiểm kiểu:** mẫu có trường mang kiểu JSON khác kiểu mà bản có kiểu tĩnh khai báo. Bản có kiểu tĩnh kiểm rằng
+  giá trị không chuyển được sang kiểu đó (không biên dịch được, hoặc bị từ chối khi đọc mẫu); `errorTag` chỉ áp dụng cho
+  bản không có kiểu tĩnh. Danh sách hiện tại:
+  - `vietqr-encode-bin-not-string`
+  - `vietqr-encode-purpose-not-string`
+  - `number-query` (scheme `bank-lookup`)
+  - `promptpay-encode-two-targets` (đích có hai khoá `mobile` và `nationalId`: kiểu đích đóng của bản có kiểu tĩnh không
+    biểu diễn được).
+- **Thông báo lỗi** không bắt buộc giống từng chữ giữa các bản (luật "không có đầu vào" ở trên cũng nằm trong luật này).
+- **`bank-app-link`**: hai bản chỉ bảo đảm giống nhau trên các mẫu; tên miền Unicode ngoài mẫu có thể khác giữa
+  TypeScript và .NET, và giữa Linux và Windows.
+
 ## Mẫu link mở app (`kind: "link"`, `scheme: "bank-app-link"`)
 
 Dành cho `bankAppLink` (`@tingqr/core/banks`). Mẫu nằm ở `vectors/bank-app-link/`.
