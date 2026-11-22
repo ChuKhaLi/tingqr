@@ -16,7 +16,8 @@ TypeScript và bản .NET, kèm tích hợp sẵn cho Angular, NestJS và ASP.NE
     - Xong: đọc VNPAY-QR (`decodeVnpayQr`), `extraFields`, công cụ công thức `conformance/tools/recipe/`.
     - **Mọi hàm đọc mặc định chế độ chấp nhận lệch chuẩn**, chặt phải truyền `{ mode: 'strict' }` (chủ dự án chọn).
     - **Hoãn (chủ dự án):** Task 5 chụp QR thật và phần code Task 6 nhận diện ví. Chưa có `provider`; xem
-      `conformance/schemes/vietqr-wallets.md`.
+      `conformance/schemes/vietqr-wallets.md`. Ngày 2026-11-22 chủ dự án hoãn lần nữa: Task 6 chỉ làm phần tài liệu, QR
+      thật thêm sau.
   - **Plan 3** (2026-11-19, nhánh `plan-3`): `docs/superpowers/plans/2026-11-18-plan-3-promptpay-khqr-detect.md`.
     - Xong: tạo và đọc PromptPay (`encodePromptPayQr`, `decodePromptPayQr`), KHQR (`encodeKhqr`, `decodeKhqr`,
       `isKhqrExpired`), `detect()`, `TingQrError.fields`. Gói npm bỏ source map.
@@ -84,7 +85,7 @@ TypeScript và bản .NET, kèm tích hợp sẵn cho Angular, NestJS và ASP.NE
     - Ngân sách nâng (chủ dự án duyệt 2026-11-21): `render` 36 000 byte, `core` 48 000 byte (vì README).
     - Còn phải làm để phát hành: xem `docs/RELEASING.md`. Mở công khai repo là điều kiện bắt buộc; bản giữ chỗ 0.0.1
       phát hành tay, 0.1.0 qua CI trong vòng 2 ngày.
-  - Tiếp theo: Plan 2 Task 5–6 (MoMo, ZaloPay) khi có QR thật; chủ dự án quét thêm app (kể cả bản có icon ngân hàng) và
+  - Tiếp theo: Plan 2 Task 5–6 (MoMo, ZaloPay) khi chủ dự án có QR thật; chủ dự án quét thêm app (kể cả bản có icon ngân hàng) và
     thử PNG trong Zalo/Messenger; Plan 8 (.NET).
 - **Chủ dự án đã quyết:**
   - Mục đích chính là một thư viện mã nguồn mở có tiếng; dùng phụ trong Noel tree (`../noel-tree`, Angular 21 SSR trên

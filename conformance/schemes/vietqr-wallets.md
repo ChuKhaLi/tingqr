@@ -20,7 +20,8 @@ vào BIN sẽ gắn nhầm mọi QR BVBank thành ví.
 
 ## Quan sát từ QR thật
 
-**Chưa có.** Chủ dự án hoãn việc chụp QR thật (2026-11-18). Khi có, làm theo `conformance/README.md` mục "QR thật": bỏ
+**Chưa có.** Chủ dự án hoãn việc chụp QR thật (2026-11-18, rồi 2026-11-22). Vì vậy Plan 2 Task 6 chỉ làm phần tài liệu
+(2026-11-22): không thêm `provider`, không đổi code. Khi có QR thật, làm theo `conformance/README.md` mục "QR thật": bỏ
 file vào `conformance/private/`, chạy `node conformance/tools/recipe/extract.mjs`, rồi ghi quan sát vào đây.
 
 ## Luật đang bật
