@@ -14,7 +14,7 @@ import {
 } from '@nestjs/common'
 import { HttpAdapterHost, Reflector } from '@nestjs/core'
 import { TingQrError } from '@tingqr/core'
-import { toSvg } from '@tingqr/render'
+import { checkSvgOptions, toSvg } from '@tingqr/render'
 import { catchError, map, throwError, type Observable } from 'rxjs'
 import { checkServedLogo, type ResolvedTingQrOptions, type TingQrSvgOptions } from './options.js'
 import { TINGQR_OPTIONS } from './tokens.js'
@@ -67,6 +67,7 @@ export class TingQrSvgInterceptor implements NestInterceptor {
         }
         const svg = toSvg(value, svgOptions)
         const adapter = this.host.httpAdapter
+        adapter.status(response, 200) // an image, whatever the method (Nest answers POST with 201)
         adapter.setHeader(response, 'Content-Type', 'image/svg+xml; charset=utf-8')
         adapter.setHeader(response, 'X-Content-Type-Options', 'nosniff')
         adapter.setHeader(response, 'Content-Security-Policy', CSP)
@@ -96,5 +97,9 @@ export class TingQrSvgInterceptor implements NestInterceptor {
  */
 export function TingQrSvg(options?: TingQrSvgOptions): MethodDecorator & ClassDecorator {
   checkServedLogo(options)
+  if (options !== undefined) {
+    const { cacheControl: _cacheControl, ...svgOptions } = options
+    checkSvgOptions(svgOptions) // a bad option stops the app at startup, not every request
+  }
   return applyDecorators(SetMetadata(TINGQR_SVG_ROUTE, options), UseInterceptors(TingQrSvgInterceptor))
 }

@@ -46,7 +46,9 @@ app.get(
 Render options (`margin`, `foreground`, `background`, `size`, `logo`, `ecc`…) are those of `toSvg` from
 `@tingqr/render`. A `logo` must be a `data:image/` URI (e.g. from `@tingqr/bank-logos`): an SVG shown as an
 image cannot load a path or URL, so tingqr rejects those (`INVALID_VALUE`, when the route is created) instead of serving a
-blank logo.
+blank logo. `tingqr({ … })` checks every render option when the route is created, so a bad colour, margin or size fails
+at startup; only what depends on the payload (too long for `maxVersion`, a logo too big for a small code) is known per
+request.
 
 Pass your app's Hono env and the route path as type arguments so `resolve` sees typed bindings and params:
 `tingqr<AppEnv, '/orders/:id/qr.svg'>({ resolve: (c) => … c.env.DB … c.req.param('id') … })`.

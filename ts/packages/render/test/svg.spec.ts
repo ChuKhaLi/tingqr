@@ -1,5 +1,5 @@
 import { TingQrError } from '@tingqr/core'
-import { toMatrix, toSvg, type SvgOptions } from '../src/index.js'
+import { checkSvgOptions, toMatrix, toSvg, type SvgOptions } from '../src/index.js'
 import { escapeAttr } from '../src/svg.js'
 
 const TEXT = 'TINGQR SVG TEST'
@@ -128,4 +128,40 @@ test.each([
   ['2.55in', 'width="2.55in"'],
 ])('size %o (unitless or two decimals) is accepted', (size, attr) => {
   expect(toSvg(TEXT, { size })).toContain(attr)
+})
+
+describe('checkSvgOptions: every option that does not depend on the text, checked without rendering', () => {
+  const LOGO = 'data:image/png;base64,AAAA'
+  const messageOf = (run: () => unknown): string => {
+    try {
+      run()
+    } catch (e) {
+      expect(e).toBeInstanceOf(TingQrError)
+      expect((e as TingQrError).code).toBe('INVALID_VALUE')
+      return (e as Error).message
+    }
+    return 'no error'
+  }
+  test.each<[string, SvgOptions]>([
+    ['margin', { margin: -1 }],
+    ['colours', { foreground: '#ffffff' }],
+    ['size', { size: '10furlongs' }],
+    ['logo size', { logo: { href: LOGO, size: 0.5 } }],
+    ['logo padding', { logo: { href: LOGO, padding: 9 } }],
+    ['logo href', { logo: { href: 'javascript:alert(1)' } }],
+    ['logo with ecc L', { logo: { href: LOGO }, ecc: 'L' }],
+    ['ecc', { ecc: 'X' as never }],
+    ['minVersion above maxVersion', { minVersion: 10, maxVersion: 5 }],
+  ])('%s: same error and message as toSvg', (_name, options) => {
+    const expected = messageOf(() => toSvg('TINGQR', options))
+    expect(expected).not.toBe('no error')
+    expect(messageOf(() => checkSvgOptions(options))).toBe(expected)
+  })
+  test.each<[string, SvgOptions | undefined]>([
+    ['none', undefined],
+    ['empty', {}],
+    ['all valid', { margin: 2, size: 240, foreground: '#112233', logo: { href: LOGO, size: 0.2 }, minVersion: 5 }],
+  ])('%s: no error', (_name, options) => {
+    expect(() => checkSvgOptions(options)).not.toThrow()
+  })
 })

@@ -42,7 +42,7 @@ TingQrModule.forRootAsync({
 - `service: 'card'` for a card number; `svg` for default image options; `isGlobal: true` to use the service everywhere.
 - **The configuration is checked when the app starts.** An unknown bank, an invalid account, a logo that is not a data
   URI, or `svg` options that cannot render the account's static code (colours, margin, logo size…) stop the app with a
-  `TingQrError` (`INVALID_VALUE`). Options that depend on the payload length (`maxVersion`, `ecc`) are only checked per
+  `TingQrError` (`INVALID_VALUE`). Options that depend on the payload length (`maxVersion`) are only checked per
   request (500).
 
 ## Build a code
@@ -67,9 +67,14 @@ async qr(@Param('id') id: string) {
 }
 ```
 
+- `@TingQrSvg()` is for HTTP controllers only (not GraphQL resolvers, microservices or WebSocket gateways).
+- Options passed to `@TingQrSvg(options)` are checked when the decorator runs, so a bad colour, margin, size or logo
+  stops the app at startup. Only what depends on the payload (too long for `maxVersion`, a logo too big for a small
+  code) is known per request.
+
 | The handler returns | Response |
 |---|---|
-| any non-empty string (not validated: build it with tingqr's encoders, e.g. `paymentQr`) | `200`, SVG |
+| any non-empty string (not validated: build it with tingqr's encoders, e.g. `paymentQr`) | `200`, SVG, whatever the method (also `POST`, where Nest's default is `201`) |
 | `null`, `undefined`, `''` | `404` (`NotFoundException`) |
 | throws a `TingQrError`, or the string / options cannot be drawn | `500` (`InternalServerErrorException`, body `{ "error": { "code" } }`); the message is logged with Nest's `Logger`, never sent |
 | throws anything else | unchanged: your exception filters decide (`500` by default) |

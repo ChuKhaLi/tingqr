@@ -197,3 +197,12 @@ describe('logos over HTTP', () => {
     expect(() => tingqr({ resolve: () => PAYLOAD, logo: { href: '/logo.png' } })).toThrow(TingQrError)
   })
 })
+
+test.each([{ margin: -1 }, { foreground: '#ffffff' }, { size: 'big' }, { ecc: 'X' }])(
+  'the route rejects a bad option %o when it is created, not on every request',
+  (options) => {
+    expect(() => tingqr({ resolve: () => PAYLOAD, ...(options as object) })).toThrow(
+      expect.objectContaining({ code: 'INVALID_VALUE' }),
+    )
+  },
+)

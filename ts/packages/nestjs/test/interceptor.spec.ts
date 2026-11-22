@@ -24,7 +24,12 @@ async function run(
   const headers: Record<string, string> = opts.headers ?? {}
   const response = { fake: 'response' }
   const request = { fake: 'request' }
-  const host = { httpAdapter: { setHeader: (res: unknown, name: string, value: string) => (expect(res).toBe(response), (headers[name] = value)) } }
+  const host = {
+    httpAdapter: {
+      setHeader: (res: unknown, name: string, value: string) => (expect(res).toBe(response), (headers[name] = value)),
+      status: (res: unknown, code: number) => (expect(res).toBe(response), expect(code).toBe(200)),
+    },
+  }
   const options = opts.moduleSvg === null ? undefined : { bank: 'MB', accountNumber: '0123456789', bin: '970422', svg: opts.moduleSvg ?? undefined }
   const interceptor = new TingQrSvgInterceptor(host as unknown as HttpAdapterHost, new Reflector(), options as never)
   const context = {
@@ -116,6 +121,13 @@ test('a non-data: logo on a route is rejected when the decorator is applied', ()
     expect.objectContaining({ code: 'INVALID_VALUE' }),
   )
 })
+
+test.each([{ margin: -1 }, { foreground: '#ffffff' }, { size: 'big' }, { logo: { href: 'data:image/png;base64,AA', size: 0.9 } }])(
+  'a bad route option %o is rejected when the decorator is applied, not per request',
+  (options) => {
+    expect(() => TingQrSvg(options as never)).toThrow(expect.objectContaining({ code: 'INVALID_VALUE' }))
+  },
+)
 
 test('TINGQR_OPTIONS is exported for advanced wiring', () => {
   expect(typeof TINGQR_OPTIONS).toBe('symbol')

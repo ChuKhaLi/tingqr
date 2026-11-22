@@ -1,11 +1,12 @@
-import { Module, type DynamicModule, type ModuleMetadata, type Provider } from '@nestjs/common'
+import { Module, type DynamicModule, type FactoryProvider, type ModuleMetadata, type Provider } from '@nestjs/common'
 import { resolveOptions, type TingQrModuleOptions } from './options.js'
 import { TingQrService } from './service.js'
 import { TINGQR_OPTIONS } from './tokens.js'
 
 export interface TingQrModuleAsyncOptions {
   imports?: ModuleMetadata['imports']
-  inject?: Array<string | symbol | Function>
+  /** Tokens for useFactory's arguments, as in a Nest factory provider (`{ token, optional: true }` too). */
+  inject?: FactoryProvider['inject']
   useFactory: (...args: any[]) => TingQrModuleOptions | Promise<TingQrModuleOptions>
   /** Register TingQrService for the whole app. Default false. */
   isGlobal?: boolean

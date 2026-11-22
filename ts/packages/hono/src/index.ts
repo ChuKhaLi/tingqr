@@ -1,5 +1,5 @@
 import { TingQrError } from '@tingqr/core'
-import { toSvg, type SvgOptions } from '@tingqr/render'
+import { checkSvgOptions, toSvg, type SvgOptions } from '@tingqr/render'
 import type { Context, Env, Handler } from 'hono'
 
 export interface TingQrSvgOptions extends SvgOptions {
@@ -62,7 +62,10 @@ export function tingqrSvg<E extends Env>(c: Context<E>, payload: string, options
  */
 export function tingqr<E extends Env = any, P extends string = any>(options: TingQrRouteOptions<E, P>): Handler<E, P> {
   const { resolve, ...svgOptions } = options
-  checkServedLogo(svgOptions) // a config mistake fails when the route is created, not as a 500 on every request
+  // A config mistake fails when the route is created, not as a 500 on every request.
+  checkServedLogo(svgOptions)
+  const { cacheControl: _cacheControl, ...renderOptions } = svgOptions
+  checkSvgOptions(renderOptions)
   return async (c) => {
     try {
       const payload = await resolve(c)
