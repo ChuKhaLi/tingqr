@@ -40,6 +40,36 @@ namespace TingQR.Tests.Conformance
                     ? TingQrResult<DetectSummary>.Success(new DetectSummary(r.Value!.Scheme, r.Value.AlsoMatches), r.Warnings)
                     : TingQrResult<DetectSummary>.Failure(r.Error!);
             });
+            // Not QR schemes: `link` vectors build a link from input (encode-invalid ones expect BankApps.Link to
+            // throw); `lookup` vectors: Banks.Find(query) → its bin or null, BankApps.ForBank(bin) → app ids in order.
+            VectorRunner.Register("bank-app-link", BankAppLinkOf, null);
+            VectorRunner.Register("bank-lookup", node =>
+            {
+                var i = JsonInput.Of(node);
+                var query = i.String("query") ?? throw new InputConversionException("input.query is missing.");
+                i.Done();
+                return Banks.Find(query)?.Bin;
+            }, null);
+            VectorRunner.Register("bank-apps-for-bank", node =>
+            {
+                var i = JsonInput.Of(node);
+                var bin = i.String("bin") ?? throw new InputConversionException("input.bin is missing.");
+                i.Done();
+                return BankApps.ForBank(bin).Select(a => a.Id).ToList();
+            }, null);
+        }
+
+        private static readonly IReadOnlyDictionary<string, AppPlatform> AppPlatforms =
+            new Dictionary<string, AppPlatform> { ["android"] = AppPlatform.Android, ["ios"] = AppPlatform.Ios };
+
+        private static object? BankAppLinkOf(JsonNode node)
+        {
+            var i = JsonInput.Of(node);
+            var appId = i.String("appId") ?? throw new InputConversionException("input.appId is missing.");
+            var platform = i.Enum("platform", AppPlatforms) ?? throw new InputConversionException("input.platform is missing.");
+            var fallbackUrl = i.String("fallbackUrl");
+            i.Done();
+            return BankApps.Link(appId, platform, fallbackUrl);
         }
 
         private sealed record DetectSummary(QrScheme Scheme, IReadOnlyList<QrScheme> AlsoMatches);
@@ -161,6 +191,28 @@ namespace TingQR.Tests.Conformance
                 Assert.NotEmpty(ofScheme);
                 Assert.All(ofScheme, v => Assert.Contains((string)v["id"]!, ran));
             }
+        }
+
+        /// <summary>Vectors of a scheme nobody registered would not run at all; render belongs to the renderer (Plan 8b).</summary>
+        [Fact]
+        public void EveryVectorSchemeHasARunner()
+        {
+            var missing = VectorRunner.Vectors.Values
+                .Select(v => (string)v["scheme"]!)
+                .Where(s => s != "render" && !VectorRunner.IsRegistered(s))
+                .Distinct()
+                .OrderBy(s => s, StringComparer.Ordinal)
+                .ToList();
+            Assert.True(missing.Count == 0, "schemes without a runner: " + string.Join(", ", missing));
+        }
+
+        [Fact]
+        public void BankVectorCounts()
+        {
+            int Count(string scheme) => Vectors().Count(row => VectorRunner.Vectors[(string)row[0]]["scheme"]!.GetValue<string>() == scheme);
+            Assert.Equal(11, Count("bank-lookup"));
+            Assert.Equal(3, Count("bank-apps-for-bank"));
+            Assert.Equal(24, Count("bank-app-link"));
         }
 
         [Fact]

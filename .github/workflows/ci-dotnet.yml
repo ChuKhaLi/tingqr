@@ -28,5 +28,12 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 10.0.x
+      # BankDataSyncTests runs `node conformance/tools/banks/sync-dotnet.mjs --check` (no install needed); without
+      # Node it would be skipped.
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+          # setup-node v5 turns on caching from package.json "packageManager" (pnpm), which is not installed here.
+          package-manager-cache: false
       - run: dotnet build dotnet/TingQR.slnx -c Release
       - run: dotnet test dotnet/TingQR.slnx -c Release

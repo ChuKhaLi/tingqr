@@ -32,6 +32,8 @@ bộ mẫu thử ở đây, nên hai bản cho cùng kết quả trên mọi hà
 - `tools/banks/`: tải, so sánh và cập nhật `banks/`, có `package.json` riêng (`sharp` để thu nhỏ logo).
   - Có gọi mạng: `update.mjs`, `capture-sources.mjs`, `play-check.mjs`, `commons-search.mjs`.
   - `sync-ts.mjs` sinh `ts/packages/core/src/banks/data.ts`.
+  - `sync-dotnet.mjs` sinh `dotnet/src/TingQR.Core/Banks/BankData.g.cs` (cùng trường, cùng thứ tự). Chạy ngay sau
+    `sync-ts.mjs`; `--check` của cả hai thoát 1 khi file sinh lệch dữ liệu.
   - Test không gọi mạng. Cách dùng: skill `update-banks`.
 - `private/`: QR thật chụp ở máy chủ dự án. **Nằm trong `.gitignore`, không bao giờ commit.**
 - `banks/`: danh sách ngân hàng và app ngân hàng, dùng chung cho mọi ngôn ngữ (thiết kế:
@@ -107,6 +109,8 @@ Ba luật chung nữa, cùng loại:
 - **Thông báo lỗi** không bắt buộc giống từng chữ giữa các bản (luật "không có đầu vào" ở trên cũng nằm trong luật này).
 - **`bank-app-link`**: hai bản chỉ bảo đảm giống nhau trên các mẫu; tên miền Unicode ngoài mẫu có thể khác giữa
   TypeScript và .NET, và giữa Linux và Windows.
+  - Bản .NET không có bộ đọc WHATWG đầy đủ: nó từ chối (`INVALID_VALUE`) một số URL mà WHATWG nhận rồi viết lại, như
+    có user info, IPv6, IPv4 dạng không chuẩn (`0x7f.1`), `%` hay `\` trong host, `\` hay đoạn `.`/`..` trong path.
 
 ## Mẫu link mở app (`kind: "link"`, `scheme: "bank-app-link"`)
 

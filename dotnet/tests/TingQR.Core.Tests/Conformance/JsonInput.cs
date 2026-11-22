@@ -45,7 +45,46 @@ namespace TingQR.Tests.Conformance
             var node = Take(name, out var present);
             if (!present) return null;
             if (Kind(node!) != JsonValueKind.String) throw new InputConversionException($"input.{name} is not a string.");
-            return node!.GetValue<string>();
+            try
+            {
+                return node!.GetValue<string>();
+            }
+            catch (InvalidOperationException)
+            {
+                // System.Text.Json refuses a lone surrogate (\ud800), which a C# string can hold and which a vector
+                // passes on purpose (bank-app-link/mb-android-fallback-lone-surrogate). Unescape the raw token.
+                return UnescapeRaw(node!.GetValue<JsonElement>().GetRawText());
+            }
+        }
+
+        // The raw JSON string token, quotes included, as UTF-16 code units (lone surrogates kept).
+        private static string UnescapeRaw(string raw)
+        {
+            var sb = new System.Text.StringBuilder(raw.Length);
+            for (var i = 1; i < raw.Length - 1; i++)
+            {
+                var c = raw[i];
+                if (c != '\\')
+                {
+                    sb.Append(c);
+                    continue;
+                }
+                var e = raw[++i];
+                switch (e)
+                {
+                    case 'b': sb.Append('\b'); break;
+                    case 'f': sb.Append('\f'); break;
+                    case 'n': sb.Append('\n'); break;
+                    case 'r': sb.Append('\r'); break;
+                    case 't': sb.Append('\t'); break;
+                    case 'u':
+                        sb.Append((char)Convert.ToInt32(raw.Substring(i + 1, 4), 16));
+                        i += 4;
+                        break;
+                    default: sb.Append(e); break; // " \ /
+                }
+            }
+            return sb.ToString();
         }
 
         /// <summary>An integral JSON number as a long, or null when absent.</summary>
