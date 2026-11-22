@@ -315,9 +315,9 @@ describe('encodeKhqr without an input object', () => {
   }
 })
 
-describe('alternateLanguage.language (64.00) is 1–2 letters', () => {
+describe('alternateLanguage.language (64.00) is exactly 2 letters', () => {
   const alt = (language: string): KhqrInput => ({ ...BASE, alternateLanguage: { language, merchantName: 'ចន ស្មីន' } })
-  for (const bad of ['1!', 'k1', ' k', 'k-']) {
+  for (const bad of ['1!', 'k1', ' k', 'k-', 'k']) {
     test(`${JSON.stringify(bad)} is INVALID_VALUE on 64.00`, () => {
       let error: unknown
       try {
@@ -332,7 +332,7 @@ describe('alternateLanguage.language (64.00) is 1–2 letters', () => {
   test('a Khmer letter is still NON_ASCII on 64.00', () => {
     expect(() => encodeKhqr(alt('ក'))).toThrow(expect.objectContaining({ code: 'NON_ASCII', tag: '64.00' }))
   })
-  for (const good of ['km', 'KM', 'k']) {
+  for (const good of ['km', 'KM', 'Km']) {
     test(`${good} is written verbatim`, () => {
       const r = decodeKhqr(encodeKhqr(alt(good)))
       expect(r.ok && r.value.alternateLanguage?.language).toBe(good)

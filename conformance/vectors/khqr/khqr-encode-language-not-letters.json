@@ -16,7 +16,7 @@
   },
   "error": "INVALID_VALUE",
   "errorTag": "64.00",
-  "source": "conformance/schemes/khqr.md, encode rules (language code: letters only, EMVCo MPM language preference is an ISO 639 code)",
+  "source": "tingqr rule (v0.1 polish design 2026-11-22: two letters, ISO 639-1); EMVCo MPM language preference understood to be 2 alphabetic characters, not re-read",
   "derived": true,
   "derivedFrom": "khqr-encode-individual-khmer",
   "note": "alternateLanguage.language changed from 'km' to '1!'."

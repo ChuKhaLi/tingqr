@@ -95,10 +95,11 @@ Ngoài ra:
   - `merchantName` 1–25 (`59`), `merchantCity` tối đa 15, mặc định `Phnom Penh` (`60`), `merchantCategoryCode` 4 chữ
     số, mặc định `5999` (`52`);
   - các trường `62` mỗi trường tối đa 25;
-  - `alternateLanguage`: `language` 1–2 chữ cái ASCII, giữ nguyên hoa/thường (`64.00`; độ dài theo SDK `bakong-khqr`,
-    chỉ chữ cái vì EMVCo MPM ghi đây là mã ISO 639; mẫu `khqr-encode-language-not-letters`), `merchantName` bắt buộc như
-    SDK, tối đa 25 (`64.01`),
-    `merchantCity` tối đa 15 (`64.02`).
+  - `alternateLanguage`: `language` đúng 2 chữ cái ASCII, giữ nguyên hoa/thường (`64.00`; mẫu
+    `khqr-encode-language-not-letters`, `khqr-encode-language-uppercase`). Hai chữ cái là mã ISO 639-1, theo bản thiết
+    kế 2026-11-22; EMVCo MPM được hiểu là ghi trường này dài 2 và gồm chữ cái, **chưa đọc lại đặc tả** để xác nhận.
+    SDK `bakong-khqr` cho tới 2 ký tự (chưa kiểm nó có nhận 1 ký tự không). Chỉ kiểm khi tạo mã; hàm đọc trả nguyên văn.
+    `merchantName` bắt buộc như SDK, tối đa 25 (`64.01`), `merchantCity` tối đa 15 (`64.02`).
 - **Chữ:** chỉ `alternateLanguage` được có chữ ngoài ASCII (ví dụ Khmer). Trường khác có chữ ngoài ASCII in được thì
   `NON_ASCII`.
 - Chưa hỗ trợ tạo tag `15` (UnionPay).

@@ -15,7 +15,7 @@ Planned as 0.1.0, after MoMo and ZaloPay recognition and scans with more banking
   refuses them. Lowercase CRC and surrounding whitespace are accepted in both modes, with a warning.
 - Shared error and warning codes (`conformance/errors.json`). Encoders called without an input object throw
   `INVALID_VALUE`, never a `TypeError`; a code without tag 01 is `MISSING_TAG` on `01`.
-- KHQR: the tag 64 language code must be 1–2 letters.
+- KHQR: the tag 64 language code must be 2 letters (ISO 639-1).
 - `@tingqr/core/banks`: Vietnamese banks (`findBank`), banking apps (`findBankApp`, `appsForBank`) and links that open
   them (`bankAppLink`).
 
