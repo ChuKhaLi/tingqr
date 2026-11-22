@@ -17,6 +17,7 @@ namespace TingQR.Tests.Conformance
         static ConformanceTests()
         {
             VectorRunner.Register("vietqr", VietQrInputOf, (payload, mode) => VietQr.Decode(payload, mode));
+            VectorRunner.Register("vnpay", null, (payload, mode) => VnpayQr.Decode(payload, mode));
         }
 
         private static readonly IReadOnlyDictionary<string, VietQrService> VietQrServices =
