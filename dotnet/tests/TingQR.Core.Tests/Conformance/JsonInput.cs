@@ -48,6 +48,18 @@ namespace TingQR.Tests.Conformance
             return node!.GetValue<string>();
         }
 
+        /// <summary>An integral JSON number as a long, or null when absent.</summary>
+        public long? Long(string name)
+        {
+            var node = Take(name, out var present);
+            if (!present) return null;
+            if (Kind(node!) != JsonValueKind.Number || !node!.GetValue<JsonElement>().TryGetInt64(out var value))
+            {
+                throw new InputConversionException($"input.{name} is not an integral number.");
+            }
+            return value;
+        }
+
         /// <summary>Whether the input has the key (without reading it).</summary>
         public bool Has(string name) => _obj.ContainsKey(name);
 

@@ -24,6 +24,51 @@ namespace TingQR.Tests.Conformance
             });
             VectorRunner.Register("promptpay", PromptPayInputOf, (payload, mode) => PromptPayQr.Decode(payload, mode));
             VectorRunner.Register("vnpay", null, (payload, mode) => VnpayQr.Decode(payload, mode));
+            VectorRunner.Register("khqr", KhqrInputOf, (payload, mode) => Khqr.Decode(payload, mode));
+        }
+
+        private static readonly IReadOnlyDictionary<string, KhqrAccountType> KhqrAccountTypes =
+            new Dictionary<string, KhqrAccountType> { ["individual"] = KhqrAccountType.Individual, ["merchant"] = KhqrAccountType.Merchant };
+
+        private static object? KhqrInputOf(JsonNode node)
+        {
+            var i = JsonInput.Of(node);
+            var alt = i.Object("alternateLanguage");
+            KhqrAlternateLanguage? language = null;
+            if (alt != null)
+            {
+                language = new KhqrAlternateLanguage(alt.String("language")!, alt.String("merchantName")!, alt.String("merchantCity"));
+                alt.Done();
+            }
+            var input = new KhqrInput
+            {
+                AccountType = i.Enum("accountType", KhqrAccountTypes) ?? throw new InputConversionException("input.accountType is missing."),
+                BakongAccountId = i.String("bakongAccountId")!,
+                AccountInformation = i.String("accountInformation"),
+                MerchantId = i.String("merchantId"),
+                AcquiringBank = i.String("acquiringBank"),
+                MerchantName = i.String("merchantName")!,
+                MerchantCity = i.String("merchantCity"),
+                MerchantCategoryCode = i.String("merchantCategoryCode"),
+                Currency = i.String("currency")!,
+                Amount = i.Amount("amount"),
+                BillNumber = i.String("billNumber"),
+                MobileNumber = i.String("mobileNumber"),
+                StoreLabel = i.String("storeLabel"),
+                TerminalLabel = i.String("terminalLabel"),
+                Purpose = i.String("purpose"),
+                AlternateLanguage = language,
+                CreatedAt = i.Long("createdAt") ?? throw new InputConversionException("input.createdAt is missing."),
+                ExpiresAt = i.Long("expiresAt"),
+            };
+            i.Done();
+            return Khqr.Encode(input);
+        }
+
+        [Fact]
+        public void KhqrHasAll21Vectors()
+        {
+            Assert.Equal(21, Vectors().Count(row => VectorRunner.Vectors[(string)row[0]]["scheme"]!.GetValue<string>() == "khqr"));
         }
 
         private static readonly IReadOnlyDictionary<string, VietQrService> VietQrServices =
