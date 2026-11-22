@@ -19,4 +19,6 @@ Hướng dẫn cho phần .NET của tingqr. Quy tắc chung: `../CLAUDE.md`. Th
 - Không dependency lúc chạy.
 - `src/TingQR.Core/Banks/BankData.g.cs` là file sinh (từ `conformance/banks/`); không sửa tay.
 - Mẫu thử đọc tại chỗ qua `ConformanceRoot` (tests), không chép `conformance/`.
-- Mutation (Stryker.NET): làm ở Task 11 của Plan 8a.
+- **Mutation test (Stryker.NET 5.1.0, tool cục bộ trong `.config/dotnet-tools.json`):** `dotnet tool restore` rồi `dotnet tool run dotnet-stryker` trong `dotnet/` (~5 phút). Cấu hình `stryker-config.json`: chạy test `net10.0`, ngưỡng chặn 90 (đo 90,99% ngày 2026-11-22), loại `Banks/BankData.g.cs` và `Polyfills.cs`. CI: `.github/workflows/mutation-dotnet.yml`. Báo cáo HTML ở `dotnet/StrykerOutput/` (không commit).
+  - `ignore-methods` bỏ qua đột biến bên trong lời gọi `Invalid`, `Fail`, `NotAbsolute`, `Quote`, constructor `*Exception` và `TingQrWarning`: đó là chuỗi thông báo lỗi (không có tính quy phạm), tương đương như ở `ts/CLAUDE.md`. Hệ quả: tên tag truyền vào các hàm này cũng không bị đột biến; `TingQrException.Tag` vẫn được test kiểm.
+  - Còn sống sót mà coi là tương đương/chấp nhận: biên của các hàm kiểm ký tự ASCII (`IsAsciiLetter` ...), nhánh `Quote` chỉ dùng cho thông báo, nhãn tag/tên trường truyền vào `Text(...)` của KHQR/PromptPay (chỉ vào thông báo), đột biến trong `FallbackUrl` (bộ kiểm URL nhiều biên). Đột biến khác sống sót là lỗ hổng test: viết test giết nó, đừng hạ ngưỡng.

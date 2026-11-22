@@ -36,5 +36,43 @@ namespace TingQR.Tests
             Assert.Equal(2, CodePoints.Count("a\U0001F600"));
             Assert.Equal(8, CodePoints.Count("ចន ស្មីន"));
         }
+
+        [Fact]
+        public void LoneSurrogatesCountOneEachAndStaySeparateInSplit()
+        {
+            Assert.Equal(2, CodePoints.Count("a�"));
+            Assert.Equal(2, CodePoints.Count("��"));
+            Assert.Equal(2, CodePoints.Count("��"));
+            Assert.Equal(new[] { "a", "�" }, CodePoints.Split("a�"));
+            Assert.Equal(new[] { "�", "�" }, CodePoints.Split("��"));
+            Assert.Equal(new[] { "�", "�" }, CodePoints.Split("��"));
+            Assert.Equal(new[] { "a", "\U0001F600", "b" }, CodePoints.Split("a\U0001F600b"));
+        }
+
+        [Fact]
+        public void AmountHashFollowsEquality()
+        {
+            Assert.Equal(new QrAmount("20000").GetHashCode(), new QrAmount("20000").GetHashCode());
+            Assert.NotEqual(new QrAmount("20000").GetHashCode(), new QrAmount("20001").GetHashCode());
+            Assert.NotEqual(new QrAmount(20000L).GetHashCode(), new QrAmount("20000").GetHashCode());
+            Assert.NotEqual(default(QrAmount).GetHashCode(), new QrAmount("20000").GetHashCode());
+            Assert.Equal(default(QrAmount).GetHashCode(), default(QrAmount).GetHashCode());
+            Assert.True(new QrAmount(5L).IsNumber);
+            Assert.False(new QrAmount("5").IsNumber);
+        }
+
+        [Fact]
+        public void NodeHashFollowsChildren()
+        {
+            var a = new Emv.TlvNode("26", "x", new[] { new Emv.TlvNode("00", "a"), new Emv.TlvNode("01", "b") });
+            var same = new Emv.TlvNode("26", "x", new[] { new Emv.TlvNode("00", "a"), new Emv.TlvNode("01", "b") });
+            var swapped = new Emv.TlvNode("26", "x", new[] { new Emv.TlvNode("01", "b"), new Emv.TlvNode("00", "a") });
+            var none = new Emv.TlvNode("26", "x");
+            Assert.True(a.Equals((object)a));
+            Assert.Equal(a.GetHashCode(), same.GetHashCode());
+            Assert.NotEqual(a.GetHashCode(), swapped.GetHashCode());
+            Assert.NotEqual(a.GetHashCode(), none.GetHashCode());
+            Assert.Equal((a.Tag, a.Value).GetHashCode(), none.GetHashCode());
+        }
     }
 }
