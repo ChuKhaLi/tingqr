@@ -8,8 +8,9 @@ bộ mẫu thử ở đây, nên hai bản cho cùng kết quả trên mọi hà
   - `LOGO_LOAD_FAILED`, `CANVAS_TAINTED`, `NO_CANVAS` chỉ đến từ phần vẽ PNG trên canvas ở trình duyệt
     (`@tingqr/render/canvas`). Mọi ngôn ngữ vẫn khai báo đủ ba mã; bản nào không có phần vẽ đó thì không bao giờ ném chúng.
   - Logo khi vẽ ảnh raster (canvas, hay bộ vẽ PNG phía máy chủ sau này): ảnh giải mã ra 0×0 thì `LOGO_LOAD_FAILED`, trừ
-    logo `data:image/svg+xml` (SVG không có `width`/`height`), được vẽ vừa ô logo vuông. Bản TypeScript mới thử bằng
-    canvas giả, chưa thử trên trình duyệt thật.
+    logo `data:image/svg+xml` báo 0×0 (SVG không có `width`/`height`), được vẽ vừa ô logo vuông. Chrome 157 (thử
+    2026-11-22) không báo 0×0 mà báo 150×150 cho SVG chỉ có `viewBox` vuông, 300×150 khi không có `viewBox`, và vẽ đúng;
+    chưa thử trình duyệt nào báo 0×0. SVG không vẽ ra gì (ví dụ `<svg/>`) cho ô logo trống, không báo lỗi.
 - `http/svg-response.json`: hợp đồng HTTP chung của mọi gói tích hợp trả QR dạng ảnh SVG (`@tingqr/hono`,
   `@tingqr/nestjs`, sau này `TingQR.AspNetCore`): status, header, thân lỗi 500, luật logo, cái gì kiểm lúc cấu hình. Test của từng gói đọc file
   này, không tự chép header.
