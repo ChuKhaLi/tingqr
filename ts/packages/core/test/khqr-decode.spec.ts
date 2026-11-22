@@ -188,8 +188,8 @@ test('parse warnings (whitespace) are kept', () => {
   expect(ok(` ${INDIVIDUAL} `).warnings.map((w) => w.code)).toEqual(['TRIMMED_WHITESPACE'])
 })
 
-test.each(['00', '01'])('a missing tag %s is INVALID_VALUE, not a crash', (t) => {
-  expect(err(rebuild(INDIVIDUAL, (f) => drop(f, t)))).toEqual(['INVALID_VALUE', t])
+test.each([['00', 'INVALID_VALUE'], ['01', 'MISSING_TAG']])('a missing tag %s is %s, not a crash', (t, code) => {
+  expect(err(rebuild(INDIVIDUAL, (f) => drop(f, t)))).toEqual([code, t])
 })
 
 test.each(['01726821915797', '17268219157970'])('a 14-digit timestamp %s is not a time', (stamp) => {
@@ -223,4 +223,18 @@ test.each(['DE', 'TH', 'kh'])('an @ account in a code whose tag 58 is %s is not 
   const payload = rebuild(INDIVIDUAL, (f) => setTag(f, '58', country))
   expect(err(payload)).toEqual(['UNSUPPORTED_SCHEME', '29'])
   expect(err(payload, 'strict')).toEqual(['UNSUPPORTED_SCHEME', '29'])
+})
+
+describe('decodeKhqr with no tag 01', () => {
+  // conformance/vectors/khqr/khqr-missing-poi.json
+  const payload = '00020129310014jonhsmith@nbcq0109012345678520459995303116540750000.05802KH5910Jonh Smith6009Siam Reap62550117INV-2021-07-658220211855123456780305BKK-107060123459917001316303958385026304FF7C'
+  for (const mode of ['strict', 'lenient'] as const) {
+    test(`${mode}: MISSING_TAG 01 with a message that names the tag`, () => {
+      const r = decodeKhqr(payload, { mode })
+      expect(r.ok).toBe(false)
+      if (r.ok) return
+      expect([r.error.code, r.error.tag]).toEqual(['MISSING_TAG', '01'])
+      expect(r.error.message).toBe('Tag 01 (point of initiation) is missing; expected 11 or 12.')
+    })
+  }
 })

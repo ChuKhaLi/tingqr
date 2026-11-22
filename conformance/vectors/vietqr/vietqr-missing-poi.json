@@ -1,0 +1,12 @@
+{
+  "id": "vietqr-missing-poi",
+  "scheme": "vietqr",
+  "kind": "invalid",
+  "payload": "00020138530010A0000007270123000697041601092576788590208QRIBFTTA53037045802VN63043B24",
+  "error": "MISSING_TAG",
+  "errorTag": "01",
+  "source": "mutation of vietqr-readme-sample",
+  "derived": true,
+  "derivedFrom": "vietqr-readme-sample",
+  "note": "Tag 01 (010211) removed; CRC recomputed with an independent Python CRC-16/CCITT-FALSE routine, not with tingqr."
+}

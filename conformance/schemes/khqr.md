@@ -48,7 +48,7 @@ Thứ tự kiểm:
    `58 = TH`, nên chỉ chuỗi **không có** tag 58 mới có thể khớp cả hai (xem `detect.md`).
    - Có cả `29` lẫn `30` hợp lệ: lấy `29`, tag `30` nằm trong `extraFields`. Chưa thấy QR nào như vậy.
 3. Cửa hàng: thiếu `30.01` hoặc `30.02` thì `MISSING_TAG` ở cả hai chế độ.
-4. Tag `00` và `01` như VietQR.
+4. Tag `00` và `01` như VietQR (thiếu `01`: `MISSING_TAG`, mẫu `khqr-missing-poi`).
 5. Tag `52`, `53`, `58`, `59`, `60` theo thứ tự tăng dần:
    - `53` thiếu: `MISSING_TAG` ở **cả hai** chế độ, vì không đoán được là KHR hay USD.
    - **Chế độ chặt:** thiếu tag khác cũng là `MISSING_TAG`.

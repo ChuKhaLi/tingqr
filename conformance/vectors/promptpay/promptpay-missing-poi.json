@@ -1,0 +1,12 @@
+{
+  "id": "promptpay-missing-poi",
+  "scheme": "promptpay",
+  "kind": "invalid",
+  "payload": "00020129370016A0000006770101110113006681222333353037645802TH630408FD",
+  "error": "MISSING_TAG",
+  "errorTag": "01",
+  "source": "mutation of promptpay-promptparse-mobile",
+  "derived": true,
+  "derivedFrom": "promptpay-promptparse-mobile",
+  "note": "Tag 01 (010211) removed; CRC recomputed with an independent Python CRC-16/CCITT-FALSE routine, not with tingqr."
+}

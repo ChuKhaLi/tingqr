@@ -1,0 +1,12 @@
+{
+  "id": "khqr-missing-poi",
+  "scheme": "khqr",
+  "kind": "invalid",
+  "payload": "00020129310014jonhsmith@nbcq0109012345678520459995303116540750000.05802KH5910Jonh Smith6009Siam Reap62550117INV-2021-07-658220211855123456780305BKK-107060123459917001316303958385026304FF7C",
+  "error": "MISSING_TAG",
+  "errorTag": "01",
+  "source": "mutation of khqr-sdk-khr-50000",
+  "derived": true,
+  "derivedFrom": "khqr-sdk-khr-50000",
+  "note": "Tag 01 (010212) removed; CRC recomputed with an independent Python CRC-16/CCITT-FALSE routine, not with tingqr."
+}
