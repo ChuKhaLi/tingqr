@@ -36,9 +36,11 @@ Nguồn các điều về npm (đọc ngày 2026-11-21; nên đọc lại trư�
 0. **Rà lịch sử commit trước khi mở công khai** (chủ dự án làm).
    - Mở công khai thì **mọi commit** đều công khai, kể cả nội dung đã xoá ở commit sau.
    - Những gì đã biết đang nằm trong lịch sử:
-     - commit `e3b0a39` (file kết quả thử Noel tree) có số tài khoản ảo nhận tiền của Noel tree. Bản hiện tại đã bỏ số
-       này, nhưng commit cũ vẫn còn. Số này vốn hiện cho người trả tiền trên trang thanh toán của Noel tree; bạn quyết
-       có cần xoá khỏi lịch sử không;
+     - **Đã làm (2026-11-22):** số tài khoản ảo nhận tiền của Noel tree trong file kết quả thử Noel tree đã được thay
+       khỏi toàn bộ lịch sử `main` (`git filter-branch`, rồi force-push). Mọi mã commit từ commit đó trở đi đã đổi.
+       **Còn sót:** các PR cũ trên GitHub (#7 Plan 6 và các PR sau) vẫn giữ commit cũ trong `refs/pull/*`, và GitHub
+       vẫn cho xem commit cũ theo mã cho tới khi dọn rác. Muốn xoá hẳn thì phải nhờ GitHub Support, hoặc tạo repo mới
+       từ lịch sử đã sạch trước khi mở công khai;
      - email tác giả trong mọi commit;
      - các ghi chú bàn giao và kế hoạch nội bộ trong `docs/superpowers/`.
    - Nên chạy thêm một công cụ dò bí mật trên toàn bộ lịch sử (ví dụ `gitleaks detect` hay `trufflehog git`), và kiểm
