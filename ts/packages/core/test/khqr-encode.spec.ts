@@ -298,3 +298,19 @@ test('the decoded currency can be passed straight back to encodeKhqr', () => {
 test.each(['764', 'khr', 116])('currency %o is rejected', (currency) => {
   expect(errorOf({ ...BASE, currency })).toEqual(['INVALID_VALUE', '53'])
 })
+
+describe('encodeKhqr without an input object', () => {
+  for (const bad of [undefined, null, 42, 'x']) {
+    test(`${String(bad)} is INVALID_VALUE, not a TypeError`, () => {
+      let error: unknown
+      try {
+        encodeKhqr(bad as never)
+      } catch (e) {
+        error = e
+      }
+      expect(error).toBeInstanceOf(TingQrError)
+      expect((error as TingQrError).code).toBe('INVALID_VALUE')
+      expect((error as TingQrError).message).toBe(`encodeKhqr needs an input object; got ${bad === null ? 'null' : typeof bad}.`)
+    })
+  }
+})

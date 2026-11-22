@@ -60,3 +60,10 @@ export class TingQrError extends Error {
 }
 
 export type Result<T> = { ok: true; value: T; warnings: Warning[] } | { ok: false; error: TingQrError }
+
+/** Encoders take an object: anything else is INVALID_VALUE, never a TypeError from reading a property of it. */
+export function requireInput(fn: string, input: unknown): void {
+  if (typeof input !== 'object' || input === null) {
+    throw new TingQrError('INVALID_VALUE', `${fn} needs an input object; got ${input === null ? 'null' : typeof input}.`)
+  }
+}

@@ -150,3 +150,19 @@ test.each([
 ])('a target with more than one recipient (%o) is rejected, not silently narrowed', (target) => {
   expect(errorOf({ target })).toEqual(['INVALID_VALUE', '29'])
 })
+
+describe('encodePromptPayQr without an input object', () => {
+  for (const bad of [undefined, null, 42, 'x']) {
+    test(`${String(bad)} is INVALID_VALUE, not a TypeError`, () => {
+      let error: unknown
+      try {
+        encodePromptPayQr(bad as never)
+      } catch (e) {
+        error = e
+      }
+      expect(error).toBeInstanceOf(TingQrError)
+      expect((error as TingQrError).code).toBe('INVALID_VALUE')
+      expect((error as TingQrError).message).toBe(`encodePromptPayQr needs an input object; got ${bad === null ? 'null' : typeof bad}.`)
+    })
+  }
+})

@@ -1,4 +1,4 @@
-import { TingQrError } from '../../errors.js'
+import { requireInput, TingQrError } from '../../errors.js'
 import { buildPayload } from '../../emv/payload.js'
 import { field, type TlvField } from '../../emv/tlv.js'
 import type { KhqrInput } from './types.js'
@@ -93,6 +93,7 @@ function accountTemplate(input: KhqrInput): ['29' | '30', string] {
  * TingQrError on invalid input; never rounds or silently changes it.
  */
 export function encodeKhqr(input: KhqrInput): string {
+  requireInput('encodeKhqr', input)
   const [accountTag, account] = accountTemplate(input)
   const mcc = input.merchantCategoryCode ?? '5999'
   if (typeof mcc !== 'string' || !/^\d{4}$/.test(mcc)) throw invalid('merchantCategoryCode must be 4 digits.', '52')

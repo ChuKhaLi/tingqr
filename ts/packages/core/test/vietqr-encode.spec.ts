@@ -101,3 +101,19 @@ test('empty-string purpose is treated as no purpose', () => {
 test.each(['9704220', 'X970422', '970422 '])('bank BIN %j is rejected (exactly 6 digits)', (bankBin) => {
   expect(thrown(() => encodeVietQr({ ...BASE, bankBin })).code).toBe('INVALID_VALUE')
 })
+
+describe('encodeVietQr without an input object', () => {
+  for (const bad of [undefined, null, 42, 'x']) {
+    test(`${String(bad)} is INVALID_VALUE, not a TypeError`, () => {
+      let error: unknown
+      try {
+        encodeVietQr(bad as never)
+      } catch (e) {
+        error = e
+      }
+      expect(error).toBeInstanceOf(TingQrError)
+      expect((error as TingQrError).code).toBe('INVALID_VALUE')
+      expect((error as TingQrError).message).toBe(`encodeVietQr needs an input object; got ${bad === null ? 'null' : typeof bad}.`)
+    })
+  }
+})

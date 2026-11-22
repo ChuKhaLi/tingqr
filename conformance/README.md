@@ -78,6 +78,10 @@ bộ mẫu thử ở đây, nên hai bản cho cùng kết quả trên mọi hà
 | `derived`, `derivedFrom` | khi sửa từ mẫu khác | `derivedFrom` là `id` mẫu gốc |
 | `note` | không | ghi đã sửa gì, đã chạy lệnh gì |
 
+`input` của mẫu luôn là object, nên mẫu thử không diễn tả được một lời gọi không có đầu vào. Luật chung cho mọi bản: hàm
+tạo mã nhận `undefined`, `null` hay giá trị không phải object thì báo `INVALID_VALUE`, không kèm tag, thông báo
+`<tên hàm> needs an input object; got <kiểu>.` (bản TypeScript: test `*-encode.spec.ts`).
+
 ## Mẫu link mở app (`kind: "link"`, `scheme: "bank-app-link"`)
 
 Dành cho `bankAppLink` (`@tingqr/core/banks`). Mẫu nằm ở `vectors/bank-app-link/`.
