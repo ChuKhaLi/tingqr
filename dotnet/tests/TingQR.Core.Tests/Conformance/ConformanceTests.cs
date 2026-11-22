@@ -210,7 +210,7 @@ namespace TingQR.Tests.Conformance
         public void BankVectorCounts()
         {
             int Count(string scheme) => Vectors().Count(row => VectorRunner.Vectors[(string)row[0]]["scheme"]!.GetValue<string>() == scheme);
-            Assert.Equal(11, Count("bank-lookup"));
+            Assert.Equal(12, Count("bank-lookup"));
             Assert.Equal(3, Count("bank-apps-for-bank"));
             Assert.Equal(24, Count("bank-app-link"));
         }

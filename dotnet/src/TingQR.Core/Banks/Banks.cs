@@ -15,20 +15,38 @@ namespace TingQR
         public static IReadOnlyList<Bank> All { get; } = new ReadOnlyCollection<Bank>(BankData.Banks());
 
         /// <summary>
-        /// Finds a bank by 6-digit BIN (exact), or else by vietqr.io code, then short name, ignoring case (invariant).
-        /// No trimming: <c>" MB"</c> finds nothing. A code beats another bank's short name that spells the same.
+        /// Finds a bank by 6-digit BIN (exact), or else by vietqr.io code, then short name, ignoring the case of ASCII
+        /// letters only. No trimming: <c>" MB"</c> finds nothing. A code beats another bank's short name that spells the
+        /// same.
         /// </summary>
         /// <param name="binOrCode">A BIN such as <c>970422</c>, or a code or short name such as <c>MB</c>, <c>mbbank</c>.</param>
-        /// <returns>The bank, or null when nothing matches (or <paramref name="binOrCode"/> is null).</returns>
-        public static Bank? Find(string? binOrCode) => FindIn(All, binOrCode);
+        /// <returns>The bank, or null when nothing matches.</returns>
+        /// <exception cref="TingQrException"><c>INVALID_VALUE</c> when <paramref name="binOrCode"/> is null.</exception>
+        public static Bank? Find(string binOrCode) => FindIn(All, binOrCode);
 
         internal static Bank? FindIn(IReadOnlyList<Bank> banks, string? binOrCode)
         {
-            if (binOrCode == null) return null;
+            if (binOrCode == null)
+            {
+                // Stryker disable once String : error message
+                throw new TingQrException(TingQrErrorCode.InvalidValue, "Banks.Find needs a string (BIN or code), got null.");
+            }
             if (IsBin(binOrCode)) return banks.FirstOrDefault(b => b.Bin == binOrCode);
-            var key = binOrCode.ToLowerInvariant();
-            return banks.FirstOrDefault(b => b.Code.ToLowerInvariant() == key)
-                ?? banks.FirstOrDefault(b => b.ShortName.ToLowerInvariant() == key);
+            var key = AsciiLower(binOrCode);
+            return banks.FirstOrDefault(b => AsciiLower(b.Code) == key)
+                ?? banks.FirstOrDefault(b => AsciiLower(b.ShortName) == key);
+        }
+
+        // Codes and short names are ASCII; folding A-Z only keeps the lookup the same in every language
+        // (conformance/README.md, bank lookup).
+        internal static string AsciiLower(string s)
+        {
+            var chars = s.ToCharArray();
+            for (var i = 0; i < chars.Length; i++)
+            {
+                if (chars[i] >= 'A' && chars[i] <= 'Z') chars[i] = (char)(chars[i] + 32);
+            }
+            return new string(chars);
         }
 
         // Exactly six ASCII digits (char.IsDigit would also take other scripts' digits).
@@ -46,14 +64,24 @@ namespace TingQR
 
         /// <summary>Finds an app by id, exactly (ids are lower case, e.g. <c>mb</c>, <c>tcb</c>).</summary>
         /// <param name="id">The app id.</param>
-        /// <returns>The app, or null when none has that id.</returns>
+        /// <returns>The app, or null when none has that id (no app has a null id, so null finds nothing).</returns>
         public static BankApp? Find(string? id) => All.FirstOrDefault(a => a.Id == id);
 
         /// <summary>Every app of the bank with this BIN, in <see cref="All"/> order; empty when it has none.</summary>
         /// <param name="bin">The bank's BIN.</param>
         /// <returns>A read-only list of apps.</returns>
-        public static IReadOnlyList<BankApp> ForBank(string? bin)
-            => new ReadOnlyCollection<BankApp>(All.Where(a => a.Bin == bin).ToList());
+        /// <exception cref="TingQrException"><c>INVALID_VALUE</c> when <paramref name="bin"/> is null.</exception>
+        public static IReadOnlyList<BankApp> ForBank(string bin) => ForBankIn(All, bin);
+
+        internal static IReadOnlyList<BankApp> ForBankIn(IReadOnlyList<BankApp> apps, string? bin)
+        {
+            if (bin == null)
+            {
+                // Stryker disable once String : error message
+                throw new TingQrException(TingQrErrorCode.InvalidValue, "BankApps.ForBank needs a string (BIN), got null.");
+            }
+            return new ReadOnlyCollection<BankApp>(apps.Where(a => a.Bin == bin).ToList());
+        }
 
         /// <summary>
         /// The link that opens a bank app: <c>intent://…</c> on Android (with <c>S.browser_fallback_url</c> when

@@ -1,7 +1,7 @@
 # conformance/
 
-Nguồn sự thật chung cho mọi ngôn ngữ của tingqr. Bản TypeScript (`ts/`) và bản .NET (`dotnet/`, từ v0.2) chạy cùng một
-bộ mẫu thử ở đây, nên hai bản cho cùng kết quả trên mọi hành vi có mẫu.
+Nguồn sự thật chung cho mọi ngôn ngữ của tingqr. Bản TypeScript (`ts/`) và bản .NET (`dotnet/`) chạy cùng một bộ mẫu
+thử ở đây, nên hai bản cho cùng kết quả trên mọi hành vi có mẫu (trừ 4 mẫu kiểm kiểu, xem dưới; mẫu `render` từ Plan 8b).
 
 - `vectors.schema.json`: JSON Schema của một file mẫu thử.
 - `errors.json`: bảng mã lỗi và mã cảnh báo dùng chung. Không ngôn ngữ nào được có mã ngoài bảng.
@@ -147,15 +147,24 @@ Dành cho `findBank` và `appsForBank` (`@tingqr/core/banks`).
   - `input` là `{ query }`; `expected` là `{ result }`, với `result` là `bin` của ngân hàng tìm thấy, hoặc `null`.
   - **Luật tra cứu:**
     - `query` khớp `^[0-9]{6}$` (đúng 6 chữ số ASCII) thì so bằng với `bin`.
-    - Ngược lại, so với `code`, rồi mới tới `shortName`. So khớp ordinal sau khi chuyển chữ thường theo invariant
-      culture (không theo ngôn ngữ máy, ví dụ chữ `I` của tiếng Thổ Nhĩ Kỳ).
+    - Ngược lại, so với `code`, rồi mới tới `shortName`. So khớp ordinal sau khi đổi chữ hoa thành chữ thường **chỉ với
+      chữ cái ASCII** `A`–`Z`, ở cả `query` lẫn dữ liệu. Ký tự khác giữ nguyên: `code` và `shortName` đều là ASCII, còn
+      đổi chữ thường đầy đủ theo Unicode khác nhau giữa các ngôn ngữ (JavaScript `toLowerCase` đổi `İ` thành `i̇`,
+      .NET `ToLowerInvariant` giữ nguyên) và theo ngôn ngữ máy (chữ `I` của tiếng Thổ Nhĩ Kỳ). Mẫu:
+      `non-ascii-dotted-i`.
     - Mã của ngân hàng này thắng tên ngắn của ngân hàng khác.
     - Không cắt khoảng trắng.
     - `query` không phải chuỗi (ví dụ BIN lưu dạng số) là lỗi lập trình: ném `INVALID_VALUE` (mẫu `encode-invalid`), không trả `null`.
+      Bản .NET: `Banks.Find(null)` ném `TingQrException` `INVALID_VALUE`.
 - **`scheme: "bank-apps-for-bank"`** (`vectors/bank-apps-for-bank/`):
   - `input` là `{ bin }`; `expected` là `{ result }`, với `result` là mảng `id` app có `bin` đó, theo thứ tự trong
     `bank-apps.json`. Không có app nào thì là `[]`.
+  - `bin` không phải chuỗi (TypeScript: `null`, `undefined`, số; .NET: `null`) cũng ném `INVALID_VALUE`, như
+    `findBank`, để `null` không bao giờ khớp một app có `bin: null` (kiểu dữ liệu cho phép; ngày 2026-11-23 chưa app
+    nào như vậy). Chỉ có test của từng bản, chưa có mẫu.
 - **Quy tắc so sánh:** kết quả phải bằng `expected.result` (chuỗi, `null`, hoặc mảng đúng thứ tự).
+- **`findBankApp` / `BankApps.Find`** (chưa có mẫu): so `id` đúng từng ký tự. `id` của app không bao giờ `null`, nên
+  `null` (hay thứ không phải chuỗi) chỉ là không tìm thấy (`undefined` / `null`), không ném.
 
 ## Logo và icon (`banks/logos/`)
 

@@ -64,12 +64,59 @@ namespace TingQR.Tests
             Assert.Equal(2, BankApps.ForBank("970416").Count);
         }
 
+        // conformance/README.md (bank lookup): a null query is a programming error for Find and ForBank, as a
+        // non-string is in TypeScript; an app id is never null, so BankApps.Find(null) is simply not found.
         [Fact]
-        public void FindNullIsNull()
+        public void NullQueriesThrowForFindAndForBankAndAreNotFoundForAppFind()
         {
-            Assert.Null(Banks.Find(null));
+            Assert.Contains("string", Thrown(() => Banks.Find(null!)).Message);
+            Assert.Contains("string", Thrown(() => BankApps.ForBank(null!)).Message);
             Assert.Null(BankApps.Find(null));
-            Assert.Empty(BankApps.ForBank(null));
+        }
+
+        [Fact]
+        public void ForBankInDoesNotMatchANullBinAppForANullQuery()
+        {
+            var apps = new[]
+            {
+                new BankApp("nobin", "No BIN", null, new BankAppIos("nobin"), null, BankAppConfidence.SingleSource, false),
+                new BankApp("one", "One", "900001", new BankAppIos("one"), null, BankAppConfidence.SingleSource, false),
+            };
+            Assert.Equal(TingQrErrorCode.InvalidValue, Assert.Throws<TingQrException>(() => BankApps.ForBankIn(apps, null)).Code);
+            Assert.Equal(new[] { "one" }, BankApps.ForBankIn(apps, "900001").Select(a => a.Id));
+            Assert.Empty(BankApps.ForBankIn(apps, "900002"));
+        }
+
+        // Only ASCII letters fold, in the query and in the data (conformance/vectors/bank-lookup/non-ascii-dotted-i.json).
+        // ToLowerInvariant would fold U+00C9 and KELVIN SIGN; JavaScript's toLowerCase folds a different set.
+        [Fact]
+        public void FindFoldsAsciiLettersOnly()
+        {
+            Assert.Equal("970441", Banks.Find("VIB")?.Bin);
+            Assert.Null(Banks.Find("V\u0130B"));
+        }
+
+        [Fact]
+        public void FindInFoldsAsciiLettersOnly()
+        {
+            var list = new[] { new Bank("900001", "K\u00C9", "VIB", "accented code", null, "https://x/a.png") };
+            Assert.Equal("900001", Banks.FindIn(list, "VIB")?.Bin);
+            Assert.Equal("900001", Banks.FindIn(list, "vib")?.Bin);
+            Assert.Equal("900001", Banks.FindIn(list, "k\u00C9")?.Bin);
+            // Non-ASCII letters are compared as they are, in the query and in the data.
+            Assert.Null(Banks.FindIn(list, "k\u00E9"));
+            Assert.Null(Banks.FindIn(list, "\u212A\u00C9")); // KELVIN SIGN lower-cases to k under full Unicode folding
+            Assert.Null(Banks.FindIn(list, "V\u0130B"));
+            Assert.Null(Banks.FindIn(list, "v\u0131b"));
+        }
+
+        [Fact]
+        public void AsciiFoldingCoversAToZAndNothingNextToThem()
+        {
+            Assert.Equal("az@[`{", Banks.AsciiLower("AZ@[`{"));
+            var list = new[] { new Bank("900001", "AZ", "@[", "edges", null, "https://x/a.png") };
+            Assert.Equal("900001", Banks.FindIn(list, "az")?.Bin);
+            Assert.Null(Banks.FindIn(list, "`{"));
         }
 
         // ---- Banks.Find (findBank)
@@ -285,6 +332,22 @@ namespace TingQR.Tests
             Assert.Equal(href, FallbackUrl.Normalize(input));
         }
 
+        // A known difference outside the vectors (conformance/README.md, bank-app-link). Node 22.23.3 (2026-11-23):
+        // new URL('https://ẞ.vn/').href is https://ss.vn/ and new URL('https://ß.vn/').href is
+        // https://xn--zca.vn/. IdnMapping gives xn--zca for both on .NET 10 (ICU, Windows) and ss for both on .NET
+        // Framework 4.8.1 (Windows tables); lower-casing the host first or not changes neither. Linux not run yet.
+        [Theory]
+        [InlineData("https://ẞ.vn/")]
+        [InlineData("https://ß.vn/")]
+        public void SharpSDependsOnThePlatformIdnTables(string input)
+        {
+#if NETFRAMEWORK
+            Assert.Equal("https://ss.vn/", FallbackUrl.Normalize(input));
+#else
+            Assert.Equal("https://xn--zca.vn/", FallbackUrl.Normalize(input));
+#endif
+        }
+
         // WHATWG throws for the first group; the second is accepted by WHATWG (1.2.3.4. and %2e segments are rewritten)
         // but outside the subset this checker supports, so it throws too.
         [Theory]
@@ -350,10 +413,8 @@ namespace TingQR.Tests
         }
 
         [Fact]
-        public void FindAndForBankAnswerForARealBinAndForNull()
+        public void FindAndForBankAnswerForARealBin()
         {
-            Assert.Null(BankApps.Find(null));
-            Assert.Empty(BankApps.ForBank(null));
             Assert.NotEmpty(BankApps.ForBank("970422"));
             Assert.All(BankApps.ForBank("970422"), a => Assert.Equal("970422", a.Bin));
         }
