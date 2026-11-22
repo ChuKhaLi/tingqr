@@ -77,7 +77,7 @@ async qr(@Param('id') id: string) {
 
 | The handler returns | Response |
 |---|---|
-| any non-empty string (not validated: build it with tingqr's encoders, e.g. `paymentQr`) | `200`, SVG, whatever the method (also `POST`, where Nest's default is `201`) |
+| any non-empty string (not validated: build it with tingqr's encoders, e.g. `paymentQr`) | `200`, SVG, whatever the method (also `POST`, where Nest's default is `201`); an explicit `@HttpCode()` on the route is kept |
 | `null`, `undefined`, `''` | `404` (`NotFoundException`) |
 | throws a `TingQrError`, or the string / options cannot be drawn | `500` (`InternalServerErrorException`, body `{ "error": { "code" } }`); the message is logged with Nest's `Logger`, never sent |
 | throws anything else | unchanged: your exception filters decide (`500` by default) |

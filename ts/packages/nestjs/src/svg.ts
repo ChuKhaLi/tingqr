@@ -22,6 +22,9 @@ import { TINGQR_OPTIONS } from './tokens.js'
 /** Metadata key of the per-route options set by @TingQrSvg. */
 export const TINGQR_SVG_ROUTE = 'tingqr:svg-route'
 
+/** Metadata key of Nest's @HttpCode (HTTP_CODE_METADATA in @nestjs/common/constants, not exported from the root). */
+const HTTP_CODE = '__httpCode__'
+
 /** Requests whose response a TingQrSvgInterceptor is already rendering. */
 const RENDERING = new WeakSet<object>()
 
@@ -59,6 +62,8 @@ export class TingQrSvgInterceptor implements NestInterceptor {
     ])
     const { cacheControl = 'private, max-age=300', ...svgOptions } = { ...this.options?.svg, ...route }
     const response: unknown = context.switchToHttp().getResponse()
+    // An image is 200 whatever the method (Nest answers POST with 201), unless the route sets @HttpCode itself.
+    const status = this.reflector.get<number | undefined>(HTTP_CODE, context.getHandler()) ?? 200
     return next.handle().pipe(
       map((value: unknown) => {
         if (value === null || value === undefined || value === '') throw new NotFoundException()
@@ -67,7 +72,7 @@ export class TingQrSvgInterceptor implements NestInterceptor {
         }
         const svg = toSvg(value, svgOptions)
         const adapter = this.host.httpAdapter
-        adapter.status(response, 200) // an image, whatever the method (Nest answers POST with 201)
+        adapter.status(response, status)
         adapter.setHeader(response, 'Content-Type', 'image/svg+xml; charset=utf-8')
         adapter.setHeader(response, 'X-Content-Type-Options', 'nosniff')
         adapter.setHeader(response, 'Content-Security-Policy', CSP)
