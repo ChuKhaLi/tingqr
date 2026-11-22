@@ -11,8 +11,7 @@ namespace TingQR.Emv
         {
             var crc = 0xFFFF;
             // Lone surrogates encode as U+FFFD, same as the TS implementation.
-            // Stryker disable once Boolean : the first flag only adds a BOM to GetPreamble(), never to GetBytes()
-            foreach (var b in new UTF8Encoding(false, false).GetBytes(input))
+            foreach (var b in new UTF8Encoding().GetBytes(input))
             {
                 crc ^= b << 8;
                 for (var bit = 0; bit < 8; bit++)

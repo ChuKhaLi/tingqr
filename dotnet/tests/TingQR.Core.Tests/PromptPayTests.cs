@@ -57,6 +57,38 @@ namespace TingQR.Tests
             Assert.Equal("0812223333", Ok(Mobile).Mobile);
         }
 
+        [Fact]
+        public void ABrokenBillTemplateDoesNotSpoilATransferCode()
+        {
+            var broken = F("00", PromptPayQr.Aid.BillPayment) + F("01", "a") + F("01", "b");
+            var payload = Rebuild(Mobile, f => f.Concat(new[] { new TlvField("30", broken) }).ToList());
+            Assert.Equal(PromptPayKind.CreditTransfer, Ok(payload).Kind);
+        }
+
+        [Theory]
+        [InlineData(1L)]
+        [InlineData(9999999999L)]
+        [InlineData("0.5")]
+        [InlineData("1234567890.12")]
+        [InlineData("5.1")]
+        public void AmountsAtTheEdgesOfTheShapeAreAccepted(object amount)
+        {
+            var qr = amount is long n ? (QrAmount)n : (QrAmount)(string)amount;
+            PromptPayQr.Encode(new PromptPayInput { Target = new PromptPayTarget.Mobile("0812223333"), Amount = qr });
+        }
+
+        [Theory]
+        [InlineData("12345678901")]
+        [InlineData("0")]
+        [InlineData("1.234")]
+        [InlineData("1.")]
+        [InlineData(".5")]
+        [InlineData("a")]
+        public void AmountsOutsideTheShapeAreRejectedOnTag54(string amount)
+        {
+            Assert.Equal((TingQrErrorCode.InvalidValue, (string?)"54"), EncodeErr(new PromptPayTarget.Mobile("0812223333"), amount));
+        }
+
         [Theory]
         [InlineData("12345678901")]
         [InlineData("0123456789012")]

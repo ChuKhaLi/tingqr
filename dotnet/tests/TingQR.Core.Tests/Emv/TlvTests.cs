@@ -62,6 +62,9 @@ namespace TingQR.Tests
         public void ParseRejectsNonDigitTagWithBadTag()
         {
             Assert.Equal(TingQrErrorCode.BadTag, Thrown(() => Tlv.Parse("AB02xx")).Code);
+            Assert.Equal(TingQrErrorCode.BadTag, Thrown(() => Tlv.Parse("!!02xx")).Code);
+            Assert.Equal(TingQrErrorCode.BadTag, Thrown(() => Tlv.Parse("0!02xx")).Code);
+            Assert.Equal(TingQrErrorCode.BadTag, Thrown(() => Tlv.Parse("/:02xx")).Code);
             Assert.Equal(TingQrErrorCode.BadTag, Thrown(() => Tlv.Parse("\U0001F600\U0001F60002xx")).Code);
         }
 

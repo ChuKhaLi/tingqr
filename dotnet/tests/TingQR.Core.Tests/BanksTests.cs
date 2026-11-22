@@ -251,6 +251,8 @@ namespace TingQR.Tests
         // What WHATWG URL (Node 22) gives, checked with: node -e "console.log(new URL(process.argv[1]).href)" <url>
         [Theory]
         [InlineData("https://a.vn:65535/", "https://a.vn:65535/")]
+        [InlineData("https://a./", "https://a./")]
+        [InlineData("https://a.vn/\u001fx", "https://a.vn/%1Fx")]
         [InlineData("https://a.vn:1/", "https://a.vn:1/")]
         [InlineData("http://a.vn:443/", "http://a.vn:443/")]
         [InlineData("https://a.vn:80/", "https://a.vn:80/")]
@@ -287,6 +289,10 @@ namespace TingQR.Tests
         // but outside the subset this checker supports, so it throws too.
         [Theory]
         [InlineData("https://a.vn:65536/")]
+        [InlineData("https://1./")]
+        [InlineData("https://a\u0080.vn/")]
+        [InlineData("https://a b.vn/")]
+        [InlineData("https://a\u001fb.vn/")]
         [InlineData("https://256.1.1.1/")]
         [InlineData("https://1.2.3.1234/")]
         [InlineData("https://1..2.3/")]
@@ -341,6 +347,15 @@ namespace TingQR.Tests
         {
             var message = Assert.Throws<TingQrException>(() => FallbackUrl.Normalize(url)).Message;
             Assert.Contains("absolute", message);
+        }
+
+        [Fact]
+        public void FindAndForBankAnswerForARealBinAndForNull()
+        {
+            Assert.Null(BankApps.Find(null));
+            Assert.Empty(BankApps.ForBank(null));
+            Assert.NotEmpty(BankApps.ForBank("970422"));
+            Assert.All(BankApps.ForBank("970422"), a => Assert.Equal("970422", a.Bin));
         }
 
         [Fact]

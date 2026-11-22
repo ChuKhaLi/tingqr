@@ -21,8 +21,7 @@ namespace TingQR
         private static bool IsBakongAccount(string s)
         {
             var at = s.IndexOf('@');
-            // Stryker disable once Equality : IndexOf('@', at + 1) is never 0, so < 0 and <= 0 agree
-            return at > 0 && at < s.Length - 1 && s.IndexOf('@', at + 1) < 0;
+            return at > 0 && at < s.Length - 1 && s.IndexOf('@', at + 1) == -1;
         }
 
         private static TingQrException Invalid(string message, string tag) => new TingQrException(TingQrErrorCode.InvalidValue, message, tag);
@@ -80,10 +79,8 @@ namespace TingQR
             else
             {
                 var dot = raw.IndexOf('.');
-                // Stryker disable once Equality : dot == 0 is rejected through the whole part either way
-                var whole = dot < 0 ? raw : raw.Substring(0, dot);
-                // Stryker disable once Equality : dot == 0 is rejected through the whole part either way
-                var frac = dot < 0 ? null : raw.Substring(dot + 1);
+                var whole = dot == -1 ? raw : raw.Substring(0, dot);
+                var frac = dot == -1 ? null : raw.Substring(dot + 1);
                 if (AllDigits(whole) && (frac == null || (frac.Length >= 1 && frac.Length <= 2 && AllDigits(frac))))
                 {
                     output = TrimLeadingZeros(whole) + (frac == null ? string.Empty : "." + frac.PadRight(2, '0'));
@@ -344,8 +341,7 @@ namespace TingQR
                 }
                 var individual = ReadAccount(p, "29");
                 var merchant = individual != null ? null : ReadAccount(p, "30");
-                // Stryker disable once NullCoalescing : merchant is null whenever individual is not, so both orders agree
-                var account = individual ?? merchant;
+                var account = individual != null ? individual : merchant;
                 if (account == null)
                 {
                     return Fail(TingQrErrorCode.UnsupportedScheme,

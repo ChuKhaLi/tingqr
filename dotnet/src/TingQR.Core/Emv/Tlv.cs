@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -29,8 +30,8 @@ namespace TingQR.Emv
             return sb.ToString();
         }
 
-        // Stryker disable once Logical : a two-unit code point starts with a surrogate, never a digit, so the length test is redundant
-        private static bool IsAsciiDigit(string cp) => cp.Length == 1 && cp[0] >= '0' && cp[0] <= '9';
+        // A code point is one string; a surrogate pair (two units) is never a substring of the digits.
+        private static bool IsAsciiDigit(string cp) => "0123456789".IndexOf(cp, StringComparison.Ordinal) != -1;
 
         private static bool TwoDigits(IReadOnlyList<string> cps, int at) => IsAsciiDigit(cps[at]) && IsAsciiDigit(cps[at + 1]);
 

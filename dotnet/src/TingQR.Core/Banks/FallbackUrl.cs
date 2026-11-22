@@ -18,6 +18,8 @@ namespace TingQR
     {
         private static readonly IdnMapping Idn = new IdnMapping();
 
+        private static readonly char[] ForbiddenInAuthority = { '@', '[', '\\', '%' };
+
         private static TingQrException NotAbsolute(string url)
             => new TingQrException(TingQrErrorCode.InvalidValue, $"fallbackUrl must be an absolute http(s) URL, got \"{url}\".");
 
@@ -84,16 +86,12 @@ namespace TingQR
 
         private static string HostAndPort(string authority, string scheme, string url)
         {
-            // Stryker disable once all : defence in depth; Host and Port reject these same characters with the same NotAbsolute
-            if (authority.IndexOf('@') >= 0 || authority.IndexOf('[') >= 0 || authority.IndexOf('\\') >= 0 || authority.IndexOf('%') >= 0)
-            {
-                throw NotAbsolute(url);
-            }
+            // Stryker disable once Statement : defence in depth; Host and Port reject these same characters with the same NotAbsolute
+            if (authority.IndexOfAny(ForbiddenInAuthority) != -1) throw NotAbsolute(url);
             var host = authority;
             string? port = null;
             var colon = authority.LastIndexOf(':');
-            // Stryker disable once Equality : a colon at index 0 leaves ":..." as the host, which Host rejects the same way
-            if (colon >= 0)
+            if (colon != -1)
             {
                 host = authority.Substring(0, colon);
                 port = Port(authority.Substring(colon + 1), scheme, url);
@@ -140,8 +138,7 @@ namespace TingQR
             }
             foreach (var c in ascii)
             {
-                // Stryker disable once Equality : "#" (index 0 of the set) cannot occur in an authority, which ends at "#"
-                if (c <= ' ' || c >= 0x7F || "#/:<>?@[\\]^|%".IndexOf(c) >= 0) throw NotAbsolute(url);
+                if (c <= ' ' || c >= 0x7F || "#/:<>?@[\\]^|%".IndexOf(c) != -1) throw NotAbsolute(url);
             }
             if (EndsInANumber(ascii) && !IsCanonicalIpv4(ascii)) throw NotAbsolute(url);
             return ascii;
@@ -162,8 +159,7 @@ namespace TingQR
         {
             var labels = host.Split('.');
             var n = labels.Length;
-            // Stryker disable once Equality : a host is never empty, so n == 1 with an empty label cannot happen
-            if (n > 1 && labels[n - 1].Length == 0) n--;
+            if (n >= 2 && labels[n - 1].Length == 0) n--;
             var last = labels[n - 1];
             if (last.Length > 0 && AllDigits(last)) return true;
             return last.StartsWith("0x", StringComparison.Ordinal);
@@ -185,8 +181,7 @@ namespace TingQR
         private static string Path(string path, string url)
         {
             if (path.Length == 0) return "/";
-            // Stryker disable once Equality : a path starts with "/" or is empty, so a backslash is never at index 0
-            if (path.IndexOf('\\') >= 0) throw NotAbsolute(url);
+            if (path.IndexOf('\\') != -1) throw NotAbsolute(url);
             foreach (var segment in path.Split('/'))
             {
                 var d = segment.Replace("%2e", ".").Replace("%2E", ".");
@@ -196,8 +191,7 @@ namespace TingQR
         }
 
         // Percent-encode sets of the URL Standard. All three include the C0 control set (C0 controls and > U+007E).
-        // Stryker disable once Equality : 0x20 (space) is in every percent-encode set on its own
-        private static bool IsInC0Set(int cp) => cp < 0x20 || cp > 0x7E;
+        private static bool IsInC0Set(int cp) => cp <= 0x1F || cp >= 0x7F;
 
         private static bool IsInFragmentSet(int cp) => IsInC0Set(cp) || cp == ' ' || cp == '"' || cp == '<' || cp == '>' || cp == '`';
 
@@ -241,26 +235,20 @@ namespace TingQR
             }
             if (cp < 0x800)
             {
-                // Stryker disable once Bitwise : cp is never negative, so >> and >>> agree
-                b[0] = (byte)(0xC0 | (cp >> 6));
+                b[0] = (byte)(0xC0 | (cp / 0x40));
                 b[1] = (byte)(0x80 | (cp & 0x3F));
                 return 2;
             }
             if (cp < 0x10000)
             {
-                // Stryker disable once Bitwise : cp is never negative, so >> and >>> agree
-                b[0] = (byte)(0xE0 | (cp >> 12));
-                // Stryker disable once Bitwise : cp is never negative, so >> and >>> agree
-                b[1] = (byte)(0x80 | ((cp >> 6) & 0x3F));
+                b[0] = (byte)(0xE0 | (cp / 0x1000));
+                b[1] = (byte)(0x80 | ((cp / 0x40) & 0x3F));
                 b[2] = (byte)(0x80 | (cp & 0x3F));
                 return 3;
             }
-            // Stryker disable once Bitwise : (cp << 18) leaves the low byte at 0 and >> / >>> agree for non-negative cp
-            b[0] = (byte)(0xF0 | (cp >> 18));
-            // Stryker disable once Bitwise : cp is never negative, so >> and >>> agree
-            b[1] = (byte)(0x80 | ((cp >> 12) & 0x3F));
-            // Stryker disable once Bitwise : cp is never negative, so >> and >>> agree
-            b[2] = (byte)(0x80 | ((cp >> 6) & 0x3F));
+            b[0] = (byte)(0xF0 | (cp / 0x40000));
+            b[1] = (byte)(0x80 | ((cp / 0x1000) & 0x3F));
+            b[2] = (byte)(0x80 | ((cp / 0x40) & 0x3F));
             b[3] = (byte)(0x80 | (cp & 0x3F));
             return 4;
         }
@@ -299,8 +287,7 @@ namespace TingQR
         {
             foreach (var c in s)
             {
-                // Stryker disable once Equality : U+007F is rejected as a host code point on either path
-                if (c > 0x7F) return false;
+                if ((c & 0xFF80) != 0) return false;
             }
             return true;
         }

@@ -73,14 +73,11 @@ namespace TingQR
             if (amount == null || !amount.Value.HasValue) return null;
             var text = amount.Value.Text!;
             var dot = text.IndexOf('.');
-            // Stryker disable once Equality : dot == 0 is rejected through the whole part either way
-            var whole = dot < 0 ? text : text.Substring(0, dot);
-            // Stryker disable once Equality : dot == 0 is rejected through the whole part either way
-            var frac = dot < 0 ? string.Empty : text.Substring(dot + 1);
+            var whole = dot == -1 ? text : text.Substring(0, dot);
+            var frac = dot == -1 ? string.Empty : text.Substring(dot + 1);
             // ^(\d{1,10})(?:\.(\d{1,2}))?$
-            // Stryker disable once Equality : dot == 0 is rejected through the whole part either way
             var shape = whole.Length >= 1 && whole.Length <= 10 && AllDigits(whole)
-                && (dot < 0 || (frac.Length >= 1 && frac.Length <= 2 && AllDigits(frac)));
+                && (dot == -1 || (frac.Length >= 1 && frac.Length <= 2 && AllDigits(frac)));
             if (shape)
             {
                 var trimmed = whole.TrimStart('0');
@@ -214,7 +211,6 @@ namespace TingQR
             try
             {
                 var transfer = FindTemplate(p, "29", Aid.CreditTransfer, Aid.Ota);
-                // Stryker disable once Conditional : bill is only read when transfer is null, so skipping the lookup changes nothing
                 var bill = transfer != null ? null : FindTemplate(p, "30", Aid.BillPayment, Aid.BillPaymentCrossBorder);
                 string merchantTag;
                 PromptPayKind kind;

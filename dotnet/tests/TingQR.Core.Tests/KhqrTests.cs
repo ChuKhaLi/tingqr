@@ -595,6 +595,12 @@ namespace TingQR.Tests
             {
                 (Base with { BakongAccountId = "" }, "29.00"),
                 (Base with { BakongAccountId = "nobank" }, "29.00"),
+                (Base with { BakongAccountId = "@bank" }, "29.00"),
+                (Base with { BakongAccountId = "name@" }, "29.00"),
+                (Base with { BakongAccountId = "a@b@c" }, "29.00"),
+                (Base with { Currency = "USD", Amount = "1.234", ExpiresAt = Now + 1 }, "54"),
+                (Base with { Currency = "USD", Amount = "1.", ExpiresAt = Now + 1 }, "54"),
+                (Base with { Currency = "USD", Amount = "1.x", ExpiresAt = Now + 1 }, "54"),
                 (MerchantBase with { BakongAccountId = "" }, "30.00"),
                 (MerchantBase with { BakongAccountId = "nobank" }, "30.00"),
                 (Base with { AccountInformation = long33 }, "29.01"),
