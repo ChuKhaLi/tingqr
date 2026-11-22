@@ -29,12 +29,12 @@ on:
 permissions:
   contents: read
 
-# Every tag shares one group, so a release never runs alongside another one and a running release is never cancelled.
+# Every tag push (the only event that publishes) shares one group, so a release never runs alongside another one and a running release is never cancelled.
 # GitHub keeps only one pending run per group: a third tag pushed while one runs and one waits cancels the waiting one.
-# Push one tag at a time (the run waits for approval in npm-release) and re-run a cancelled one. PR dry-runs keep a group
-# per ref.
+# Push one tag at a time (the run waits for approval in npm-release) and re-run a cancelled one. PR and manual dry-runs
+# (even on a tag ref) keep a group per event and ref.
 concurrency:
-  group: ${{ github.ref_type == 'tag' && 'release-ts-publish' || format('release-ts-{0}', github.ref) }}
+  group: ${{ github.event_name == 'push' && github.ref_type == 'tag' && 'release-ts-publish' || format('release-ts-{0}-{1}', github.event_name, github.ref) }}
   cancel-in-progress: false
 
 jobs:
