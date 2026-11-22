@@ -16,8 +16,6 @@ namespace TingQR
     /// </summary>
     internal static class FallbackUrl
     {
-        private static readonly IdnMapping Idn = new IdnMapping();
-
         private static readonly char[] ForbiddenInAuthority = { '@', '[', '\\', '%' };
 
         private static TingQrException NotAbsolute(string url)
@@ -126,10 +124,12 @@ namespace TingQR
             {
                 try
                 {
+                    // A new IdnMapping per call: the docs do not promise that a shared instance is thread-safe.
+                    var idn = new IdnMapping();
                     var lower = host.ToLowerInvariant();
-                    ascii = Idn.GetAscii(lower).ToLowerInvariant();
+                    ascii = idn.GetAscii(lower).ToLowerInvariant();
                     // An xn-- label must decode to what it encodes (WHATWG rejects bad Punycode such as xn--abc).
-                    if (Idn.GetAscii(Idn.GetUnicode(ascii)).ToLowerInvariant() != ascii) throw NotAbsolute(url);
+                    if (idn.GetAscii(idn.GetUnicode(ascii)).ToLowerInvariant() != ascii) throw NotAbsolute(url);
                 }
                 catch (ArgumentException)
                 {

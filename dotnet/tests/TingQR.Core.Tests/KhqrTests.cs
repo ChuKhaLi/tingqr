@@ -77,6 +77,8 @@ namespace TingQR.Tests
         {
             Assert.Equal(TingQrErrorCode.InvalidValue, Khqr.Decode(null).Error!.Code);
             Assert.Equal(TingQrErrorCode.InvalidValue, Khqr.Decode(null, ParseMode.Strict).Error!.Code);
+            Assert.Null(Khqr.Decode(null).Error!.Tag);
+            Assert.Null(Khqr.Decode(null, ParseMode.Strict).Error!.Tag);
         }
 
         [Fact]

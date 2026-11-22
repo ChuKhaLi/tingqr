@@ -2,6 +2,9 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { spawnSync } from 'node:child_process'
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { csString, renderBankDataCs } from '../sync-dotnet.mjs'
 
@@ -73,3 +76,37 @@ test('--check exits 0 when the committed file is current', () => {
   const r = spawnSync(process.execPath, [SYNC, '--check'], { encoding: 'utf8' })
   assert.equal(r.status, 0, r.stderr)
 })
+
+// The script finds the repo from its own location, so a copy in a scratch tree checks a scratch BankData.g.cs.
+function scratchRepo(edit) {
+  const repo = fileURLToPath(new URL('../../../../', import.meta.url))
+  const tmp = mkdtempSync(join(tmpdir(), 'tingqr-sync-dotnet-'))
+  const copy = (rel, change = (t) => t) => {
+    mkdirSync(dirname(join(tmp, rel)), { recursive: true })
+    writeFileSync(join(tmp, rel), change(readFileSync(join(repo, rel), 'utf8')))
+  }
+  copy('conformance/tools/banks/sync-dotnet.mjs')
+  copy('conformance/banks/banks.json')
+  copy('conformance/banks/bank-apps.json')
+  const generated = 'dotnet/src/TingQR.Core/Banks/BankData.g.cs'
+  if (edit !== null) copy(generated, edit)
+  return { tmp, script: join(tmp, 'conformance/tools/banks/sync-dotnet.mjs') }
+}
+
+for (const [name, edit, status] of [
+  ['an unchanged copy', (t) => t, 0],
+  ['a copy with one character changed', (t) => t.replace('MBBank', 'MBBanx'), 1],
+  ['a copy with a trailing newline added', (t) => t + '\n', 1],
+  ['a missing file', null, 1],
+]) {
+  test(`--check exits ${status} for ${name}`, () => {
+    const { tmp, script } = scratchRepo(edit)
+    try {
+      const r = spawnSync(process.execPath, [script, '--check'], { encoding: 'utf8' })
+      assert.equal(r.status, status, r.stderr)
+      if (status === 1) assert.match(r.stderr, /stale/)
+    } finally {
+      rmSync(tmp, { recursive: true, force: true })
+    }
+  })
+}

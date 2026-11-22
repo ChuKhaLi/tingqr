@@ -34,6 +34,7 @@ namespace TingQR.Tests
             var r = TingQrDetector.Detect(null);
             Assert.False(r.Ok);
             Assert.Equal(TingQrErrorCode.InvalidValue, r.Error!.Code);
+            Assert.Null(r.Error!.Tag);
         }
 
         [Fact]

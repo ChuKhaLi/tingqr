@@ -112,6 +112,8 @@ namespace TingQR.Tests
         {
             Assert.Equal(TingQrErrorCode.InvalidValue, PromptPayQr.Decode(null).Error!.Code);
             Assert.Equal(TingQrErrorCode.InvalidValue, PromptPayQr.Decode(null, ParseMode.Strict).Error!.Code);
+            Assert.Null(PromptPayQr.Decode(null).Error!.Tag);
+            Assert.Null(PromptPayQr.Decode(null, ParseMode.Strict).Error!.Tag);
         }
 
         [Fact]

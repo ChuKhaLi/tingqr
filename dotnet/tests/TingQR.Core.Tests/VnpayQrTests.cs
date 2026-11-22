@@ -54,6 +54,8 @@ namespace TingQR.Tests
         {
             Assert.Equal(TingQrErrorCode.InvalidValue, Fail(VnpayQr.Decode(null)).Code);
             Assert.Equal(TingQrErrorCode.InvalidValue, Fail(VnpayQr.Decode(null, ParseMode.Strict)).Code);
+            Assert.Null(Fail(VnpayQr.Decode(null)).Tag);
+            Assert.Null(Fail(VnpayQr.Decode(null, ParseMode.Strict)).Tag);
         }
 
         [Fact]
@@ -81,7 +83,7 @@ namespace TingQR.Tests
         [Fact]
         public void With52And60StrictReadsWithoutWarnings()
         {
-            var r = VnpayQr.Decode(Rebuild(f => f.Concat(new[] { new TlvField("52", "5732"), new TlvField("60", "HA NOI") })));
+            var r = VnpayQr.Decode(Rebuild(f => f.Concat(new[] { new TlvField("52", "5732"), new TlvField("60", "HA NOI") })), ParseMode.Strict);
             Assert.Empty(r.Warnings);
             Assert.Equal("5732", Ok(r).MerchantCategoryCode);
             Assert.Equal("HA NOI", r.Value!.MerchantCity);
