@@ -94,6 +94,12 @@ TypeScript và bản .NET, kèm tích hợp sẵn cho Angular, NestJS và ASP.NE
       phát hành tag trên `main`, từng tag một.
     - Để sau: PromptPay đọc tag 64; bộ đọc thứ hai cho `check-promptpay`; payload mã hoá ba lần khi vẽ PNG; deprecate
       0.0.1; luật "chỉ tag `ts-v*`" cho environment `npm-release` (chủ dự án đặt trên GitHub); mẫu KHQR USD nguyên.
+  - **Plan 8a** (2026-11-22, nhánh `plan-8a`): `docs/superpowers/plans/2026-11-22-plan-8a-dotnet-core.md`, thiết kế
+    `docs/superpowers/specs/2026-11-22-tingqr-dotnet-core-design.md`. `TingQR.Core` (C#, `dotnet/`, net10.0 +
+    netstandard2.0): VietQR, VNPAY, PromptPay, KHQR, Detect, banks; chạy cùng mẫu `conformance/`; Stryker.NET 90%.
+    - Giới hạn đã biết: bộ kiểm `fallbackUrl` tự viết (từ chối cố ý user info, IPv6, IPv4 không chuẩn...; tên miền
+      Unicode ngoài mẫu có thể lệch TS); 4 mẫu kiểm kiểu. Chưa phát hành (số phiên bản để Plan 8c).
+    - **Chưa kiểm:** `ci-dotnet` và `mutation-dotnet` chưa chạy trên GitHub; mẫu tên miền Unicode chưa chạy trên Linux.
   - Tiếp theo: Plan 2 Task 5–6 (MoMo, ZaloPay) khi chủ dự án có QR thật; chủ dự án quét thêm app (kể cả bản có icon ngân hàng) và
     thử PNG trong Zalo/Messenger; Plan 8 (.NET).
 - **Chủ dự án đã quyết:**

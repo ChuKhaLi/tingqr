@@ -110,7 +110,8 @@ Ba luật chung nữa, cùng loại:
 - **`bank-app-link`**: hai bản chỉ bảo đảm giống nhau trên các mẫu; tên miền Unicode ngoài mẫu có thể khác giữa
   TypeScript và .NET, và giữa Linux và Windows.
   - Bản .NET không có bộ đọc WHATWG đầy đủ: nó từ chối (`INVALID_VALUE`) một số URL mà WHATWG nhận rồi viết lại, như
-    có user info, IPv6, IPv4 dạng không chuẩn (`0x7f.1`), `%` hay `\` trong host, `\` hay đoạn `.`/`..` trong path.
+    có user info, IPv6, IPv4 dạng không chuẩn (`0x7f.1`), `%` hay `\` trong host, `\` hay đoạn `.`/`..` trong path,
+    host có nhãn cuối bắt đầu bằng `0x` (như `a.0x`), và IPv4 có dấu chấm cuối (`127.0.0.1.`).
 
 ## Mẫu link mở app (`kind: "link"`, `scheme: "bank-app-link"`)
 

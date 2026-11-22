@@ -85,8 +85,12 @@ Tương ứng một-một với `ts/packages/core/src/` (khoảng 1 800 dòng, k
 2. **`BankAppLink` và `fallbackUrl`:** bản TS dùng bộ đọc URL WHATWG. .NET không có bộ đọc đó; `System.Uri` khác ở nhiều
    chỗ, và `IdnMapping` (đổi tên miền Unicode sang punycode) dựa vào ICU trên Linux, vào Windows trên Windows.
    - .NET viết một bộ kiểm URL nhỏ, đủ cho luật của tingqr: chỉ `http:`/`https:`, URL tuyệt đối, và ra đúng chuỗi mà mọi
-     mẫu `bank-app-link` mong đợi (tên miền Unicode sang punycode qua `IdnMapping`, ký tự surrogate lẻ là lỗi,
-     `https:example.com`, viết hoa và khoảng trắng hai đầu).
+     mẫu `bank-app-link` mong đợi (tên miền Unicode sang punycode qua `IdnMapping`, `https:example.com`, viết hoa và khoảng trắng hai đầu).
+   - Surrogate lẻ: trong **path** thì thành U+FFFD (mẫu `mb-android-fallback-lone-surrogate`); chỉ surrogate lẻ trong
+     **host** mới là `INVALID_VALUE`. (Bản đầu của spec ghi "surrogate lẻ là lỗi" là sai.)
+   - **Cố ý từ chối** (`INVALID_VALUE`), dù WHATWG nhận rồi viết lại: user info; IPv6; IPv4 không chuẩn; `%` hoặc `\`
+     trong host; `\` hoặc đoạn `.`/`..` trong path; host có nhãn cuối bắt đầu bằng `0x`; IPv4 có dấu chấm cuối.
+   - Ví dụ lệch đã biết: `ẞ` ra `xn--zca` ở .NET nhưng `ss` ở Node.
    - Không port toàn bộ chuẩn WHATWG và bảng UTS-46. `conformance/schemes/bank-app-link.md` (hoặc README) ghi rõ: hai bản
      chỉ bảo đảm giống nhau trên các mẫu; tên miền Unicode ngoài mẫu có thể ra khác nhau giữa TS và .NET, và giữa Linux
      và Windows. CI chạy cả Ubuntu và Windows để bắt chỗ lệch trên các mẫu.
