@@ -95,6 +95,9 @@ Nguồn các điều về npm (đọc ngày 2026-11-21; nên đọc lại trư�
    - `git tag ts-vX.Y.Z`
    - `git push origin ts-vX.Y.Z`
 7. Xem job `verify` của `Release (TypeScript)`. Job này chạy lại mọi kiểm tra, diễn tập, và `npm publish --dry-run`.
+   - Tag phải trỏ vào một commit đã nằm trên `main` (bước "The tag must point to a commit on main"); tag trên nhánh
+     khác thì dừng trước khi phát hành.
+   - Mọi tag chung một hàng đợi (`concurrency`): đẩy hai tag cùng lúc thì chạy lần lượt, không huỷ lần nào.
 8. Duyệt job `publish` trong environment `npm-release`. Job này phát hành đúng các tarball mà `verify` đã diễn tập.
 
 **Chỉ tag mới phát hành.** Chạy bằng tay (Actions → Release (TypeScript) → Run workflow) và PR sửa workflow, script
