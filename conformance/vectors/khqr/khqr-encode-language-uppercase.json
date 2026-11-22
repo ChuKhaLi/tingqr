@@ -1,0 +1,38 @@
+{
+  "id": "khqr-encode-language-uppercase",
+  "scheme": "khqr",
+  "kind": "valid",
+  "payload": "00020101021129190015john_smith@devb5204599953031165802KH5910John Smith6010Phnom Penh64280002KM0108ចន ស្មីន0206ភ្នំពញ630498EF",
+  "input": {
+    "accountType": "individual",
+    "bakongAccountId": "john_smith@devb",
+    "merchantName": "John Smith",
+    "currency": "KHR",
+    "alternateLanguage": {
+      "language": "KM",
+      "merchantName": "ចន ស្មីន",
+      "merchantCity": "ភ្នំពញ"
+    },
+    "createdAt": 1731000000000
+  },
+  "expected": {
+    "accountType": "individual",
+    "bakongAccountId": "john_smith@devb",
+    "initiation": "static",
+    "currency": "116",
+    "currencyAlpha": "KHR",
+    "merchantCategoryCode": "5999",
+    "merchantName": "John Smith",
+    "merchantCity": "Phnom Penh",
+    "country": "KH",
+    "alternateLanguage": {
+      "language": "KM",
+      "merchantName": "ចន ស្មីន",
+      "merchantCity": "ភ្នំពញ"
+    }
+  },
+  "source": "mutation of khqr-encode-individual-khmer (bakong-khqr@1.0.20 output); upper-case KM as written by the SDK in khqr-sdk-merchant-acleda",
+  "derived": true,
+  "derivedFrom": "khqr-encode-individual-khmer",
+  "note": "64.00 changed from km to KM; CRC recomputed with an independent Python CRC-16/CCITT-FALSE routine, not with tingqr. Pins that the encoder keeps the case."
+}

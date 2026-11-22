@@ -1,4 +1,4 @@
-import { TingQrError } from '../../errors.js'
+import { requireInput, TingQrError } from '../../errors.js'
 import { buildPayload } from '../../emv/payload.js'
 import { field, type TlvField } from '../../emv/tlv.js'
 import { SERVICE_CODE, VIETQR_GUID, type VietQrInput } from './types.js'
@@ -23,6 +23,7 @@ function amountText(amount: VietQrInput['amount']): string | undefined {
 
 /** Build a VietQR (NAPAS) payload. Throws TingQrError on invalid input; never silently changes it. */
 export function encodeVietQr(input: VietQrInput): string {
+  requireInput('encodeVietQr', input)
   if (typeof input.bankBin !== 'string' || !BIN.test(input.bankBin)) {
     throw new TingQrError('INVALID_VALUE', `Bank BIN "${input.bankBin}" must be 6 digits.`, '38')
   }

@@ -30,7 +30,7 @@ Thứ tự kiểm:
 1. CRC và độ dài.
 2. Tag `26` với GUID `A000000775`, nếu không có thì `UNSUPPORTED_SCHEME`.
 3. `26.01`, nếu thiếu thì `MISSING_TAG`.
-4. Tag `00` và `01`.
+4. Tag `00` và `01` như VietQR (thiếu `01`: `MISSING_TAG`, mẫu `vnpay-missing-poi`).
 5. Tag `52`, `53`, `58`, `59`, `60` theo thứ tự tăng dần:
    - **Chế độ chấp nhận lệch chuẩn (mặc định):** mỗi tag thiếu thêm một cảnh báo `MISSING_OPTIONAL_TAG`. `53` và `58` được điền
      mặc định `704` và `VN`; `52`, `59`, `60` để trống.

@@ -12,6 +12,8 @@ import { PAYLOAD, PAYLOAD_2 } from './payload.js'
 let created = 0
 let pending: { id: number; release: () => void }[] = []
 let failExport: unknown = undefined
+/** When set at release time, toBlob gives null (the browser could not encode): toPng rejects with NO_CANVAS. */
+let nullBlob = false
 /** Blob made by each canvas, to name the Blob the component emits (jsdom's Blob has no text()). */
 const blobName = new Map<Blob, string>()
 const realCreate = document.createElement.bind(document)
@@ -19,6 +21,7 @@ beforeEach(() => {
   created = 0
   pending = []
   failExport = undefined
+  nullBlob = false
   vi.spyOn(document, 'createElement').mockImplementation(((tag: string, opts?: ElementCreationOptions) => {
     if (tag !== 'canvas') return realCreate(tag, opts)
     const id = ++created
@@ -31,10 +34,11 @@ beforeEach(() => {
         if (failExport !== undefined) throw failExport
         return `data:image/png;base64,${btoa(`png-${id}`)}`
       },
-      toBlob: (cb: (b: Blob) => void) => {
+      toBlob: (cb: (b: Blob | null) => void) => {
         pending.push({
           id,
           release: () => {
+            if (nullBlob) return cb(null)
             const blob = new Blob([`png-${id}`], { type: 'image/png' })
             blobName.set(blob, `png-${id}`)
             cb(blob)
@@ -83,10 +87,11 @@ describe('mode img', () => {
     await vi.waitFor(() => expect(pngs).toEqual(['png-1']))
   })
 
-  test('no label: an empty alt (the host carries the role)', async () => {
+  test('no label: the alt is the default name, like the host', async () => {
     const { f } = await create({ payload: PAYLOAD, mode: 'img' })
     await settle(f)
-    expect(img(f)!.getAttribute('alt')).toBe('')
+    expect(img(f)!.getAttribute('alt')).toBe('Payment QR code')
+    expect(el(f).getAttribute('aria-label')).toBe('Payment QR code')
   })
 
   test('changing the payload removes the old image at once', async () => {
@@ -114,6 +119,25 @@ describe('mode img', () => {
     await new Promise((r) => setTimeout(r, 20))
     await f.whenStable()
     expect(img(f)!.getAttribute('src')).toBe(`data:image/png;base64,${btoa('png-2')}`)
+    expect(pngs).toEqual(['png-2'])
+  })
+
+  test('a drawing error for a payload that has since changed is dropped', async () => {
+    const { f, errors, pngs } = await create({ payload: PAYLOAD, mode: 'img' })
+    await vi.waitFor(() => expect(pending.map((p) => p.id)).toEqual([1]))
+    f.componentRef.setInput('payload', PAYLOAD_2)
+    await f.whenStable()
+    await vi.waitFor(() => expect(pending.map((p) => p.id)).toEqual([1, 2]))
+    nullBlob = true
+    pending[0]!.release() // the old drawing fails after the payload changed: not this payload's error
+    await new Promise((r) => setTimeout(r, 20))
+    nullBlob = false
+    pending[1]!.release()
+    await vi.waitFor(async () => {
+      await f.whenStable()
+      expect(img(f)?.getAttribute('src')).toBe(`data:image/png;base64,${btoa('png-2')}`)
+    })
+    expect(errors).toEqual([])
     expect(pngs).toEqual(['png-2'])
   })
 

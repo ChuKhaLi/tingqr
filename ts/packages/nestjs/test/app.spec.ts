@@ -37,19 +37,27 @@ describe.each(ADAPTERS)('same contract on %s', (_name, adapter) => {
     expect(res.headers.get('content-type') ?? '').not.toContain('svg')
   })
 
-  test('a TingQrError from the handler: 400 JSON with the code', async () => {
+  test('a TingQrError from the handler: 500 JSON with only the code', async () => {
     const res = await get('/orders/ACCENT/qr.svg')
-    expect(res.status).toBe(400)
-    expect(((await res.json()) as { error: { code: string } }).error.code).toBe('NON_ASCII')
+    expect(res.status).toBe(500)
+    expect(await res.json()).toEqual({ error: { code: 'NON_ASCII' } })
   })
 
-  test('another error: 500 (Nest default), not 400', async () => {
-    expect((await get('/orders/BOOM/qr.svg')).status).toBe(500)
+  test('another error: 500 (Nest default body, no error.code)', async () => {
+    const res = await get('/orders/BOOM/qr.svg')
+    expect(res.status).toBe(500)
+    expect(await res.json()).not.toHaveProperty('error.code')
   })
 
   test('the query string changes nothing', async () => {
     const res = await get('/orders/A1/qr.svg?acc=9999999999&bank=970436&amount=1&margin=0')
     expect(await res.text()).toBe(toSvg(VIETQR.payload))
+  })
+
+  test.each(['POST', 'PUT', 'PATCH'])('%s: 200 with the SVG (not the 201 Nest gives POST)', async (method) => {
+    const res = await fetch(base + '/pp.svg', { method })
+    expect(res.status).toBe(200)
+    expect(await res.text()).toBe(toSvg(PROMPTPAY))
   })
 
   test('any QR (PromptPay) with route options', async () => {

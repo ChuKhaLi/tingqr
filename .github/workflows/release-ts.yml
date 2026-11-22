@@ -29,8 +29,12 @@ on:
 permissions:
   contents: read
 
+# Every tag shares one group, so a release never runs alongside another one and a running release is never cancelled.
+# GitHub keeps only one pending run per group: a third tag pushed while one runs and one waits cancels the waiting one.
+# Push one tag at a time (the run waits for approval in npm-release) and re-run a cancelled one. PR dry-runs keep a group
+# per ref.
 concurrency:
-  group: release-ts-${{ github.ref }}
+  group: ${{ github.ref_type == 'tag' && 'release-ts-publish' || format('release-ts-{0}', github.ref) }}
   cancel-in-progress: false
 
 jobs:
@@ -40,6 +44,8 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0 # the tag check below needs main's history
       # Pinned to a commit: this job packs the tarballs that `publish` uploads, so a moved tag of a third-party action
       # must not be able to change them. Bump the SHA deliberately (Dependabot or by hand), keeping the tag comment.
       - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
@@ -64,6 +70,16 @@ jobs:
       - name: The tag must be exactly ts-v<version>, shared by all six packages
         if: github.ref_type == 'tag'
         run: node ts/scripts/check-release.mjs --tag "$GITHUB_REF_NAME"
+      # A tag can point at any commit, e.g. on an unreviewed branch. Only reviewed code on main is published.
+      - name: The tag must point to a commit on main
+        if: github.ref_type == 'tag'
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin main
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" FETCH_HEAD; then
+            echo "::error::The tag $GITHUB_REF_NAME must point to a commit on main."
+            exit 1
+          fi
       - name: All six packages share one version and carry the release metadata
         if: github.ref_type != 'tag'
         run: node ts/scripts/check-release.mjs

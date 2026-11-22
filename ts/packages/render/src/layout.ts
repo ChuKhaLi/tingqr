@@ -78,11 +78,8 @@ function checkLogoOptions(logo: LogoOptions, background: string) {
   return { href, logoSize, padding, logoBackground }
 }
 
-/**
- * Validate everything, encode `text` and place the logo. Margin and colours are checked by the caller first (toSvg checks
- * its size in between); `layout` repeats nothing and is the one place logo and ECC rules live.
- */
-export function layoutChecked(text: string, options: LayoutOptions, margin: number, foreground: string, background: string): Layout {
+/** Check the logo options and the logo/ECC rule; return the logo parts and the options for toMatrix. */
+function checkedParts(options: LayoutOptions, background: string) {
   const { logo, margin: _m, foreground: _f, background: _b, ...matrixOptions } = options
   // Every logo option is checked before encoding, so a bad option is reported even when the text is also too long.
   const logoParts = logo === undefined ? undefined : checkLogoOptions(logo, background)
@@ -92,6 +89,26 @@ export function layoutChecked(text: string, options: LayoutOptions, margin: numb
     }
     matrixOptions.ecc = 'H'
   }
+  return { logoParts, matrixOptions }
+}
+
+/**
+ * Check every option that does not depend on the text, without rendering: the same errors as layout would throw for
+ * them. What depends on the text (too long for maxVersion, a logo too big for a small code) is only known when drawing.
+ */
+export function checkLayoutOptions(options: LayoutOptions): void {
+  const { margin = 4, foreground = '#000000', background = '#ffffff' } = options
+  checkMargin(margin)
+  checkColours(foreground, background)
+  toMatrix('', checkedParts(options, background).matrixOptions) // checks ecc, versions, mask… on an empty text
+}
+
+/**
+ * Validate everything, encode `text` and place the logo. Margin and colours are checked by the caller first (toSvg checks
+ * its size in between); `layout` repeats nothing and is the one place logo and ECC rules live.
+ */
+export function layoutChecked(text: string, options: LayoutOptions, margin: number, foreground: string, background: string): Layout {
+  const { logoParts, matrixOptions } = checkedParts(options, background)
   const m = toMatrix(text, matrixOptions)
   const base = { modules: m.modules, size: m.size, margin, foreground, background }
   if (logoParts === undefined) return { ...base, cleared: () => false }

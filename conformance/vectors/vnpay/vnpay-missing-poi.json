@@ -1,0 +1,12 @@
+{
+  "id": "vnpay-missing-poi",
+  "scheme": "vnpay",
+  "kind": "invalid",
+  "payload": "00020126280010A0000007750110012345678953037045802VN5911TINGQR SHOP62240312TINGQR STORE0704TQ016304CD00",
+  "error": "MISSING_TAG",
+  "errorTag": "01",
+  "source": "mutation of vnpay-static",
+  "derived": true,
+  "derivedFrom": "vnpay-static",
+  "note": "Tag 01 (010211) removed; CRC recomputed with an independent Python CRC-16/CCITT-FALSE routine, not with tingqr."
+}

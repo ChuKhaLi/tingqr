@@ -41,9 +41,9 @@ describe('mode svg', () => {
     expect(host(f).getAttribute('aria-label')).toBe('QR 50 000 đ')
   })
 
-  test('no label: no aria-label attribute', async () => {
+  test('no label: the default accessible name', async () => {
     const { f } = await create({ payload: PAYLOAD, mode: 'svg' })
-    expect(host(f).hasAttribute('aria-label')).toBe(false)
+    expect(host(f).getAttribute('aria-label')).toBe('Payment QR code')
   })
 
   test('changing the payload changes the SVG', async () => {

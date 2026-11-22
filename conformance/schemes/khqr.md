@@ -48,7 +48,7 @@ Thứ tự kiểm:
    `58 = TH`, nên chỉ chuỗi **không có** tag 58 mới có thể khớp cả hai (xem `detect.md`).
    - Có cả `29` lẫn `30` hợp lệ: lấy `29`, tag `30` nằm trong `extraFields`. Chưa thấy QR nào như vậy.
 3. Cửa hàng: thiếu `30.01` hoặc `30.02` thì `MISSING_TAG` ở cả hai chế độ.
-4. Tag `00` và `01` như VietQR.
+4. Tag `00` và `01` như VietQR (thiếu `01`: `MISSING_TAG`, mẫu `khqr-missing-poi`).
 5. Tag `52`, `53`, `58`, `59`, `60` theo thứ tự tăng dần:
    - `53` thiếu: `MISSING_TAG` ở **cả hai** chế độ, vì không đoán được là KHR hay USD.
    - **Chế độ chặt:** thiếu tag khác cũng là `MISSING_TAG`.
@@ -95,8 +95,11 @@ Ngoài ra:
   - `merchantName` 1–25 (`59`), `merchantCity` tối đa 15, mặc định `Phnom Penh` (`60`), `merchantCategoryCode` 4 chữ
     số, mặc định `5999` (`52`);
   - các trường `62` mỗi trường tối đa 25;
-  - `alternateLanguage`: `language` 1–2 ký tự (`64.00`), `merchantName` bắt buộc như SDK, tối đa 25 (`64.01`),
-    `merchantCity` tối đa 15 (`64.02`).
+  - `alternateLanguage`: `language` đúng 2 chữ cái ASCII, giữ nguyên hoa/thường (`64.00`; mẫu
+    `khqr-encode-language-not-letters`, `khqr-encode-language-uppercase`). Hai chữ cái là mã ISO 639-1, theo bản thiết
+    kế 2026-11-22; EMVCo MPM được hiểu là ghi trường này dài 2 và gồm chữ cái, **chưa đọc lại đặc tả** để xác nhận.
+    SDK `bakong-khqr` cho tới 2 ký tự (chưa kiểm nó có nhận 1 ký tự không). Chỉ kiểm khi tạo mã; hàm đọc trả nguyên văn.
+    `merchantName` bắt buộc như SDK, tối đa 25 (`64.01`), `merchantCity` tối đa 15 (`64.02`).
 - **Chữ:** chỉ `alternateLanguage` được có chữ ngoài ASCII (ví dụ Khmer). Trường khác có chữ ngoài ASCII in được thì
   `NON_ASCII`.
 - Chưa hỗ trợ tạo tag `15` (UnionPay).

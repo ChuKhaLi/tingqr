@@ -76,6 +76,16 @@ describe('forRootAsync', () => {
     expect(s.bin).toBe('970407')
   })
 
+  test('inject accepts an optional dependency, as Nest factory providers do', async () => {
+    const s = await serviceFor(
+      TingQrModule.forRootAsync({
+        inject: [{ token: 'MISSING_CONFIG', optional: true }],
+        useFactory: (c?: { account: string }) => ({ bank: 'VCB', accountNumber: c?.account ?? '0123456789' }),
+      }),
+    )
+    expect(s.bin).toBe('970436')
+  })
+
   test('a factory that rejects stops the app', async () => {
     const boom = new Error('no config')
     await expect(Test.createTestingModule({ imports: [TingQrModule.forRootAsync({ useFactory: async () => Promise.reject(boom) })] }).compile()).rejects.toBe(boom)

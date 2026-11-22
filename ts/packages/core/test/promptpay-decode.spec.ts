@@ -232,11 +232,25 @@ test('a bill payment without references has no reference keys', () => {
   expect('reference2' in value).toBe(false)
 })
 
-test.each(['00', '01'])('a missing tag %s is INVALID_VALUE, not a crash', (t) => {
-  expect(err(rebuild(PP_MOBILE, (f) => f.filter((x) => x.tag !== t)))).toEqual(['INVALID_VALUE', t])
+test.each([['00', 'INVALID_VALUE'], ['01', 'MISSING_TAG']])('a missing tag %s is %s, not a crash', (t, code) => {
+  expect(err(rebuild(PP_MOBILE, (f) => f.filter((x) => x.tag !== t)))).toEqual([code, t])
 })
 
 test.each(['10066812223333', '00668122233334'])('a 14-digit mobile proxy %s is not normalised', (proxy) => {
   const payload = rebuild(PP_MOBILE, (f) => setTag(f, '29', field('00', PROMPTPAY_AID.creditTransfer) + field('01', proxy)))
   expect('mobile' in ok(payload).value).toBe(false)
+})
+
+describe('decodePromptPayQr with no tag 01', () => {
+  // conformance/vectors/promptpay/promptpay-missing-poi.json
+  const payload = '00020129370016A0000006770101110113006681222333353037645802TH630408FD'
+  for (const mode of ['strict', 'lenient'] as const) {
+    test(`${mode}: MISSING_TAG 01 with a message that names the tag`, () => {
+      const r = decodePromptPayQr(payload, { mode })
+      expect(r.ok).toBe(false)
+      if (r.ok) return
+      expect([r.error.code, r.error.tag]).toEqual(['MISSING_TAG', '01'])
+      expect(r.error.message).toBe('Tag 01 (point of initiation) is missing; expected 11 or 12.')
+    })
+  }
 })

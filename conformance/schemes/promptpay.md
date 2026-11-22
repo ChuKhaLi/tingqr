@@ -61,7 +61,7 @@ Thứ tự kiểm:
      - **Chế độ chấp nhận lệch chuẩn (mặc định):** `proxyType: 'unknown'`, `proxy: ''`, cảnh báo `MISSING_OPTIONAL_TAG` tag `29`.
      - **Chế độ chặt:** `MISSING_TAG` `29.01`.
 4. Hoá đơn: thiếu `30.01` thì `MISSING_TAG` ở cả hai chế độ.
-5. Tag `00` và `01` như VietQR.
+5. Tag `00` và `01` như VietQR (thiếu `01`: `MISSING_TAG`, mẫu `promptpay-missing-poi`).
 6. Tag `53`, `58`: chế độ chặt thiếu thì `MISSING_TAG`; chế độ chấp nhận lệch chuẩn điền `764` / `TH` kèm cảnh báo.
    Không bắt buộc `52`, `59`, `60`.
 

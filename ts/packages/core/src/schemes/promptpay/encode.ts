@@ -1,4 +1,4 @@
-import { TingQrError } from '../../errors.js'
+import { requireInput, TingQrError } from '../../errors.js'
 import { buildPayload } from '../../emv/payload.js'
 import { field, type TlvField } from '../../emv/tlv.js'
 import { PROMPTPAY_AID, type PromptPayInput } from './types.js'
@@ -77,6 +77,7 @@ function merchantTemplate(target: PromptPayInput['target'] | undefined): ['29' |
  * TingQrError on invalid input; never rounds or silently changes it.
  */
 export function encodePromptPayQr(input: PromptPayInput): string {
+  requireInput('encodePromptPayQr', input)
   const [tag, merchant] = merchantTemplate(input.target)
   const amount = amountText(input.amount)
   const fields: TlvField[] = [

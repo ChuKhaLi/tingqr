@@ -298,3 +298,44 @@ test('the decoded currency can be passed straight back to encodeKhqr', () => {
 test.each(['764', 'khr', 116])('currency %o is rejected', (currency) => {
   expect(errorOf({ ...BASE, currency })).toEqual(['INVALID_VALUE', '53'])
 })
+
+describe('encodeKhqr without an input object', () => {
+  for (const bad of [undefined, null, 42, 'x']) {
+    test(`${String(bad)} is INVALID_VALUE, not a TypeError`, () => {
+      let error: unknown
+      try {
+        encodeKhqr(bad as never)
+      } catch (e) {
+        error = e
+      }
+      expect(error).toBeInstanceOf(TingQrError)
+      expect((error as TingQrError).code).toBe('INVALID_VALUE')
+      expect((error as TingQrError).message).toBe(`encodeKhqr needs an input object; got ${bad === null ? 'null' : typeof bad}.`)
+    })
+  }
+})
+
+describe('alternateLanguage.language (64.00) is exactly 2 letters', () => {
+  const alt = (language: string): KhqrInput => ({ ...BASE, alternateLanguage: { language, merchantName: 'ចន ស្មីន' } })
+  for (const bad of ['1!', 'k1', ' k', 'k-', 'k']) {
+    test(`${JSON.stringify(bad)} is INVALID_VALUE on 64.00`, () => {
+      let error: unknown
+      try {
+        encodeKhqr(alt(bad))
+      } catch (e) {
+        error = e
+      }
+      expect(error).toBeInstanceOf(TingQrError)
+      expect([(error as TingQrError).code, (error as TingQrError).tag]).toEqual(['INVALID_VALUE', '64.00'])
+    })
+  }
+  test('a Khmer letter is still NON_ASCII on 64.00', () => {
+    expect(() => encodeKhqr(alt('ក'))).toThrow(expect.objectContaining({ code: 'NON_ASCII', tag: '64.00' }))
+  })
+  for (const good of ['km', 'KM', 'Km']) {
+    test(`${good} is written verbatim`, () => {
+      const r = decodeKhqr(encodeKhqr(alt(good)))
+      expect(r.ok && r.value.alternateLanguage?.language).toBe(good)
+    })
+  }
+})

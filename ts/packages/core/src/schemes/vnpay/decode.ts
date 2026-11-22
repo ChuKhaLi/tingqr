@@ -50,6 +50,7 @@ export function readVnpayQr(p: EmvPayload, parsedWarnings: readonly Warning[], m
       return fail('INVALID_VALUE', 'Tag 00 (payload format indicator) must be "01".', '00')
     }
     const poi = getField(p, '01')?.value
+    if (poi === undefined) return fail('MISSING_TAG', 'Tag 01 (point of initiation) is missing; expected 11 or 12.', '01')
     if (poi !== '11' && poi !== '12') {
       return fail('INVALID_VALUE', `Tag 01 (point of initiation) is "${poi}", expected 11 or 12.`, '01')
     }

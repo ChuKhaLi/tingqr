@@ -85,6 +85,15 @@ TypeScript và bản .NET, kèm tích hợp sẵn cho Angular, NestJS và ASP.NE
     - Ngân sách nâng (chủ dự án duyệt 2026-11-21): `render` 36 000 byte, `core` 48 000 byte (vì README).
     - Còn phải làm để phát hành: xem `docs/RELEASING.md`. Mở công khai repo là điều kiện bắt buộc; bản giữ chỗ 0.0.1
       phát hành tay, 0.1.0 qua CI trong vòng 2 ngày.
+  - **Dọn lỗi nhỏ trước v0.1** (2026-11-22, nhánh `v01-polish`): `docs/superpowers/plans/2026-11-22-v01-polish.md`,
+    thiết kế `docs/superpowers/specs/2026-11-22-tingqr-v01-polish-design.md`.
+    - **Hợp đồng HTTP đổi** (chủ dự án chọn): `TingQrError` → 500, thân chỉ `{ error: { code } }`, thông báo ghi vào log
+      máy chủ (Hono `console.error`, NestJS `Logger`). Bản .NET ở Plan 8 phải theo.
+    - Thiếu tag 01 → `MISSING_TAG`; bộ tạo nhận đầu vào không phải object → `INVALID_VALUE`; mã ngôn ngữ KHQR chỉ chữ
+      cái; `checkSvgOptions` mới trong `@tingqr/render`; `label` Angular mặc định `'Payment QR code'`; workflow chỉ
+      phát hành tag trên `main`, từng tag một.
+    - Để sau: PromptPay đọc tag 64; bộ đọc thứ hai cho `check-promptpay`; payload mã hoá ba lần khi vẽ PNG; deprecate
+      0.0.1; luật "chỉ tag `ts-v*`" cho environment `npm-release` (chủ dự án đặt trên GitHub); mẫu KHQR USD nguyên.
   - Tiếp theo: Plan 2 Task 5–6 (MoMo, ZaloPay) khi chủ dự án có QR thật; chủ dự án quét thêm app (kể cả bản có icon ngân hàng) và
     thử PNG trong Zalo/Messenger; Plan 8 (.NET).
 - **Chủ dự án đã quyết:**

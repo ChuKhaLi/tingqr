@@ -3,6 +3,7 @@
   "success": {
     "when": "the app gives a non-empty QR payload that renders",
     "status": 200,
+    "method": "200 for every HTTP method the app routes to it (GET, POST, PUT, PATCH…), never a framework default such as 201 for POST",
     "body": "toSvg(payload, options)",
     "headers": {
       "Content-Type": "image/svg+xml; charset=utf-8",
@@ -19,11 +20,19 @@
   },
   "tingQrError": {
     "when": "the app throws a TingQrError, or the payload or an option cannot be rendered",
-    "status": 400,
-    "body": { "error": { "code": "<a code from errors.json>", "message": "<the error message>" } },
+    "status": 500,
+    "body": { "error": { "code": "<a code from errors.json>" } },
+    "why": "The app, not the client, builds the payload, so a TingQrError is a server-side mistake (e.g. a misconfigured receiving account). Its message may describe the app's configuration, so it is never sent to the client. An app that builds a QR from client input and wants 400 validates or encodes that input itself (e.g. inside resolve or the handler) and answers 400; errors from drawing the returned payload (too long for maxVersion, a logo too big for a small code) happen after it returns and are always 500.",
+    "log": "The error (code and message) is written to the server log through the framework's usual channel: console.error for Hono (as Hono's default error handler does), Nest's Logger for NestJS.",
     "note": "Integrations whose framework routes errors through app filters (NestJS) guarantee the status and error.code only when the app does not rewrite the body."
   },
   "otherErrors": "left to the framework's normal error handling, unchanged",
+  "configuration": {
+    "rule": "every render option that does not depend on the payload (margin, colours, size, logo options, ecc, versions, mask, and the rule that a logo needs ecc H) is checked when the route or service is configured, with the same INVALID_VALUE errors and messages as toSvg; a mistake stops the app at startup, not every request",
+    "perRequest": "only what depends on the payload: text too long for maxVersion, a logo too big for a small code (both 500 as tingQrError)",
+    "merged": "where route options are merged over app-wide options at request time (NestJS @TingQrSvg over TingQrModule svg), a route foreground set without a route background is checked only as a colour at configuration time, because its contrast depends on the app-wide background; an app-wide/route clash is found per request",
+    "appWide": "app-wide options (NestJS TingQrModule svg) are checked by rendering the receiving account's static code at startup, which also catches a logo too big for that code"
+  },
   "logo": {
     "rule": "a logo href must start with data:image/ (an SVG shown as an image cannot load a path or URL); anything else is INVALID_VALUE when the route or service is configured, not per request",
     "mustStartWith": "data:image/"

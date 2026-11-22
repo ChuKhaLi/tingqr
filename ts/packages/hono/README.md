@@ -37,14 +37,19 @@ app.get(
 
 - `resolve` returns a payload → `200` SVG.
 - `resolve` returns `null`, `undefined` or `''` → `404`.
-- A `TingQrError` (bad payload or option, also when thrown by `resolve`) → `400` JSON
-  `{ "error": { "code": "INVALID_VALUE", "message": "…" } }`. A broken image is never served.
+- A `TingQrError` (bad payload or option, also when thrown by `resolve`) → `500` JSON `{ "error": { "code": "INVALID_VALUE" } }`.
+  Your app builds the payload, so this is a server-side mistake (for example a misconfigured account): the message is
+  written with `console.error`, never sent to the client. If you build a QR from client input and want a `400`, validate
+  or encode that input in `resolve` and answer `400` yourself; errors from drawing the payload `resolve` returns (too
+  long, a logo too big) are always `500`. A broken image is never served.
 - Any other error from `resolve` goes to `app.onError` unchanged.
 
 Render options (`margin`, `foreground`, `background`, `size`, `logo`, `ecc`…) are those of `toSvg` from
 `@tingqr/render`. A `logo` must be a `data:image/` URI (e.g. from `@tingqr/bank-logos`): an SVG shown as an
 image cannot load a path or URL, so tingqr rejects those (`INVALID_VALUE`, when the route is created) instead of serving a
-blank logo.
+blank logo. `tingqr({ … })` checks every render option when the route is created, so a bad colour, margin or size fails
+at startup; only what depends on the payload (too long for `maxVersion`, a logo too big for a small code) is known per
+request.
 
 Pass your app's Hono env and the route path as type arguments so `resolve` sees typed bindings and params:
 `tingqr<AppEnv, '/orders/:id/qr.svg'>({ resolve: (c) => … c.env.DB … c.req.param('id') … })`.

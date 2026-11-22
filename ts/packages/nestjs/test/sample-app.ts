@@ -1,6 +1,6 @@
 // A small NestJS app using @tingqr/nestjs as a developer would. Explicit @Inject everywhere: these test files are
 // compiled by esbuild, which emits no decorator metadata.
-import { Controller, Get, Inject, Module, Param } from '@nestjs/common'
+import { Controller, Get, Inject, Module, Param, Patch, Post, Put } from '@nestjs/common'
 import { TingQrModule, TingQrService, TingQrSvg, type TingQrModuleOptions } from '@tingqr/nestjs'
 import { PROMPTPAY } from './payload.js'
 
@@ -21,6 +21,25 @@ class OrdersController {
   @Get('pp.svg')
   @TingQrSvg({ cacheControl: 'no-store' })
   promptpay(): string {
+    return PROMPTPAY
+  }
+
+  /** Nest answers POST with 201 by default; an image response is 200 whatever the method. */
+  @Post('pp.svg')
+  @TingQrSvg()
+  promptpayPost(): string {
+    return PROMPTPAY
+  }
+
+  @Put('pp.svg')
+  @TingQrSvg()
+  promptpayPut(): string {
+    return PROMPTPAY
+  }
+
+  @Patch('pp.svg')
+  @TingQrSvg()
+  promptpayPatch(): string {
     return PROMPTPAY
   }
 }

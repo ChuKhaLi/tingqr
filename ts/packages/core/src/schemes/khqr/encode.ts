@@ -1,4 +1,4 @@
-import { TingQrError } from '../../errors.js'
+import { requireInput, TingQrError } from '../../errors.js'
 import { buildPayload } from '../../emv/payload.js'
 import { field, type TlvField } from '../../emv/tlv.js'
 import type { KhqrInput } from './types.js'
@@ -93,6 +93,7 @@ function accountTemplate(input: KhqrInput): ['29' | '30', string] {
  * TingQrError on invalid input; never rounds or silently changes it.
  */
 export function encodeKhqr(input: KhqrInput): string {
+  requireInput('encodeKhqr', input)
   const [accountTag, account] = accountTemplate(input)
   const mcc = input.merchantCategoryCode ?? '5999'
   if (typeof mcc !== 'string' || !/^\d{4}$/.test(mcc)) throw invalid('merchantCategoryCode must be 4 digits.', '52')
@@ -118,7 +119,11 @@ export function encodeKhqr(input: KhqrInput): string {
   let language = ''
   if (input.alternateLanguage !== undefined) {
     const alt = input.alternateLanguage
-    language += field('00', text(alt.language, 'alternateLanguage.language', '64.00', 2, { required: true }) as string)
+    const code = text(alt.language, 'alternateLanguage.language', '64.00', 2, { required: true }) as string
+    // Two letters: an ISO 639-1 code, as EMVCo MPM is understood to require (not re-read; see conformance/schemes/khqr.md).
+    // Case kept: the SDK writes both 'km' and 'KM'.
+    if (!/^[A-Za-z]{2}$/.test(code)) throw invalid(`alternateLanguage.language "${code}" must be 2 letters (ISO 639-1).`, '64.00')
+    language += field('00', code)
     const altName = text(alt.merchantName, 'alternateLanguage.merchantName', '64.01', 25, { required: true, ascii: false })
     language += field('01', altName as string)
     const altCity = text(alt.merchantCity, 'alternateLanguage.merchantCity', '64.02', 15, { ascii: false })

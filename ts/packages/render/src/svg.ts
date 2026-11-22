@@ -1,4 +1,4 @@
-import { checkColours, checkMargin, invalid, layoutChecked, type LayoutOptions } from './layout.js'
+import { checkColours, checkLayoutOptions, checkMargin, invalid, layoutChecked, type LayoutOptions } from './layout.js'
 
 export interface SvgOptions extends LayoutOptions {
   /** width/height of the <svg>: a positive number (px) or a length like '40mm', '2in', '100%'. Absent: scales to its box. */
@@ -50,6 +50,17 @@ export function forEachRun(
       run(start, y, x - start)
     }
   })
+}
+
+/**
+ * Check SVG options without rendering, e.g. when a route is configured: the same INVALID_VALUE errors and messages as
+ * toSvg for every option that does not depend on the text. Options that do (maxVersion too low for the text, a logo
+ * too big for a small code) are still only known when toSvg runs.
+ */
+export function checkSvgOptions(options: SvgOptions = {}): void {
+  const { size, ...rest } = options
+  checkLayoutOptions(rest)
+  sizeAttr(size)
 }
 
 /** Render `text` as a QR code SVG string. No DOM: runs in browsers, Node, Workers and SSR. */

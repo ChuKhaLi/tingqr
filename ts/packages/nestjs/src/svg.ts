@@ -1,8 +1,9 @@
 import {
   applyDecorators,
-  BadRequestException,
   Inject,
   Injectable,
+  InternalServerErrorException,
+  Logger,
   NotFoundException,
   Optional,
   SetMetadata,
@@ -13,7 +14,7 @@ import {
 } from '@nestjs/common'
 import { HttpAdapterHost, Reflector } from '@nestjs/core'
 import { TingQrError } from '@tingqr/core'
-import { toSvg } from '@tingqr/render'
+import { checkSvgOptions, toSvg } from '@tingqr/render'
 import { catchError, map, throwError, type Observable } from 'rxjs'
 import { checkServedLogo, type ResolvedTingQrOptions, type TingQrSvgOptions } from './options.js'
 import { TINGQR_OPTIONS } from './tokens.js'
@@ -24,13 +25,17 @@ export const TINGQR_SVG_ROUTE = 'tingqr:svg-route'
 /** Requests whose response a TingQrSvgInterceptor is already rendering. */
 const RENDERING = new WeakSet<object>()
 
+/** Where a TingQrError's message goes: the server log, never the response. */
+const logger = new Logger('TingQrSvg')
+
 /** SVG served directly is a document: no scripts, no external loads, only inline styles and data: images. */
 const CSP = "default-src 'none'; img-src data:; style-src 'unsafe-inline'"
 
 /**
  * Turns the QR payload a handler returns into an SVG image response (the same contract as @tingqr/hono):
- * a string → 200 SVG with safe headers; null, undefined or '' → 404 (NotFoundException); a TingQrError → 400
- * (BadRequestException with `{ error: { code, message } }`). Other errors pass through. Use it through @TingQrSvg().
+ * a string → 200 SVG with safe headers; null, undefined or '' → 404 (NotFoundException); a TingQrError → 500
+ * (InternalServerErrorException with `{ error: { code } }`; the message is logged with Nest's Logger, never sent: the app
+ * builds the payload, so the message may describe its configuration). Other errors pass through. Use it through @TingQrSvg().
  */
 @Injectable()
 export class TingQrSvgInterceptor implements NestInterceptor {
@@ -62,6 +67,7 @@ export class TingQrSvgInterceptor implements NestInterceptor {
         }
         const svg = toSvg(value, svgOptions)
         const adapter = this.host.httpAdapter
+        adapter.status(response, 200) // an image, whatever the method (Nest answers POST with 201)
         adapter.setHeader(response, 'Content-Type', 'image/svg+xml; charset=utf-8')
         adapter.setHeader(response, 'X-Content-Type-Options', 'nosniff')
         adapter.setHeader(response, 'Content-Security-Policy', CSP)
@@ -69,7 +75,10 @@ export class TingQrSvgInterceptor implements NestInterceptor {
         return svg
       }),
       catchError((e: unknown) => {
-        if (e instanceof TingQrError) throw new BadRequestException({ error: { code: e.code, message: e.message } })
+        if (e instanceof TingQrError) {
+          logger.error(`${e.code}: ${e.message}`, e.stack)
+          throw new InternalServerErrorException({ error: { code: e.code } })
+        }
         return throwError(() => e)
       }),
     )
@@ -88,5 +97,13 @@ export class TingQrSvgInterceptor implements NestInterceptor {
  */
 export function TingQrSvg(options?: TingQrSvgOptions): MethodDecorator & ClassDecorator {
   checkServedLogo(options)
+  if (options !== undefined) {
+    const { cacheControl: _cacheControl, ...svgOptions } = options
+    // A bad option stops the app at startup, not every request. The route is merged over the module's `svg` options,
+    // so a route foreground alone is checked as a colour only: its contrast depends on the module's background. (A
+    // route background alone is checked against black, the darkest foreground, so that check holds for any module.)
+    const routeOnly = svgOptions.foreground !== undefined && svgOptions.background === undefined
+    checkSvgOptions(routeOnly ? { ...svgOptions, background: 'transparent' } : svgOptions)
+  }
   return applyDecorators(SetMetadata(TINGQR_SVG_ROUTE, options), UseInterceptors(TingQrSvgInterceptor))
 }

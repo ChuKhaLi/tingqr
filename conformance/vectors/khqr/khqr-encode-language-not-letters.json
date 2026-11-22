@@ -1,0 +1,23 @@
+{
+  "id": "khqr-encode-language-not-letters",
+  "scheme": "khqr",
+  "kind": "encode-invalid",
+  "input": {
+    "accountType": "individual",
+    "bakongAccountId": "john_smith@devb",
+    "merchantName": "John Smith",
+    "currency": "KHR",
+    "alternateLanguage": {
+      "language": "1!",
+      "merchantName": "ចន ស្មីន",
+      "merchantCity": "ភ្នំពញ"
+    },
+    "createdAt": 1731000000000
+  },
+  "error": "INVALID_VALUE",
+  "errorTag": "64.00",
+  "source": "tingqr rule (v0.1 polish design 2026-11-22: two letters, ISO 639-1); EMVCo MPM language preference understood to be 2 alphabetic characters, not re-read",
+  "derived": true,
+  "derivedFrom": "khqr-encode-individual-khmer",
+  "note": "alternateLanguage.language changed from 'km' to '1!'."
+}

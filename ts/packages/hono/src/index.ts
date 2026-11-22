@@ -1,5 +1,5 @@
 import { TingQrError } from '@tingqr/core'
-import { toSvg, type SvgOptions } from '@tingqr/render'
+import { checkSvgOptions, toSvg, type SvgOptions } from '@tingqr/render'
 import type { Context, Env, Handler } from 'hono'
 
 export interface TingQrSvgOptions extends SvgOptions {
@@ -56,19 +56,28 @@ export function tingqrSvg<E extends Env>(c: Context<E>, payload: string, options
 
 /**
  * A route handler that serves the QR code for whatever `resolve` returns:
- * 200 SVG; 404 when resolve gives nothing; 400 JSON `{ error: { code, message } }` for a TingQrError.
+ * 200 SVG; 404 when resolve gives nothing; for a TingQrError, 500 JSON `{ error: { code } }` with the message logged by
+ * console.error (never sent: the app builds the payload, so the message may describe its configuration).
  * Any other error from resolve goes to Hono's error handling (app.onError) unchanged.
  */
 export function tingqr<E extends Env = any, P extends string = any>(options: TingQrRouteOptions<E, P>): Handler<E, P> {
   const { resolve, ...svgOptions } = options
-  checkServedLogo(svgOptions) // a config mistake fails when the route is created, not as a 400 on every request
+  // A config mistake fails when the route is created, not as a 500 on every request.
+  checkServedLogo(svgOptions)
+  const { cacheControl: _cacheControl, ...renderOptions } = svgOptions
+  checkSvgOptions(renderOptions)
   return async (c) => {
     try {
       const payload = await resolve(c)
       if (payload === null || payload === undefined || payload === '') return c.notFound()
       return tingqrSvg(c, payload, svgOptions)
     } catch (e) {
-      if (e instanceof TingQrError) return c.json({ error: { code: e.code, message: e.message } }, 400)
+      if (e instanceof TingQrError) {
+        // The app builds the payload, so this is a server-side mistake: log the message (as Hono's default error
+        // handler logs), send only the code.
+        console.error(e)
+        return c.json({ error: { code: e.code } }, 500)
+      }
       throw e
     }
   }

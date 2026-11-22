@@ -36,7 +36,7 @@ export class Pay {
 | `payload` (required) | QR string from `@tingqr/core`, any scheme. `''`, `null` and `undefined` (e.g. `order$ | async` before its first value) draw nothing. Pass a stable `options` object: a new object redraws the PNG. |
 | `mode` | `'auto'` (default): SVG on the server and at first paint, then a PNG `<img>` drawn in the browser. `'svg'`: always SVG. `'img'`: PNG only (nothing on the server). |
 | `options` | Options of `toSvg` / `@tingqr/render/canvas` (`margin`, colours, `logo`, `scale`…). |
-| `label` | Accessible name (`role="img"` on the host) and the PNG's `alt`. |
+| `label` | Accessible name (`role="img"` on the host) and the PNG's `alt`. Default `'Payment QR code'`; pass the amount and the order, e.g. `'QR 50,000 VND, order A1'`. |
 
 | Output | |
 |---|---|
