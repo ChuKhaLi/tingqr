@@ -107,8 +107,9 @@ TypeScript và bản .NET, kèm tích hợp sẵn cho Angular, NestJS và ASP.NE
 
 ## Lệnh
 
-- Ở gốc repo: `pnpm test:all`, `pnpm build:all`, `pnpm typecheck:all` (hiện chỉ có phần TypeScript; Plan 8 thêm .NET).
+- Ở gốc repo: `pnpm test:all`, `pnpm build:all`, `pnpm typecheck:all` (TypeScript và .NET).
 - Chi tiết phần TypeScript: `ts/CLAUDE.md`.
+- Chi tiết phần .NET: `dotnet/CLAUDE.md`.
 
 ## Conformance trước, code sau
 

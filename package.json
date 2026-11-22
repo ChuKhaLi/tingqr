@@ -3,9 +3,9 @@
   "private": true,
   "packageManager": "pnpm@10.34.1",
   "scripts": {
-    "test:all": "pnpm -C ts test",
-    "build:all": "pnpm -C ts build",
-    "typecheck:all": "pnpm -C ts typecheck",
+    "test:all": "pnpm -C ts test && dotnet test dotnet/TingQR.slnx",
+    "build:all": "pnpm -C ts build && dotnet build dotnet/TingQR.slnx -c Release",
+    "typecheck:all": "pnpm -C ts typecheck && dotnet build dotnet/TingQR.slnx",
     "test:recipe": "pnpm -C conformance/tools/recipe test"
   }
 }
