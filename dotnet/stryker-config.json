@@ -16,14 +16,6 @@
       "low": 90,
       "break": 90
     },
-    "coverage-analysis": "perTest",
-    "ignore-methods": [
-      "Invalid",
-      "Fail",
-      "NotAbsolute",
-      "Quote",
-      "*Exception.ctor",
-      "TingQrWarning.ctor"
-    ]
+    "coverage-analysis": "perTest"
   }
 }

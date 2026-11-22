@@ -248,6 +248,121 @@ namespace TingQR.Tests
             Assert.Equal(href, FallbackUrl.Normalize(input));
         }
 
+        // What WHATWG URL (Node 22) gives, checked with: node -e "console.log(new URL(process.argv[1]).href)" <url>
+        [Theory]
+        [InlineData("https://a.vn:65535/", "https://a.vn:65535/")]
+        [InlineData("https://a.vn:1/", "https://a.vn:1/")]
+        [InlineData("http://a.vn:443/", "http://a.vn:443/")]
+        [InlineData("https://a.vn:80/", "https://a.vn:80/")]
+        [InlineData("https://a.vn:00443/", "https://a.vn/")]
+        [InlineData("https://a../", "https://a../")]
+        [InlineData("https://0.0.0.0/", "https://0.0.0.0/")]
+        [InlineData("https://10.20.30.40/", "https://10.20.30.40/")]
+        [InlineData("https://100.200.255.255/", "https://100.200.255.255/")]
+        [InlineData("https://255.255.255.255/", "https://255.255.255.255/")]
+        [InlineData("https://1.2.3.123/", "https://1.2.3.123/")]
+        [InlineData("https://zZ.vn/", "https://zz.vn/")]
+        [InlineData("https://AZaz09.vn/", "https://azaz09.vn/")]
+        [InlineData("https://exa\tmple.com/", "https://example.com/")]
+        [InlineData("https://exa\nmple.com/", "https://example.com/")]
+        [InlineData("https://exa\rmple.com/", "https://example.com/")]
+        [InlineData("https://a.vn/a.b/..c/.d", "https://a.vn/a.b/..c/.d")]
+        [InlineData("https://a.vn/~", "https://a.vn/~")]
+        [InlineData("https://a.vn/}", "https://a.vn/%7D")]
+        [InlineData("https://a.vn/a?b#c#d", "https://a.vn/a?b#c#d")]
+        [InlineData("https://a.vn/\u0080", "https://a.vn/%C2%80")]
+        [InlineData("https://a.vn/߿", "https://a.vn/%DF%BF")]
+        [InlineData("https://a.vn/ࠀ", "https://a.vn/%E0%A0%80")]
+        [InlineData("https://a.vn/￿", "https://a.vn/%EF%BF%BF")]
+        [InlineData("https://a.vn/\U00010000", "https://a.vn/%F0%90%80%80")]
+        [InlineData("https://a.vn/\U0010FFFF", "https://a.vn/%F4%8F%BF%BF")]
+        [InlineData("https://a.vn/?\u0080", "https://a.vn/?%C2%80")]
+        [InlineData("https://a.vn/#ࠀ", "https://a.vn/#%E0%A0%80")]
+        public void FallbackBoundariesMatchWhatwgHref(string input, string href)
+        {
+            Assert.Equal(href, FallbackUrl.Normalize(input));
+        }
+
+        // WHATWG throws for the first group; the second is accepted by WHATWG (1.2.3.4. and %2e segments are rewritten)
+        // but outside the subset this checker supports, so it throws too.
+        [Theory]
+        [InlineData("https://a.vn:65536/")]
+        [InlineData("https://256.1.1.1/")]
+        [InlineData("https://1.2.3.1234/")]
+        [InlineData("https://1..2.3/")]
+        [InlineData("https://a.1/")]
+        [InlineData("https://a\u007F.vn/")]
+        [InlineData("https://a<b.vn/")]
+        [InlineData("https://a>b.vn/")]
+        [InlineData("https://a^b.vn/")]
+        [InlineData("https://a|b.vn/")]
+        [InlineData("https://a]b.vn/")]
+        [InlineData("https://1.2.3.4./")]
+        [InlineData("https://a.vn/a/%2e/b")]
+        [InlineData("https://a.vn/%2e%2e")]
+        [InlineData("https://a.vn/.%2e")]
+        [InlineData("https://a.vn/%2E.")]
+        [InlineData("https://a.vn/%2e")]
+        [InlineData("https://a.vn/..")]
+        [InlineData("https://a.vn/.")]
+        public void FallbackHostsPortsAndPathsOutsideTheSubsetThrow(string url)
+        {
+            Assert.Equal(TingQrErrorCode.InvalidValue, Assert.Throws<TingQrException>(() => FallbackUrl.Normalize(url)).Code);
+        }
+
+        [Theory]
+        [InlineData("a:b")]
+        [InlineData("a+b:x")]
+        [InlineData("a-b:x")]
+        [InlineData("a.b:x")]
+        [InlineData("a1:x")]
+        [InlineData("a9:x")]
+        [InlineData("zaAZ:x")]
+        [InlineData("Abc:x")]
+        [InlineData("Z:x")]
+        public void AWellFormedSchemeThatIsNotHttpSaysSo(string url)
+        {
+            Assert.Contains("https: or http:", Assert.Throws<TingQrException>(() => FallbackUrl.Normalize(url)).Message);
+        }
+
+        [Theory]
+        [InlineData(":x")]
+        [InlineData("1abc://x")]
+        [InlineData("a b:x")]
+        [InlineData("a!b:x")]
+        [InlineData("a/b:x")]
+        [InlineData("a@b:x")]
+        [InlineData("a[b:x")]
+        [InlineData("a`b:x")]
+        [InlineData("a{b:x")]
+        [InlineData("@a:x")]
+        [InlineData("[a:x")]
+        public void AMalformedSchemeSaysTheUrlIsNotAbsolute(string url)
+        {
+            var message = Assert.Throws<TingQrException>(() => FallbackUrl.Normalize(url)).Message;
+            Assert.Contains("absolute", message);
+        }
+
+        [Fact]
+        public void ANullFallbackIsInvalidValue()
+        {
+            Assert.Equal(TingQrErrorCode.InvalidValue, Assert.Throws<TingQrException>(() => FallbackUrl.Normalize(null)).Code);
+        }
+
+        [Fact]
+        public void EncodeUriComponentKeepsTheUnreservedSetAndEscapesTheRest()
+        {
+            Assert.Equal("azAZ09-_.!~*'()", FallbackUrl.EncodeUriComponent("azAZ09-_.!~*'()"));
+            Assert.Equal("%40%5B%60%7B%2F%3A%20%25", FallbackUrl.EncodeUriComponent("@[`{/: %"));
+        }
+
+        [Fact]
+        public void ABinMustBeSixAsciiDigitsToBeLookedUpAsABin()
+        {
+            var list = new[] { new Bank("900001", "12345a", "XYZ", "odd code", null, "https://x/a.png") };
+            Assert.Equal("900001", Banks.FindIn(list, "12345a")?.Bin);
+        }
+
         [Fact]
         public void AccentedCharactersAndSpacesInFallbackAreEncodedToAscii()
         {

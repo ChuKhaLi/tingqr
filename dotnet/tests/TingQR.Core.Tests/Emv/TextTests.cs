@@ -40,12 +40,12 @@ namespace TingQR.Tests
         [Fact]
         public void LoneSurrogatesCountOneEachAndStaySeparateInSplit()
         {
-            Assert.Equal(2, CodePoints.Count("a�"));
-            Assert.Equal(2, CodePoints.Count("��"));
-            Assert.Equal(2, CodePoints.Count("��"));
-            Assert.Equal(new[] { "a", "�" }, CodePoints.Split("a�"));
-            Assert.Equal(new[] { "�", "�" }, CodePoints.Split("��"));
-            Assert.Equal(new[] { "�", "�" }, CodePoints.Split("��"));
+            Assert.Equal(2, CodePoints.Count("a\uD83D"));
+            Assert.Equal(2, CodePoints.Count("\uD83D\uD83D"));
+            Assert.Equal(2, CodePoints.Count("\uDE00\uD83D"));
+            Assert.Equal(new[] { "a", "\uD83D" }, CodePoints.Split("a\uD83D"));
+            Assert.Equal(new[] { "\uD83D", "\uD83D" }, CodePoints.Split("\uD83D\uD83D"));
+            Assert.Equal(new[] { "\uDE00", "\uD83D" }, CodePoints.Split("\uDE00\uD83D"));
             Assert.Equal(new[] { "a", "\U0001F600", "b" }, CodePoints.Split("a\U0001F600b"));
         }
 

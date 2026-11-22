@@ -53,6 +53,7 @@ namespace TingQR
             if (foundScheme == null)
             {
                 return TingQrResult<DetectResult>.Failure(new TingQrException(TingQrErrorCode.UnknownScheme,
+                    // Stryker disable once String : error message, or a field name that only appears in one
                     "Not a payment QR tingqr knows (VietQR, VNPAY, PromptPay, KHQR).", null, p.Fields));
             }
             return TingQrResult<DetectResult>.Success(new DetectResult(foundScheme.Value, foundData!, also), foundWarnings);

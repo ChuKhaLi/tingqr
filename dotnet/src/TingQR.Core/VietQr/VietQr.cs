@@ -37,8 +37,10 @@ namespace TingQR
             var text = amount.Value.Text!;
             if (!IsAmount(text))
             {
+                // Stryker disable once all : "shown" is only used in the error message
                 var shown = amount.Value.IsNumber ? text : "\"" + text + "\"";
                 throw new TingQrException(TingQrErrorCode.InvalidValue,
+                    // Stryker disable once String : error message, or a field name that only appears in one
                     $"Amount {shown} must be a whole number of VND, 1–13 digits, greater than zero.", "54");
             }
             return text;
@@ -52,15 +54,20 @@ namespace TingQR
         {
             if (input == null)
             {
-                throw new TingQrException(TingQrErrorCode.InvalidValue, "VietQr.Encode needs an input object; got null.");
+                throw new TingQrException(TingQrErrorCode.InvalidValue,
+                    // Stryker disable once String : error message, or a field name that only appears in one
+                    "VietQr.Encode needs an input object; got null.");
             }
             if (!IsBin(input.BankBin))
             {
-                throw new TingQrException(TingQrErrorCode.InvalidValue, $"Bank BIN \"{input.BankBin}\" must be 6 digits.", "38");
+                throw new TingQrException(TingQrErrorCode.InvalidValue,
+                    // Stryker disable once String : error message, or a field name that only appears in one
+                    $"Bank BIN \"{input.BankBin}\" must be 6 digits.", "38");
             }
             if (!IsAccount(input.AccountNumber))
             {
                 throw new TingQrException(TingQrErrorCode.InvalidValue,
+                    // Stryker disable once String : error message, or a field name that only appears in one
                     $"Account number \"{input.AccountNumber}\" must be 3–25 letters or digits.", "38");
             }
             var amount = AmountText(input.Amount);
@@ -74,6 +81,7 @@ namespace TingQR
             if (input.Service != VietQrService.Account && input.Service != VietQrService.Card)
             {
                 throw new TingQrException(TingQrErrorCode.InvalidValue,
+                    // Stryker disable once String : error message, or a field name that only appears in one
                     $"Service \"{input.Service}\" must be Account or Card.", "38");
             }
 
@@ -118,35 +126,49 @@ namespace TingQR
                 var merchant = Fields.ReadSchemeTemplate(p, "38", Guid);
                 if (merchant == null)
                 {
-                    return Fail(TingQrErrorCode.UnsupportedScheme, "Not a VietQR payload: tag 38 with GUID A000000727 is missing.", "38");
+                    return Fail(TingQrErrorCode.UnsupportedScheme,
+                        // Stryker disable once String : error message, or a field name that only appears in one
+                        "Not a VietQR payload: tag 38 with GUID A000000727 is missing.", "38");
                 }
 
                 var beneficiaryValue = Sub(merchant, "01");
-                if (beneficiaryValue == null) return Fail(TingQrErrorCode.MissingTag, "Tag 38.01 (beneficiary) is missing.", "38.01");
+                if (beneficiaryValue == null) return Fail(TingQrErrorCode.MissingTag,
+                    // Stryker disable once String : error message, or a field name that only appears in one
+                    "Tag 38.01 (beneficiary) is missing.", "38.01");
                 var beneficiary = Tlv.ParseTemplate(beneficiaryValue, "38.01");
                 var bankBin = Sub(beneficiary, "00");
                 var accountNumber = Sub(beneficiary, "01");
                 if (bankBin == null || accountNumber == null)
                 {
-                    return Fail(TingQrErrorCode.MissingTag, "Tag 38.01 must hold the bank BIN (00) and account number (01).", "38.01");
+                    return Fail(TingQrErrorCode.MissingTag,
+                        // Stryker disable once String : error message, or a field name that only appears in one
+                        "Tag 38.01 must hold the bank BIN (00) and account number (01).", "38.01");
                 }
 
                 var serviceCode = Sub(merchant, "02");
-                if (serviceCode == null) return Fail(TingQrErrorCode.MissingTag, "Tag 38.02 (service code) is missing.", "38.02");
+                if (serviceCode == null) return Fail(TingQrErrorCode.MissingTag,
+                    // Stryker disable once String : error message, or a field name that only appears in one
+                    "Tag 38.02 (service code) is missing.", "38.02");
                 VietQrService service;
                 if (serviceCode == "QRIBFTTA") service = VietQrService.Account;
                 else if (serviceCode == "QRIBFTTC") service = VietQrService.Card;
-                else return Fail(TingQrErrorCode.InvalidValue, $"Service code \"{serviceCode}\" is not QRIBFTTA or QRIBFTTC.", "38.02");
+                else return Fail(TingQrErrorCode.InvalidValue,
+                    // Stryker disable once String : error message, or a field name that only appears in one
+                    $"Service code \"{serviceCode}\" is not QRIBFTTA or QRIBFTTC.", "38.02");
 
                 if (EmvPayloads.GetField(p, "00")?.Value != "01")
                 {
-                    return Fail(TingQrErrorCode.InvalidValue, "Tag 00 (payload format indicator) must be \"01\".", "00");
+                    return Fail(TingQrErrorCode.InvalidValue,
+                        // Stryker disable once String : error message, or a field name that only appears in one
+                        "Tag 00 (payload format indicator) must be \"01\".", "00");
                 }
                 var poi = EmvPayloads.GetField(p, "01")?.Value;
                 if (poi == null) return Fail(TingQrErrorCode.MissingTag, "Tag 01 (point of initiation) is missing; expected 11 or 12.", "01");
                 if (poi != "11" && poi != "12")
                 {
-                    return Fail(TingQrErrorCode.InvalidValue, $"Tag 01 (point of initiation) is \"{poi}\", expected 11 or 12.", "01");
+                    return Fail(TingQrErrorCode.InvalidValue,
+                        // Stryker disable once String : error message, or a field name that only appears in one
+                        $"Tag 01 (point of initiation) is \"{poi}\", expected 11 or 12.", "01");
                 }
 
                 var required = new Dictionary<string, string>(StringComparer.Ordinal);
@@ -159,12 +181,15 @@ namespace TingQR
                     }
                     else if (mode == ParseMode.Strict)
                     {
-                        return Fail(TingQrErrorCode.MissingTag, $"Tag {tag} is required.", tag);
+                        return Fail(TingQrErrorCode.MissingTag,
+                            // Stryker disable once String : error message, or a field name that only appears in one
+                            $"Tag {tag} is required.", tag);
                     }
                     else
                     {
                         required[tag] = fallback;
                         warnings.Add(new TingQrWarning(TingQrWarningCode.MissingOptionalTag,
+                            // Stryker disable once String : error message, or a field name that only appears in one
                             $"Tag {tag} is missing; assumed \"{fallback}\".", tag));
                     }
                 }

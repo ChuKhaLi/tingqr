@@ -29,6 +29,7 @@ namespace TingQR.Emv
             var h = (Tag, Value).GetHashCode();
             if (Children != null)
             {
+                // Stryker disable once Arithmetic : any way of combining child hashes is a valid hash code
                 foreach (var c in Children) h = (h * 31) + c.GetHashCode();
             }
             return h;

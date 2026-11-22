@@ -43,20 +43,30 @@ namespace TingQR
                 var provider = Fields.ReadSchemeTemplate(p, "26", Guid);
                 if (provider == null)
                 {
-                    return Fail(TingQrErrorCode.UnsupportedScheme, "Not a VNPAY-QR payload: tag 26 with GUID A000000775 is missing.", "26");
+                    return Fail(TingQrErrorCode.UnsupportedScheme,
+                        // Stryker disable once String : error message, or a field name that only appears in one
+                        "Not a VNPAY-QR payload: tag 26 with GUID A000000775 is missing.", "26");
                 }
                 var merchantId = provider.FirstOrDefault(n => n.Tag == "01")?.Value;
-                if (merchantId == null) return Fail(TingQrErrorCode.MissingTag, "Tag 26.01 (merchant ID) is missing.", "26.01");
+                if (merchantId == null) return Fail(TingQrErrorCode.MissingTag,
+                    // Stryker disable once String : error message, or a field name that only appears in one
+                    "Tag 26.01 (merchant ID) is missing.", "26.01");
 
                 if (EmvPayloads.GetField(p, "00")?.Value != "01")
                 {
-                    return Fail(TingQrErrorCode.InvalidValue, "Tag 00 (payload format indicator) must be \"01\".", "00");
+                    return Fail(TingQrErrorCode.InvalidValue,
+                        // Stryker disable once String : error message, or a field name that only appears in one
+                        "Tag 00 (payload format indicator) must be \"01\".", "00");
                 }
                 var poi = EmvPayloads.GetField(p, "01")?.Value;
-                if (poi == null) return Fail(TingQrErrorCode.MissingTag, "Tag 01 (point of initiation) is missing; expected 11 or 12.", "01");
+                if (poi == null) return Fail(TingQrErrorCode.MissingTag,
+                    // Stryker disable once String : error message, or a field name that only appears in one
+                    "Tag 01 (point of initiation) is missing; expected 11 or 12.", "01");
                 if (poi != "11" && poi != "12")
                 {
-                    return Fail(TingQrErrorCode.InvalidValue, $"Tag 01 (point of initiation) is \"{poi}\", expected 11 or 12.", "01");
+                    return Fail(TingQrErrorCode.InvalidValue,
+                        // Stryker disable once String : error message, or a field name that only appears in one
+                        $"Tag 01 (point of initiation) is \"{poi}\", expected 11 or 12.", "01");
                 }
 
                 var standard = new Dictionary<string, string>(StringComparer.Ordinal);
@@ -68,11 +78,18 @@ namespace TingQR
                         standard[tag] = value;
                         continue;
                     }
-                    if (mode == ParseMode.Strict) return Fail(TingQrErrorCode.MissingTag, $"Tag {tag} is required by the EMV standard.", tag);
+                    if (mode == ParseMode.Strict) return Fail(TingQrErrorCode.MissingTag,
+                        // Stryker disable once String : error message, or a field name that only appears in one
+                        $"Tag {tag} is required by the EMV standard.", tag);
                     var fallback = DefaultOf(tag);
                     if (fallback != null) standard[tag] = fallback;
                     warnings.Add(new TingQrWarning(TingQrWarningCode.MissingOptionalTag,
-                        fallback == null ? $"Tag {tag} is missing." : $"Tag {tag} is missing; assumed \"{fallback}\".", tag));
+                        // Stryker disable once all : picks between two error messages
+                        fallback == null ?
+                            // Stryker disable once String : error message, or a field name that only appears in one
+                            $"Tag {tag} is missing." :
+                            // Stryker disable once String : error message, or a field name that only appears in one
+                            $"Tag {tag} is missing; assumed \"{fallback}\".", tag));
                 }
 
                 var providerData = provider.Where(n => n.Tag != "00" && n.Tag != "01").ToList();

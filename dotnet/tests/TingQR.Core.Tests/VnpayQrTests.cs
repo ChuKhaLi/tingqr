@@ -152,6 +152,14 @@ namespace TingQR.Tests
         }
 
         [Fact]
+        public void MerchantCategoryAndCityAreInterpretedNotExtra()
+        {
+            var v = Ok(VnpayQr.Decode(Rebuild(f => f.Concat(new[] { new TlvField("52", "5411"), new TlvField("60", "HANOI") }))));
+            Assert.Null(v.ExtraFields);
+            Assert.Equal("5411", v.MerchantCategoryCode);
+        }
+
+        [Fact]
         public void UnknownTopLevelTagsGoToExtraFields()
         {
             var v = Ok(VnpayQr.Decode(Rebuild(f => f.Concat(new[] { new TlvField("80", "X") }))));

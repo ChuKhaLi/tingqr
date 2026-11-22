@@ -59,7 +59,9 @@ namespace TingQR.Emv
             if (input == null)
             {
                 return TingQrResult<EmvPayload>.Failure(
-                    new TingQrException(TingQrErrorCode.InvalidValue, "The payload must not be null."));
+                    new TingQrException(TingQrErrorCode.InvalidValue,
+                        // Stryker disable once String : error message, or a field name that only appears in one
+                        "The payload must not be null."));
             }
             var warnings = new List<TingQrWarning>();
             var a = 0;
@@ -69,7 +71,9 @@ namespace TingQR.Emv
             var raw = input.Substring(a, b - a);
             if (raw != input)
             {
-                warnings.Add(new TingQrWarning(TingQrWarningCode.TrimmedWhitespace, "Whitespace around the payload was removed."));
+                warnings.Add(new TingQrWarning(TingQrWarningCode.TrimmedWhitespace,
+                    // Stryker disable once String : error message, or a field name that only appears in one
+                    "Whitespace around the payload was removed."));
             }
 
             IReadOnlyList<TlvNode> fields;
@@ -86,6 +90,7 @@ namespace TingQR.Emv
             if (last == null || last.Tag != "63" || !IsHex4(last.Value))
             {
                 return TingQrResult<EmvPayload>.Failure(new TingQrException(TingQrErrorCode.CrcMissing,
+                    // Stryker disable once String : error message, or a field name that only appears in one
                     "The payload must end with tag 63 holding a 4-digit CRC.", "63"));
             }
 
@@ -94,6 +99,7 @@ namespace TingQR.Emv
             if (actual != expected)
             {
                 return TingQrResult<EmvPayload>.Failure(new TingQrException(TingQrErrorCode.CrcMismatch,
+                    // Stryker disable once String : error message, or a field name that only appears in one
                     $"CRC is {last.Value}, expected {expected}.", "63"));
             }
             try
@@ -106,7 +112,9 @@ namespace TingQR.Emv
             }
             if (last.Value != actual)
             {
-                warnings.Add(new TingQrWarning(TingQrWarningCode.LowercaseCrc, "The CRC is written in lowercase hex.", "63"));
+                warnings.Add(new TingQrWarning(TingQrWarningCode.LowercaseCrc,
+                    // Stryker disable once String : error message, or a field name that only appears in one
+                    "The CRC is written in lowercase hex.", "63"));
             }
             return TingQrResult<EmvPayload>.Success(new EmvPayload(fields, actual, raw), warnings);
         }

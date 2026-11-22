@@ -70,6 +70,7 @@ namespace TingQR.Tests
             Assert.True(r.Ok);
             Assert.Equal(new[] { TingQrWarningCode.LowercaseCrc }, Codes(r));
             Assert.Equal("AE9F", r.Value!.Crc);
+            Assert.Equal("63", r.Warnings[0].Tag);
         }
 
         [Fact]

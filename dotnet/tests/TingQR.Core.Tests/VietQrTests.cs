@@ -238,6 +238,29 @@ namespace TingQR.Tests
         }
 
         [Fact]
+        public void AnotherSchemeIsUnsupportedOnTag38()
+        {
+            var e = VietQr.Decode("00020101021129370016A0000006770101110113006681222333353037645802TH63041DCF").Error!;
+            Assert.Equal((TingQrErrorCode.UnsupportedScheme, "38"), (e.Code, e.Tag));
+        }
+
+        [Theory]
+        [InlineData("AAA")]
+        [InlineData("zzz")]
+        [InlineData("aZz09")]
+        public void LettersAtTheEdgesOfTheAlphabetAreAcceptedInAnAccount(string account)
+        {
+            VietQr.Encode(new VietQrInput { BankBin = "970422", AccountNumber = account });
+        }
+
+        [Fact]
+        public void AOneDigitAmountIsAccepted()
+        {
+            var payload = VietQr.Encode(new VietQrInput { BankBin = "970422", AccountNumber = "0123456789", Amount = 5L });
+            Assert.Equal("5", Ok(VietQr.Decode(payload)).Amount);
+        }
+
+        [Fact]
         public void AccountOf3And25CharactersIsAccepted()
         {
             VietQr.Encode(new VietQrInput { BankBin = "970422", AccountNumber = "abc" });

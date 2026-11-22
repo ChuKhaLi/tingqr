@@ -39,13 +39,18 @@ namespace TingQR
 
         private static TingQrException Invalid(string message, string tag) => new TingQrException(TingQrErrorCode.InvalidValue, message, tag);
 
+        // Stryker disable once all : Quote only formats error messages
         private static string Quote(string? s) => s == null ? "null" : "\"" + s + "\"";
 
         private static string Digits(string? value, int[] lengths, string what, string tag)
         {
             if (value == null || value.Length == 0 || !AllDigits(value) || !lengths.Contains(value.Length))
             {
-                throw Invalid($"{what} {Quote(value)} must be {string.Join(" or ", lengths)} digits.", tag);
+                throw Invalid(
+                    // Stryker disable once String : error message, or a field name that only appears in one
+                    $"{what} {Quote(value)} must be {string.Join(
+                    // Stryker disable once String : error message, or a field name that only appears in one
+                    " or ", lengths)} digits.", tag);
             }
             return value;
         }
@@ -53,8 +58,12 @@ namespace TingQR
         private static string? Reference(string? value, string name, string tag)
         {
             if (string.IsNullOrEmpty(value)) return null;
-            if (!VietQr.IsPrintableAscii(value!)) throw new TingQrException(TingQrErrorCode.NonAscii, $"{name} must be printable ASCII.", tag);
-            if (value!.Length > 20) throw Invalid($"{name} is {value.Length} characters; the maximum is 20.", tag);
+            if (!VietQr.IsPrintableAscii(value!)) throw new TingQrException(TingQrErrorCode.NonAscii,
+                // Stryker disable once String : error message, or a field name that only appears in one
+                $"{name} must be printable ASCII.", tag);
+            if (value!.Length > 20) throw Invalid(
+                // Stryker disable once String : error message, or a field name that only appears in one
+                $"{name} is {value.Length} characters; the maximum is 20.", tag);
             return value;
         }
 
@@ -64,9 +73,12 @@ namespace TingQR
             if (amount == null || !amount.Value.HasValue) return null;
             var text = amount.Value.Text!;
             var dot = text.IndexOf('.');
+            // Stryker disable once Equality : dot == 0 is rejected through the whole part either way
             var whole = dot < 0 ? text : text.Substring(0, dot);
+            // Stryker disable once Equality : dot == 0 is rejected through the whole part either way
             var frac = dot < 0 ? string.Empty : text.Substring(dot + 1);
             // ^(\d{1,10})(?:\.(\d{1,2}))?$
+            // Stryker disable once Equality : dot == 0 is rejected through the whole part either way
             var shape = whole.Length >= 1 && whole.Length <= 10 && AllDigits(whole)
                 && (dot < 0 || (frac.Length >= 1 && frac.Length <= 2 && AllDigits(frac)));
             if (shape)
@@ -77,8 +89,11 @@ namespace TingQR
             var cents = frac.PadRight(2, '0');
             if (!shape || (whole == "0" && cents == "00"))
             {
+                // Stryker disable once all : "shown" is only used in the error message
                 var shown = amount.Value.IsNumber ? text : Quote(text);
-                throw Invalid($"Amount {shown} must be greater than zero, at most 9999999999.99, with at most 2 decimals.", "54");
+                throw Invalid(
+                    // Stryker disable once String : error message, or a field name that only appears in one
+                    $"Amount {shown} must be greater than zero, at most 9999999999.99, with at most 2 decimals.", "54");
             }
             return whole + "." + cents;
         }
@@ -89,6 +104,7 @@ namespace TingQR
             {
                 case PromptPayTarget.Mobile m:
                 {
+                    // Stryker disable once String : a null Number and "Stryker was here!" both leave no digits
                     var raw = new string((m.Number ?? string.Empty).Where(IsAsciiDigit).ToArray());
                     string? national = null;
                     if (raw.Length == 10 && raw[0] == '0') national = raw.Substring(1);
@@ -96,26 +112,40 @@ namespace TingQR
                     else if (raw.Length == 13 && raw.StartsWith("0066", StringComparison.Ordinal)) national = raw.Substring(4);
                     if (national == null)
                     {
-                        throw Invalid($"Mobile {Quote(m.Number)} must be a Thai number: 0, 66 or 0066 + 9 digits.", "29.01");
+                        throw Invalid(
+                            // Stryker disable once String : error message, or a field name that only appears in one
+                            $"Mobile {Quote(m.Number)} must be a Thai number: 0, 66 or 0066 + 9 digits.", "29.01");
                     }
                     return ("29", Tlv.Field("00", Aid.CreditTransfer) + Tlv.Field("01", "0066" + national));
                 }
                 case PromptPayTarget.NationalId n:
-                    return ("29", Tlv.Field("00", Aid.CreditTransfer) + Tlv.Field("02", Digits(n.Id, new[] { 13 }, "National or tax ID", "29.02")));
+                    return ("29", Tlv.Field("00", Aid.CreditTransfer) + Tlv.Field("02", Digits(n.Id, new[] { 13 },
+                        // Stryker disable once String : error message, or a field name that only appears in one
+                        "National or tax ID", "29.02")));
                 case PromptPayTarget.EWallet w:
-                    return ("29", Tlv.Field("00", Aid.CreditTransfer) + Tlv.Field("03", Digits(w.Id, new[] { 15 }, "E-wallet ID", "29.03")));
+                    return ("29", Tlv.Field("00", Aid.CreditTransfer) + Tlv.Field("03", Digits(w.Id, new[] { 15 },
+                        // Stryker disable once String : error message, or a field name that only appears in one
+                        "E-wallet ID", "29.03")));
                 case PromptPayTarget.Bill b:
                 {
-                    var biller = Digits(b.BillerId, new[] { 13, 15 }, "Biller ID", "30.01");
-                    var ref1 = Reference(b.Reference1, "reference1", "30.02");
-                    var ref2 = Reference(b.Reference2, "reference2", "30.03");
+                    var biller = Digits(b.BillerId, new[] { 13, 15 },
+                        // Stryker disable once String : error message, or a field name that only appears in one
+                        "Biller ID", "30.01");
+                    var ref1 = Reference(b.Reference1,
+                        // Stryker disable once String : error message, or a field name that only appears in one
+                        "reference1", "30.02");
+                    var ref2 = Reference(b.Reference2,
+                        // Stryker disable once String : error message, or a field name that only appears in one
+                        "reference2", "30.03");
                     var value = Tlv.Field("00", Aid.BillPayment) + Tlv.Field("01", biller);
                     if (ref1 != null) value += Tlv.Field("02", ref1);
                     if (ref2 != null) value += Tlv.Field("03", ref2);
                     return ("30", value);
                 }
                 default:
-                    throw Invalid("Target must be Mobile, NationalId, EWallet or Bill.", "29");
+                    throw Invalid(
+                        // Stryker disable once String : error message, or a field name that only appears in one
+                        "Target must be Mobile, NationalId, EWallet or Bill.", "29");
             }
         }
 
@@ -127,7 +157,9 @@ namespace TingQR
         {
             if (input == null)
             {
-                throw new TingQrException(TingQrErrorCode.InvalidValue, "PromptPayQr.Encode needs an input object; got null.");
+                throw new TingQrException(TingQrErrorCode.InvalidValue,
+                    // Stryker disable once String : error message, or a field name that only appears in one
+                    "PromptPayQr.Encode needs an input object; got null.");
             }
             var (tag, merchant) = MerchantTemplate(input.Target);
             var amount = AmountText(input.Amount);
@@ -182,6 +214,7 @@ namespace TingQR
             try
             {
                 var transfer = FindTemplate(p, "29", Aid.CreditTransfer, Aid.Ota);
+                // Stryker disable once Conditional : bill is only read when transfer is null, so skipping the lookup changes nothing
                 var bill = transfer != null ? null : FindTemplate(p, "30", Aid.BillPayment, Aid.BillPaymentCrossBorder);
                 string merchantTag;
                 PromptPayKind kind;
@@ -202,8 +235,12 @@ namespace TingQR
                         .FirstOrDefault(x => x.Value != null);
                     if (first.Value == null)
                     {
-                        if (mode == ParseMode.Strict) return Fail(TingQrErrorCode.MissingTag, "Tag 29 has no proxy (sub-tags 01-04).", "29.01");
-                        warnings.Add(new TingQrWarning(TingQrWarningCode.MissingOptionalTag, "Tag 29 has no proxy (sub-tags 01-04).", "29"));
+                        if (mode == ParseMode.Strict) return Fail(TingQrErrorCode.MissingTag,
+                            // Stryker disable once String : error message, or a field name that only appears in one
+                            "Tag 29 has no proxy (sub-tags 01-04).", "29.01");
+                        warnings.Add(new TingQrWarning(TingQrWarningCode.MissingOptionalTag,
+                            // Stryker disable once String : error message, or a field name that only appears in one
+                            "Tag 29 has no proxy (sub-tags 01-04).", "29"));
                     }
                     proxy = first.Value ?? string.Empty;
                     proxyType = first.Value == null ? PromptPayProxyType.Unknown : first.Type;
@@ -223,7 +260,9 @@ namespace TingQR
                     merchantTag = "30";
                     kind = PromptPayKind.BillPayment;
                     billerId = Sub(nodes, "01");
-                    if (billerId == null) return Fail(TingQrErrorCode.MissingTag, "Tag 30.01 (biller ID) is missing.", "30.01");
+                    if (billerId == null) return Fail(TingQrErrorCode.MissingTag,
+                        // Stryker disable once String : error message, or a field name that only appears in one
+                        "Tag 30.01 (biller ID) is missing.", "30.01");
                     crossBorder = aid == Aid.BillPaymentCrossBorder;
                     subFields = SubFieldsOf(nodes);
                     ref1 = Sub(nodes, "02");
@@ -231,18 +270,26 @@ namespace TingQR
                 }
                 else
                 {
-                    return Fail(TingQrErrorCode.UnsupportedScheme, "Not a PromptPay payload: no tag 29 or 30 with a PromptPay AID.", "29");
+                    return Fail(TingQrErrorCode.UnsupportedScheme,
+                        // Stryker disable once String : error message, or a field name that only appears in one
+                        "Not a PromptPay payload: no tag 29 or 30 with a PromptPay AID.", "29");
                 }
 
                 if (EmvPayloads.GetField(p, "00")?.Value != "01")
                 {
-                    return Fail(TingQrErrorCode.InvalidValue, "Tag 00 (payload format indicator) must be \"01\".", "00");
+                    return Fail(TingQrErrorCode.InvalidValue,
+                        // Stryker disable once String : error message, or a field name that only appears in one
+                        "Tag 00 (payload format indicator) must be \"01\".", "00");
                 }
                 var poi = EmvPayloads.GetField(p, "01")?.Value;
-                if (poi == null) return Fail(TingQrErrorCode.MissingTag, "Tag 01 (point of initiation) is missing; expected 11 or 12.", "01");
+                if (poi == null) return Fail(TingQrErrorCode.MissingTag,
+                    // Stryker disable once String : error message, or a field name that only appears in one
+                    "Tag 01 (point of initiation) is missing; expected 11 or 12.", "01");
                 if (poi != "11" && poi != "12")
                 {
-                    return Fail(TingQrErrorCode.InvalidValue, $"Tag 01 (point of initiation) is \"{poi}\", expected 11 or 12.", "01");
+                    return Fail(TingQrErrorCode.InvalidValue,
+                        // Stryker disable once String : error message, or a field name that only appears in one
+                        $"Tag 01 (point of initiation) is \"{poi}\", expected 11 or 12.", "01");
                 }
 
                 var required = new Dictionary<string, string>(StringComparer.Ordinal);
@@ -255,7 +302,9 @@ namespace TingQR
                     }
                     else if (mode == ParseMode.Strict)
                     {
-                        return Fail(TingQrErrorCode.MissingTag, $"Tag {tag} is required.", tag);
+                        return Fail(TingQrErrorCode.MissingTag,
+                            // Stryker disable once String : error message, or a field name that only appears in one
+                            $"Tag {tag} is required.", tag);
                     }
                     else
                     {

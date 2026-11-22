@@ -11,7 +11,13 @@ namespace TingQR
         /// </summary>
         public static string For(BankApp? app, string? appId, AppPlatform platform, string? fallbackUrl)
         {
-            if (app == null) throw Invalid($"unknown bank app {(appId == null ? "null" : "\"" + appId + "\"")}.");
+            if (app == null)
+            {
+                // Stryker disable once all : "shown" is only used in the error message
+                var shown = appId == null ? "null" : "\"" + appId + "\"";
+                // Stryker disable once String : error message
+                throw Invalid($"unknown bank app {shown}.");
+            }
             if (platform != AppPlatform.Android && platform != AppPlatform.Ios)
             {
                 throw Invalid($"platform must be Android or Ios, got {(int)platform}.");

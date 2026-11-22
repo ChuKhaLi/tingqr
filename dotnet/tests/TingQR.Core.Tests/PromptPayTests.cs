@@ -50,6 +50,32 @@ namespace TingQR.Tests
         }
 
         [Fact]
+        public void AThirteenDigitProxyNotStartingWith0066IsNotReadAsAMobileNumber()
+        {
+            var payload = Rebuild(Mobile, f => SetTag(f.ToList(), "29", F("00", PromptPayQr.Aid.CreditTransfer) + F("01", "1234567890123")));
+            Assert.Null(Ok(payload).Mobile);
+            Assert.Equal("0812223333", Ok(Mobile).Mobile);
+        }
+
+        [Theory]
+        [InlineData("12345678901")]
+        [InlineData("0123456789012")]
+        [InlineData("661234567890")]
+        public void ADigitStringThatIsNotAThaiMobileNumberIsRejectedOnTag2901(string number)
+        {
+            Assert.Equal((TingQrErrorCode.InvalidValue, (string?)"29.01"), EncodeErr(new PromptPayTarget.Mobile(number)));
+        }
+
+        [Fact]
+        public void EncodeErrorsOnIdsCarryTheirSubTag()
+        {
+            Assert.Equal((TingQrErrorCode.InvalidValue, (string?)"29.02"), EncodeErr(new PromptPayTarget.NationalId("123")));
+            Assert.Equal((TingQrErrorCode.InvalidValue, (string?)"29.03"), EncodeErr(new PromptPayTarget.EWallet("123")));
+            Assert.Equal((TingQrErrorCode.InvalidValue, (string?)"30.02"), EncodeErr(new PromptPayTarget.Bill("0112233445566", new string('a', 21))));
+            Assert.Equal((TingQrErrorCode.InvalidValue, (string?)"30.03"), EncodeErr(new PromptPayTarget.Bill("0112233445566", null, new string('a', 21))));
+        }
+
+        [Fact]
         public void DecodeNullIsInvalidValue()
         {
             Assert.Equal(TingQrErrorCode.InvalidValue, PromptPayQr.Decode(null).Error!.Code);

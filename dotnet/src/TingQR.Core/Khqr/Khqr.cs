@@ -21,11 +21,13 @@ namespace TingQR
         private static bool IsBakongAccount(string s)
         {
             var at = s.IndexOf('@');
+            // Stryker disable once Equality : IndexOf('@', at + 1) is never 0, so < 0 and <= 0 agree
             return at > 0 && at < s.Length - 1 && s.IndexOf('@', at + 1) < 0;
         }
 
         private static TingQrException Invalid(string message, string tag) => new TingQrException(TingQrErrorCode.InvalidValue, message, tag);
 
+        // Stryker disable once all : Quote only formats error messages
         private static string Quote(string? s) => s == null ? "null" : "\"" + s + "\"";
 
         // An optional (or, with required, mandatory) text field of at most max code points.
@@ -33,21 +35,29 @@ namespace TingQR
         {
             if (string.IsNullOrEmpty(value))
             {
-                if (required) throw Invalid($"{name} is required.", tag);
+                if (required) throw Invalid(
+                    // Stryker disable once String : error message, or a field name that only appears in one
+                    $"{name} is required.", tag);
                 return null;
             }
             if (ascii && !VietQr.IsPrintableAscii(value!))
             {
-                throw new TingQrException(TingQrErrorCode.NonAscii, $"{name} must be printable ASCII; only alternateLanguage may hold other scripts.", tag);
+                throw new TingQrException(TingQrErrorCode.NonAscii,
+                    // Stryker disable once String : error message, or a field name that only appears in one
+                    $"{name} must be printable ASCII; only alternateLanguage may hold other scripts.", tag);
             }
             var length = CodePoints.Count(value!);
-            if (length > max) throw Invalid($"{name} is {length} characters; the maximum is {max}.", tag);
+            if (length > max) throw Invalid(
+                // Stryker disable once String : error message, or a field name that only appears in one
+                $"{name} is {length} characters; the maximum is {max}.", tag);
             return value;
         }
 
         private static long Timestamp(long value, string name, string tag)
         {
-            if (value < 1000000000000L || value > 9999999999999L) throw Invalid($"{name} must be Unix milliseconds (13 digits).", tag);
+            if (value < 1000000000000L || value > 9999999999999L) throw Invalid(
+                // Stryker disable once String : error message, or a field name that only appears in one
+                $"{name} must be Unix milliseconds (13 digits).", tag);
             return value;
         }
 
@@ -70,7 +80,9 @@ namespace TingQR
             else
             {
                 var dot = raw.IndexOf('.');
+                // Stryker disable once Equality : dot == 0 is rejected through the whole part either way
                 var whole = dot < 0 ? raw : raw.Substring(0, dot);
+                // Stryker disable once Equality : dot == 0 is rejected through the whole part either way
                 var frac = dot < 0 ? null : raw.Substring(dot + 1);
                 if (AllDigits(whole) && (frac == null || (frac.Length >= 1 && frac.Length <= 2 && AllDigits(frac))))
                 {
@@ -79,11 +91,17 @@ namespace TingQR
             }
             if (output == null || output.All(c => c == '0' || c == '.') || output.Length > MaxAmountLength)
             {
+                // Stryker disable once all : "shown" is only used in the error message
                 var shown = amount.Value.IsNumber ? raw : Quote(raw);
                 throw Invalid(
+                    // Stryker disable once all : picks between two error messages
                     usd
-                        ? $"Amount {shown} must be greater than zero with at most 2 decimals."
-                        : $"Amount {shown} must be a whole number of KHR greater than zero.",
+                        ?
+                            // Stryker disable once String : error message, or a field name that only appears in one
+                            $"Amount {shown} must be greater than zero with at most 2 decimals."
+                        :
+                            // Stryker disable once String : error message, or a field name that only appears in one
+                            $"Amount {shown} must be a whole number of KHR greater than zero.",
                     "54");
             }
             return output;
@@ -94,23 +112,39 @@ namespace TingQR
             var merchant = input.AccountType == KhqrAccountType.Merchant;
             if (!merchant && input.AccountType != KhqrAccountType.Individual)
             {
-                throw Invalid("accountType must be Individual or Merchant.", "29");
+                throw Invalid(
+                    // Stryker disable once String : error message, or a field name that only appears in one
+                    "accountType must be Individual or Merchant.", "29");
             }
             var tag = merchant ? "30" : "29";
-            var account = Text(input.BakongAccountId, "bakongAccountId", tag + ".00", 32, required: true)!;
-            if (!IsBakongAccount(account)) throw Invalid("bakongAccountId must be name@bank with exactly one \"@\".", tag + ".00");
+            var account = Text(input.BakongAccountId,
+                // Stryker disable once String : error message, or a field name that only appears in one
+                "bakongAccountId", tag + ".00", 32, required: true)!;
+            if (!IsBakongAccount(account)) throw Invalid(
+                // Stryker disable once String : error message, or a field name that only appears in one
+                "bakongAccountId must be name@bank with exactly one \"@\".", tag + ".00");
             if (merchant && input.AccountInformation != null)
             {
-                throw Invalid("accountInformation is for individual accounts; a merchant uses merchantId.", "30");
+                throw Invalid(
+                    // Stryker disable once String : error message, or a field name that only appears in one
+                    "accountInformation is for individual accounts; a merchant uses merchantId.", "30");
             }
             if (!merchant && input.MerchantId != null)
             {
-                throw Invalid("merchantId is for merchant accounts; an individual uses accountInformation.", "29");
+                throw Invalid(
+                    // Stryker disable once String : error message, or a field name that only appears in one
+                    "merchantId is for merchant accounts; an individual uses accountInformation.", "29");
             }
             var first = merchant
-                ? Text(input.MerchantId, "merchantId", "30.01", 32, required: true)
-                : Text(input.AccountInformation, "accountInformation", "29.01", 32);
-            var bank = Text(input.AcquiringBank, "acquiringBank", tag + ".02", 32, required: merchant);
+                ? Text(input.MerchantId,
+                    // Stryker disable once String : error message, or a field name that only appears in one
+                    "merchantId", "30.01", 32, required: true)
+                : Text(input.AccountInformation,
+                    // Stryker disable once String : error message, or a field name that only appears in one
+                    "accountInformation", "29.01", 32);
+            var bank = Text(input.AcquiringBank,
+                // Stryker disable once String : error message, or a field name that only appears in one
+                "acquiringBank", tag + ".02", 32, required: merchant);
             var value = Tlv.Field("00", account);
             if (first != null) value += Tlv.Field("01", first);
             if (bank != null) value += Tlv.Field("02", bank);
@@ -127,11 +161,15 @@ namespace TingQR
         {
             if (input == null)
             {
-                throw new TingQrException(TingQrErrorCode.InvalidValue, "Khqr.Encode needs an input object; got null.");
+                throw new TingQrException(TingQrErrorCode.InvalidValue,
+                    // Stryker disable once String : error message, or a field name that only appears in one
+                    "Khqr.Encode needs an input object; got null.");
             }
             var (accountTag, account) = AccountTemplate(input);
             var mcc = input.MerchantCategoryCode ?? "5999";
-            if (mcc.Length != 4 || !AllDigits(mcc)) throw Invalid("merchantCategoryCode must be 4 digits.", "52");
+            if (mcc.Length != 4 || !AllDigits(mcc)) throw Invalid(
+                // Stryker disable once String : error message, or a field name that only appears in one
+                "merchantCategoryCode must be 4 digits.", "52");
             string numeric;
             bool usd;
             switch (input.Currency)
@@ -147,19 +185,35 @@ namespace TingQR
                     usd = true;
                     break;
                 default:
-                    throw Invalid("currency must be 'KHR', 'USD', '116' or '840'.", "53");
+                    throw Invalid(
+                        // Stryker disable once String : error message, or a field name that only appears in one
+                        "currency must be 'KHR', 'USD', '116' or '840'.", "53");
             }
             var amount = AmountText(input.Amount, usd);
-            var name = Text(input.MerchantName, "merchantName", "59", 25, required: true)!;
-            var city = Text(input.MerchantCity, "merchantCity", "60", 15) ?? "Phnom Penh";
+            var name = Text(input.MerchantName,
+                // Stryker disable once String : error message, or a field name that only appears in one
+                "merchantName", "59", 25, required: true)!;
+            var city = Text(input.MerchantCity,
+                // Stryker disable once String : error message, or a field name that only appears in one
+                "merchantCity", "60", 15) ?? "Phnom Penh";
 
             var extra = new[]
             {
-                ("01", "billNumber", input.BillNumber),
-                ("02", "mobileNumber", input.MobileNumber),
-                ("03", "storeLabel", input.StoreLabel),
-                ("07", "terminalLabel", input.TerminalLabel),
-                ("08", "purpose", input.Purpose),
+                ("01",
+                    // Stryker disable once String : error message, or a field name that only appears in one
+                    "billNumber", input.BillNumber),
+                ("02",
+                    // Stryker disable once String : error message, or a field name that only appears in one
+                    "mobileNumber", input.MobileNumber),
+                ("03",
+                    // Stryker disable once String : error message, or a field name that only appears in one
+                    "storeLabel", input.StoreLabel),
+                ("07",
+                    // Stryker disable once String : error message, or a field name that only appears in one
+                    "terminalLabel", input.TerminalLabel),
+                ("08",
+                    // Stryker disable once String : error message, or a field name that only appears in one
+                    "purpose", input.Purpose),
             };
             var additional = string.Empty;
             foreach (var (sub, key, raw) in extra)
@@ -172,28 +226,44 @@ namespace TingQR
             if (input.AlternateLanguage != null)
             {
                 var alt = input.AlternateLanguage;
-                var code = Text(alt.Language, "alternateLanguage.language", "64.00", 2, required: true)!;
+                var code = Text(alt.Language,
+                    // Stryker disable once String : error message, or a field name that only appears in one
+                    "alternateLanguage.language", "64.00", 2, required: true)!;
                 // Two ASCII letters, case kept (the SDK writes both 'km' and 'KM').
                 if (code.Length != 2 || !code.All(IsAsciiLetter))
                 {
-                    throw Invalid($"alternateLanguage.language \"{code}\" must be 2 letters (ISO 639-1).", "64.00");
+                    throw Invalid(
+                        // Stryker disable once String : error message, or a field name that only appears in one
+                        $"alternateLanguage.language \"{code}\" must be 2 letters (ISO 639-1).", "64.00");
                 }
                 language += Tlv.Field("00", code);
-                language += Tlv.Field("01", Text(alt.MerchantName, "alternateLanguage.merchantName", "64.01", 25, required: true, ascii: false)!);
-                var altCity = Text(alt.MerchantCity, "alternateLanguage.merchantCity", "64.02", 15, ascii: false);
+                language += Tlv.Field("01", Text(alt.MerchantName,
+                    // Stryker disable once String : error message, or a field name that only appears in one
+                    "alternateLanguage.merchantName", "64.01", 25, required: true, ascii: false)!);
+                var altCity = Text(alt.MerchantCity,
+                    // Stryker disable once String : error message, or a field name that only appears in one
+                    "alternateLanguage.merchantCity", "64.02", 15, ascii: false);
                 if (altCity != null) language += Tlv.Field("02", altCity);
             }
 
-            var createdAt = Timestamp(input.CreatedAt, "createdAt", "99.00");
+            var createdAt = Timestamp(input.CreatedAt,
+                // Stryker disable once String : error message, or a field name that only appears in one
+                "createdAt", "99.00");
             long? expiresAt = null;
             if (input.ExpiresAt.HasValue)
             {
-                expiresAt = Timestamp(input.ExpiresAt.Value, "expiresAt", "99.01");
-                if (expiresAt.Value <= createdAt) throw Invalid("expiresAt must be after createdAt.", "99.01");
+                expiresAt = Timestamp(input.ExpiresAt.Value,
+                    // Stryker disable once String : error message, or a field name that only appears in one
+                    "expiresAt", "99.01");
+                if (expiresAt.Value <= createdAt) throw Invalid(
+                    // Stryker disable once String : error message, or a field name that only appears in one
+                    "expiresAt must be after createdAt.", "99.01");
             }
             else if (amount != null)
             {
-                throw Invalid("A KHQR with an amount must have expiresAt.", "99.01");
+                throw Invalid(
+                    // Stryker disable once String : error message, or a field name that only appears in one
+                    "A KHQR with an amount must have expiresAt.", "99.01");
             }
 
             var fields = new List<TlvField>
@@ -268,33 +338,50 @@ namespace TingQR
                 var country = EmvPayloads.GetField(p, "58")?.Value;
                 if (country != null && country != "KH")
                 {
-                    return Fail(TingQrErrorCode.UnsupportedScheme, $"Not a KHQR payload: tag 58 (country) is \"{country}\", not \"KH\".", "29");
+                    return Fail(TingQrErrorCode.UnsupportedScheme,
+                        // Stryker disable once String : error message, or a field name that only appears in one
+                        $"Not a KHQR payload: tag 58 (country) is \"{country}\", not \"KH\".", "29");
                 }
                 var individual = ReadAccount(p, "29");
                 var merchant = individual != null ? null : ReadAccount(p, "30");
+                // Stryker disable once NullCoalescing : merchant is null whenever individual is not, so both orders agree
                 var account = individual ?? merchant;
                 if (account == null)
                 {
-                    return Fail(TingQrErrorCode.UnsupportedScheme, "Not a KHQR payload: no tag 29 or 30 holding a Bakong account (name@bank).", "29");
+                    return Fail(TingQrErrorCode.UnsupportedScheme,
+                        // Stryker disable once String : error message, or a field name that only appears in one
+                        "Not a KHQR payload: no tag 29 or 30 holding a Bakong account (name@bank).", "29");
                 }
                 var accountTag = individual != null ? "29" : "30";
                 if (merchant != null)
                 {
-                    foreach (var (s, what) in new[] { ("01", "merchant ID"), ("02", "acquiring bank") })
+                    foreach (var (s, what) in new[] { ("01",
+                        // Stryker disable once String : error message, or a field name that only appears in one
+                        "merchant ID"), ("02",
+                        // Stryker disable once String : error message, or a field name that only appears in one
+                        "acquiring bank") })
                     {
-                        if (Sub(merchant, s) == null) return Fail(TingQrErrorCode.MissingTag, $"Tag 30.{s} ({what}) is missing.", "30." + s);
+                        if (Sub(merchant, s) == null) return Fail(TingQrErrorCode.MissingTag,
+                            // Stryker disable once String : error message, or a field name that only appears in one
+                            $"Tag 30.{s} ({what}) is missing.", "30." + s);
                     }
                 }
 
                 if (EmvPayloads.GetField(p, "00")?.Value != "01")
                 {
-                    return Fail(TingQrErrorCode.InvalidValue, "Tag 00 (payload format indicator) must be \"01\".", "00");
+                    return Fail(TingQrErrorCode.InvalidValue,
+                        // Stryker disable once String : error message, or a field name that only appears in one
+                        "Tag 00 (payload format indicator) must be \"01\".", "00");
                 }
                 var poi = EmvPayloads.GetField(p, "01")?.Value;
-                if (poi == null) return Fail(TingQrErrorCode.MissingTag, "Tag 01 (point of initiation) is missing; expected 11 or 12.", "01");
+                if (poi == null) return Fail(TingQrErrorCode.MissingTag,
+                    // Stryker disable once String : error message, or a field name that only appears in one
+                    "Tag 01 (point of initiation) is missing; expected 11 or 12.", "01");
                 if (poi != "11" && poi != "12")
                 {
-                    return Fail(TingQrErrorCode.InvalidValue, $"Tag 01 (point of initiation) is \"{poi}\", expected 11 or 12.", "01");
+                    return Fail(TingQrErrorCode.InvalidValue,
+                        // Stryker disable once String : error message, or a field name that only appears in one
+                        $"Tag 01 (point of initiation) is \"{poi}\", expected 11 or 12.", "01");
                 }
 
                 var standard = new Dictionary<string, string>(StringComparer.Ordinal);
@@ -306,9 +393,15 @@ namespace TingQR
                         standard[tag] = v;
                         continue;
                     }
-                    if (mode == ParseMode.Strict || tag == "53") return Fail(TingQrErrorCode.MissingTag, $"Tag {tag} is required by KHQR.", tag);
+                    if (mode == ParseMode.Strict || tag == "53") return Fail(TingQrErrorCode.MissingTag,
+                        // Stryker disable once String : error message, or a field name that only appears in one
+                        $"Tag {tag} is required by KHQR.", tag);
                     if (tag == "58") standard[tag] = "KH";
-                    warnings.Add(new TingQrWarning(TingQrWarningCode.MissingOptionalTag, tag == "58" ? "Tag 58 is missing; assumed \"KH\"." : $"Tag {tag} is missing.", tag));
+                    warnings.Add(new TingQrWarning(TingQrWarningCode.MissingOptionalTag,
+                        // Stryker disable once all : picks between two error messages
+                        tag == "58" ? "Tag 58 is missing; assumed \"KH\"." :
+                        // Stryker disable once String : error message, or a field name that only appears in one
+                        $"Tag {tag} is missing.", tag));
                 }
 
                 var currency = standard["53"];
@@ -343,15 +436,21 @@ namespace TingQR
                         }
                         else if (mode == ParseMode.Strict)
                         {
-                            return Fail(TingQrErrorCode.InvalidValue, $"Tag 99.{s} must be Unix milliseconds (13 digits).", "99." + s);
+                            return Fail(TingQrErrorCode.InvalidValue,
+                                // Stryker disable once String : error message, or a field name that only appears in one
+                                $"Tag 99.{s} must be Unix milliseconds (13 digits).", "99." + s);
                         }
                     }
                 }
                 var dynamic = poi == "12";
                 if (dynamic && expiresAt == null)
                 {
-                    if (mode == ParseMode.Strict) return Fail(TingQrErrorCode.MissingTag, "A dynamic KHQR must carry an expiry time (99.01).", "99.01");
-                    warnings.Add(new TingQrWarning(TingQrWarningCode.MissingOptionalTag, "Dynamic KHQR without a readable expiry time (99.01).", "99.01"));
+                    if (mode == ParseMode.Strict) return Fail(TingQrErrorCode.MissingTag,
+                        // Stryker disable once String : error message, or a field name that only appears in one
+                        "A dynamic KHQR must carry an expiry time (99.01).", "99.01");
+                    warnings.Add(new TingQrWarning(TingQrWarningCode.MissingOptionalTag,
+                        // Stryker disable once String : error message, or a field name that only appears in one
+                        "Dynamic KHQR without a readable expiry time (99.01).", "99.01"));
                 }
 
                 var interpreted = new HashSet<string>(StringComparer.Ordinal)

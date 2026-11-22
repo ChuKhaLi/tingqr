@@ -15,6 +15,7 @@ namespace TingQR.Emv
             if (length > 99)
             {
                 throw new TingQrException(TingQrErrorCode.FieldTooLong,
+                    // Stryker disable once String : error message, or a field name that only appears in one
                     $"Tag {tag} is {length} characters long; the maximum is 99.", tag);
             }
             return tag + length.ToString("D2", CultureInfo.InvariantCulture) + value;
@@ -28,6 +29,7 @@ namespace TingQR.Emv
             return sb.ToString();
         }
 
+        // Stryker disable once Logical : a two-unit code point starts with a surrogate, never a digit, so the length test is redundant
         private static bool IsAsciiDigit(string cp) => cp.Length == 1 && cp[0] >= '0' && cp[0] <= '9';
 
         private static bool TwoDigits(IReadOnlyList<string> cps, int at) => IsAsciiDigit(cps[at]) && IsAsciiDigit(cps[at + 1]);
@@ -49,17 +51,22 @@ namespace TingQR.Emv
             {
                 if (i + 4 > chars.Count)
                 {
-                    throw new TingQrException(TingQrErrorCode.Truncated, $"Field header at position {i} is cut off.");
+                    throw new TingQrException(TingQrErrorCode.Truncated,
+                        // Stryker disable once String : error message, or a field name that only appears in one
+                        $"Field header at position {i} is cut off.");
                 }
                 var tag = Join(chars, i, 2);
                 if (!TwoDigits(chars, i))
                 {
-                    throw new TingQrException(TingQrErrorCode.BadTag, $"Tag \"{tag}\" at position {i} is not two digits.");
+                    throw new TingQrException(TingQrErrorCode.BadTag,
+                        // Stryker disable once String : error message, or a field name that only appears in one
+                        $"Tag \"{tag}\" at position {i} is not two digits.");
                 }
                 var lengthText = Join(chars, i + 2, 2);
                 if (!TwoDigits(chars, i + 2))
                 {
                     throw new TingQrException(TingQrErrorCode.BadLength,
+                        // Stryker disable once String : error message, or a field name that only appears in one
                         $"Tag {tag} has length \"{lengthText}\", expected two digits.", tag);
                 }
                 var length = int.Parse(lengthText, NumberStyles.None, CultureInfo.InvariantCulture);
@@ -67,6 +74,7 @@ namespace TingQR.Emv
                 if (start + length > chars.Count)
                 {
                     throw new TingQrException(TingQrErrorCode.Truncated,
+                        // Stryker disable once String : error message, or a field name that only appears in one
                         $"Tag {tag} declares {length} characters but the payload ends first.", tag);
                 }
                 result.Add(new TlvNode(tag, Join(chars, start, length)));
@@ -84,7 +92,9 @@ namespace TingQR.Emv
                 var where = string.IsNullOrEmpty(path) ? n.Tag : path + "." + n.Tag;
                 if (!seen.Add(n.Tag))
                 {
-                    throw new TingQrException(TingQrErrorCode.DuplicateTag, $"Tag {where} appears more than once.", where);
+                    throw new TingQrException(TingQrErrorCode.DuplicateTag,
+                        // Stryker disable once String : error message, or a field name that only appears in one
+                        $"Tag {where} appears more than once.", where);
                 }
             }
         }

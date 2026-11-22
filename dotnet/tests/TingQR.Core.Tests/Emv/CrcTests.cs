@@ -19,6 +19,9 @@ namespace TingQR.Tests
         public void EmptyInputIsTheInitialValue() => Assert.Equal("FFFF", Crc16.Compute(""));
 
         [Fact]
+        public void ALoneSurrogateCountsAsReplacementCharacter() => Assert.Equal(Crc16.Compute("a�b"), Crc16.Compute("a\uD800b"));
+
+        [Fact]
         public void AlwaysFourUppercaseHexDigitsZeroPadded()
         {
             var n = 1;

@@ -47,12 +47,14 @@ namespace TingQR
         /// <summary>Finds an app by id, exactly (ids are lower case, e.g. <c>mb</c>, <c>tcb</c>).</summary>
         /// <param name="id">The app id.</param>
         /// <returns>The app, or null when none has that id.</returns>
+        // Stryker disable once Conditional : FirstOrDefault(a => a.Id == null) is also null, so the guard changes nothing
         public static BankApp? Find(string? id) => id == null ? null : All.FirstOrDefault(a => a.Id == id);
 
         /// <summary>Every app of the bank with this BIN, in <see cref="All"/> order; empty when it has none.</summary>
         /// <param name="bin">The bank's BIN.</param>
         /// <returns>A read-only list of apps.</returns>
         public static IReadOnlyList<BankApp> ForBank(string? bin)
+            // Stryker disable once Conditional : Where(a => a.Bin == null) is also empty, so the guard changes nothing
             => new ReadOnlyCollection<BankApp>(bin == null ? new List<BankApp>() : All.Where(a => a.Bin == bin).ToList());
 
         /// <summary>

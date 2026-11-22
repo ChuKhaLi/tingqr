@@ -563,6 +563,93 @@ namespace TingQR.Tests
         }
 
         [Fact]
+        public void AnIndividualAccountWinsOverAMerchantTemplateInTheSamePayload()
+        {
+            foreach (var template in new[]
+            {
+                Tlv.Field("00", "other@bank"),
+                Tlv.Field("00", "other@bank") + Tlv.Field("01", "m1") + Tlv.Field("02", "bk"),
+            })
+            {
+                var payload = Rebuild(Individual, f => f.Concat(new[] { new TlvField("30", template) }).ToArray());
+                var v = Ok(payload);
+                Assert.Equal(KhqrAccountType.Individual, v.AccountType);
+                Assert.Equal("john_smith@devb", v.BakongAccountId);
+                Assert.Null(v.MerchantId);
+            }
+        }
+
+        [Fact]
+        public void ALetterInAThirteenCharacterStampIsNotATime()
+        {
+            var v = Ok(Rebuild(Individual, f => Set(f, "99", Tlv.Field("00", "123456789012a") + Tlv.Field("01", "123456789012a"))));
+            Assert.Null(v.CreatedAt);
+            Assert.Null(v.ExpiresAt);
+        }
+
+        [Fact]
+        public void EncodeErrorsCarryTheTagOfTheFieldAtFault()
+        {
+            var long33 = new string('a', 33);
+            var cases = new (KhqrInput Input, string Tag)[]
+            {
+                (Base with { BakongAccountId = "" }, "29.00"),
+                (Base with { BakongAccountId = "nobank" }, "29.00"),
+                (MerchantBase with { BakongAccountId = "" }, "30.00"),
+                (MerchantBase with { BakongAccountId = "nobank" }, "30.00"),
+                (Base with { AccountInformation = long33 }, "29.01"),
+                (MerchantBase with { MerchantId = "" }, "30.01"),
+                (MerchantBase with { MerchantId = long33 }, "30.01"),
+                (Base with { AcquiringBank = long33 }, "29.02"),
+                (MerchantBase with { AcquiringBank = long33 }, "30.02"),
+                (MerchantBase with { AcquiringBank = "" }, "30.02"),
+                (Base with { MerchantName = "" }, "59"),
+                (Base with { MerchantCity = new string('a', 16) }, "60"),
+                (Base with { BillNumber = new string('a', 26) }, "62.01"),
+                (Base with { MobileNumber = new string('a', 26) }, "62.02"),
+                (Base with { StoreLabel = new string('a', 26) }, "62.03"),
+                (Base with { TerminalLabel = new string('a', 26) }, "62.07"),
+                (Base with { Purpose = new string('a', 26) }, "62.08"),
+                (Base with { AlternateLanguage = new KhqrAlternateLanguage("", "x") }, "64.00"),
+                (Base with { AlternateLanguage = new KhqrAlternateLanguage("k1", "x") }, "64.00"),
+                (Base with { AlternateLanguage = new KhqrAlternateLanguage("km", "") }, "64.01"),
+                (Base with { AlternateLanguage = new KhqrAlternateLanguage("km", "x", new string('a', 16)) }, "64.02"),
+                (Base with { CreatedAt = 0 }, "99.00"),
+                (Base with { CreatedAt = 999999999999L }, "99.00"),
+                (Base with { CreatedAt = 10000000000000L }, "99.00"),
+                (Base with { ExpiresAt = 999999999999L }, "99.01"),
+                (Base with { ExpiresAt = 10000000000000L }, "99.01"),
+                (Base with { ExpiresAt = Now }, "99.01"),
+                (Base with { Currency = "EUR" }, "53"),
+                (Base with { MerchantCategoryCode = "59a9" }, "52"),
+                (Base with { MerchantCategoryCode = "599" }, "52"),
+                (Base with { Currency = "USD", Amount = ".5", ExpiresAt = Now + 1 }, "54"),
+                (Base with { Amount = 5L }, "99.01"),
+            };
+            foreach (var (input, tag) in cases)
+            {
+                var e = Assert.Throws<TingQrException>(() => Khqr.Encode(input));
+                Assert.Equal(tag, e.Tag);
+            }
+        }
+
+        [Fact]
+        public void EncodeAcceptsTheBoundaryOfTimestampsAndLanguageLetters()
+        {
+            Khqr.Encode(Base with { CreatedAt = 1000000000000L });
+            Khqr.Encode(Base with { CreatedAt = 9999999999998L, ExpiresAt = 9999999999999L });
+            foreach (var code in new[] { "aa", "zz", "AA", "ZZ", "az", "AZ" })
+            {
+                Khqr.Encode(Base with { AlternateLanguage = new KhqrAlternateLanguage(code, "x") });
+            }
+            foreach (var code in new[] { "@a", "`a", "[a", "{a", "a@", "a`" })
+            {
+                var e = Assert.Throws<TingQrException>(() => Khqr.Encode(Base with { AlternateLanguage = new KhqrAlternateLanguage(code, "x") }));
+                Assert.Equal("64.00", e.Tag);
+            }
+        }
+
+        [Fact]
         public void KhmerMerchantDecodesWithCodePointLengths()
         {
             var v = Ok(Individual, ParseMode.Strict);

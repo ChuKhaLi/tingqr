@@ -77,6 +77,7 @@ namespace TingQR
         public override bool Equals(object? obj) => obj is QrAmount other && Equals(other);
 
         /// <inheritdoc />
+        // Stryker disable once Bitwise : any hash combining is valid; only equal values must hash equal (tested)
         public override int GetHashCode() => ((int)_form * 397) ^ (_text == null ? 0 : StringComparer.Ordinal.GetHashCode(_text));
 
         /// <summary>Equality.</summary>
