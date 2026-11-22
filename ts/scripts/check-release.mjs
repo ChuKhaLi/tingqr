@@ -3,7 +3,7 @@
 // Usage: node ts/scripts/check-release.mjs [--tag ts-vX.Y.Z]
 import { existsSync, readFileSync } from 'node:fs'
 import { join, relative } from 'node:path'
-import { coreIndexPath, PACKAGES, readPackage, ROOT, VERSION_LINE } from './release-common.mjs'
+import { coreIndexPath, PACKAGES, readPackage, ROOT, SEMVER, VERSION_LINE } from './release-common.mjs'
 
 const REPO_URL = 'git+https://github.com/ChuKhaLi/tingqr.git'
 const AUTHOR = 'Chung Nguyen'
@@ -41,15 +41,21 @@ if (tagIndex !== -1) {
   const tag = process.argv[tagIndex + 1] ?? ''
   if (tag !== `ts-v${version}`) problems.push(`tag ${JSON.stringify(tag)} must be exactly ts-v${version}`)
   if (version === '0.0.0') problems.push('version 0.0.0 is the in-repo placeholder: run set-version first')
+  // Prereleases need a dist-tag flow that does not exist yet (an rc published as `latest` is a real footgun). This is
+  // the only prerelease guard: the workflow passes the tag here instead of matching it in shell, where the dash of the
+  // "ts-" prefix once made every tag look like a prerelease.
+  if (!SEMVER.test(version)) problems.push(`version ${version} is not a plain x.y.z: prerelease publishing is not supported`)
   // npm publishes each README verbatim and a published version's page never changes: a release must not ship the
-  // pre-release status line (docs/RELEASING.md says what to write instead).
+  // pre-release status (docs/RELEASING.md says what to write instead). Markdown wraps lines and quotes blocks, so line
+  // breaks and "> " prefixes are flattened before matching.
   // Package READMEs are npm-only: the whole file counts. The root READMEs also speak for other languages (.NET), so
-  // only the paragraph after the `<!-- status:npm -->` marker counts there.
-  const UNRELEASED = /not released yet|chưa phát hành/i
+  // only the first paragraph after the `<!-- status:npm -->` marker counts there.
+  const UNRELEASED = /not\s+released\s+yet|not\s+on\s+npm\s+yet|chưa\s+phát\s+hành|chưa\s+có\s+trên\s+npm/i
+  const flat = (text) => text.replace(/\r?\n[ \t]*(>[ \t]*)*/g, ' ')
   const packageReadmes = PACKAGES.map((p) => join(ROOT, 'ts', 'packages', p, 'README.md'))
   for (const file of packageReadmes) {
-    if (existsSync(file) && UNRELEASED.test(readFileSync(file, 'utf8'))) {
-      problems.push(`${relative(ROOT, file)} still says "not released yet": update the status line before a release`)
+    if (existsSync(file) && UNRELEASED.test(flat(readFileSync(file, 'utf8')))) {
+      problems.push(`${relative(ROOT, file)} still says it is not released: update its status before a release`)
     }
   }
   for (const file of [join(ROOT, 'README.md'), join(ROOT, 'README.vi.md')]) {
@@ -60,8 +66,14 @@ if (tagIndex !== -1) {
       problems.push(`${relative(ROOT, file)} has no <!-- status:npm --> marker before its npm status paragraph`)
       continue
     }
-    const paragraph = text.slice(at).split(/\r?\n\s*\r?\n/)[0]
-    if (UNRELEASED.test(paragraph)) problems.push(`${relative(ROOT, file)}: the npm status still says "not released yet"`)
+    // The paragraph starts on the marker's own line: a blank line right after the marker leaves it empty, and an
+    // empty status cannot be checked, so it is refused rather than passed.
+    const paragraph = text.slice(at + '<!-- status:npm -->'.length).split(/\r?\n[ \t]*\r?\n/)[0].trim()
+    if (paragraph === '') {
+      problems.push(`${relative(ROOT, file)}: the npm status paragraph must follow <!-- status:npm --> with no blank line`)
+    } else if (UNRELEASED.test(flat(paragraph))) {
+      problems.push(`${relative(ROOT, file)}: the npm status still says it is not released`)
+    }
   }
 }
 

@@ -58,14 +58,12 @@ jobs:
           for c in core render bank-logos hono angular nestjs; do node "ts/scripts/check-$c-package.mjs"; done
       - run: node --test ts/scripts/test/release.test.mjs
 
-      # The tag is the version claim, so it is checked, not trusted. Prereleases are refused until a dist-tag flow
-      # (publishing an rc as `latest` would be a real footgun) is built and tested.
+      # The tag is the version claim, so it is checked, not trusted. check-release --tag does every tag check (tag equals
+      # ts-v<version>, plain x.y.z with no prerelease, not 0.0.0, READMEs no longer say "not released") and has tests;
+      # no shell pattern here (a `*-*` guard once refused every tag because of the dash in "ts-").
       - name: The tag must be exactly ts-v<version>, shared by all six packages
         if: github.ref_type == 'tag'
-        run: |
-          set -euo pipefail
-          case "$GITHUB_REF_NAME" in *-*) echo "::error::prerelease tags are not supported: $GITHUB_REF_NAME"; exit 1;; esac
-          node ts/scripts/check-release.mjs --tag "$GITHUB_REF_NAME"
+        run: node ts/scripts/check-release.mjs --tag "$GITHUB_REF_NAME"
       - name: All six packages share one version and carry the release metadata
         if: github.ref_type != 'tag'
         run: node ts/scripts/check-release.mjs
@@ -107,15 +105,23 @@ jobs:
         with:
           node-version: 24
           registry-url: 'https://registry.npmjs.org'
-      # Trusted publishing needs npm 11.5.1 or later.
-      - run: npm install -g npm@^11.5.1
+      # Trusted publishing needs npm 11.5.1 or later. An exact version: this job holds the OIDC token, so the npm that
+      # runs here is chosen deliberately, not whatever 11.x is newest on release day. Bump it on purpose.
+      - run: npm install -g npm@11.21.3
       - uses: actions/download-artifact@v4
         with:
           name: tarballs
           path: tarballs
+      # Re-runnable: a package whose version is already on npm (published by an earlier attempt of this same release) is
+      # skipped, so "Re-run failed jobs" finishes a release that stopped halfway instead of failing at the first package.
       - name: npm publish, in dependency order
         run: |
           set -euo pipefail
+          version="${GITHUB_REF_NAME#ts-v}"
           for p in core render bank-logos hono nestjs angular; do
-            npm publish --access public ./tarballs/tingqr-$p-*.tgz
+            if npm view "@tingqr/$p@$version" version >/dev/null 2>&1; then
+              echo "@tingqr/$p@$version is already on npm: skipped"
+              continue
+            fi
+            npm publish --access public ./tarballs/tingqr-$p-$version.tgz
           done

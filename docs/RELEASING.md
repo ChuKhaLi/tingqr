@@ -107,7 +107,11 @@ tarball từ artifact chỉ mới được đọc, chưa được chạy. Lần 
 ## Khi phát hành hỏng giữa chừng
 
 - Các gói đã lên npm thì không rút lại được.
-- Đừng phát hành lại cùng số. Sửa lỗi, rồi phát hành `X.Y.(Z+1)` cho **cả sáu gói**, để sáu gói luôn cùng số.
+- **Lỗi tạm thời** (mạng, registry) làm job `publish` dừng giữa chừng: bấm "Re-run failed jobs". Job bỏ qua gói nào đã có
+  đúng số đó trên npm và phát hành tiếp các gói còn lại, vẫn từ đúng các tarball đã diễn tập.
+  - Artifact giữ 7 ngày. Quá hạn thì phải phát hành số mới.
+- **Lỗi trong gói** (bản đã lên bị hỏng): đừng phát hành lại cùng số. Sửa lỗi, rồi phát hành `X.Y.(Z+1)` cho **cả sáu
+  gói**, để sáu gói luôn cùng số.
 - Một bản đã lên mà hỏng thì đánh dấu deprecated: `npm deprecate @tingqr/<gói>@X.Y.Z "<lý do>"`. Không dùng
   `npm unpublish`.
 

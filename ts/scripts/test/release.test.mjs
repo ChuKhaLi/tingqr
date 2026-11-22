@@ -199,3 +199,67 @@ test('the Vietnamese status line is checked too', () => {
     rmSync(root, { recursive: true, force: true })
   }
 })
+
+test('a prerelease version is refused even when the tag matches it', () => {
+  const root = fakeRepo('1.2.3-rc.1')
+  try {
+    const r = run('check-release.mjs', ['--tag', 'ts-v1.2.3-rc.1'], root)
+    assert.equal(r.code, 1)
+    assert.match(r.out, /prerelease|x\.y\.z/)
+  } finally {
+    rmSync(root, { recursive: true, force: true })
+  }
+})
+
+test('a release tag like ts-v0.1.0 is accepted (the "ts-" prefix is not a prerelease)', () => {
+  const root = fakeRepo('0.1.0')
+  try {
+    assert.equal(run('check-release.mjs', ['--tag', 'ts-v0.1.0'], root).code, 0)
+  } finally {
+    rmSync(root, { recursive: true, force: true })
+  }
+})
+
+for (const [name, text] of [
+  ['a status sentence wrapped over two lines', '> **Not\n> released yet.** See the repository README.\n'],
+  ['"not on npm yet"', 'These packages are not on npm yet.\n'],
+  ['the Vietnamese "chưa có trên npm"', 'Các gói chưa có trên npm.\n'],
+]) {
+  test(`a package README with ${name} is refused at release`, () => {
+    const root = fakeRepo('1.2.3')
+    try {
+      writeFileSync(join(root, 'ts', 'packages', 'core', 'README.md'), text)
+      assert.equal(run('check-release.mjs', ['--tag', 'ts-v1.2.3'], root).code, 1)
+    } finally {
+      rmSync(root, { recursive: true, force: true })
+    }
+  })
+}
+
+test('an empty paragraph after the status marker is refused, not silently passed', () => {
+  const root = fakeRepo('1.2.3')
+  try {
+    writeFileSync(join(root, 'README.md'), '# tingqr\n\n<!-- status:npm -->\n\n**Status: not released yet.**\n')
+    assert.equal(run('check-release.mjs', ['--tag', 'ts-v1.2.3'], root).code, 1)
+  } finally {
+    rmSync(root, { recursive: true, force: true })
+  }
+})
+
+test('root READMEs with CRLF line endings are read the same way', () => {
+  const root = fakeRepo('1.2.3')
+  try {
+    writeFileSync(join(root, 'README.md'), '# tingqr\r\n\r\n<!-- status:npm -->\r\n**npm: 1.2.3.**\r\n\r\n.NET: not released yet.\r\n')
+    assert.equal(run('check-release.mjs', ['--tag', 'ts-v1.2.3'], root).code, 0)
+    writeFileSync(join(root, 'README.md'), '# tingqr\r\n\r\n<!-- status:npm -->\r\n**Status: not released yet.**\r\n')
+    assert.equal(run('check-release.mjs', ['--tag', 'ts-v1.2.3'], root).code, 1)
+  } finally {
+    rmSync(root, { recursive: true, force: true })
+  }
+})
+
+test('the release workflow leaves tag checks to check-release (no shell guard that matches the "ts-" dash)', () => {
+  const workflow = readFileSync(join(SCRIPTS, '..', '..', '.github', 'workflows', 'release-ts.yml'), 'utf8')
+  assert.match(workflow, /node ts\/scripts\/check-release\.mjs --tag "\$GITHUB_REF_NAME"/)
+  assert.doesNotMatch(workflow, /case "\$GITHUB_REF_NAME"/)
+})
