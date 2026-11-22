@@ -1,0 +1,23 @@
+{
+  "id": "khqr-encode-language-not-letters",
+  "scheme": "khqr",
+  "kind": "encode-invalid",
+  "input": {
+    "accountType": "individual",
+    "bakongAccountId": "john_smith@devb",
+    "merchantName": "John Smith",
+    "currency": "KHR",
+    "alternateLanguage": {
+      "language": "1!",
+      "merchantName": "ចន ស្មីន",
+      "merchantCity": "ភ្នំពញ"
+    },
+    "createdAt": 1731000000000
+  },
+  "error": "INVALID_VALUE",
+  "errorTag": "64.00",
+  "source": "conformance/schemes/khqr.md, encode rules (language code: letters only, EMVCo MPM language preference is an ISO 639 code)",
+  "derived": true,
+  "derivedFrom": "khqr-encode-individual-khmer",
+  "note": "alternateLanguage.language changed from 'km' to '1!'."
+}

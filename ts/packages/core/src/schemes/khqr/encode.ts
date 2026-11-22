@@ -119,7 +119,10 @@ export function encodeKhqr(input: KhqrInput): string {
   let language = ''
   if (input.alternateLanguage !== undefined) {
     const alt = input.alternateLanguage
-    language += field('00', text(alt.language, 'alternateLanguage.language', '64.00', 2, { required: true }) as string)
+    const code = text(alt.language, 'alternateLanguage.language', '64.00', 2, { required: true }) as string
+    // EMVCo: the language preference is an ISO 639 code, so letters only (case kept: the SDK writes 'km' and 'KM').
+    if (!/^[A-Za-z]+$/.test(code)) throw invalid(`alternateLanguage.language "${code}" must be letters (ISO 639).`, '64.00')
+    language += field('00', code)
     const altName = text(alt.merchantName, 'alternateLanguage.merchantName', '64.01', 25, { required: true, ascii: false })
     language += field('01', altName as string)
     const altCity = text(alt.merchantCity, 'alternateLanguage.merchantCity', '64.02', 15, { ascii: false })

@@ -95,7 +95,9 @@ Ngoài ra:
   - `merchantName` 1–25 (`59`), `merchantCity` tối đa 15, mặc định `Phnom Penh` (`60`), `merchantCategoryCode` 4 chữ
     số, mặc định `5999` (`52`);
   - các trường `62` mỗi trường tối đa 25;
-  - `alternateLanguage`: `language` 1–2 ký tự (`64.00`), `merchantName` bắt buộc như SDK, tối đa 25 (`64.01`),
+  - `alternateLanguage`: `language` 1–2 chữ cái ASCII, giữ nguyên hoa/thường (`64.00`; độ dài theo SDK `bakong-khqr`,
+    chỉ chữ cái vì EMVCo MPM ghi đây là mã ISO 639; mẫu `khqr-encode-language-not-letters`), `merchantName` bắt buộc như
+    SDK, tối đa 25 (`64.01`),
     `merchantCity` tối đa 15 (`64.02`).
 - **Chữ:** chỉ `alternateLanguage` được có chữ ngoài ASCII (ví dụ Khmer). Trường khác có chữ ngoài ASCII in được thì
   `NON_ASCII`.

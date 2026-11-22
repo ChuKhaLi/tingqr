@@ -79,7 +79,7 @@ export interface KhqrInput {
   storeLabel?: string
   terminalLabel?: string
   purpose?: string
-  /** Tag 64, the only text that may be non-ASCII: language code (1–2 characters), name (≤ 25), city (≤ 15). */
+  /** Tag 64, the only text that may be non-ASCII: language code (1–2 ASCII letters, ISO 639), name (≤ 25), city (≤ 15). */
   alternateLanguage?: { language: string; merchantName: string; merchantCity?: string }
   /**
    * Unix milliseconds (13 digits). Required so the output never depends on the clock. Written to 99.00 only together
