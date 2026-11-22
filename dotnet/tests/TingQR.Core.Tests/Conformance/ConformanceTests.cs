@@ -17,6 +17,12 @@ namespace TingQR.Tests.Conformance
         static ConformanceTests()
         {
             VectorRunner.Register("vietqr", VietQrInputOf, (payload, mode) => VietQr.Decode(payload, mode));
+            ResultJson.RegisterEnum(new Dictionary<PromptPayKind, string>
+            {
+                [PromptPayKind.CreditTransfer] = "credit-transfer",
+                [PromptPayKind.BillPayment] = "bill-payment",
+            });
+            VectorRunner.Register("promptpay", PromptPayInputOf, (payload, mode) => PromptPayQr.Decode(payload, mode));
             VectorRunner.Register("vnpay", null, (payload, mode) => VnpayQr.Decode(payload, mode));
         }
 
@@ -36,6 +42,31 @@ namespace TingQR.Tests.Conformance
             };
             i.Done();
             return VietQr.Encode(input);
+        }
+
+        private static readonly string[] PromptPayTargetKeys = { "mobile", "nationalId", "eWallet", "billerId" };
+
+        private static object? PromptPayInputOf(JsonNode node)
+        {
+            var i = JsonInput.Of(node);
+            var t = i.Object("target") ?? throw new InputConversionException("input.target is missing.");
+            var keys = PromptPayTargetKeys.Where(t.Has).ToList();
+            if (keys.Count != 1)
+            {
+                throw new InputConversionException("input.target must have exactly one of " + string.Join(", ", PromptPayTargetKeys) + ".");
+            }
+            PromptPayTarget target;
+            switch (keys[0])
+            {
+                case "mobile": target = new PromptPayTarget.Mobile(t.String("mobile")!); break;
+                case "nationalId": target = new PromptPayTarget.NationalId(t.String("nationalId")!); break;
+                case "eWallet": target = new PromptPayTarget.EWallet(t.String("eWallet")!); break;
+                default: target = new PromptPayTarget.Bill(t.String("billerId")!, t.String("reference1"), t.String("reference2")); break;
+            }
+            t.Done();
+            var input = new PromptPayInput { Target = target, Amount = i.Amount("amount") };
+            i.Done();
+            return PromptPayQr.Encode(input);
         }
 
         public static IEnumerable<object[]> Vectors()
@@ -74,6 +105,12 @@ namespace TingQR.Tests.Conformance
         public void VietQrHasAll29Vectors()
         {
             Assert.Equal(29, Vectors().Count(row => VectorRunner.Vectors[(string)row[0]]["scheme"]!.GetValue<string>() == "vietqr"));
+        }
+
+        [Fact]
+        public void PromptPayHasAll32Vectors()
+        {
+            Assert.Equal(32, Vectors().Count(row => VectorRunner.Vectors[(string)row[0]]["scheme"]!.GetValue<string>() == "promptpay"));
         }
 
         [Fact]

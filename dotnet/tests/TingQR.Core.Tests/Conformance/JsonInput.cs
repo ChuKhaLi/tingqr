@@ -48,6 +48,9 @@ namespace TingQR.Tests.Conformance
             return node!.GetValue<string>();
         }
 
+        /// <summary>Whether the input has the key (without reading it).</summary>
+        public bool Has(string name) => _obj.ContainsKey(name);
+
         /// <summary>An object field wrapped in its own strict reader, or null when absent.</summary>
         public JsonInput? Object(string name)
         {
