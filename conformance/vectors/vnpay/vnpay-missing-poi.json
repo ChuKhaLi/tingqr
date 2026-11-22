@@ -8,5 +8,5 @@
   "source": "mutation of vnpay-static",
   "derived": true,
   "derivedFrom": "vnpay-static",
-  "note": "Tag 01 (010211) removed; CRC recomputed with an independent Python CRC-16/CCITT-FALSE routine, not with tingqr."
+  "note": "Tag 01 (010211) removed; CRC recomputed outside tingqr; checked with python conformance/tools/crc16.py --check."
 }
