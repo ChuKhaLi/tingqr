@@ -37,14 +37,16 @@ describe.each(ADAPTERS)('same contract on %s', (_name, adapter) => {
     expect(res.headers.get('content-type') ?? '').not.toContain('svg')
   })
 
-  test('a TingQrError from the handler: 400 JSON with the code', async () => {
+  test('a TingQrError from the handler: 500 JSON with only the code', async () => {
     const res = await get('/orders/ACCENT/qr.svg')
-    expect(res.status).toBe(400)
-    expect(((await res.json()) as { error: { code: string } }).error.code).toBe('NON_ASCII')
+    expect(res.status).toBe(500)
+    expect(await res.json()).toEqual({ error: { code: 'NON_ASCII' } })
   })
 
-  test('another error: 500 (Nest default), not 400', async () => {
-    expect((await get('/orders/BOOM/qr.svg')).status).toBe(500)
+  test('another error: 500 (Nest default body, no error.code)', async () => {
+    const res = await get('/orders/BOOM/qr.svg')
+    expect(res.status).toBe(500)
+    expect(await res.json()).not.toHaveProperty('error.code')
   })
 
   test('the query string changes nothing', async () => {

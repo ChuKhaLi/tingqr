@@ -79,7 +79,9 @@ app.get(
 ```
 
 - `resolve` trả chuỗi thì trả về 200 SVG; trả `null`, `undefined` hay `''` thì 404.
-- `TingQrError` (kể cả do `resolve` ném) thì 400 JSON `{ error: { code, message } }`. Lỗi khác đi tới `app.onError`.
+- `TingQrError` (kể cả do `resolve` ném) thì 500 JSON `{ error: { code } }`; thông báo ghi bằng `console.error`, không
+  gửi cho khách (payload do app dựng, nên lỗi này là lỗi phía máy chủ, thông báo có thể lộ cấu hình). Muốn trả 400 cho
+  lỗi do khách gây ra thì tự bắt lỗi trong `resolve`. Lỗi khác đi tới `app.onError`.
 - Header:
   - `Content-Type: image/svg+xml`;
   - `X-Content-Type-Options: nosniff`;
@@ -121,14 +123,14 @@ export class OrdersController {
   - `bank` là mã hay BIN, tra bằng `findBank`.
 - **Cấu hình sai thì app không khởi động** (`INVALID_VALUE`): ngân hàng không tra ra, tài khoản sai, logo không phải data
   URI, tuỳ chọn `svg` không vẽ được QR tĩnh của tài khoản (màu, viền, cỡ logo…). Tuỳ chọn phụ thuộc độ dài chuỗi
-  (`maxVersion`, `ecc`) chỉ được kiểm ở từng request (400).
+  (`maxVersion`, `ecc`) chỉ được kiểm ở từng request (500).
 - `paymentQr({ amount, purpose })` tạo VietQR tới tài khoản đã cấu hình; không có `amount` thì là QR tĩnh.
 - **`@TingQrSvg()`:** handler trả chuỗi khác rỗng thì ra 200 SVG (chuỗi không được kiểm; dựng bằng `paymentQr` hay bộ tạo
-  của tingqr). Status, header và mã lỗi 400 theo hợp đồng chung với Hono (`conformance/http/svg-response.json`).
+  của tingqr). Status, header và mã lỗi theo hợp đồng chung với Hono (`conformance/http/svg-response.json`).
   - Trả `null`, `undefined` hay `''` thì 404.
-  - `TingQrError` thì 400 `{ error: { code, message } }`.
+  - `TingQrError` thì 500 `{ error: { code } }`; thông báo ghi bằng `Logger` của Nest, không gửi cho khách.
   - Lỗi khác do exception filter của app quyết (mặc định 500).
-  - 404 và 400 đi qua lớp exception của NestJS, nên filter của app có thể đổi thân lỗi.
+  - 404 và 500 đi qua lớp exception của NestJS, nên filter của app có thể đổi thân lỗi.
 - `@TingQrSvg()` dùng được cả khi không có `TingQrModule`, ví dụ để trả QR PromptPay. Chỉ `TingQrService` mới cần
   `forRoot`.
 - Mọi chỗ inject trong gói dùng `@Inject(...)` tường minh, nên chạy được khi app build không có decorator metadata (đã thử

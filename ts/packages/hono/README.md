@@ -37,8 +37,10 @@ app.get(
 
 - `resolve` returns a payload → `200` SVG.
 - `resolve` returns `null`, `undefined` or `''` → `404`.
-- A `TingQrError` (bad payload or option, also when thrown by `resolve`) → `400` JSON
-  `{ "error": { "code": "INVALID_VALUE", "message": "…" } }`. A broken image is never served.
+- A `TingQrError` (bad payload or option, also when thrown by `resolve`) → `500` JSON `{ "error": { "code": "INVALID_VALUE" } }`.
+  Your app builds the payload, so this is a server-side mistake (for example a misconfigured account): the message is
+  written with `console.error`, never sent to the client. If you build a QR from client input and want a `400`, catch
+  the error in `resolve`. A broken image is never served.
 - Any other error from `resolve` goes to `app.onError` unchanged.
 
 Render options (`margin`, `foreground`, `background`, `size`, `logo`, `ecc`…) are those of `toSvg` from

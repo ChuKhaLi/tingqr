@@ -43,7 +43,7 @@ TingQrModule.forRootAsync({
 - **The configuration is checked when the app starts.** An unknown bank, an invalid account, a logo that is not a data
   URI, or `svg` options that cannot render the account's static code (colours, margin, logo size…) stop the app with a
   `TingQrError` (`INVALID_VALUE`). Options that depend on the payload length (`maxVersion`, `ecc`) are only checked per
-  request (400).
+  request (500).
 
 ## Build a code
 
@@ -71,11 +71,14 @@ async qr(@Param('id') id: string) {
 |---|---|
 | any non-empty string (not validated: build it with tingqr's encoders, e.g. `paymentQr`) | `200`, SVG |
 | `null`, `undefined`, `''` | `404` (`NotFoundException`) |
-| throws a `TingQrError`, or the string / options cannot be drawn | `400` (`BadRequestException`, body `{ "error": { "code", "message" } }`) |
+| throws a `TingQrError`, or the string / options cannot be drawn | `500` (`InternalServerErrorException`, body `{ "error": { "code" } }`); the message is logged with Nest's `Logger`, never sent |
 | throws anything else | unchanged: your exception filters decide (`500` by default) |
 
-- 404 and 400 go through Nest's exception layer, so your filters and logging apply (and a global filter may change the
-  body). Status codes, the image headers and the 400 error code follow the contract shared with `@tingqr/hono`
+- Your app builds the payload, so a `TingQrError` is a server-side mistake (for example a misconfigured account): its
+  message may describe your configuration and stays in the log. If you build a QR from client input and want a `400`,
+  catch the error in the handler.
+- 404 and 500 go through Nest's exception layer, so your filters apply (and a global filter may change the body).
+  Status codes, the image headers and the error code follow the contract shared with `@tingqr/hono`
   (`conformance/http/svg-response.json`); the 404 body differs.
 - Image headers: `Content-Type: image/svg+xml; charset=utf-8`, `X-Content-Type-Options: nosniff`,
   `Content-Security-Policy: default-src 'none'; img-src data:; style-src 'unsafe-inline'`, and

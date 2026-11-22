@@ -19,8 +19,10 @@
   },
   "tingQrError": {
     "when": "the app throws a TingQrError, or the payload or an option cannot be rendered",
-    "status": 400,
-    "body": { "error": { "code": "<a code from errors.json>", "message": "<the error message>" } },
+    "status": 500,
+    "body": { "error": { "code": "<a code from errors.json>" } },
+    "why": "The app, not the client, builds the payload, so a TingQrError is a server-side mistake (e.g. a misconfigured receiving account). Its message may describe the app's configuration, so it is never sent to the client. An app that builds a QR from client input and wants 400 catches the error itself.",
+    "log": "The error (code and message) is written to the server log through the framework's usual channel: console.error for Hono (as Hono's default error handler does), Nest's Logger for NestJS.",
     "note": "Integrations whose framework routes errors through app filters (NestJS) guarantee the status and error.code only when the app does not rewrite the body."
   },
   "otherErrors": "left to the framework's normal error handling, unchanged",

@@ -1,4 +1,4 @@
-import { BadRequestException, HttpException, NotFoundException, type CallHandler, type ExecutionContext } from '@nestjs/common'
+import { HttpException, InternalServerErrorException, Logger, NotFoundException, type CallHandler, type ExecutionContext } from '@nestjs/common'
 import { HttpAdapterHost, Reflector } from '@nestjs/core'
 import { TingQrError } from '@tingqr/core'
 import { toSvg } from '@tingqr/render'
@@ -80,22 +80,24 @@ test.each([null, undefined, ''])('%o is 404 and sets no header', async (value) =
   expect(headers).toEqual({})
 })
 
-test('a bad render option is 400 with the code and the toSvg message, and no image header', async () => {
-  const { error, headers } = await failure(() => of(PAYLOAD), { moduleSvg: { foreground: '#fff' } })
-  expect(error).toBeInstanceOf(BadRequestException)
-  let message = ''
-  try {
-    toSvg(PAYLOAD, { foreground: '#fff' })
-  } catch (e) {
-    message = (e as Error).message
-  }
-  expect((error as BadRequestException).getResponse()).toEqual({ error: { code: 'INVALID_VALUE', message } })
+test('a payload that cannot be drawn is 500 with only the code, logged, and no image header', async () => {
+  const log = vi.spyOn(Logger.prototype, 'error').mockImplementation(() => {})
+  const { error, headers } = await failure(() => of('a'.repeat(5000)))
+  expect(error).toBeInstanceOf(InternalServerErrorException)
+  expect((error as InternalServerErrorException).getResponse()).toEqual({ error: { code: 'INVALID_VALUE' } })
   expect(headers).toEqual({})
+  expect(log).toHaveBeenCalledTimes(1)
+  log.mockRestore()
 })
 
-test('a TingQrError from the handler is 400 with its code', async () => {
-  const { error } = await failure(() => throwError(() => new TingQrError('NON_ASCII', 'accents')))
-  expect((error as BadRequestException).getResponse()).toEqual({ error: { code: 'NON_ASCII', message: 'accents' } })
+test('a TingQrError from the handler is 500 with only its code; the message goes to the log', async () => {
+  const log = vi.spyOn(Logger.prototype, 'error').mockImplementation(() => {})
+  const { error } = await failure(() => throwError(() => new TingQrError('NON_ASCII', 'account 0123456789 has accents')))
+  expect((error as HttpException).getStatus()).toBe(500)
+  expect((error as HttpException).getResponse()).toEqual({ error: { code: 'NON_ASCII' } })
+  expect(JSON.stringify((error as HttpException).getResponse())).not.toMatch(/0123456789/)
+  expect(log.mock.calls[0]?.[0]).toMatch(/NON_ASCII.*account 0123456789 has accents/)
+  log.mockRestore()
 })
 
 test('any other error passes through unchanged', async () => {

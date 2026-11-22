@@ -1,8 +1,9 @@
 import {
   applyDecorators,
-  BadRequestException,
   Inject,
   Injectable,
+  InternalServerErrorException,
+  Logger,
   NotFoundException,
   Optional,
   SetMetadata,
@@ -24,13 +25,17 @@ export const TINGQR_SVG_ROUTE = 'tingqr:svg-route'
 /** Requests whose response a TingQrSvgInterceptor is already rendering. */
 const RENDERING = new WeakSet<object>()
 
+/** Where a TingQrError's message goes: the server log, never the response. */
+const logger = new Logger('TingQrSvg')
+
 /** SVG served directly is a document: no scripts, no external loads, only inline styles and data: images. */
 const CSP = "default-src 'none'; img-src data:; style-src 'unsafe-inline'"
 
 /**
  * Turns the QR payload a handler returns into an SVG image response (the same contract as @tingqr/hono):
- * a string → 200 SVG with safe headers; null, undefined or '' → 404 (NotFoundException); a TingQrError → 400
- * (BadRequestException with `{ error: { code, message } }`). Other errors pass through. Use it through @TingQrSvg().
+ * a string → 200 SVG with safe headers; null, undefined or '' → 404 (NotFoundException); a TingQrError → 500
+ * (InternalServerErrorException with `{ error: { code } }`; the message is logged with Nest's Logger, never sent: the app
+ * builds the payload, so the message may describe its configuration). Other errors pass through. Use it through @TingQrSvg().
  */
 @Injectable()
 export class TingQrSvgInterceptor implements NestInterceptor {
@@ -69,7 +74,10 @@ export class TingQrSvgInterceptor implements NestInterceptor {
         return svg
       }),
       catchError((e: unknown) => {
-        if (e instanceof TingQrError) throw new BadRequestException({ error: { code: e.code, message: e.message } })
+        if (e instanceof TingQrError) {
+          logger.error(`${e.code}: ${e.message}`, e.stack)
+          throw new InternalServerErrorException({ error: { code: e.code } })
+        }
         return throwError(() => e)
       }),
     )

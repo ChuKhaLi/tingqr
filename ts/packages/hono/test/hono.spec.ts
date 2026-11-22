@@ -14,6 +14,7 @@ const PAYLOAD: string = JSON.parse(
 // The shared HTTP contract of the SVG integrations (conformance/http/svg-response.json), header names lowercased.
 const CONTRACT = JSON.parse(readFileSync(join(CONFORMANCE_DIR, 'http', 'svg-response.json'), 'utf8')) as {
   success: { headers: Record<string, string> }
+  tingQrError: { status: number }
 }
 const SVG_HEADERS = Object.fromEntries(Object.entries(CONTRACT.success.headers).map(([k, v]) => [k.toLowerCase(), v]))
 
@@ -88,19 +89,36 @@ describe('tingqr route', () => {
     expect(res.headers.get('cache-control')).toBe('no-store')
   })
 
-  test('a TingQrError is 400 JSON with the code, not an image', async () => {
-    const app = new Hono().get('/qr.svg', tingqr({ resolve: () => PAYLOAD, foreground: '#ffffff' }))
+  test('a TingQrError is a 500 with only the code; the message goes to the server log, not the client', async () => {
+    const log = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const secret = new TingQrError('INVALID_VALUE', 'account 0123456789 is misconfigured')
+    const app = new Hono().get(
+      '/qr.svg',
+      tingqr({
+        resolve: () => {
+          throw secret
+        },
+      }),
+    )
     const res = await app.request('/qr.svg')
-    expect(res.status).toBe(400)
+    expect(res.status).toBe(CONTRACT.tingQrError.status)
+    expect(res.status).toBe(500)
     expect(res.headers.get('content-type')).toMatch(/^application\/json/)
-    const body = (await res.json()) as { error: { code: string; message: string } }
-    expect(body.error.code).toBe('INVALID_VALUE')
-    expect(body.error.message).toMatch(/Foreground/)
+    const text = await res.text()
+    expect(JSON.parse(text)).toEqual({ error: { code: 'INVALID_VALUE' } })
+    expect(text).not.toMatch(/0123456789|misconfigured/)
+    expect(log).toHaveBeenCalledWith(secret)
+    log.mockRestore()
   })
 
-  test('a payload too long for a QR code is 400', async () => {
+  test('a payload too long for a QR code is a 500 with its code, logged', async () => {
+    const log = vi.spyOn(console, 'error').mockImplementation(() => {})
     const app = new Hono().get('/qr.svg', tingqr({ resolve: () => 'a'.repeat(5000) }))
-    expect((await app.request('/qr.svg')).status).toBe(400)
+    const res = await app.request('/qr.svg')
+    expect(res.status).toBe(500)
+    expect(((await res.json()) as { error: { code: string } }).error.code).toBe('INVALID_VALUE')
+    expect(log).toHaveBeenCalledTimes(1)
+    log.mockRestore()
   })
 
   test('passes non-TingQrError from resolve to onError', async () => {
@@ -134,7 +152,8 @@ describe('tingqr route', () => {
     expect((await app.request('/orders/A1/qr.svg', {}, { ACCOUNT: 'ok' })).status).toBe(200)
   })
 
-  test('a TingQrError thrown by resolve itself is also 400', async () => {
+  test('a TingQrError thrown by resolve itself is also 500 with the code', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {})
     const app = new Hono().get(
       '/qr.svg',
       tingqr({
@@ -144,8 +163,9 @@ describe('tingqr route', () => {
       }),
     )
     const res = await app.request('/qr.svg')
-    expect(res.status).toBe(400)
-    expect(((await res.json()) as { error: { code: string } }).error.code).toBe('NON_ASCII')
+    expect(res.status).toBe(500)
+    expect(await res.json()).toEqual({ error: { code: 'NON_ASCII' } })
+    vi.restoreAllMocks()
   })
 })
 
