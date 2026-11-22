@@ -36,11 +36,11 @@ type SvgState = { svg: SafeHtml } | { error: TingQrError } | null
 @Component({
   selector: 'tingqr-code',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { role: 'img', '[attr.aria-label]': 'label() ?? null' },
+  host: { role: 'img', '[attr.aria-label]': 'label()' },
   styles: ':host{display:inline-block}:host>span{display:contents}:host>img{display:block;width:100%;height:auto}',
   template: `
     @if (pngUrl(); as src) {
-      <img [src]="src" [alt]="label() ?? ''" />
+      <img [src]="src" [alt]="label()" />
     } @else if (mode() !== 'img') {
       @if (svgState(); as s) {
         @if ('svg' in s) {
@@ -55,8 +55,8 @@ export class TingQrCode {
   readonly payload = input.required<string | null | undefined>()
   readonly options = input<CanvasOptions>({})
   readonly mode = input<TingQrMode>('auto')
-  /** Accessible name of the code (e.g. the amount and the order); also the PNG's alt text. */
-  readonly label = input<string | undefined>(undefined)
+  /** Accessible name of the code (e.g. the amount and the order); also the PNG's alt text. Default 'Payment QR code'. */
+  readonly label = input<string>('Payment QR code')
   /** A TingQrError for a payload or option that cannot be drawn, or a PNG that cannot be made (e.g. CANVAS_TAINTED). */
   readonly error = output<TingQrError>()
   /** The PNG now shown (modes img and auto), e.g. to enable a "Save" or share button. */
