@@ -1,0 +1,127 @@
+name: Release (TypeScript)
+
+# Publishes the six @tingqr npm packages. See docs/RELEASING.md before the first release.
+#
+# - Only a tag `ts-vX.Y.Z` publishes, because only a tag run checks the tag against the version and refuses READMEs that
+#   still say "not released yet" (check-release --tag). `workflow_dispatch` and pull requests that touch the release
+#   machinery are always dry runs.
+# - The irreversible step needs a deliberate act (the tag) and then a human approval on the `npm-release` environment,
+#   given with the verify results already visible. Required reviewers exist only on public repositories (or private ones
+#   on GitHub Enterprise), so `publish` refuses to run from a private repository: there the tag alone would publish.
+# - npm authentication is trusted publishing (OIDC): no NPM_TOKEN exists or should exist. The trusted publisher on
+#   npmjs.com is configured against THIS FILE NAME and the `npm-release` environment: renaming either breaks publishing
+#   until every package's trusted publisher is updated.
+# - Tarball paths start with ./ : npm reads "tarballs/x.tgz" as the GitHub shorthand user/repo.
+# - `publish` uploads exactly the tarballs `verify` packed and drilled (artifact), in dependency order.
+
+on:
+  push:
+    tags: ['ts-v*']
+  workflow_dispatch: # always a dry run
+  pull_request:
+    paths:
+      - '.github/workflows/release-ts.yml'
+      - 'ts/scripts/set-version.mjs'
+      - 'ts/scripts/check-release.mjs'
+      - 'ts/scripts/release-common.mjs'
+      - '.claude/skills/release-drill/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-ts-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v5
+      # Pinned to a commit: this job packs the tarballs that `publish` uploads, so a moved tag of a third-party action
+      # must not be able to change them. Bump the SHA deliberately (Dependabot or by hand), keeping the tag comment.
+      - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: ts/pnpm-lock.yaml
+      - run: pnpm -C ts install --frozen-lockfile
+      - run: pnpm -C ts typecheck
+      - run: pnpm -C ts build
+      - run: pnpm -C ts test
+      - name: Package checks
+        run: |
+          set -euo pipefail
+          for c in core render bank-logos hono angular nestjs; do node "ts/scripts/check-$c-package.mjs"; done
+      - run: node --test ts/scripts/test/release.test.mjs
+
+      # The tag is the version claim, so it is checked, not trusted. check-release --tag does every tag check (tag equals
+      # ts-v<version>, plain x.y.z with no prerelease, not 0.0.0, READMEs no longer say "not released") and has tests;
+      # no shell pattern here (a `*-*` guard once refused every tag because of the dash in "ts-").
+      - name: The tag must be exactly ts-v<version>, shared by all six packages
+        if: github.ref_type == 'tag'
+        run: node ts/scripts/check-release.mjs --tag "$GITHUB_REF_NAME"
+      - name: All six packages share one version and carry the release metadata
+        if: github.ref_type != 'tag'
+        run: node ts/scripts/check-release.mjs
+
+      # Installs the packed tarballs into a clean directory and uses them as a consumer would (calls the npm registry
+      # for peers). --out keeps the exact files that will be published.
+      - name: Release drill
+        run: node .claude/skills/release-drill/scripts/drill.mjs --out tarballs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tarballs
+          path: tarballs/*.tgz
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: npm publish --dry-run, in publish order
+        run: |
+          set -euo pipefail
+          for p in core render bank-logos hono nestjs angular; do
+            npm publish --dry-run --access public ./tarballs/tingqr-$p-*.tgz
+          done
+
+  publish:
+    needs: verify
+    # A tag only: the tag run is the one that checked tag, version and README status (see the comment at the top).
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/ts-v')
+    runs-on: ubuntu-latest
+    environment: npm-release
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Refuse to publish from a private repository
+        if: github.event.repository.private
+        run: |
+          echo "::error::This repository is private: the npm-release approval gate does not apply, so publishing is refused. See docs/RELEASING.md."
+          exit 1
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          registry-url: 'https://registry.npmjs.org'
+      # Trusted publishing needs npm 11.5.1 or later. An exact version: this job holds the OIDC token, so the npm that
+      # runs here is chosen deliberately, not whatever 11.x is newest on release day. Bump it on purpose.
+      - run: npm install -g npm@11.21.3
+      - uses: actions/download-artifact@v4
+        with:
+          name: tarballs
+          path: tarballs
+      # Re-runnable: a package whose version is already on npm (published by an earlier attempt of this same release) is
+      # skipped, so "Re-run failed jobs" finishes a release that stopped halfway instead of failing at the first package.
+      - name: npm publish, in dependency order
+        run: |
+          set -euo pipefail
+          version="${GITHUB_REF_NAME#ts-v}"
+          for p in core render bank-logos hono nestjs angular; do
+            if npm view "@tingqr/$p@$version" version >/dev/null 2>&1; then
+              echo "@tingqr/$p@$version is already on npm: skipped"
+              continue
+            fi
+            npm publish --access public ./tarballs/tingqr-$p-$version.tgz
+          done

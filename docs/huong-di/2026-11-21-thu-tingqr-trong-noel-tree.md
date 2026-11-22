@@ -48,7 +48,7 @@ và sau bằng cùng script), `noel-e2e.log`, `noel-e2e-all.log`, `noel-vietqr-e
 **Đã chứng minh:**
 
 - `encodeVietQr` của tingqr cho ra **đúng từng byte** chuỗi mà `vietQrText` của Noel tree tạo. Test ba ca trong nhánh thử
-  (`src/app/tree/vietqr.spec.ts`, commit `9e289ec`): tài khoản số 20 000 đ, tài khoản ảo chữ số `[số tài khoản đã xoá]`
+  (`src/app/tree/vietqr.spec.ts`, commit `9e289ec`): tài khoản số 20 000 đ, tài khoản ảo có cả chữ lẫn số (13 ký tự, dạng tài khoản nhận của Noel tree; số thật không ghi ở đây)
   10 000 đ, BIN Vietcombank 49 000 đ.
 - Trên Chromium thật, ảnh PNG mà `<tingqr-code>` hiện ra khớp từng ô với ma trận của chuỗi VietQR của đơn. e2e đọc
   điểm ảnh ở tâm mỗi ô (14 px mỗi ô, viền 4 ô).

@@ -8,7 +8,8 @@ import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const CORE = join(dirname(fileURLToPath(import.meta.url)), '..', 'packages', 'core')
-const MAX_TARBALL_BYTES = 45_000
+// 45 000 from 2026-11-20 (bank data); owner approved 48 000 on 2026-11-21 for a full README (Plan 7).
+const MAX_TARBALL_BYTES = 48_000
 
 const pkg = JSON.parse(readFileSync(join(CORE, 'package.json'), 'utf8'))
 const problems = []

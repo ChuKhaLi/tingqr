@@ -55,6 +55,10 @@ jobs:
         run: node ts/scripts/check-angular-package.mjs
       - name: '@tingqr/nestjs depends only on core and render, NestJS is a peer, fits the size budget'
         run: node ts/scripts/check-nestjs-package.mjs
+      - name: 'All six packages share one version and carry the npm metadata a release needs'
+        run: node ts/scripts/check-release.mjs
+      # File path, not a directory: Node does not accept a directory for --test (and Node 20 on Windows does not expand globs).
+      - run: node --test ts/scripts/test/release.test.mjs
       - run: pnpm -C ts test
       # The bank-list tool (conformance/tools/banks) never calls the network in its tests; sharp resizes a generated image.
       - run: pnpm -C conformance/tools/banks install --frozen-lockfile

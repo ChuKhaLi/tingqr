@@ -6,6 +6,9 @@ serve any QR code (VietQR, PromptPay, KHQR…) as SVG from your own controllers 
 Tested on NestJS 12.6 with Express and with Fastify (CI). Peer range `>=10`; versions before 12 are not tested.
 
 > tingqr does **not** confirm payments or receive webhooks. It only builds, reads and draws QR codes.
+>
+> **Not released yet.** See the [repository README](https://github.com/ChuKhaLi/tingqr#readme) for status and for which
+> codes have been scanned with real banking apps.
 
 ```sh
 npm i @tingqr/nestjs @tingqr/core

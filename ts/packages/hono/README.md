@@ -5,6 +5,9 @@ tests) and Cloudflare Workers (`wrangler dev`, one app); no `node:*` imports, so
 are untested. No network calls.
 
 > tingqr does **not** confirm payments or receive webhooks. It only builds, reads and draws QR codes.
+>
+> **Not released yet.** See the [repository README](https://github.com/ChuKhaLi/tingqr#readme) for status and for which
+> codes have been scanned with real banking apps.
 
 ```sh
 npm i @tingqr/hono @tingqr/core hono

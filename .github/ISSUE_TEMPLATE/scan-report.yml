@@ -1,0 +1,76 @@
+name: Scan report / Báo kết quả quét
+description: You scanned a tingqr sample code with a banking or wallet app. / Bạn đã quét một mã mẫu của tingqr bằng app ngân hàng hay ví.
+title: "Scan: <app> <version> — <vector id>"
+labels: ["scan-report"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you. Each report becomes a row in `conformance/scans.md`, the only place tingqr's README takes "works with app X" from.
+        Cảm ơn bạn. Mỗi báo cáo thành một dòng trong `conformance/scans.md`, nơi duy nhất README của tingqr dựa vào khi ghi "chạy với app X".
+
+        **Do not paste a real account number, a real person's name, or a photo of a QR code with real data.** Use the sample codes from `conformance/vectors/` and give their `id`.
+        **Đừng dán số tài khoản thật, tên người thật, hay ảnh QR có dữ liệu thật.** Dùng mã mẫu trong `conformance/vectors/` và ghi `id` của nó.
+
+        Stop at the confirmation screen. Never transfer money to a sample account. / Dừng ở màn hình xác nhận. Không bao giờ chuyển tiền vào tài khoản mẫu.
+  - type: input
+    id: app
+    attributes:
+      label: App and version / App và phiên bản
+      placeholder: "MB Bank 6.5.31"
+    validations:
+      required: true
+  - type: input
+    id: device
+    attributes:
+      label: Device and OS / Máy và hệ điều hành
+      placeholder: "Samsung Galaxy S22 Ultra, Android 16"
+    validations:
+      required: true
+  - type: input
+    id: vector_id
+    attributes:
+      label: Sample code id / id của mã mẫu
+      description: The `id` of the vector in `conformance/vectors/` (also shown on the scan sheet). / `id` của mẫu trong `conformance/vectors/` (cũng in trên trang quét thử).
+      placeholder: "vietqr-dynamic-amount-purpose"
+    validations:
+      required: true
+  - type: dropdown
+    id: logo
+    attributes:
+      label: Logo in the middle / Logo ở giữa
+      options:
+        - "no logo / không logo"
+        - "test logo from the scan sheet / logo thử của trang quét thử"
+        - "real bank icon from tingqr's bank logos / icon ngân hàng thật của tingqr"
+    validations:
+      required: true
+  - type: dropdown
+    id: medium
+    attributes:
+      label: Scanned from / Quét từ
+      options:
+        - "screen / màn hình"
+        - "paper / giấy"
+        - "both, same result / cả hai, kết quả giống nhau"
+    validations:
+      required: true
+  - type: dropdown
+    id: result
+    attributes:
+      label: Result / Kết quả
+      description: The levels of `conformance/scans.md`. / Các mức của `conformance/scans.md`.
+      options:
+        - "correct: bank, account and receiver, amount and note all as on the sheet / đúng"
+        - "read, account lookup failed (normal for a sample account) / đọc được, tra tài khoản thất bại"
+        - "read, shows the receiver, fields not compared / đọc được, hiện người nhận"
+        - "read (no detail) / đọc được"
+        - "wrong: the app shows something else (say which field in the notes) / sai"
+        - "not read: the app shows an error or ignores the code / không đọc được"
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes / Ghi chú
+      description: What the app showed, error text, anything unusual. No real account data. / App hiện gì, thông báo lỗi, điều bất thường. Không ghi dữ liệu tài khoản thật.
