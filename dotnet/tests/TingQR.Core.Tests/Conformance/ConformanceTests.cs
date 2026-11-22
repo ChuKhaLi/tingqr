@@ -25,7 +25,24 @@ namespace TingQR.Tests.Conformance
             VectorRunner.Register("promptpay", PromptPayInputOf, (payload, mode) => PromptPayQr.Decode(payload, mode));
             VectorRunner.Register("vnpay", null, (payload, mode) => VnpayQr.Decode(payload, mode));
             VectorRunner.Register("khqr", KhqrInputOf, (payload, mode) => Khqr.Decode(payload, mode));
+            ResultJson.RegisterEnum(new Dictionary<QrScheme, string>
+            {
+                [QrScheme.VietQr] = "vietqr",
+                [QrScheme.Vnpay] = "vnpay",
+                [QrScheme.PromptPay] = "promptpay",
+                [QrScheme.Khqr] = "khqr",
+            });
+            // Like the TS runner, compare only scheme and alsoMatches (the data is covered by the scheme vectors).
+            VectorRunner.Register("detect", null, (payload, _) =>
+            {
+                var r = TingQrDetector.Detect(payload);
+                return r.Ok
+                    ? TingQrResult<DetectSummary>.Success(new DetectSummary(r.Value!.Scheme, r.Value.AlsoMatches), r.Warnings)
+                    : TingQrResult<DetectSummary>.Failure(r.Error!);
+            });
         }
+
+        private sealed record DetectSummary(QrScheme Scheme, IReadOnlyList<QrScheme> AlsoMatches);
 
         private static readonly IReadOnlyDictionary<string, KhqrAccountType> KhqrAccountTypes =
             new Dictionary<string, KhqrAccountType> { ["individual"] = KhqrAccountType.Individual, ["merchant"] = KhqrAccountType.Merchant };
