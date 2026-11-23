@@ -252,6 +252,13 @@ Dành cho `toSvg` (`@tingqr/render`, `TingQrRender.ToSvg` bên .NET). Mẫu nằ
   Làm vậy cũng đổi commit trong `source` của mọi file (git diff cho thấy mọi file đổi một dòng). CI chạy `--check`:
   nó bỏ qua commit, chỉ báo khi nội dung lệch. Đổi `toSvg` mà mẫu đổi theo là đổi hành vi, phải báo cho bản .NET.
 - Logo trong mẫu là ảnh PNG 1×1 dạng `data:` URI, không phải logo ngân hàng thật; `toSvg` không giải mã ảnh.
+- **`null` trong tuỳ chọn:** cả hai bản coi tuỳ chọn `null` (`toSvg(text, null)`, `checkSvgOptions(null)`,
+  `toMatrix(text, null)`) như không truyền, và `logo: null` là không có logo. Một trường khác mang `null` (`margin`,
+  `foreground`, `background`, `size`, `minVersion`, `maxVersion`, `mask`) thì TypeScript ném `INVALID_VALUE`; C# không
+  phân biệt thuộc tính vắng với `null` (kiểu nullable), nên `null` ở đó là chưa đặt (mặc định). Riêng `size` ở .NET:
+  `Size = null` là không có kích thước, còn một chuỗi `null` (`new SvgSize((string?)null)`) thì `INVALID_VALUE`. Không có
+  mẫu cho các trường hợp này (bộ chạy .NET từ chối `null` trong `input`); test riêng: `svg.spec.ts`, `matrix.spec.ts`,
+  `layout.spec.ts` bên TypeScript.
 - Ba mẫu kiểm kiểu của scheme `render` nằm trong danh sách ở trên (`mask`, `margin` và `logo.padding` không nguyên).
 
 ## Trang quét thử (VietQR bằng app thật)

@@ -59,6 +59,7 @@ export function toMatrix(text: string, options: MatrixOptions = {}): QrMatrix {
   if (LONE_SURROGATE.test(text)) {
     throw invalid('Text contains an unpaired surrogate (a character cut in half); it cannot be encoded as UTF-8.')
   }
+  options = options ?? {} // null is the defaults too, like .NET
   const ecc = options.ecc ?? 'M'
   if (!Object.hasOwn(ECC, ecc)) throw invalid("Option ecc must be 'L', 'M', 'Q' or 'H'.")
   const boostEcc = options.boostEcc ?? true

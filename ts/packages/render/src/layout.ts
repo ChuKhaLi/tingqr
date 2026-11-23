@@ -82,7 +82,7 @@ function checkLogoOptions(logo: LogoOptions, background: string) {
 function checkedParts(options: LayoutOptions, background: string) {
   const { logo, margin: _m, foreground: _f, background: _b, ...matrixOptions } = options
   // Every logo option is checked before encoding, so a bad option is reported even when the text is also too long.
-  const logoParts = logo === undefined ? undefined : checkLogoOptions(logo, background)
+  const logoParts = logo == null ? undefined : checkLogoOptions(logo, background)
   if (logoParts !== undefined) {
     if (matrixOptions.ecc !== undefined && matrixOptions.ecc !== 'H') {
       throw invalid(`A logo needs ECC H; got ecc '${String(matrixOptions.ecc)}'. Leave ecc unset or pass 'H'.`)
@@ -125,6 +125,7 @@ export function layoutChecked(text: string, options: LayoutOptions, margin: numb
 
 /** Validate the options, encode `text` and place the logo. Throws INVALID_VALUE like toSvg, with the same messages. */
 export function layout(text: string, options: LayoutOptions = {}): Layout {
+  options = options ?? {}
   const { margin = 4, foreground = '#000000', background = '#ffffff' } = options
   checkMargin(margin)
   checkColours(foreground, background)
