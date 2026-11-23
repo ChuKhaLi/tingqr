@@ -1,11 +1,12 @@
 // Runner for the SVG vectors of conformance/vectors/render/ (conformance/README.md "Mẫu SVG"). They are golden output of
 // toSvg itself, so this proves the files are current and the errors are the expected ones, not that the SVG is right;
-// the matrix under them is pinned by the Nayuki vectors (matrix-conformance.spec.ts).
+// the encoder is checked against Nayuki on the matrix vectors (matrix-conformance.spec.ts), but the matrices inside these
+// SVGs come from the port.
 import { readFileSync, readdirSync } from 'node:fs'
 import { join } from 'node:path'
 import { TingQrError } from '@tingqr/core'
 import { CONFORMANCE_DIR } from './conformance-root.js'
-import { toSvg, type SvgOptions } from '../src/index.js'
+import { checkSvgOptions, toSvg, type SvgOptions } from '../src/index.js'
 
 interface Vector {
   id: string
@@ -14,6 +15,7 @@ interface Vector {
   input: { text: string } & SvgOptions
   expected?: { svg: string }
   error?: string
+  textDependent?: boolean
 }
 
 const DIR = join(CONFORMANCE_DIR, 'vectors', 'render')
@@ -33,6 +35,9 @@ describe.each(vectors.map((v) => [v.id, v] as const))('%s', (_id, v) => {
     test('renders exactly the expected SVG', () => {
       expect(toSvg(text, options)).toBe(v.expected!.svg)
     })
+    test('passes checkSvgOptions', () => {
+      expect(() => checkSvgOptions(options)).not.toThrow()
+    })
   } else {
     test('throws the expected TingQrError', () => {
       let thrown: unknown
@@ -43,6 +48,11 @@ describe.each(vectors.map((v) => [v.id, v] as const))('%s', (_id, v) => {
       }
       expect(thrown).toBeInstanceOf(TingQrError)
       expect((thrown as TingQrError).code).toBe(v.error)
+    })
+    // textDependent: the error needs the text (too long, logo too big), so checkSvgOptions cannot know it.
+    test(v.textDependent ? 'checkSvgOptions accepts it (textDependent)' : 'checkSvgOptions throws the same code', () => {
+      if (v.textDependent) return expect(() => checkSvgOptions(options)).not.toThrow()
+      expect(() => checkSvgOptions(options)).toThrow(expect.objectContaining({ code: v.error }))
     })
   }
 })

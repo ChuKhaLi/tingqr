@@ -240,11 +240,14 @@ Dành cho `toSvg` (`@tingqr/render`, `TingQrRender.ToSvg` bên .NET). Mẫu nằ
 - Mẫu lỗi: `kind: "encode-invalid"` với `"render": "svg"` ở ngoài cùng (cạnh `kind`), và `error` (luôn `INVALID_VALUE`). Bộ chạy
   gọi `toSvg`, không phải `toMatrix`; mẫu `encode-invalid` không có `render` vẫn gọi `toMatrix`. Mẫu lỗi SVG đặt tên
   `render-svg-invalid-*`, để không lẫn với `render-invalid-*` (mẫu ma trận) khi đếm.
+- **`checkSvgOptions`** (`CheckSvgOptions` bên .NET): với mẫu `svg`, gọi với tuỳ chọn (bỏ `text`) không được ném. Với mẫu lỗi SVG, phải ném
+  đúng `error`, **trừ** mẫu có `"textDependent": true` (chỉ có trên mẫu lỗi SVG): lỗi đó cần văn bản (quá dài so với `maxVersion`, logo
+  quá to so với mã), nên `checkSvgOptions` không biết và không được ném. Cờ nằm trong mẫu, không có danh sách riêng.
 - **Cách chọn bộ chạy:** `kind: "matrix"` hoặc `encode-invalid` không có `render` → bộ chạy ma trận; `kind: "svg"` hoặc
   `render: "svg"` → bộ chạy SVG. Bộ chạy của `@tingqr/core` bỏ qua mọi mẫu `scheme: "render"`.
 - **Nguồn là mẫu vàng, không phải oracle.** Mẫu SVG sinh từ chính `toSvg` của TypeScript bằng `tools/render/gen-svg.mjs`: chúng
-  chỉ chứng minh hai bản cài đặt đồng ý với nhau, không chứng minh SVG đúng. Phần ma trận bên dưới đã có Nayuki làm chứng
-  (mẫu ma trận); phần còn lại (đường dẫn, màu, kích thước, logo) chỉ có mẫu vàng này. `source` của mỗi mẫu ghi commit lúc sinh.
+  chỉ chứng minh hai bản cài đặt đồng ý với nhau, không chứng minh SVG đúng. Bộ mã hoá đã được so với Nayuki gốc qua mẫu
+  ma trận; ma trận trong các mẫu SVG này do bản port sinh ra. Phần còn lại (đường dẫn, màu, kích thước, logo) chỉ có mẫu vàng này. `source` của mỗi mẫu ghi commit lúc sinh.
 - **Sinh lại:** sửa `svg-cases.mjs` hoặc sửa `toSvg` thì build `@tingqr/render` rồi chạy `node conformance/tools/render/gen-svg.mjs`.
   Làm vậy cũng đổi commit trong `source` của mọi file (git diff cho thấy mọi file đổi một dòng). CI chạy `--check`:
   nó bỏ qua commit, chỉ báo khi nội dung lệch. Đổi `toSvg` mà mẫu đổi theo là đổi hành vi, phải báo cho bản .NET.

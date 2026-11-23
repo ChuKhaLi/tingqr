@@ -12,7 +12,7 @@ const COMMIT = /\) at [0-9a-f]{7,40}; golden/
 
 export const sourceOf = (commit) =>
   `@tingqr/render toSvg (TypeScript) at ${commit}; golden output so the two implementations agree, not an independent oracle ` +
-  '(the matrix is pinned by the Nayuki matrix vectors)'
+  '(the encoder is checked against the original Nayuki on the matrix vectors; the matrices inside these SVGs come from the port)'
 
 /**
  * The vectors for `cases` as { file, text }. `toSvg(text, options)` renders the cases without `error`; a case with
@@ -38,6 +38,7 @@ export function buildVectors(cases, toSvg, commit) {
         throw new Error(`${c.id}: expected ${c.error}, got ${thrown ? thrown.code ?? thrown : 'no error'}`)
       }
       vector = { id: c.id, scheme: 'render', kind: 'encode-invalid', render: 'svg', input: c.input, error: c.error }
+      if (c.textDependent) vector.textDependent = true
     }
     vector.source = sourceOf(commit)
     if (c.note) vector.note = c.note

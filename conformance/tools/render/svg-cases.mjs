@@ -15,6 +15,8 @@ const LOGO = { minVersion: 5 }
 const ok = (id, input, note) => ({ id: `render-svg-${id}`, input: { text: TEXT, ...input }, note })
 /** A case that must throw INVALID_VALUE from toSvg. */
 const bad = (id, input, note) => ({ id: `render-svg-invalid-${id}`, input: { text: TEXT, ...input }, error: 'INVALID_VALUE', note })
+/** Like bad, but only toSvg finds the error: it depends on the text, so checkSvgOptions (no text) accepts it. */
+const badWithText = (id, input, note) => ({ ...bad(id, input, note), textDependent: true })
 
 export const CASES = [
   ok('default', {}, 'no options: margin 4, black on white, no size'),
@@ -32,10 +34,13 @@ export const CASES = [
   ok('size-mm', { size: '40mm' }, 'size as a length'),
   ok('size-percent', { size: '100%' }, 'size as a percentage'),
   ok('size-length-fraction', { size: '1.5in' }, 'length with a fraction'),
-  ok('ecc-l', { ecc: 'L' }, 'ecc L'),
-  ok('ecc-m', { ecc: 'M' }, 'ecc M'),
-  ok('ecc-q', { ecc: 'Q' }, 'ecc Q'),
-  ok('ecc-h', { ecc: 'H' }, 'ecc H'),
+  ok('ecc-l', { ecc: 'L', boostEcc: false }, 'ecc L, not raised'),
+  ok('ecc-m', { ecc: 'M', boostEcc: false, minVersion: 3 }, 'ecc M, not raised (a bigger version, so it differs from the default, which is M too)'),
+  ok('ecc-q', { ecc: 'Q', boostEcc: false }, 'ecc Q, not raised'),
+  ok('ecc-h', { ecc: 'H', boostEcc: false }, 'ecc H, not raised'),
+  ok('mask-3', { mask: 3 }, 'a fixed mask'),
+  ok('boost-ecc-off', { ecc: 'L', boostEcc: false, minVersion: 2 }, 'boostEcc false keeps the level'),
+  ok('max-version-fits', { maxVersion: 4, minVersion: 4 }, 'maxVersion that the text fits in'),
   { id: 'render-svg-khmer', input: { text: 'ការទូទាត់ QR' }, note: 'Khmer text: byte mode, UTF-8' },
   { id: 'render-svg-emoji', input: { text: 'ting 😀 qr' }, note: 'emoji: a UTF-16 surrogate pair in the source text' },
   ok('logo-default', { ...LOGO, logo: { href: PNG } }, 'logo with defaults (size 0.2, padding 1, background = QR background); ecc is forced to H'),
@@ -63,7 +68,7 @@ export const CASES = [
   bad('size-zero-length', { size: '0mm' }, 'a length of zero'),
   bad('size-empty', { size: '' }, 'empty length'),
   bad('ecc-unknown', { ecc: 'X' }, 'an option of the matrix reaches toSvg too'),
-  bad('max-version', { maxVersion: 1, text: 'this text does not fit in a version 1 code' }, 'text longer than maxVersion allows'),
+  badWithText('max-version', { maxVersion: 1, text: 'this text does not fit in a version 1 code' }, 'text longer than maxVersion allows'),
   bad('logo-size-zero', { ...LOGO, logo: { href: PNG, size: 0 } }, 'logo size 0'),
   bad('logo-size-03', { ...LOGO, logo: { href: PNG, size: 0.3 } }, 'logo size above 0.25'),
   bad('logo-padding-5', { ...LOGO, logo: { href: PNG, padding: 5 } }, 'logo padding above 4'),
@@ -75,5 +80,7 @@ export const CASES = [
   bad('logo-href-protocol-relative', { ...LOGO, logo: { href: '//evil.example/x.png' } }, 'protocol-relative logo href'),
   bad('logo-background-colour', { ...LOGO, logo: { href: PNG, background: 'gold' } }, 'logo background must be a hex colour or transparent'),
   bad('logo-ecc-l', { ...LOGO, ecc: 'L', logo: { href: PNG } }, 'a logo needs ecc H'),
-  bad('logo-too-big', { logo: { href: PNG, size: 0.25, padding: 4 } }, 'the cleared box takes more than 10% of a small code'),
+  bad('min-over-max', { minVersion: 3, maxVersion: 2 }, 'minVersion above maxVersion'),
+  badWithText('logo-near-finder', { text: 'ting', logo: { href: PNG, padding: 0 } }, 'box under 10% but starts at module 8 on a 21x21 code'),
+  badWithText('logo-too-big', { logo: { href: PNG, size: 0.25, padding: 4 } }, 'the cleared box takes more than 10% of a small code'),
 ]

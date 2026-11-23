@@ -12,6 +12,6 @@
     }
   },
   "error": "INVALID_VALUE",
-  "source": "@tingqr/render toSvg (TypeScript) at 16108a2; golden output so the two implementations agree, not an independent oracle (the matrix is pinned by the Nayuki matrix vectors)",
+  "source": "@tingqr/render toSvg (TypeScript) at 12c1d1f; golden output so the two implementations agree, not an independent oracle (the encoder is checked against the original Nayuki on the matrix vectors; the matrices inside these SVGs come from the port)",
   "note": "logo background must be a hex colour or transparent"
 }

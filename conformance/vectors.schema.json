@@ -74,6 +74,9 @@
       "enum": [
         "svg"
       ]
+    },
+    "textDependent": {
+      "type": "boolean"
     }
   },
   "allOf": [
@@ -454,6 +457,23 @@
             "const": "render"
           }
         }
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "textDependent"
+        ]
+      },
+      "then": {
+        "properties": {
+          "render": {
+            "const": "svg"
+          }
+        },
+        "required": [
+          "render"
+        ]
       }
     }
   ]

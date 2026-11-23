@@ -67,6 +67,23 @@ test('the real cases are valid ids and cover both kinds', () => {
   for (const c of CASES) assert.equal(c.error !== undefined, c.id.startsWith('render-svg-invalid-'), c.id)
 })
 
+test('every rendering case has its own SVG, so no option can be dropped unnoticed', async () => {
+  const { toSvg } = await import('../../../../ts/packages/render/dist/index.js')
+  const allowed = new Set(['render-svg-logo-default', 'render-svg-logo-ecc-h']) // ecc H is forced by a logo
+  const seen = new Map()
+  for (const c of CASES.filter((c) => c.error === undefined)) {
+    const { text, ...options } = c.input
+    const svg = toSvg(text, options)
+    const other = seen.get(svg)
+    if (other !== undefined && !(allowed.has(other) && allowed.has(c.id))) assert.fail(`${c.id} renders the same SVG as ${other}`)
+    seen.set(svg, c.id)
+  }
+})
+
+test('textDependent only on error cases', () => {
+  for (const c of CASES) if (c.textDependent) assert.ok(c.error)
+})
+
 function scratchDir(edit) {
   const tmp = mkdtempSync(join(tmpdir(), 'tingqr-gen-svg-'))
   cpSync(VECTORS, tmp, { recursive: true })
