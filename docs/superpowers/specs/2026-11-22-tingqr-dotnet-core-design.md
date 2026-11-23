@@ -100,7 +100,7 @@ Tương ứng một-một với `ts/packages/core/src/` (khoảng 1 800 dòng, k
      4.8.1 và Node 22. Bỏ bước đổi chữ thường trước `IdnMapping` không đổi kết quả.
    - Không port toàn bộ chuẩn WHATWG và bảng UTS-46. `conformance/schemes/bank-app-link.md` (hoặc README) ghi rõ: hai bản
      chỉ bảo đảm giống nhau trên các mẫu; tên miền Unicode ngoài mẫu có thể ra khác nhau giữa TS và .NET, và giữa Linux
-     và Windows. CI được cấu hình chạy cả Ubuntu và Windows (chưa chạy lần nào).
+     và Windows. CI chạy cả Ubuntu và Windows; lần đầu xanh trên PR #10 (2026-11-23).
 3. **`Decode`/`Detect` nhận `null`:** trả kết quả lỗi `INVALID_VALUE`, không ném (spec chung, 5.3: hàm đọc không ném vì
    dữ liệu xấu). Bản TS hiện ném `TypeError` khi nhận thứ không phải chuỗi, nên **thêm cùng luật vào bản TS** (một lần
    kiểm ở đầu mỗi hàm đọc và `detect`), kèm test, và ghi luật vào `conformance/README.md` cạnh luật "không có đầu vào"

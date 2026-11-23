@@ -1,7 +1,7 @@
 name: Mutation (.NET core)
 
 # Stryker.NET mutates TingQR.Core and fails if the score drops below `thresholds.break` in dotnet/stryker-config.json.
-# One OS: the score is expected not to vary by platform; the only run so far (2026-11-22) was on Windows. The tests
+# One OS: the score is expected not to vary by platform; local runs on Windows (2026-11-22/23) and the first CI run on Ubuntu (PR #10, 2026-11-23) both passed. The tests
 # run on net10.0 only (net481 is Windows-only).
 on:
   push:

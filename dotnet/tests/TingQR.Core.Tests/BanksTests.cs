@@ -335,7 +335,7 @@ namespace TingQR.Tests
         // A known difference outside the vectors (conformance/README.md, bank-app-link). Node 22.23.3 (2026-11-23):
         // new URL('https://ẞ.vn/').href is https://ss.vn/ and new URL('https://ß.vn/').href is
         // https://xn--zca.vn/. IdnMapping gives xn--zca for both on .NET 10 (ICU, Windows) and ss for both on .NET
-        // Framework 4.8.1 (Windows tables); lower-casing the host first or not changes neither. Linux not run yet.
+        // Framework 4.8.1 (Windows tables); lower-casing the host first or not changes neither. Ubuntu CI (ICU, PR #10, 2026-11-23) gives the .NET 10 result too.
         [Theory]
         [InlineData("https://ẞ.vn/")]
         [InlineData("https://ß.vn/")]

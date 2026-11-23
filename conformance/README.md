@@ -131,7 +131,7 @@ Ba luật chung nữa, cùng loại:
   - Ví dụ lệch đã biết (chạy 2026-11-23): `https://ẞ.vn/` (U+1E9E) ra `https://ss.vn/` ở Node 22.23.3, `https://xn--zca.vn/`
     ở .NET 10 (ICU, Windows) và `https://ss.vn/` ở .NET Framework 4.8.1. `https://ß.vn/` ra `https://xn--zca.vn/` ở Node
     và .NET 10, `https://ss.vn/` ở .NET Framework 4.8.1. Đổi host sang chữ thường trước `IdnMapping` hay không đều cho
-    cùng kết quả. Chưa chạy trên Linux. Test: `SharpSDependsOnThePlatformIdnTables` (`BanksTests.cs`).
+    cùng kết quả. Trên Linux (Ubuntu CI, ICU, PR #10, 2026-11-23) .NET 10 cũng ra `xn--zca.vn` cho cả hai. Test: `SharpSDependsOnThePlatformIdnTables` (`BanksTests.cs`).
   - `fallbackUrl` là `null`: TypeScript phân biệt vắng (`{}` hay `undefined`: không có fallback) với `{ fallbackUrl: null }`
     (ném `INVALID_VALUE`). C# không phân biệt tham số vắng với `null`, nên `BankApps.Link(..., null)` là không có
     fallback.
