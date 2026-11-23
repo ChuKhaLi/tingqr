@@ -1,0 +1,14 @@
+{
+  "id": "render-svg-invalid-contrast-below-threshold",
+  "scheme": "render",
+  "kind": "encode-invalid",
+  "render": "svg",
+  "input": {
+    "text": "ting ting qr",
+    "foreground": "#777777",
+    "background": "#ffffff"
+  },
+  "error": "INVALID_VALUE",
+  "source": "@tingqr/render toSvg (TypeScript) at 16108a2; golden output so the two implementations agree, not an independent oracle (the matrix is pinned by the Nayuki matrix vectors)",
+  "note": "#777777 on white is 4.48:1, just under the 4.5:1 bar"
+}

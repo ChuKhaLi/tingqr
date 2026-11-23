@@ -7,7 +7,8 @@ import { toMatrix, type MatrixOptions } from '../src/index.js'
 
 interface Vector {
   id: string
-  kind: 'matrix' | 'encode-invalid'
+  kind: 'matrix' | 'encode-invalid' | 'svg'
+  render?: 'svg'
   input: { text: string } & MatrixOptions
   expected?: { size: number; version: number; ecc: string; mask: number; rows: string[] }
   error?: string
@@ -15,10 +16,13 @@ interface Vector {
 
 const DIR = join(CONFORMANCE_DIR, 'vectors', 'render')
 const names = readdirSync(DIR).filter((n) => n.endsWith('.json'))
-const vectors: Vector[] = names.map((n) => JSON.parse(readFileSync(join(DIR, n), 'utf8')))
+const all: Vector[] = names.map((n) => JSON.parse(readFileSync(join(DIR, n), 'utf8')))
+// The SVG vectors (kind "svg", and encode-invalid with "render": "svg") belong to svg-conformance.spec.ts.
+const vectors = all.filter((v) => v.kind === 'matrix' || (v.kind === 'encode-invalid' && v.render === undefined))
 
-test('the runner sees every render vector, and there are at least 20', () => {
-  expect(vectors.length).toBe(names.length)
+test('the runner sees every matrix vector, and there are at least 20', () => {
+  expect(all.length).toBe(names.length)
+  expect(vectors.length).toBe(all.filter((v) => v.kind !== 'svg' && v.render !== 'svg').length)
   expect(vectors.length).toBeGreaterThanOrEqual(20)
 })
 

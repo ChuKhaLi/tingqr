@@ -1,0 +1,17 @@
+{
+  "id": "render-svg-invalid-logo-size-zero",
+  "scheme": "render",
+  "kind": "encode-invalid",
+  "render": "svg",
+  "input": {
+    "text": "ting ting qr",
+    "minVersion": 5,
+    "logo": {
+      "href": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGP4z8DwHwAFAAH/q842iQAAAABJRU5ErkJggg==",
+      "size": 0
+    }
+  },
+  "error": "INVALID_VALUE",
+  "source": "@tingqr/render toSvg (TypeScript) at 16108a2; golden output so the two implementations agree, not an independent oracle (the matrix is pinned by the Nayuki matrix vectors)",
+  "note": "logo size 0"
+}

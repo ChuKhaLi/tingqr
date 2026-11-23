@@ -1,0 +1,16 @@
+{
+  "id": "render-svg-invalid-logo-href-protocol-relative",
+  "scheme": "render",
+  "kind": "encode-invalid",
+  "render": "svg",
+  "input": {
+    "text": "ting ting qr",
+    "minVersion": 5,
+    "logo": {
+      "href": "//evil.example/x.png"
+    }
+  },
+  "error": "INVALID_VALUE",
+  "source": "@tingqr/render toSvg (TypeScript) at 16108a2; golden output so the two implementations agree, not an independent oracle (the matrix is pinned by the Nayuki matrix vectors)",
+  "note": "protocol-relative logo href"
+}

@@ -164,3 +164,37 @@ test('schema rejects a lookup vector without expected.result, or with a payload 
   const { input: _i, ...noInput } = lookup
   expect(validate(noInput)).toBe(false)
 })
+
+const svg = {
+  id: 'x',
+  scheme: 'render',
+  kind: 'svg',
+  input: { text: 'A', margin: 2 },
+  expected: { svg: '<svg></svg>' },
+  source: 'test fixture inside conformance-format.spec.ts',
+}
+
+test('schema accepts an svg vector with input and expected.svg and no payload', () => {
+  expect(validate(svg), ajv.errorsText(validate.errors)).toBe(true)
+})
+
+test('schema rejects an svg vector without input or expected.svg, or with a payload, error or render', () => {
+  const { input: _i, ...noInput } = svg
+  const { expected: _e, ...noExpected } = svg
+  expect(validate(noInput)).toBe(false)
+  expect(validate(noExpected)).toBe(false)
+  expect(validate({ ...svg, expected: {} })).toBe(false)
+  expect(validate({ ...svg, expected: { svg: 1 } })).toBe(false)
+  expect(validate({ ...svg, expected: { svg: '<svg/>', rows: [] } })).toBe(false)
+  expect(validate({ ...svg, payload: '000201' })).toBe(false)
+  expect(validate({ ...svg, error: 'INVALID_VALUE' })).toBe(false)
+  expect(validate({ ...svg, render: 'svg' })).toBe(false)
+})
+
+test('schema accepts render: "svg" only on an encode-invalid vector of scheme render', () => {
+  const invalid = { id: 'x', scheme: 'render', kind: 'encode-invalid', render: 'svg', input: { text: 'A', margin: -1 }, error: 'INVALID_VALUE', source: 'test fixture inside conformance-format.spec.ts' }
+  expect(validate(invalid), ajv.errorsText(validate.errors)).toBe(true)
+  expect(validate({ ...invalid, render: 'png' })).toBe(false)
+  expect(validate({ ...invalid, scheme: 'vietqr' })).toBe(false)
+  expect(validate({ ...invalid, kind: 'matrix', expected: { size: 21, version: 1, ecc: 'M', mask: 0, rows: [] }, error: undefined })).toBe(false)
+})

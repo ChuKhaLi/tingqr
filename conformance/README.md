@@ -1,7 +1,7 @@
 # conformance/
 
 Nguồn sự thật chung cho mọi ngôn ngữ của tingqr. Bản TypeScript (`ts/`) và bản .NET (`dotnet/`) chạy cùng một bộ mẫu
-thử ở đây, nên hai bản cho cùng kết quả trên mọi hành vi có mẫu (trừ 5 mẫu kiểm kiểu, xem dưới; mẫu `render` từ Plan 8b).
+thử ở đây, nên hai bản cho cùng kết quả trên mọi hành vi có mẫu (trừ 7 mẫu kiểm kiểu, xem dưới; mẫu `render` từ Plan 8b).
 
 - `vectors.schema.json`: JSON Schema của một file mẫu thử.
 - `errors.json`: bảng mã lỗi và mã cảnh báo dùng chung. Không ngôn ngữ nào được có mã ngoài bảng.
@@ -29,6 +29,9 @@ thử ở đây, nên hai bản cho cùng kết quả trên mọi hành vi có m
   | `bakong-khqr` | 1.0.20 | ISC khai báo trong `package.json`, không có file LICENSE (SDK của Ngân hàng Quốc gia Campuchia) | KHQR |
   | Nayuki `qrcodegen.ts` | v1.8.0, commit `720f62b` | MIT (header trong file) | Mẫu ma trận (`vendor/`, file gốc không sửa, kiểm SHA-256 trước khi chạy) |
   | `typescript` | 5.9.3 | Apache-2.0 | Dịch file Nayuki gốc trong `gen-render.mjs` |
+- `tools/render/`: `gen-svg.mjs` sinh `vectors/render/render-svg-*.json` từ `@tingqr/render` (danh sách ca ở `svg-cases.mjs`).
+  Đọc `ts/packages/render/dist`, nên build trước (`pnpm -C ts/packages/render build`). `--check` thoát 1 khi file lệch, thiếu
+  hoặc không còn ca nào sinh ra nó. Xem "Mẫu SVG".
 - `tools/banks/`: tải, so sánh và cập nhật `banks/`, có `package.json` riêng (`sharp` để thu nhỏ logo).
   - Có gọi mạng: `update.mjs`, `capture-sources.mjs`, `play-check.mjs`, `commons-search.mjs`.
   - `sync-ts.mjs` sinh `ts/packages/core/src/banks/data.ts`.
@@ -107,6 +110,8 @@ Ba luật chung nữa, cùng loại:
   - `promptpay-encode-two-targets` (đích có hai khoá `mobile` và `nationalId`: kiểu đích đóng của bản có kiểu tĩnh không
     biểu diễn được).
   - `render-invalid-mask-fraction` (scheme `render`: `mask` 1.5, kiểu `int?` của bản .NET không biểu diễn được).
+  - `render-svg-invalid-margin-fraction` (`margin` 1.5, kiểu `int?`).
+  - `render-svg-invalid-logo-padding-fraction` (`logo.padding` 1.5, kiểu `int?`).
 - **Thông báo lỗi** không bắt buộc giống từng chữ giữa các bản (luật "không có đầu vào" ở trên cũng nằm trong luật này).
 - **Chưa có loại mẫu, chỉ có test của từng bản:** `isKhqrExpired` / `Khqr.IsExpired`, `removeVietnameseAccents` /
   `VietnameseText.RemoveAccents`, `fields` của lỗi `UNKNOWN_SCHEME` (`TingQrError.fields` / `TingQrException.Fields`)
@@ -221,6 +226,30 @@ Dành cho bộ vẽ QR (`@tingqr/render`, sau này `TingQR.Rendering`). Mẫu n�
 - Mẫu ma trận chạy bằng bộ chạy riêng của `@tingqr/render`. Bộ chạy của `@tingqr/core` bỏ qua chúng, vì `render` phụ
   thuộc `core`.
 - Mẫu ma trận chỉ sinh từ bộ mã hoá Nayuki **gốc** chạy làm oracle, không bao giờ từ code đã port.
+
+## Mẫu SVG (`kind: "svg"`, `scheme: "render"`)
+
+Dành cho `toSvg` (`@tingqr/render`, `TingQrRender.ToSvg` bên .NET). Mẫu nằm cạnh mẫu ma trận ở `vectors/render/`, tên
+`render-svg-*.json`.
+
+- `input`: `{ text, margin?, foreground?, background?, size?, ecc?, boostEcc?, minVersion?, maxVersion?, mask?, logo? }`,
+  các tuỳ chọn trải phẳng như mẫu ma trận. `logo` là `{ href, size?, padding?, background? }`. `size` là số dương hoặc
+  chuỗi độ dài (`"40mm"`, `"100%"`). Không có `payload`, không có `error`.
+- `expected`: `{ svg }`, chuỗi SVG đúng từng ký tự. **Quy tắc so sánh:** `toSvg(input.text, các trường còn lại của input)` phải
+  bằng `expected.svg`.
+- Mẫu lỗi: `kind: "encode-invalid"` với `"render": "svg"` ở ngoài cùng (cạnh `kind`), và `error` (luôn `INVALID_VALUE`). Bộ chạy
+  gọi `toSvg`, không phải `toMatrix`; mẫu `encode-invalid` không có `render` vẫn gọi `toMatrix`. Mẫu lỗi SVG đặt tên
+  `render-svg-invalid-*`, để không lẫn với `render-invalid-*` (mẫu ma trận) khi đếm.
+- **Cách chọn bộ chạy:** `kind: "matrix"` hoặc `encode-invalid` không có `render` → bộ chạy ma trận; `kind: "svg"` hoặc
+  `render: "svg"` → bộ chạy SVG. Bộ chạy của `@tingqr/core` bỏ qua mọi mẫu `scheme: "render"`.
+- **Nguồn là mẫu vàng, không phải oracle.** Mẫu SVG sinh từ chính `toSvg` của TypeScript bằng `tools/render/gen-svg.mjs`: chúng
+  chỉ chứng minh hai bản cài đặt đồng ý với nhau, không chứng minh SVG đúng. Phần ma trận bên dưới đã có Nayuki làm chứng
+  (mẫu ma trận); phần còn lại (đường dẫn, màu, kích thước, logo) chỉ có mẫu vàng này. `source` của mỗi mẫu ghi commit lúc sinh.
+- **Sinh lại:** sửa `svg-cases.mjs` hoặc sửa `toSvg` thì build `@tingqr/render` rồi chạy `node conformance/tools/render/gen-svg.mjs`.
+  Làm vậy cũng đổi commit trong `source` của mọi file (git diff cho thấy mọi file đổi một dòng). CI chạy `--check`:
+  nó bỏ qua commit, chỉ báo khi nội dung lệch. Đổi `toSvg` mà mẫu đổi theo là đổi hành vi, phải báo cho bản .NET.
+- Logo trong mẫu là ảnh PNG 1×1 dạng `data:` URI, không phải logo ngân hàng thật; `toSvg` không giải mã ảnh.
+- Ba mẫu kiểm kiểu của scheme `render` nằm trong danh sách ở trên (`mask`, `margin` và `logo.padding` không nguyên).
 
 ## Trang quét thử (VietQR bằng app thật)
 

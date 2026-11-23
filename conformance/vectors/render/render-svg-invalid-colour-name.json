@@ -1,0 +1,13 @@
+{
+  "id": "render-svg-invalid-colour-name",
+  "scheme": "render",
+  "kind": "encode-invalid",
+  "render": "svg",
+  "input": {
+    "text": "ting ting qr",
+    "foreground": "red"
+  },
+  "error": "INVALID_VALUE",
+  "source": "@tingqr/render toSvg (TypeScript) at 16108a2; golden output so the two implementations agree, not an independent oracle (the matrix is pinned by the Nayuki matrix vectors)",
+  "note": "colour must be #rgb or #rrggbb"
+}
