@@ -107,11 +107,34 @@ Ba luật chung nữa, cùng loại:
   - `promptpay-encode-two-targets` (đích có hai khoá `mobile` và `nationalId`: kiểu đích đóng của bản có kiểu tĩnh không
     biểu diễn được).
 - **Thông báo lỗi** không bắt buộc giống từng chữ giữa các bản (luật "không có đầu vào" ở trên cũng nằm trong luật này).
+- **Chưa có loại mẫu, chỉ có test của từng bản:** `isKhqrExpired` / `Khqr.IsExpired`, `removeVietnameseAccents` /
+  `VietnameseText.RemoveAccents`, `fields` của lỗi `UNKNOWN_SCHEME` (`TingQrError.fields` / `TingQrException.Fields`)
+  và `tag` của cảnh báo. Hai bản có thể lệch ở những chỗ này mà bộ mẫu không bắt được.
+- **`null` trong `expected`:** bộ chạy .NET bỏ mọi thuộc tính C# mang `null` khi đổi kết quả sang JSON (coi `null` như
+  vắng, giống trường tuỳ chọn bị bỏ ở TypeScript). Vì vậy một mẫu ghi `"x": null` bên trong `expected` sẽ đỏ ở .NET:
+  trường tuỳ chọn không có giá trị thì bỏ hẳn khỏi mẫu, không ghi `null`. (Riêng `expected.result: null` của mẫu
+  `lookup` là giá trị kết quả, không phải thuộc tính bị bỏ.)
+- **Số tiền không nguyên:** bản .NET nhận `decimal` (`QrAmount`), JavaScript nhận `number` (double). Hai kiểu chỉ viết
+  ra chữ số khác nhau khi số có hơn 15 chữ số có nghĩa (double làm tròn), nhỏ hơn 1e-6 hay từ 1e21 trở lên (JavaScript
+  dùng dạng mũ). Mọi hàm tạo mã đều từ chối các giá trị đó (`INVALID_VALUE`, tag `54`): VietQR chỉ nhận số nguyên 1–13
+  chữ số; PromptPay tối đa 10 chữ số phần nguyên và 2 chữ số thập phân; KHQR KHR số nguyên, USD tối đa 2 chữ số thập
+  phân, cả hai tối đa 13 ký tự. Kiểm bằng cách đọc `amountText` của ba bản TS và `QrAmount` (2026-11-23), chưa có mẫu.
 - **`bank-app-link`**: hai bản chỉ bảo đảm giống nhau trên các mẫu; tên miền Unicode ngoài mẫu có thể khác giữa
   TypeScript và .NET, và giữa Linux và Windows.
   - Bản .NET không có bộ đọc WHATWG đầy đủ: nó từ chối (`INVALID_VALUE`) một số URL mà WHATWG nhận rồi viết lại, như
     có user info, IPv6, IPv4 dạng không chuẩn (`0x7f.1`), `%` hay `\` trong host, `\` hay đoạn `.`/`..` trong path,
     host có nhãn cuối bắt đầu bằng `0x` (như `a.0x`), và IPv4 có dấu chấm cuối (`127.0.0.1.`).
+  - Đoạn `.`/`..` viết bằng mã phần trăm (`%2e`, `%2E`, `.%2e`, `%2e%2e`) cũng tính là đoạn `.`/`..`, nên bản .NET
+    cũng từ chối.
+  - Surrogate lẻ: trong path (và query, fragment) thành U+FFFD rồi mã hoá (`%EF%BF%BD`, mẫu
+    `mb-android-fallback-lone-surrogate`); trong host thì `INVALID_VALUE` ở cả hai bản.
+  - Ví dụ lệch đã biết (chạy 2026-11-23): `https://ẞ.vn/` (U+1E9E) ra `https://ss.vn/` ở Node 22.23.3, `https://xn--zca.vn/`
+    ở .NET 10 (ICU, Windows) và `https://ss.vn/` ở .NET Framework 4.8.1. `https://ß.vn/` ra `https://xn--zca.vn/` ở Node
+    và .NET 10, `https://ss.vn/` ở .NET Framework 4.8.1. Đổi host sang chữ thường trước `IdnMapping` hay không đều cho
+    cùng kết quả. Chưa chạy trên Linux. Test: `SharpSDependsOnThePlatformIdnTables` (`BanksTests.cs`).
+  - `fallbackUrl` là `null`: TypeScript phân biệt vắng (`{}` hay `undefined`: không có fallback) với `{ fallbackUrl: null }`
+    (ném `INVALID_VALUE`). C# không phân biệt tham số vắng với `null`, nên `BankApps.Link(..., null)` là không có
+    fallback.
 
 ## Mẫu link mở app (`kind: "link"`, `scheme: "bank-app-link"`)
 

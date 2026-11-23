@@ -96,10 +96,16 @@ TypeScript và bản .NET, kèm tích hợp sẵn cho Angular, NestJS và ASP.NE
       0.0.1; luật "chỉ tag `ts-v*`" cho environment `npm-release` (chủ dự án đặt trên GitHub); mẫu KHQR USD nguyên.
   - **Plan 8a** (2026-11-22, nhánh `plan-8a`): `docs/superpowers/plans/2026-11-22-plan-8a-dotnet-core.md`, thiết kế
     `docs/superpowers/specs/2026-11-22-tingqr-dotnet-core-design.md`. `TingQR.Core` (C#, `dotnet/`, net10.0 +
-    netstandard2.0): VietQR, VNPAY, PromptPay, KHQR, Detect, banks; chạy cùng mẫu `conformance/`; Stryker.NET 90%.
+    netstandard2.0): VietQR, VNPAY, PromptPay, KHQR, Detect, banks; chạy cùng mẫu `conformance/`.
+    - Stryker.NET, ngưỡng chặn 90%; chạy cục bộ trên Windows 2026-11-23 (sau đợt sửa cuối): 0 sống sót trên 1518 đột
+      biến được tính (1505 bị giết, 13 quá giờ), 291 bị bỏ qua (147 theo comment `Stryker disable`, 144 do bộ lọc
+      "block already covered"), chưa chạy trên CI.
+    - Tra cứu ngân hàng: `null`/không phải chuỗi ở `findBank`/`appsForBank` ném `INVALID_VALUE`; chỉ đổi hoa/thường chữ
+      ASCII (`conformance/README.md`).
     - Giới hạn đã biết: bộ kiểm `fallbackUrl` tự viết (từ chối cố ý user info, IPv6, IPv4 không chuẩn...; tên miền
       Unicode ngoài mẫu có thể lệch TS); 4 mẫu kiểm kiểu. Chưa phát hành (số phiên bản để Plan 8c).
-    - **Chưa kiểm:** `ci-dotnet` và `mutation-dotnet` chưa chạy trên GitHub; mẫu tên miền Unicode chưa chạy trên Linux.
+    - **Chưa kiểm:** test .NET mới chạy trên Windows (`net10.0`, `net481`); `ci-dotnet` (Ubuntu + Windows) và
+      `mutation-dotnet` chưa chạy lần nào; mẫu tên miền Unicode chưa chạy trên Linux.
   - Tiếp theo: Plan 2 Task 5–6 (MoMo, ZaloPay) khi chủ dự án có QR thật; chủ dự án quét thêm app (kể cả bản có icon ngân hàng) và
     thử PNG trong Zalo/Messenger; Plan 8 (.NET).
 - **Chủ dự án đã quyết:**

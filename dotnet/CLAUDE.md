@@ -22,4 +22,10 @@ Hướng dẫn cho phần .NET của tingqr. Quy tắc chung: `../CLAUDE.md`. Th
 - **Mutation test (Stryker.NET 5.1.0, tool cục bộ trong `.config/dotnet-tools.json`):** `dotnet tool restore` rồi `dotnet tool run dotnet-stryker` trong `dotnet/` (~5 phút). Cấu hình `stryker-config.json`: chạy test `net10.0`, ngưỡng chặn ≥ 90 (`thresholds.break`), loại `Banks/BankData.g.cs` và `Polyfills.cs`. CI: `.github/workflows/mutation-dotnet.yml`. Báo cáo HTML ở `dotnet/StrykerOutput/` (không commit).
   - Không dùng `ignore-methods`: mã lỗi và tag là quy phạm nên vẫn bị đột biến. Chỉ chuỗi thông báo lỗi (và tên trường chỉ xuất hiện trong thông báo) được loại, từng chỗ một bằng `// Stryker disable once String : error message` đặt ngay trước literal.
   - Đột biến tương đương thật sự cũng loại từng chỗ bằng `// Stryker disable once <Loại> : <lý do>` ngay trên dòng đó (ví dụ `dot < 0` so với `dot <= 0`, dung lượng `StringBuilder`, `>>` so với `>>>` với số không âm, tổ hợp mã băm). Lý do phải nằm trong comment, không để ở đây. Phạm vi thật của `disable once` (đo bằng báo cáo JSON, Stryker.NET 5.1.0): mọi đột biến cùng loại trong cả câu lệnh/dòng đó, không riêng một đột biến. Vì vậy chỉ dùng khi mọi đột biến loại đó trên dòng đều tương đương; nếu lẫn đột biến giết được thì viết lại mã cho đột biến tương đương biến mất (ví dụ `IndexOf(x) != -1` thay cho `>= 0`, `dot == -1` thay cho `dot < 0`) hoặc tách ra dòng riêng.
+  - Biến hay hàm phụ chỉ dùng để dựng thông báo lỗi (`shown`, `Quote`, chỗ chọn giữa hai thông báo) được loại bằng
+    `// Stryker disable once all : <lý do>` ngay trên dòng đó, vì mọi đột biến trên dòng chỉ đổi thông báo. Kiểm lại
+    rằng dòng đó không chứa gì ngoài phần dựng thông báo.
+  - Ngoại lệ duy nhất không phải thông báo hay tương đương: `Banks/FallbackUrl.cs`, kiểm `ForbiddenInAuthority` ở đầu
+    `HostAndPort` (`disable once Statement`). Đó là kiểm tra phòng thủ không thể chạm tới: `Host` và `Port` đã từ chối
+    đúng các ký tự đó với cùng lỗi, nên bỏ câu lệnh không đổi kết quả nào.
   - Đột biến sống sót khác là lỗ hổng test: viết test giết nó, không hạ ngưỡng và không thêm ngoại lệ theo cả file hay cả lớp.

@@ -11,8 +11,9 @@ namespace TingQR
     /// <c>INVALID_VALUE</c> for anything else, including some URLs WHATWG would accept and rewrite (user info, IPv6
     /// literals, non-canonical IPv4 such as <c>0x7f.1</c>, percent signs or backslashes in the host, backslashes and
     /// <c>.</c>/<c>..</c> segments in the path). Unicode hosts go through <see cref="IdnMapping"/>, which uses ICU on
-    /// Linux and Windows' own tables on .NET Framework, so a Unicode host outside the vectors may come out differently
-    /// from the TypeScript version.
+    /// .NET 5 and later (Linux and Windows) and the Windows (NLS) tables on .NET Framework, and ICU versions differ
+    /// between machines, so a Unicode host outside the vectors may come out differently from the TypeScript version
+    /// and between platforms.
     /// </summary>
     internal static class FallbackUrl
     {

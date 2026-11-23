@@ -35,7 +35,7 @@ Chủ dự án chọn cách 1 (2026-11-22).
 
 Tương ứng một-một với `ts/packages/core/src/` (khoảng 1 800 dòng, không kể dữ liệu ngân hàng):
 
-| TypeScript | .NET (đề xuất tên, **[Claude]**) |
+| TypeScript | .NET (đề xuất tên, **[Claude]**; tên thật ở cuối bảng) |
 |---|---|
 | `TingQrError` (`code`, `tag`, `fields`), `ERROR_CODES`, `WARNING_CODES` | `TingQrException : Exception` (`Code`, `Tag`, `Fields`); `TingQrErrorCode`, `TingQrWarningCode` (enum) |
 | `Result<T>` (`ok`, `value`, `warnings` / `error`) | `TingQrResult<T>` (`Ok`, `Value`, `Warnings`, `Error`) |
@@ -44,6 +44,11 @@ Tương ứng một-một với `ts/packages/core/src/` (khoảng 1 800 dòng, k
 | `encodeVietQr`/`decodeVietQr`, `decodeVnpayQr`, `encodePromptPayQr`/`decodePromptPayQr`, `encodeKhqr`/`decodeKhqr`/`isKhqrExpired`, `detect` | `VietQr.Encode/Decode`, `VnpayQr.Decode`, `PromptPayQr.Encode/Decode`, `Khqr.Encode/Decode/IsExpired`, `TingQrDetector.Detect` (hoặc tên tương đương, theo quy ước .NET) |
 | `removeVietnameseAccents` | `VietnameseText.RemoveAccents` |
 | `@tingqr/core/banks`: `BANKS`, `BANK_APPS`, `findBank`, `findBankApp`, `appsForBank`, `bankAppLink` | namespace `TingQR.Banks` trong cùng assembly: `Banks.All`, `BankApps.All`, `FindBank`, `FindBankApp`, `AppsForBank`, `BankAppLink` |
+
+**Tên thật đã dùng (thay các tên đề xuất trên, 2026-11-23):** mọi kiểu nằm trong namespace `TingQR`, trừ tầng EMV và
+`ParseMode` ở `TingQR.Emv` (`Crc16`, `Tlv`, `EmvPayload`, `EmvPayloads`). Không có namespace `TingQR.Banks`: dùng
+`Banks.All`, `Banks.Find`, `BankApps.All`, `BankApps.Find`, `BankApps.ForBank`, `BankApps.Link`. Bảng đối chiếu đầy
+đủ ở `dotnet/src/TingQR.Core/README.md`.
 
 - **Quy tắc chung (spec chung, 5.3):** `Encode` ném `TingQrException`; `Decode`/`Detect` trả `TingQrResult<T>`, không ném
   với dữ liệu vào xấu.
@@ -83,17 +88,19 @@ Tương ứng một-một với `ts/packages/core/src/` (khoảng 1 800 dòng, k
      danh sách thì đỏ; mẫu trong danh sách mà lại chuyển được thì cũng đỏ. Không bỏ qua lặng lẽ.
    - `errorTag` của các mẫu này chỉ áp dụng cho bản không có kiểu tĩnh (TS).
 2. **`BankAppLink` và `fallbackUrl`:** bản TS dùng bộ đọc URL WHATWG. .NET không có bộ đọc đó; `System.Uri` khác ở nhiều
-   chỗ, và `IdnMapping` (đổi tên miền Unicode sang punycode) dựa vào ICU trên Linux, vào Windows trên Windows.
+   chỗ, và `IdnMapping` (đổi tên miền Unicode sang punycode) dùng ICU trên .NET 5 trở lên (cả Linux lẫn Windows), bảng
+   NLS của Windows trên .NET Framework; phiên bản ICU cũng khác nhau giữa các máy.
    - .NET viết một bộ kiểm URL nhỏ, đủ cho luật của tingqr: chỉ `http:`/`https:`, URL tuyệt đối, và ra đúng chuỗi mà mọi
      mẫu `bank-app-link` mong đợi (tên miền Unicode sang punycode qua `IdnMapping`, `https:example.com`, viết hoa và khoảng trắng hai đầu).
    - Surrogate lẻ: trong **path** thì thành U+FFFD (mẫu `mb-android-fallback-lone-surrogate`); chỉ surrogate lẻ trong
      **host** mới là `INVALID_VALUE`. (Bản đầu của spec ghi "surrogate lẻ là lỗi" là sai.)
    - **Cố ý từ chối** (`INVALID_VALUE`), dù WHATWG nhận rồi viết lại: user info; IPv6; IPv4 không chuẩn; `%` hoặc `\`
      trong host; `\` hoặc đoạn `.`/`..` trong path; host có nhãn cuối bắt đầu bằng `0x`; IPv4 có dấu chấm cuối.
-   - Ví dụ lệch đã biết: `ẞ` ra `xn--zca` ở .NET nhưng `ss` ở Node.
+   - Ví dụ lệch đã biết (chạy 2026-11-23): `https://ẞ.vn/` ra `xn--zca.vn` ở .NET 10 (Windows), `ss.vn` ở .NET Framework
+     4.8.1 và Node 22. Bỏ bước đổi chữ thường trước `IdnMapping` không đổi kết quả.
    - Không port toàn bộ chuẩn WHATWG và bảng UTS-46. `conformance/schemes/bank-app-link.md` (hoặc README) ghi rõ: hai bản
      chỉ bảo đảm giống nhau trên các mẫu; tên miền Unicode ngoài mẫu có thể ra khác nhau giữa TS và .NET, và giữa Linux
-     và Windows. CI chạy cả Ubuntu và Windows để bắt chỗ lệch trên các mẫu.
+     và Windows. CI được cấu hình chạy cả Ubuntu và Windows (chưa chạy lần nào).
 3. **`Decode`/`Detect` nhận `null`:** trả kết quả lỗi `INVALID_VALUE`, không ném (spec chung, 5.3: hàm đọc không ném vì
    dữ liệu xấu). Bản TS hiện ném `TypeError` khi nhận thứ không phải chuỗi, nên **thêm cùng luật vào bản TS** (một lần
    kiểm ở đầu mỗi hàm đọc và `detect`), kèm test, và ghi luật vào `conformance/README.md` cạnh luật "không có đầu vào"
