@@ -29,3 +29,8 @@ Hướng dẫn cho phần .NET của tingqr. Quy tắc chung: `../CLAUDE.md`. Th
     `HostAndPort` (`disable once Statement`). Đó là kiểm tra phòng thủ không thể chạm tới: `Host` và `Port` đã từ chối
     đúng các ký tự đó với cùng lỗi, nên bỏ câu lệnh không đổi kết quả nào.
   - Đột biến sống sót khác là lỗ hổng test: viết test giết nó, không hạ ngưỡng và không thêm ngoại lệ theo cả file hay cả lớp.
+
+## TingQR.Rendering
+
+- `src/TingQR.Rendering` (tests `tests/TingQR.Rendering.Tests`): port của `ts/packages/render/src/` (trừ `canvas.ts`). Phụ thuộc `TingQR.Core`. Mẫu thử: `conformance/vectors/render/`.
+- Bộ mã hoá QR là port từng dòng từ `ts/packages/render/src/qrcodegen.ts` (Nayuki v1.8.0, MIT; ghi công trong `NOTICE`). File port đó không chạy mutation test.

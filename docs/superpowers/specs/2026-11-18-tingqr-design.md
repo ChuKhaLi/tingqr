@@ -269,7 +269,7 @@ tree khớp với vietqr.io ở cả 15 app nó có.
   - **Bộ mã hoá QR là code của tingqr, port từ Nayuki QR Code generator** (bản TypeScript, MIT, header
     `Copyright (c) Project Nayuki`; https://github.com/nayuki/QR-Code-generator). Không bọc thư viện QR khác, không có
     dependency. Giữ header giấy phép và ghi công trong file được port và trong NOTICE. **[chủ dự án, 2026-11-18]**
-  - Bản .NET (`TingQR.Rendering`, v0.2) port từ `manuelbl/QrCodeGenerator` (MIT), vốn là bản port trung thành của Nayuki.
+  - Bản .NET (`TingQR.Rendering`, v0.2) port từ `ts/packages/render/src/qrcodegen.ts` (Nayuki v1.8.0) từng dòng một (chủ dự án chọn 2026-11-23).
   - **Hai ngôn ngữ phải cho cùng một ma trận điểm ảnh** với cùng chuỗi và cùng tuỳ chọn (mức sửa lỗi, mask, phiên bản).
     Bộ mẫu thử có loại mẫu ma trận (`conformance/vectors/render/`) để chứng minh. Mẫu ma trận lấy từ chính bộ mã hoá
     Nayuki gốc chạy làm oracle, không lấy từ code đã port.
