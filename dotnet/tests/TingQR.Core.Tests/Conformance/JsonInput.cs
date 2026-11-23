@@ -99,6 +99,19 @@ namespace TingQR.Tests.Conformance
             return value;
         }
 
+        /// <summary>Any JSON number as a double, or null when absent.</summary>
+        public double? Double(string name)
+        {
+            var node = Take(name, out var present);
+            if (!present) return null;
+            if (Kind(node!) != JsonValueKind.Number) throw new InputConversionException($"input.{name} is not a number.");
+            return node!.GetValue<double>();
+        }
+
+        /// <summary>The JSON kind of a field, or null when absent; does not mark it read.</summary>
+        public JsonValueKind? KindOf(string name)
+            => _obj.TryGetPropertyValue(name, out var node) ? (node == null ? JsonValueKind.Null : Kind(node)) : (JsonValueKind?)null;
+
         /// <summary>A JSON boolean, or null when absent.</summary>
         public bool? Bool(string name)
         {
