@@ -69,15 +69,23 @@ test('the real cases are valid ids and cover both kinds', () => {
 
 test('every rendering case has its own SVG, so no option can be dropped unnoticed', async () => {
   const { toSvg } = await import('../../../../ts/packages/render/dist/index.js')
-  const allowed = new Set(['render-svg-logo-default', 'render-svg-logo-ecc-h']) // ecc H is forced by a logo
+  // Pairs that must render the same SVG: ecc H is forced by a logo; a digit string is written like the number.
+  const same = [
+    ['render-svg-logo-default', 'render-svg-logo-ecc-h'],
+    ['render-svg-size-integer', 'render-svg-size-string-integer'],
+  ]
+  const allowed = (a, b) => same.some(([x, y]) => (x === a && y === b) || (x === b && y === a))
   const seen = new Map()
+  const svgOf = new Map()
   for (const c of CASES.filter((c) => c.error === undefined)) {
     const { text, ...options } = c.input
     const svg = toSvg(text, options)
+    svgOf.set(c.id, svg)
     const other = seen.get(svg)
-    if (other !== undefined && !(allowed.has(other) && allowed.has(c.id))) assert.fail(`${c.id} renders the same SVG as ${other}`)
+    if (other !== undefined && !allowed(other, c.id)) assert.fail(`${c.id} renders the same SVG as ${other}`)
     seen.set(svg, c.id)
   }
+  for (const [a, b] of same) assert.equal(svgOf.get(a), svgOf.get(b), `${a} and ${b}`)
 })
 
 test('textDependent only on error cases', () => {
