@@ -122,26 +122,27 @@ namespace TingQR.Rendering
             // the value underflows. A value too large is Infinity in JavaScript (> 0); net481's parser fails on it instead,
             // so a failed parse of these plain digits means overflow, which is positive.
             var number = Number.Match(length).Value;
-            if (!double.TryParse(number, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out var parsed)) return true;
-            return parsed > 0;
+            return !double.TryParse(number, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out var parsed) || parsed > 0;
         }
 
         /// <summary>Path data for dark modules, one segment per horizontal run, skipping the logo's cleared box.</summary>
         public static void AppendModulePath(StringBuilder d, LayoutResult l, int margin)
         {
+            // Rows are indexed directly (not IsDark, which is false outside the matrix), so reading past the edge throws.
             var size = l.Size;
             for (var y = 0; y < size; y++)
             {
+                var row = l.Matrix.Modules[y];
                 var x = 0;
                 while (x < size)
                 {
-                    if (!l.Matrix.IsDark(x, y) || l.Cleared(x, y))
+                    if (!row[x] || l.Cleared(x, y))
                     {
                         x++;
                         continue;
                     }
                     var start = x;
-                    while (x < size && l.Matrix.IsDark(x, y) && !l.Cleared(x, y)) x++;
+                    while (x < size && row[x] && !l.Cleared(x, y)) x++;
                     var len = Num(x - start);
                     d.Append('M').Append(Num(start + margin)).Append(' ').Append(Num(y + margin))
                         .Append('h').Append(len).Append("v1h-").Append(len).Append('z');

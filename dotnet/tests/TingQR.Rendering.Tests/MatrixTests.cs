@@ -79,6 +79,55 @@ namespace TingQR.Rendering.Tests
             Assert.False(m.IsDark(0, m.Size));
         }
 
+        // Messages from the built TS dist (node 22): toMatrix('A', options) for each options object below.
+        public static IEnumerable<object[]> BadIntOptions() => new[]
+        {
+            new object[] { new MatrixOptions { Mask = 8 }, "Option mask must be an integer 0–7." },
+            new object[] { new MatrixOptions { Mask = -1 }, "Option mask must be an integer 0–7." },
+            new object[] { new MatrixOptions { MinVersion = 0 }, "Option minVersion must be an integer 1–40." },
+            new object[] { new MatrixOptions { MinVersion = 41 }, "Option minVersion must be an integer 1–40." },
+            new object[] { new MatrixOptions { MaxVersion = 0 }, "Option maxVersion must be an integer 1–40." },
+            new object[] { new MatrixOptions { MaxVersion = 41 }, "Option maxVersion must be an integer 1–40." },
+            new object[] { new MatrixOptions { MinVersion = 5, MaxVersion = 4 }, "Option minVersion must not exceed maxVersion." },
+        };
+
+        [Theory]
+        [MemberData(nameof(BadIntOptions))]
+        public void BadIntOptionMessages(MatrixOptions options, string message)
+        {
+            var e = Assert.Throws<TingQrException>(() => TingQrRender.ToMatrix("A", options));
+            Assert.Equal(TingQrErrorCode.InvalidValue, e.Code);
+            Assert.Equal(message, e.Message);
+        }
+
+        // node: toMatrix('A', { minVersion: 5, maxVersion: 5 }) gives version 5, size 37.
+        [Fact]
+        public void EqualMinAndMaxVersionPinTheVersion()
+        {
+            var m = TingQrRender.ToMatrix("A", new MatrixOptions { MinVersion = 5, MaxVersion = 5 });
+            Assert.Equal(5, m.Version);
+            Assert.Equal(37, m.Size);
+        }
+
+        // node: toMatrix throws INVALID_VALUE with this message for each text below, and encodes '😀' (version 1).
+        // One Fact, not InlineData: xUnit's test-case serialisation replaces lone surrogates with U+FFFD.
+        [Fact]
+        public void LoneSurrogatesAreInvalidValue()
+        {
+            foreach (var text in new[] { "\uD800", "a\uD800", "\uD800a", "\uDC00", "a\uDC00b" })
+            {
+                var e = Assert.Throws<TingQrException>(() => TingQrRender.ToMatrix(text));
+                Assert.Equal(TingQrErrorCode.InvalidValue, e.Code);
+                Assert.Equal("Text contains an unpaired surrogate (a character cut in half); it cannot be encoded as UTF-8.", e.Message);
+            }
+        }
+
+        [Fact]
+        public void ASurrogatePairIsEncoded()
+        {
+            Assert.Equal(1, TingQrRender.ToMatrix("😀").Version);
+        }
+
         [Fact]
         public void NullOptionsAreDefaults()
         {

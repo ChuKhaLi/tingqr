@@ -43,6 +43,14 @@ namespace TingQR.Rendering.Tests
         [InlineData(0x44B52D02C7E14AF6L, "1e+23")]
         [InlineData(0x447C7E83209E90B2L, "8.41e+21")]
         [InlineData(0x3EA0C6F7A0B5ED8DL, "5e-7")]
+        // Same script with [2**-1017, 562949953421312.25, 562949953421312.75, 2**54+4, 2**54+24, 2**54+8, 2**54+28]:
+        [InlineData(0x60000000000000L, "7.120236347223045e-307")] // power of two where the halved lower gap changes the digits
+        [InlineData(0x4300000000000002L, "562949953421312.2")] // x halfway between .2 and .3, both in range: the even one
+        [InlineData(0x4300000000000006L, "562949953421312.8")] // halfway between .7 and .8: the even one
+        [InlineData(0x4350000000000001L, "18014398509481988")] // odd significand: ...990 sits on the upper bound, excluded
+        [InlineData(0x4350000000000006L, "18014398509482010")] // even significand: ...010 on the upper bound, included
+        [InlineData(0x4350000000000002L, "18014398509481990")] // even significand: ...990 on the lower bound, included
+        [InlineData(0x4350000000000007L, "18014398509482012")] // odd significand: ...010 on the lower bound, excluded
         public void MatchesJavaScriptStringAtBoundaries(long bits, string expected)
         {
             Assert.Equal(expected, JsNumber.ToString(BitConverter.Int64BitsToDouble(bits)));

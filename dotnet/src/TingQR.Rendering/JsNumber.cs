@@ -15,7 +15,8 @@ namespace TingQR.Rendering
         {
             if (double.IsNaN(value)) return "NaN";
             if (value == 0) return "0"; // both +0 and -0
-            if (value < 0) return "-" + ToString(-value);
+            // Math.Sign, not value < 0: zero is handled above, and the boundary of a comparison would be untestable.
+            if (Math.Sign(value) == -1) return "-" + ToString(-value);
             if (double.IsPositiveInfinity(value)) return "Infinity";
 
             ShortestDigits(value, out var digits, out var n);
@@ -30,10 +31,13 @@ namespace TingQR.Rendering
         {
             var k = digits.Length;
             if (k <= n && n <= 21) return digits + new string('0', n - k);
-            if (0 < n && n <= 21) return digits.Substring(0, n) + "." + digits.Substring(n);
+            // The spec's 0 < n <= 21, as n < 22: n == 21 never gets here (k <= 17 < 21 takes the line above), so the
+            // reachable boundary is 22, and that is where the comparison sits.
+            if (0 < n && n < 22) return digits.Substring(0, n) + "." + digits.Substring(n);
             if (-6 < n && n <= 0) return "0." + new string('0', -n) + digits;
             var e = n - 1;
-            var exponent = (e < 0 ? "e-" : "e+") + Math.Abs(e).ToString(CultureInfo.InvariantCulture);
+            // The spec's e < 0: here n > 21 or n <= -6, so e >= 0 exactly when n >= 22 (the boundary that is reached).
+            var exponent = (n >= 22 ? "e+" : "e-") + Math.Abs(e).ToString(CultureInfo.InvariantCulture);
             if (k == 1) return digits + exponent;
             return digits.Substring(0, 1) + "." + digits.Substring(1) + exponent;
         }
@@ -46,7 +50,8 @@ namespace TingQR.Rendering
         private static void ShortestDigits(double x, out string digits, out int n)
         {
             var bits = BitConverter.DoubleToInt64Bits(x);
-            var biased = (int)((bits >> 52) & 0x7FF);
+            // x > 0, so the sign bit is 0 and the bits above the 52-bit fraction are the biased exponent alone.
+            var biased = (int)(bits / 0x10000000000000L);
             var fraction = bits & 0xFFFFFFFFFFFFFL;
             long f;
             int e;
@@ -65,15 +70,19 @@ namespace TingQR.Rendering
             // (not the smallest normal) the double below is closer, so the lower half-gap is halved.
             var unit = e - 2;
             var value = new BigInteger(f) * 4;
-            var lowerGap = fraction == 0 && biased > 1 ? 1 : 2;
+            // biased != 1 rather than > 1: fraction == 0 with biased == 0 would be zero, which never gets here.
+            var lowerGap = fraction == 0 && biased != 1 ? 1 : 2;
             var low = value - lowerGap;
             var high = value + 2;
             var inclusive = (f & 1) == 0;
 
-            // decimal exponent E with 10^E <= x < 10^(E+1)
-            var exp10 = (int)Math.Floor(Math.Log10(x));
-            while (Compare(BigInteger.One, exp10, value, unit) > 0) exp10--;
-            while (Compare(BigInteger.One, exp10 + 1, value, unit) <= 0) exp10++;
+            // The loop below needs a start exp10 >= E (10^E <= x < 10^(E+1)), not E itself: a start above E only adds steps
+            // whose candidates are 0 and 10^(E+1) (or larger), and taking 10^(E+1) there differs from the step at E only
+            // if 9 × 10^E is also in range and closer, which needs a rounding range over 5% of x, i.e. a subnormal below
+            // about 10 × 2^-1074 (a BigInt port of this method matched JavaScript's String for every multiple of 2^-1074 up
+            // to 300000, every power of two and the doubles around every power of ten, 2026-11-23).
+            // Math.Log10 is off by far less than 1, so floor + 1 is >= E.
+            var exp10 = (int)Math.Floor(Math.Log10(x)) + 1;
 
             for (var count = 1; ; count++)
             {

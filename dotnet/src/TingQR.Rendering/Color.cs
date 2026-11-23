@@ -55,7 +55,9 @@ namespace TingQR.Rendering
         private static double Lin(int channel)
         {
             double s = channel / 255.0;
-            return s <= 0.03928 ? s / 12.92 : Math.Pow((s + 0.055) / 1.055, 2.4);
+            // WCAG's s <= 0.03928, written on the integer channel: 10/255 ≈ 0.0392 and 11/255 ≈ 0.0431, so the two agree
+            // for every channel 0–255, and the boundary can be tested (no channel gives s == 0.03928 exactly).
+            return channel <= 10 ? s / 12.92 : Math.Pow((s + 0.055) / 1.055, 2.4);
         }
 
         /// <summary>WCAG 2.x contrast ratio, 1–21, independent of argument order.</summary>

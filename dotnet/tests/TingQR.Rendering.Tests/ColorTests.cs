@@ -72,6 +72,15 @@ namespace TingQR.Rendering.Tests
             Assert.Equal("\"\ud83d\ude00é\"", Color.Quote("\ud83d\ude00é"));
         }
 
+        // node: toSvg('A', { foreground: ' ' }) throws 'Colour " " must be #rgb or #rrggbb.' (U+0020 is not escaped;
+        // only characters below it are).
+        [Fact]
+        public void QuoteLeavesSpaceAsIs()
+        {
+            Assert.Equal("\" \"", Color.Quote(" "));
+            Assert.Equal("\"\\u001f \"", Color.Quote("\u001f "));
+        }
+
         private static readonly Rgb Black = new Rgb(0, 0, 0);
         private static readonly Rgb White = new Rgb(255, 255, 255);
 
@@ -109,6 +118,16 @@ namespace TingQR.Rendering.Tests
             // #050505: channel 5/255 is below 0.03928, so it is divided by 12.92 (luminance ≈ 0.00152).
             Assert.Equal(0.0015176349177441874, Color.Luminance(new Rgb(5, 5, 5)), 12);
             Assert.Equal(20.381370411830552, Color.ContrastRatio(new Rgb(5, 5, 5), White), 9);
+        }
+
+        // Channel 10 is the last on the linear segment (10/255 ≈ 0.0392 ≤ 0.03928). node, color.ts's formula:
+        //   s=10/255: s/12.92 = 0.003035269835488375, ((s+0.055)/1.055)**2.4 = 0.0030345186784249568
+        //   luminance of #0a0a0a = 0.003035269835488375
+        [Fact]
+        public void ChannelTenIsTheLastOnTheLinearSegment()
+        {
+            Assert.Equal(0.003035269835488375, Color.Luminance(new Rgb(10, 10, 10)), 15);
+            Assert.NotEqual(0.0030345186784249568, Color.Luminance(new Rgb(10, 10, 10)), 15);
         }
     }
 }

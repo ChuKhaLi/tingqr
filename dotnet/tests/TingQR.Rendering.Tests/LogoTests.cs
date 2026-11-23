@@ -120,6 +120,29 @@ namespace TingQR.Rendering.Tests
             Fails(() => Logo.CheckHref(href));
         }
 
+        // Ends of the ranges in JavaScript's /\s/, checked against the built dist (node 22):
+        // toSvg('https://x.vn', { minVersion: 10, logo: { href } }) rejects \t, \r, U+2000 and U+200A before 'logo.png'
+        // and accepts U+0008, U+000E, U+1FFF and U+200B.
+        [Theory]
+        [InlineData("\tlogo.png")]
+        [InlineData("\rlogo.png")]
+        [InlineData(" logo.png")]
+        [InlineData(" logo.png")]
+        public void RejectsLeadingWhitespaceAtTheEndsOfJsRanges(string href)
+        {
+            Fails(() => Logo.CheckHref(href));
+        }
+
+        [Theory]
+        [InlineData("\u0008logo.png")]
+        [InlineData("\u000Elogo.png")]
+        [InlineData("῿logo.png")]
+        [InlineData("​logo.png")]
+        public void AcceptsCharactersJustOutsideJsWhitespace(string href)
+        {
+            Assert.Equal(href, Logo.CheckHref(href));
+        }
+
         [Fact]
         public void RelativePathMustNotEndInANewlineTrick()
         {

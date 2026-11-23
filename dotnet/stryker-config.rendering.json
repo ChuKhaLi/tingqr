@@ -1,0 +1,21 @@
+{
+  "stryker-config": {
+    "project": "TingQR.Rendering.csproj",
+    "target-framework": "net10.0",
+    "mutate": [
+      "!**/QrCodeGen.cs",
+      "!**/Polyfills.cs"
+    ],
+    "reporters": [
+      "cleartext",
+      "progress",
+      "html"
+    ],
+    "thresholds": {
+      "high": 95,
+      "low": 90,
+      "break": 90
+    },
+    "coverage-analysis": "perTest"
+  }
+}
