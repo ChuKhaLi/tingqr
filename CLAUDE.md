@@ -106,6 +106,16 @@ TypeScript và bản .NET, kèm tích hợp sẵn cho Angular, NestJS và ASP.NE
       Unicode ngoài mẫu có thể lệch TS); 4 mẫu kiểm kiểu. Chưa phát hành (số phiên bản để Plan 8c).
     - CI trên PR #10 (2026-11-23) xanh: `ci-dotnet` trên Ubuntu và Windows (run 45101241011), kể cả mẫu tên miền
       Unicode và test ghim `ẞ` trên Linux (ICU); `mutation-dotnet` (run 45101240949).
+  - **Plan 8b** (2026-11-23, nhánh `plan-8b`): `docs/superpowers/plans/2026-11-23-plan-8b-dotnet-rendering.md`, thiết kế
+    `docs/superpowers/specs/2026-11-23-tingqr-dotnet-rendering-design.md`. `TingQR.Rendering` (C#, net10.0 +
+    netstandard2.0): `ToMatrix`, `ToSvg`, `CheckSvgOptions`; không có PNG. Bộ mã hoá Nayuki port từ bản TS.
+    - Mẫu: 27 mẫu ma trận (sinh từ Nayuki gốc) và 63 mẫu SVG mới (`gen-svg.mjs`, sinh từ chính `toSvg` của tingqr, nên
+      chỉ chứng minh hai bản khớp nhau, không phải oracle độc lập). Test chạy trên `net10.0` và `net481` (Windows,
+      cục bộ).
+    - Stryker.NET cục bộ 2026-11-23: Rendering 99,41% (3 sống sót, tương đương, ghi trong `dotnet/CLAUDE.md`), Core
+      100%. Người duyệt đã so ngẫu nhiên với Node (1500 bộ tuỳ chọn, 574 640 số `size`), 0 lệch; đó là kiểm lúc duyệt,
+      không phải test trong repo.
+    - **Chưa kiểm:** job `mutation-dotnet` cho Rendering và lần chạy Ubuntu trên CI; khớp TS ngoài các mẫu.
   - Tiếp theo: Plan 2 Task 5–6 (MoMo, ZaloPay) khi chủ dự án có QR thật; chủ dự án quét thêm app (kể cả bản có icon ngân hàng) và
     thử PNG trong Zalo/Messenger; Plan 8 (.NET).
 - **Chủ dự án đã quyết:**

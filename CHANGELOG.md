@@ -14,6 +14,13 @@ Planned as 0.1.0, after MoMo and ZaloPay recognition and scans with more banking
   as non-convertible). Targets `net10.0` and `netstandard2.0`.
 - Version number and package policy are decided in Plan 8c; the repository still reads `0.0.0`.
 
+### TingQR.Rendering (.NET, not released)
+
+- C# port of `@tingqr/render` (Plan 8b): `TingQrRender.ToMatrix`, `ToSvg`, `CheckSvgOptions`, with the optional centre
+  logo (provisional limits). No PNG. The SVG is byte for byte the TypeScript output on 63 new golden vectors in
+  `conformance/vectors/render/`; the matrices are also checked on the 27 Nayuki vectors. Targets `net10.0` and
+  `netstandard2.0`; the encoder is ported from Project Nayuki's generator v1.8.0 (MIT).
+
 ### @tingqr/core
 
 - Build and read VietQR (to an account or a card, static or with an amount), read VNPAY-QR, build and read PromptPay
