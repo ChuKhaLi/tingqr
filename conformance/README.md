@@ -247,10 +247,14 @@ Dành cho `toSvg` (`@tingqr/render`, `TingQrRender.ToSvg` bên .NET). Mẫu nằ
   `render: "svg"` → bộ chạy SVG. Bộ chạy của `@tingqr/core` bỏ qua mọi mẫu `scheme: "render"`.
 - **Nguồn là mẫu vàng, không phải oracle.** Mẫu SVG sinh từ chính `toSvg` của TypeScript bằng `tools/render/gen-svg.mjs`: chúng
   chỉ chứng minh hai bản cài đặt đồng ý với nhau, không chứng minh SVG đúng. Bộ mã hoá đã được so với Nayuki gốc qua mẫu
-  ma trận; ma trận trong các mẫu SVG này do bản port sinh ra. Phần còn lại (đường dẫn, màu, kích thước, logo) chỉ có mẫu vàng này. `source` của mỗi mẫu ghi commit lúc sinh.
-- **Sinh lại:** sửa `svg-cases.mjs` hoặc sửa `toSvg` thì build `@tingqr/render` rồi chạy `node conformance/tools/render/gen-svg.mjs`.
-  Làm vậy cũng đổi commit trong `source` của mọi file (git diff cho thấy mọi file đổi một dòng). CI chạy `--check`:
-  nó bỏ qua commit, chỉ báo khi nội dung lệch. Đổi `toSvg` mà mẫu đổi theo là đổi hành vi, phải báo cho bản .NET.
+  ma trận; ma trận trong các mẫu SVG này do bản port sinh ra. Phần còn lại (đường dẫn, màu, kích thước, logo) chỉ có mẫu vàng này. `source` của mỗi mẫu ghi commit cuối cùng
+  sửa `ts/packages/render/src` hoặc `conformance/tools/render` lúc sinh (`git log -1 --format=%h -- …`), nên là commit
+  có thật và còn tới được sau khi gộp nhánh.
+- **Sinh lại:** sửa `svg-cases.mjs` hoặc sửa `toSvg` thì **commit trước**, build `@tingqr/render`, rồi chạy
+  `node conformance/tools/render/gen-svg.mjs` và commit mẫu. Script từ chối ghi khi hai thư mục trên còn thay đổi chưa
+  commit. Commit trong `source` đổi thì git diff cho thấy mọi file đổi một dòng. CI chạy `--check`: nó so nội dung bỏ qua
+  commit, và báo lỗi khi commit ghi trong mẫu không phải tổ tiên của `HEAD` (`git merge-base --is-ancestor`). Đổi `toSvg`
+  mà mẫu đổi theo là đổi hành vi, phải báo cho bản .NET.
 - Logo trong mẫu là ảnh PNG 1×1 dạng `data:` URI, không phải logo ngân hàng thật; `toSvg` không giải mã ảnh.
 - **`null` trong tuỳ chọn:** cả hai bản coi tuỳ chọn `null` (`toSvg(text, null)`, `checkSvgOptions(null)`,
   `toMatrix(text, null)`) như không truyền, và `logo: null` là không có logo. Một trường khác mang `null` (`margin`,

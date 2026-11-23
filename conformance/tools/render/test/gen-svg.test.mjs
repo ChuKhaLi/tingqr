@@ -2,11 +2,11 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { spawnSync } from 'node:child_process'
-import { cpSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { cpSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { buildVectors, sourceOf, staleFiles } from '../gen-svg.mjs'
+import { buildVectors, sourceOf, stampCommit, staleFiles, unreachableStamps } from '../gen-svg.mjs'
 import { CASES } from '../svg-cases.mjs'
 
 const GEN = fileURLToPath(new URL('../gen-svg.mjs', import.meta.url))
@@ -123,6 +123,100 @@ for (const [name, edit, status] of [
       assert.equal(r.status, status, r.stderr)
       if (status === 1) assert.match(r.stderr, /stale/)
       assert.ok(readdirSync(tmp).length > 0)
+    } finally {
+      rmSync(tmp, { recursive: true, force: true })
+    }
+  })
+}
+
+test('--check exits 1 when a stamped source commit is not an ancestor of HEAD', () => {
+  const tmp = scratchDir((d) => {
+    const p = join(d, 'render-svg-default.json')
+    writeFileSync(p, readFileSync(p, 'utf8').replace(/\) at [0-9a-f]+; golden/, ') at 0000000; golden'))
+  })
+  try {
+    const r = spawnSync(process.execPath, [GEN, '--check', '--dir', tmp], { encoding: 'utf8' })
+    assert.equal(r.status, 1, r.stderr)
+    assert.match(r.stderr, /render-svg-default\.json: source commit 0000000 is not an ancestor of HEAD/)
+  } finally {
+    rmSync(tmp, { recursive: true, force: true })
+  }
+})
+
+test('unreachableStamps reports each file whose commit fails isAncestor, and a file without a commit', () => {
+  const files = buildVectors(cases, fakeToSvg, 'abc1234')
+  const tmp = mkdtempSync(join(tmpdir(), 'tingqr-gen-svg-'))
+  try {
+    for (const f of files) writeFileSync(join(tmp, f.file), f.text)
+    writeFileSync(join(tmp, 'render-mask-0.json'), '{}') // not an SVG vector: ignored
+    assert.deepEqual(unreachableStamps(tmp, () => true), [])
+    const asked = []
+    const problems = unreachableStamps(tmp, (c) => (asked.push(c), false))
+    assert.deepEqual(asked, ['abc1234', 'abc1234'])
+    assert.deepEqual(problems, [
+      'render-svg-a.json: source commit abc1234 is not an ancestor of HEAD',
+      'render-svg-invalid-b.json: source commit abc1234 is not an ancestor of HEAD',
+    ])
+    writeFileSync(join(tmp, 'render-svg-a.json'), '{"source":"hand-written"}')
+    assert.deepEqual(unreachableStamps(tmp, () => true), ['render-svg-a.json: no source commit'])
+  } finally {
+    rmSync(tmp, { recursive: true, force: true })
+  }
+})
+
+/** A throwaway git repo with gen-svg.mjs and svg-cases.mjs at their real paths (no render build, so no dist). */
+function scratchRepo() {
+  const tmp = mkdtempSync(join(tmpdir(), 'tingqr-gen-svg-repo-'))
+  const git = (...args) => {
+    const r = spawnSync('git', ['-c', 'user.name=t', '-c', 'user.email=t@example.invalid', '-c', 'commit.gpgsign=false', ...args], { cwd: tmp, encoding: 'utf8' })
+    assert.equal(r.status, 0, r.stderr)
+    return r.stdout.trim()
+  }
+  const tools = join(tmp, 'conformance', 'tools', 'render')
+  mkdirSync(tools, { recursive: true })
+  mkdirSync(join(tmp, 'ts', 'packages', 'render', 'src'), { recursive: true })
+  mkdirSync(join(tmp, 'conformance', 'vectors', 'render'), { recursive: true })
+  cpSync(GEN, join(tools, 'gen-svg.mjs'))
+  cpSync(fileURLToPath(new URL('../svg-cases.mjs', import.meta.url)), join(tools, 'svg-cases.mjs'))
+  writeFileSync(join(tmp, 'ts', 'packages', 'render', 'src', 'svg.ts'), 'export {}')
+  git('init', '-q')
+  return { tmp, git, gen: join(tools, 'gen-svg.mjs') }
+}
+
+test('the stamp is the last commit that touched the render source or tools, not HEAD', () => {
+  const { tmp, git } = scratchRepo()
+  try {
+    git('add', '-A')
+    git('commit', '-q', '-m', 'render')
+    const render = git('log', '-1', '--format=%h')
+    writeFileSync(join(tmp, 'README.md'), 'other')
+    git('add', '-A')
+    git('commit', '-q', '-m', 'other')
+    assert.notEqual(git('log', '-1', '--format=%h'), render)
+    assert.equal(stampCommit(tmp), render)
+  } finally {
+    rmSync(tmp, { recursive: true, force: true })
+  }
+})
+
+for (const [name, edit] of [
+  ['a changed render source file', (tmp) => writeFileSync(join(tmp, 'ts', 'packages', 'render', 'src', 'svg.ts'), 'export const x = 1')],
+  ['an uncommitted new case file', (tmp) => writeFileSync(join(tmp, 'conformance', 'tools', 'render', 'more-cases.mjs'), 'export {}')],
+]) {
+  test(`writing refuses to stamp vectors when there is ${name}`, () => {
+    const { tmp, git, gen } = scratchRepo()
+    try {
+      git('add', '-A')
+      git('commit', '-q', '-m', 'render')
+      // Clean: it gets past the git check and stops only at the missing render build.
+      const clean = spawnSync(process.execPath, [gen], { cwd: tmp, encoding: 'utf8' })
+      assert.equal(clean.status, 2, clean.stderr)
+      assert.match(clean.stderr, /dist is missing/)
+      edit(tmp)
+      const r = spawnSync(process.execPath, [gen], { cwd: tmp, encoding: 'utf8' })
+      assert.equal(r.status, 1, r.stderr)
+      assert.match(r.stderr, /uncommitted changes/)
+      assert.deepEqual(readdirSync(join(tmp, 'conformance', 'vectors', 'render')), [])
     } finally {
       rmSync(tmp, { recursive: true, force: true })
     }
