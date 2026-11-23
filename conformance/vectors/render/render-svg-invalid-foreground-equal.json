@@ -9,6 +9,6 @@
     "background": "#ffffff"
   },
   "error": "INVALID_VALUE",
-  "source": "@tingqr/render toSvg (TypeScript) at 12c1d1f; golden output so the two implementations agree, not an independent oracle (the encoder is checked against the original Nayuki on the matrix vectors; the matrices inside these SVGs come from the port)",
+  "source": "@tingqr/render toSvg (TypeScript) at d82ce48; golden output so the two implementations agree, not an independent oracle (the encoder is checked against the original Nayuki on the matrix vectors; the matrices inside these SVGs come from the port)",
   "note": "foreground equals background"
 }
