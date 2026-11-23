@@ -1,0 +1,42 @@
+name: Mutation (.NET core)
+
+# Stryker.NET mutates TingQR.Core and fails if the score drops below `thresholds.break` in dotnet/stryker-config.json.
+# One OS: the score is expected not to vary by platform; local runs on Windows (2026-11-22/23) and the first CI run on Ubuntu (PR #10, 2026-11-23) both passed. The tests
+# run on net10.0 only (net481 is Windows-only).
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'dotnet/**'
+      - 'conformance/**'
+      - '.github/workflows/mutation-dotnet.yml'
+  pull_request:
+    paths:
+      - 'dotnet/**'
+      - 'conformance/**'
+      - '.github/workflows/mutation-dotnet.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  mutation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30  # ~5 min locally (2026-11-22)
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - run: dotnet tool restore
+        working-directory: dotnet
+      - run: dotnet tool run dotnet-stryker
+        working-directory: dotnet
+      - name: Upload mutation report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mutation-report-dotnet
+          path: dotnet/StrykerOutput/
+          if-no-files-found: ignore

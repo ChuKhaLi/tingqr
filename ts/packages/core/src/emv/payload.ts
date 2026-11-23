@@ -29,6 +29,12 @@ const EDGE_WHITESPACE = /^[ \t\r\n﻿ ]+|[ \t\r\n﻿ ]+$/g
  * strict/lenient rules belong to each scheme. Never throws.
  */
 export function parsePayload(input: string): Result<EmvPayload> {
+  if (typeof input !== 'string') {
+    return {
+      ok: false,
+      error: new TingQrError('INVALID_VALUE', `The payload must be a string; got ${input === null ? 'null' : typeof input}.`),
+    }
+  }
   const warnings: Warning[] = []
   const raw = input.replace(EDGE_WHITESPACE, '')
   if (raw !== input) {

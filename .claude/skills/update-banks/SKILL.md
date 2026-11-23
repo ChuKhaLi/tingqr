@@ -23,11 +23,15 @@ trong `conformance/README.md`. Script ở `conformance/tools/banks/`.
    - In báo cáo.
    - **Không bao giờ ghi `bank-apps.json` hay `overrides.json`.** Hai file này sửa tay.
 2. Đọc báo cáo, xử lý từng loại (bảng dưới). Sửa tay `bank-apps.json` nếu cần.
-3. `node conformance/tools/banks/sync-ts.mjs`, để sinh lại `ts/packages/core/src/banks/data.ts`.
+3. Sinh lại dữ liệu cho hai bản, theo thứ tự:
+   - `node conformance/tools/banks/sync-ts.mjs`, sinh `ts/packages/core/src/banks/data.ts`;
+   - `node conformance/tools/banks/sync-dotnet.mjs`, sinh `dotnet/src/TingQR.Core/Banks/BankData.g.cs`.
+   - Commit cả hai file vào PR. Không sửa tay file nào.
 4. Đổi dữ liệu của một app có mẫu trong `conformance/vectors/bank-app-link/` thì sửa mẫu đó, kèm `source`.
 5. Chạy kiểm tra:
    - `pnpm -C conformance/tools/banks test`;
    - `pnpm -C ts test`;
+   - `dotnet test dotnet/TingQR.slnx` (có test `BankDataSyncTests` chạy `sync-dotnet.mjs --check`);
    - `pnpm -C ts build`, rồi `pnpm -C ts check:core` và `pnpm -C ts check:bank-logos`.
 6. Mở PR. Nội dung PR là báo cáo, cộng các chỗ đã sửa tay và lý do. Gộp xong thì đóng issue `update-banks`.
 

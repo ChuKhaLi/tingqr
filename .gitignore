@@ -20,3 +20,6 @@ ts/packages/render/scan-sheet/
 
 .claude/worktrees/
 ts/packages/bank-logos/files/
+dotnet/**/StrykerOutput/
+dotnet/**/bin/
+dotnet/**/obj/

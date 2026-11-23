@@ -3,8 +3,8 @@ import { join } from 'node:path'
 import { CONFORMANCE_DIR } from './conformance-root.js'
 import { TingQrError } from '../src/index.js'
 import { BANKS, BANK_APPS, appsForBank, findBank, findBankApp } from '../src/banks.js'
-import { findBankIn } from '../src/banks/lookup.js'
-import type { Bank } from '../src/banks.js'
+import { appsOf, findBankIn } from '../src/banks/lookup.js'
+import type { Bank, BankApp } from '../src/banks.js'
 
 const json = (name: string): any => JSON.parse(readFileSync(join(CONFORMANCE_DIR, 'banks', name), 'utf8'))
 const MB = json('banks.json').banks.find((b: Bank) => b.bin === '970422')
@@ -42,7 +42,7 @@ test.each([970422, null, undefined, { bin: '970422' }])('findBank(%j) throws INV
   }
   expect(thrown).toBeInstanceOf(TingQrError)
   expect((thrown as TingQrError).code).toBe('INVALID_VALUE')
-  expect((thrown as TingQrError).message).toMatch(/string/)
+  expect((thrown as TingQrError).message).toMatch(/^findBank needs a string/)
 })
 
 test('a code wins over another bank short name that spells the same', () => {
@@ -85,4 +85,44 @@ test('the lists and their entries are frozen', () => {
   expect(Object.isFrozen(BANK_APPS)).toBe(true)
   expect(BANKS.every((b) => Object.isFrozen(b))).toBe(true)
   expect(BANK_APPS.every((a) => Object.isFrozen(a) && (!a.android || Object.isFrozen(a.android)) && (!a.ios || Object.isFrozen(a.ios)))).toBe(true)
+})
+
+test.each([null, undefined, 42])('appsForBank(%j) throws INVALID_VALUE, not a silent match on apps without a BIN', (bin) => {
+  let thrown: unknown
+  try {
+    appsForBank(bin as never)
+  } catch (e) {
+    thrown = e
+  }
+  expect(thrown).toBeInstanceOf(TingQrError)
+  expect((thrown as TingQrError).code).toBe('INVALID_VALUE')
+  expect((thrown as TingQrError).message).toMatch(/^appsForBank needs a string/)
+})
+
+test('appsOf never matches an app without a BIN, and throws for a non-string query', () => {
+  const apps = [
+    { id: 'nobin', bin: null },
+    { id: 'one', bin: '900001' },
+  ] as unknown as BankApp[]
+  expect(() => appsOf(apps, null as never)).toThrow(TingQrError)
+  expect(appsOf(apps, '900001').map((a) => a.id)).toEqual(['one'])
+  expect(appsOf(apps, '900002')).toEqual([])
+})
+
+// conformance/vectors/bank-lookup/non-ascii-dotted-i.json: only ASCII letters fold, in the query and in the data.
+test('findBank folds ASCII letters only', () => {
+  expect(findBank('V\u0130B')).toBeUndefined()
+  const list: Bank[] = [{ bin: '900001', code: 'K\u00C9', shortName: 'VIB', name: 'accented code', swift: null, logoUrl: 'https://x/a.png' }]
+  expect(findBankIn(list, 'vib')?.bin).toBe('900001')
+  expect(findBankIn(list, 'k\u00C9')?.bin).toBe('900001')
+  expect(findBankIn(list, 'k\u00E9')).toBeUndefined()
+  expect(findBankIn(list, '\u212A\u00C9')).toBeUndefined()
+  expect(findBankIn(list, 'v\u0131b')).toBeUndefined()
+})
+
+test('ASCII folding covers A to Z and nothing next to them', () => {
+  const list: Bank[] = [{ bin: '900001', code: 'AZ', shortName: '@[', name: 'edges', swift: null, logoUrl: 'https://x/a.png' }]
+  expect(findBankIn(list, 'az')?.bin).toBe('900001')
+  expect(findBankIn(list, '`{')).toBeUndefined()
+  expect(findBankIn(list, '@[')?.bin).toBe('900001')
 })

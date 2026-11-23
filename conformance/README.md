@@ -1,7 +1,7 @@
 # conformance/
 
-Nguồn sự thật chung cho mọi ngôn ngữ của tingqr. Bản TypeScript (`ts/`) và bản .NET (`dotnet/`, từ v0.2) chạy cùng một
-bộ mẫu thử ở đây, nên hai bản cho cùng kết quả trên mọi hành vi có mẫu.
+Nguồn sự thật chung cho mọi ngôn ngữ của tingqr. Bản TypeScript (`ts/`) và bản .NET (`dotnet/`) chạy cùng một bộ mẫu
+thử ở đây, nên hai bản cho cùng kết quả trên mọi hành vi có mẫu (trừ 4 mẫu kiểm kiểu, xem dưới; mẫu `render` từ Plan 8b).
 
 - `vectors.schema.json`: JSON Schema của một file mẫu thử.
 - `errors.json`: bảng mã lỗi và mã cảnh báo dùng chung. Không ngôn ngữ nào được có mã ngoài bảng.
@@ -32,6 +32,8 @@ bộ mẫu thử ở đây, nên hai bản cho cùng kết quả trên mọi hà
 - `tools/banks/`: tải, so sánh và cập nhật `banks/`, có `package.json` riêng (`sharp` để thu nhỏ logo).
   - Có gọi mạng: `update.mjs`, `capture-sources.mjs`, `play-check.mjs`, `commons-search.mjs`.
   - `sync-ts.mjs` sinh `ts/packages/core/src/banks/data.ts`.
+  - `sync-dotnet.mjs` sinh `dotnet/src/TingQR.Core/Banks/BankData.g.cs` (cùng trường, cùng thứ tự). Chạy ngay sau
+    `sync-ts.mjs`; `--check` của cả hai thoát 1 khi file sinh lệch dữ liệu.
   - Test không gọi mạng. Cách dùng: skill `update-banks`.
 - `private/`: QR thật chụp ở máy chủ dự án. **Nằm trong `.gitignore`, không bao giờ commit.**
 - `banks/`: danh sách ngân hàng và app ngân hàng, dùng chung cho mọi ngôn ngữ (thiết kế:
@@ -90,6 +92,50 @@ dụng cho các hàm tạo mã VietQR, PromptPay và KHQR (VNPAY không có hàm
 - Mảng là object trong JavaScript, nên không bị luật này chặn; nó hỏng ở bước kiểm trường đầu tiên, vẫn là
   `INVALID_VALUE`.
 
+Ba luật chung nữa, cùng loại:
+
+- **Hàm đọc nhận thứ không phải chuỗi** (`null`, `undefined`, số...): `decodeVietQr`, `decodeVnpayQr`,
+  `decodePromptPayQr`, `decodeKhqr` và `detect` trả kết quả lỗi `INVALID_VALUE`, không kèm tag, không ném. Bản
+  TypeScript kiểm lúc chạy ở `parsePayload` (test `payload.spec.ts`); bản có kiểu tĩnh chỉ cần cổng vào nhận được
+  `null`.
+- **Mẫu kiểm kiểu:** mẫu có trường mang kiểu JSON khác kiểu mà bản có kiểu tĩnh khai báo. Bản có kiểu tĩnh kiểm rằng
+  giá trị không chuyển được sang kiểu đó (không biên dịch được, hoặc bị từ chối khi đọc mẫu); `errorTag` chỉ áp dụng cho
+  bản không có kiểu tĩnh. Danh sách hiện tại:
+  - `vietqr-encode-bin-not-string`
+  - `vietqr-encode-purpose-not-string`
+  - `number-query` (scheme `bank-lookup`)
+  - `promptpay-encode-two-targets` (đích có hai khoá `mobile` và `nationalId`: kiểu đích đóng của bản có kiểu tĩnh không
+    biểu diễn được).
+- **Thông báo lỗi** không bắt buộc giống từng chữ giữa các bản (luật "không có đầu vào" ở trên cũng nằm trong luật này).
+- **Chưa có loại mẫu, chỉ có test của từng bản:** `isKhqrExpired` / `Khqr.IsExpired`, `removeVietnameseAccents` /
+  `VietnameseText.RemoveAccents`, `fields` của lỗi `UNKNOWN_SCHEME` (`TingQrError.fields` / `TingQrException.Fields`)
+  và `tag` của cảnh báo. Hai bản có thể lệch ở những chỗ này mà bộ mẫu không bắt được.
+- **`null` trong `expected`:** bộ chạy .NET bỏ mọi thuộc tính C# mang `null` khi đổi kết quả sang JSON (coi `null` như
+  vắng, giống trường tuỳ chọn bị bỏ ở TypeScript). Vì vậy một mẫu ghi `"x": null` bên trong `expected` sẽ đỏ ở .NET:
+  trường tuỳ chọn không có giá trị thì bỏ hẳn khỏi mẫu, không ghi `null`. (Riêng `expected.result: null` của mẫu
+  `lookup` là giá trị kết quả, không phải thuộc tính bị bỏ.)
+- **Số tiền không nguyên:** bản .NET nhận `decimal` (`QrAmount`), JavaScript nhận `number` (double). Hai kiểu chỉ viết
+  ra chữ số khác nhau khi số có hơn 15 chữ số có nghĩa (double làm tròn), nhỏ hơn 1e-6 hay từ 1e21 trở lên (JavaScript
+  dùng dạng mũ). Mọi hàm tạo mã đều từ chối các giá trị đó (`INVALID_VALUE`, tag `54`): VietQR chỉ nhận số nguyên 1–13
+  chữ số; PromptPay tối đa 10 chữ số phần nguyên và 2 chữ số thập phân; KHQR KHR số nguyên, USD tối đa 2 chữ số thập
+  phân, cả hai tối đa 13 ký tự. Kiểm bằng cách đọc `amountText` của ba bản TS và `QrAmount` (2026-11-23), chưa có mẫu.
+- **`bank-app-link`**: hai bản chỉ bảo đảm giống nhau trên các mẫu; tên miền Unicode ngoài mẫu có thể khác giữa
+  TypeScript và .NET, và giữa Linux và Windows.
+  - Bản .NET không có bộ đọc WHATWG đầy đủ: nó từ chối (`INVALID_VALUE`) một số URL mà WHATWG nhận rồi viết lại, như
+    có user info, IPv6, IPv4 dạng không chuẩn (`0x7f.1`), `%` hay `\` trong host, `\` hay đoạn `.`/`..` trong path,
+    host có nhãn cuối bắt đầu bằng `0x` (như `a.0x`), và IPv4 có dấu chấm cuối (`127.0.0.1.`).
+  - Đoạn `.`/`..` viết bằng mã phần trăm (`%2e`, `%2E`, `.%2e`, `%2e%2e`) cũng tính là đoạn `.`/`..`, nên bản .NET
+    cũng từ chối.
+  - Surrogate lẻ: trong path (và query, fragment) thành U+FFFD rồi mã hoá (`%EF%BF%BD`, mẫu
+    `mb-android-fallback-lone-surrogate`); trong host thì `INVALID_VALUE` ở cả hai bản.
+  - Ví dụ lệch đã biết (chạy 2026-11-23): `https://ẞ.vn/` (U+1E9E) ra `https://ss.vn/` ở Node 22.23.3, `https://xn--zca.vn/`
+    ở .NET 10 (ICU, Windows) và `https://ss.vn/` ở .NET Framework 4.8.1. `https://ß.vn/` ra `https://xn--zca.vn/` ở Node
+    và .NET 10, `https://ss.vn/` ở .NET Framework 4.8.1. Đổi host sang chữ thường trước `IdnMapping` hay không đều cho
+    cùng kết quả. Trên Linux (Ubuntu CI, ICU, PR #10, 2026-11-23) .NET 10 cũng ra `xn--zca.vn` cho cả hai. Test: `SharpSDependsOnThePlatformIdnTables` (`BanksTests.cs`).
+  - `fallbackUrl` là `null`: TypeScript phân biệt vắng (`{}` hay `undefined`: không có fallback) với `{ fallbackUrl: null }`
+    (ném `INVALID_VALUE`). C# không phân biệt tham số vắng với `null`, nên `BankApps.Link(..., null)` là không có
+    fallback.
+
 ## Mẫu link mở app (`kind: "link"`, `scheme: "bank-app-link"`)
 
 Dành cho `bankAppLink` (`@tingqr/core/banks`). Mẫu nằm ở `vectors/bank-app-link/`.
@@ -124,15 +170,24 @@ Dành cho `findBank` và `appsForBank` (`@tingqr/core/banks`).
   - `input` là `{ query }`; `expected` là `{ result }`, với `result` là `bin` của ngân hàng tìm thấy, hoặc `null`.
   - **Luật tra cứu:**
     - `query` khớp `^[0-9]{6}$` (đúng 6 chữ số ASCII) thì so bằng với `bin`.
-    - Ngược lại, so với `code`, rồi mới tới `shortName`. So khớp ordinal sau khi chuyển chữ thường theo invariant
-      culture (không theo ngôn ngữ máy, ví dụ chữ `I` của tiếng Thổ Nhĩ Kỳ).
+    - Ngược lại, so với `code`, rồi mới tới `shortName`. So khớp ordinal sau khi đổi chữ hoa thành chữ thường **chỉ với
+      chữ cái ASCII** `A`–`Z`, ở cả `query` lẫn dữ liệu. Ký tự khác giữ nguyên: `code` và `shortName` đều là ASCII, còn
+      đổi chữ thường đầy đủ theo Unicode khác nhau giữa các ngôn ngữ (JavaScript `toLowerCase` đổi `İ` thành `i̇`,
+      .NET `ToLowerInvariant` giữ nguyên) và theo ngôn ngữ máy (chữ `I` của tiếng Thổ Nhĩ Kỳ). Mẫu:
+      `non-ascii-dotted-i`.
     - Mã của ngân hàng này thắng tên ngắn của ngân hàng khác.
     - Không cắt khoảng trắng.
     - `query` không phải chuỗi (ví dụ BIN lưu dạng số) là lỗi lập trình: ném `INVALID_VALUE` (mẫu `encode-invalid`), không trả `null`.
+      Bản .NET: `Banks.Find(null)` ném `TingQrException` `INVALID_VALUE`.
 - **`scheme: "bank-apps-for-bank"`** (`vectors/bank-apps-for-bank/`):
   - `input` là `{ bin }`; `expected` là `{ result }`, với `result` là mảng `id` app có `bin` đó, theo thứ tự trong
     `bank-apps.json`. Không có app nào thì là `[]`.
+  - `bin` không phải chuỗi (TypeScript: `null`, `undefined`, số; .NET: `null`) cũng ném `INVALID_VALUE`, như
+    `findBank`, để `null` không bao giờ khớp một app có `bin: null` (kiểu dữ liệu cho phép; ngày 2026-11-23 chưa app
+    nào như vậy). Chỉ có test của từng bản, chưa có mẫu.
 - **Quy tắc so sánh:** kết quả phải bằng `expected.result` (chuỗi, `null`, hoặc mảng đúng thứ tự).
+- **`findBankApp` / `BankApps.Find`** (chưa có mẫu): so `id` đúng từng ký tự. `id` của app không bao giờ `null`, nên
+  `null` (hay thứ không phải chuỗi) chỉ là không tìm thấy (`undefined` / `null`), không ném.
 
 ## Logo và icon (`banks/logos/`)
 

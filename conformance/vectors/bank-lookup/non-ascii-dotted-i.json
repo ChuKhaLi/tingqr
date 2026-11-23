@@ -1,0 +1,13 @@
+{
+  "id": "non-ascii-dotted-i",
+  "scheme": "bank-lookup",
+  "kind": "lookup",
+  "input": {
+    "query": "VİB"
+  },
+  "expected": {
+    "result": null
+  },
+  "source": "tingqr rule (bank lookup folds ASCII letters only), Plan 8a final review",
+  "note": "U+0130 (LATIN CAPITAL LETTER I WITH DOT ABOVE) is not an ASCII letter, so it is compared as it is and VİB matches no code or short name (VIB is 970441). Only A-Z fold, because codes and short names are ASCII and full Unicode lower-casing differs between languages: JavaScript toLowerCase gives vi̇b (i + U+0307), .NET 10 ToLowerInvariant leaves U+0130 unchanged (both checked 2026-11-22). Both full foldings happen to miss here; the vector pins the ASCII-only rule."
+}

@@ -7,6 +7,13 @@ packages (Plan 8) share that version or have their own is decided in Plan 8.
 
 Planned as 0.1.0, after MoMo and ZaloPay recognition and scans with more banking apps.
 
+### TingQR.Core (.NET, not released)
+
+- C# port of `@tingqr/core` (Plan 8a): VietQR, VNPAY-QR, PromptPay, KHQR, `TingQrDetector.Detect`, banks and bank-app
+  links, checked against the same `conformance/` vectors (render vectors not yet; four type-check vectors are checked
+  as non-convertible). Targets `net10.0` and `netstandard2.0`.
+- Version number and package policy are decided in Plan 8c; the repository still reads `0.0.0`.
+
 ### @tingqr/core
 
 - Build and read VietQR (to an account or a card, static or with an amount), read VNPAY-QR, build and read PromptPay

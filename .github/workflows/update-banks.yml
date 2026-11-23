@@ -2,7 +2,9 @@ name: Check bank list (monthly)
 
 # Compares conformance/banks/ with vietqr.io, Google Play and the logo sources, and opens (or comments on) one issue
 # labelled update-banks when something changed. It never writes to the repository: fixing the data is done locally
-# with the update-banks skill (.claude/skills/update-banks/SKILL.md), then a normal PR.
+# with the update-banks skill (.claude/skills/update-banks/SKILL.md), then a normal PR. That PR regenerates both copies
+# of the data, sync-ts.mjs (ts/packages/core/src/banks/data.ts) then sync-dotnet.mjs
+# (dotnet/src/TingQR.Core/Banks/BankData.g.cs), and commits both; the issue body says so.
 on:
   schedule:
     - cron: '0 2 1 * *'
@@ -31,6 +33,16 @@ jobs:
           code=$?
           echo "code=$code" >> "$GITHUB_OUTPUT"
           if [ "$code" = 1 ]; then { echo '# Kiểm danh sách ngân hàng: lỗi'; echo; echo '```'; cat error.txt; echo '```'; } > report.md; fi
+          if [ "$code" = 2 ]; then
+            {
+              echo
+              echo '## Sau khi sửa dữ liệu (skill update-banks)'
+              echo
+              echo '1. `node conformance/tools/banks/sync-ts.mjs`'
+              echo '2. `node conformance/tools/banks/sync-dotnet.mjs`'
+              echo '3. Commit cả `ts/packages/core/src/banks/data.ts` và `dotnet/src/TingQR.Core/Banks/BankData.g.cs` vào PR.'
+            } >> report.md
+          fi
           exit 0
       - name: Open or update the update-banks issue
         if: steps.check.outputs.code != '0'

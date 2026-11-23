@@ -1,4 +1,15 @@
-import { buildPayload, getField, parsePayload, parseTlv } from '../src/index.js'
+import {
+  buildPayload,
+  decodeKhqr,
+  decodePromptPayQr,
+  decodeVietQr,
+  decodeVnpayQr,
+  detect,
+  getField,
+  parsePayload,
+  parseTlv,
+  type Result,
+} from '../src/index.js'
 
 // vietnam-qr-pay README sample (MIT, https://github.com/xuannghia/vietnam-qr-pay)
 const S = '00020101021138530010A0000007270123000697041601092576788590208QRIBFTTA53037045802VN6304AE9F'
@@ -99,5 +110,21 @@ test('parsePayload reports CRC_MISSING when tag 63 holds more than 4 characters'
     const r = parsePayload(S.slice(0, -8) + tail)
     expect(r.ok, tail).toBe(false)
     if (!r.ok) expect(r.error.code, tail).toBe('CRC_MISSING')
+  }
+})
+
+describe('readers given a non-string', () => {
+  const readers = { parsePayload, decodeVietQr, decodeVnpayQr, decodePromptPayQr, decodeKhqr, detect }
+  for (const [name, read] of Object.entries(readers)) {
+    for (const bad of [null, undefined, 42]) {
+      it(`${name}(${String(bad)}) returns INVALID_VALUE without throwing`, () => {
+        const r = (read as (x: never) => Result<unknown>)(bad as never)
+        expect(r.ok).toBe(false)
+        if (!r.ok) {
+          expect(r.error.code).toBe('INVALID_VALUE')
+          expect(r.error.tag).toBeUndefined()
+        }
+      })
+    }
   }
 })
