@@ -41,7 +41,7 @@
 
 **Interfaces:**
 - Produces: assembly `TingQR.Rendering`, `RootNamespace=TingQR.Rendering`, `PackageId=TingQR.Rendering`, `Version=0.0.0`, `InternalsVisibleTo TingQR.Rendering.Tests`; test project tham chiếu cả Core và Rendering; `ConformanceRoot.Path` như bản của Core (chép, không tham chiếu project test khác).
-- [ ] **Step 1: Test** `SmokeTests.RenderingReferencesCore` (một kiểu public của Rendering, ví dụ hằng `TingQrRender.Version`… nếu chưa có thì `typeof(TingQR.Rendering.TingQrRender)` ở Task 2; ở task này test `ConformanceRootFindsRenderVectors`: thư mục `vectors/render` có ≥ 27 file `.json`).
+- [ ] **Step 1: Test** `SmokeTests.ConformanceRootFindsRenderVectors`: `Directory.GetFiles(Path.Combine(ConformanceRoot.Path, "vectors", "render"), "*.json").Length >= 27`; `SmokeTests.RenderingAssemblyReferencesCore`: assembly `TingQR.Rendering` liệt kê `TingQR.Core` trong `GetReferencedAssemblies()`.
 - [ ] **Step 2:** `dotnet test dotnet/TingQR.slnx` → FAIL (chưa có project). **Step 3:** tạo hai project, thêm vào `.slnx`. **Step 4:** PASS trên `net10.0` và `net481`.
 - [ ] **Step 5:** `dotnet/CLAUDE.md`: thêm mục `TingQR.Rendering` (đường dẫn, phụ thuộc Core, file port không mutation). Sửa spec chung 5.6.
 - [ ] **Step 6: Commit** `build(dotnet): TingQR.Rendering skeleton`
