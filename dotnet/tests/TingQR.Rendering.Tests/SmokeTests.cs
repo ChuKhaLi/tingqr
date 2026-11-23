@@ -17,7 +17,7 @@ public class SmokeTests
     [Fact]
     public void RenderingAssemblyReferencesCore()
     {
-        var assembly = typeof(RenderingAssemblyMarker).Assembly;
+        var assembly = typeof(TingQrRender).Assembly;
         Assert.Equal("TingQR.Rendering", assembly.GetName().Name);
         Assert.Contains(assembly.GetReferencedAssemblies(), a => a.Name == "TingQR.Core");
     }

@@ -1,7 +1,7 @@
 # conformance/
 
 Nguồn sự thật chung cho mọi ngôn ngữ của tingqr. Bản TypeScript (`ts/`) và bản .NET (`dotnet/`) chạy cùng một bộ mẫu
-thử ở đây, nên hai bản cho cùng kết quả trên mọi hành vi có mẫu (trừ 4 mẫu kiểm kiểu, xem dưới; mẫu `render` từ Plan 8b).
+thử ở đây, nên hai bản cho cùng kết quả trên mọi hành vi có mẫu (trừ 5 mẫu kiểm kiểu, xem dưới; mẫu `render` từ Plan 8b).
 
 - `vectors.schema.json`: JSON Schema của một file mẫu thử.
 - `errors.json`: bảng mã lỗi và mã cảnh báo dùng chung. Không ngôn ngữ nào được có mã ngoài bảng.
@@ -106,6 +106,7 @@ Ba luật chung nữa, cùng loại:
   - `number-query` (scheme `bank-lookup`)
   - `promptpay-encode-two-targets` (đích có hai khoá `mobile` và `nationalId`: kiểu đích đóng của bản có kiểu tĩnh không
     biểu diễn được).
+  - `render-invalid-mask-fraction` (scheme `render`: `mask` 1.5, kiểu `int?` của bản .NET không biểu diễn được).
 - **Thông báo lỗi** không bắt buộc giống từng chữ giữa các bản (luật "không có đầu vào" ở trên cũng nằm trong luật này).
 - **Chưa có loại mẫu, chỉ có test của từng bản:** `isKhqrExpired` / `Khqr.IsExpired`, `removeVietnameseAccents` /
   `VietnameseText.RemoveAccents`, `fields` của lỗi `UNKNOWN_SCHEME` (`TingQrError.fields` / `TingQrException.Fields`)

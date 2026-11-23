@@ -14,6 +14,10 @@
     <PackageReference Include="System.Text.Json" />
   </ItemGroup>
   <ItemGroup>
+    <!-- The strict vector-input reader of the core runner, shared rather than copied. -->
+    <Compile Include="..\TingQR.Core.Tests\Conformance\JsonInput.cs" Link="Conformance\JsonInput.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\..\src\TingQR.Core\TingQR.Core.csproj" />
     <ProjectReference Include="..\..\src\TingQR.Rendering\TingQR.Rendering.csproj" />
   </ItemGroup>

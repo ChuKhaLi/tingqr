@@ -99,6 +99,19 @@ namespace TingQR.Tests.Conformance
             return value;
         }
 
+        /// <summary>A JSON boolean, or null when absent.</summary>
+        public bool? Bool(string name)
+        {
+            var node = Take(name, out var present);
+            if (!present) return null;
+            var kind = Kind(node!);
+            if (kind != JsonValueKind.True && kind != JsonValueKind.False)
+            {
+                throw new InputConversionException($"input.{name} is not a boolean.");
+            }
+            return kind == JsonValueKind.True;
+        }
+
         /// <summary>Whether the input has the key (without reading it).</summary>
         public bool Has(string name) => _obj.ContainsKey(name);
 
