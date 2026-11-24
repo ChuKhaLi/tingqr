@@ -1,7 +1,7 @@
 # Rà tên API công khai .NET trước khi khoá (Plan 8c, Task 1)
 
-**Kết quả duyệt:** _chưa duyệt_. Chủ dự án ghi ở đây ngày duyệt và dòng nào bị bỏ hay sửa; Task 2 chỉ áp dụng các dòng
-đã duyệt.
+**Kết quả duyệt:** chủ dự án duyệt **toàn bộ** ngày 2026-11-24 (cả 8 dòng đổi tên, gồm `VietqrAutofill` và hai tên
+kiểu mới), không dòng nào bị bỏ hay sửa. `DetectResult.Data` **giữ kiểu `object`** (không thêm `IQrData` trong 8c).
 
 - Phạm vi: mọi kiểu và thành viên `public` của `TingQR.Core` và `TingQR.Rendering` (nhánh `plan-8c`, 2026-11-24), cộng
   tên kiểu mới dự kiến ở Task 4–7 (mục cuối).
