@@ -93,7 +93,7 @@ export const CASES = [
   bad('logo-href-empty', { ...LOGO, logo: { href: '' } }, 'empty logo href'),
   bad('logo-href-backslash', { ...LOGO, logo: { href: '/\\evil.example/x.png' } }, 'a backslash in a path reads as / in a browser'),
   bad('logo-href-leading-space', { ...LOGO, logo: { href: ' logo.png' } }, 'a relative path starting with a space'),
-  bad('logo-href-leading-bom', { ...LOGO, logo: { href: '﻿logo.png' } }, 'starts with U+FEFF, which JavaScript \\s matches'),
+  bad('logo-href-leading-bom', { ...LOGO, logo: { href: '\uFEFFlogo.png' } }, 'starts with U+FEFF, which JavaScript \\s matches'),
   bad('logo-href-protocol-relative', { ...LOGO, logo: { href: '//evil.example/x.png' } }, 'protocol-relative logo href'),
   bad('logo-background-colour', { ...LOGO, logo: { href: PNG, background: 'gold' } }, 'logo background must be a hex colour or transparent'),
   bad('logo-ecc-l', { ...LOGO, ecc: 'L', logo: { href: PNG } }, 'a logo needs ecc H'),

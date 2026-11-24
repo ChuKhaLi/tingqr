@@ -73,7 +73,8 @@ if (found.ok && found.value.scheme === 'vietqr') {
 ```
 
 - Khi tạo, đầu vào sai thì ném `TingQrError` với mã trong [`conformance/errors.json`](conformance/errors.json). Ví dụ:
-  nội dung chuyển khoản có dấu thì báo `NON_ASCII`, vì app ngân hàng từ chối chữ có dấu.
+  nội dung chuyển khoản có dấu thì báo `NON_ASCII`,
+  vì tingqr chỉ cho phép ASCII in được ở đó (luật của tingqr; chưa có lần quét nào ghi nhận app từ chối chữ có dấu).
 - Khi đọc, kết quả là `{ ok: true, value, warnings }` hoặc `{ ok: false, error }`. Mặc định chấp nhận QR thiếu tag mà
   chuẩn đòi nhưng QR thật hay bỏ (QR VNPAY thường thiếu tag 52 và 60), kèm cảnh báo; `{ mode: 'strict' }` thì từ chối.
   CRC viết thường và khoảng trắng hai đầu được chấp nhận ở cả hai chế độ, luôn kèm cảnh báo.
