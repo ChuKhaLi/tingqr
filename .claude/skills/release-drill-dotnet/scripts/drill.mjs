@@ -119,7 +119,9 @@ function startApp(dll, args, cwd) {
   let output = ''
   child.stdout.on('data', (d) => { output += d })
   child.stderr.on('data', (d) => { output += d })
-  const exited = new Promise((res) => child.once('exit', (code, signal) => res({ code, signal })))
+  // 'close', not 'exit': 'exit' can fire before stdout/stderr are drained, and check 5 reads the last lines the app wrote
+  // before it died (the TingQrException text, written just before an abort on Linux).
+  const exited = new Promise((res) => child.once('close', (code, signal) => res({ code, signal })))
   return { child, exited, output: () => output.slice(-4000), fullOutput: () => output }
 }
 

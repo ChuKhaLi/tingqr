@@ -10,7 +10,7 @@ import { fileURLToPath } from 'node:url'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 const SCRIPT = join(HERE, '..', 'check-release.mjs')
-const PACKAGES = ['TingQR.Core', 'TingQR.Rendering', 'TingQR.AspNetCore', 'TingQR.BankLogos']
+const PACKAGES = ['TingQR.Core', 'TingQR.Rendering', 'TingQR.BankLogos', 'TingQR.AspNetCore']
 const RELEASED_README = (p) => `# ${p}\n\nInstall with \`dotnet add package ${p}\`.\n`
 const ROOT_README = (status) => `# tingqr\n\n<!-- status:npm -->\n**Status: not released yet.**\n\n## .NET\n\n<!-- status:nuget -->\n${status}\n\nMore text.\n`
 

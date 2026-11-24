@@ -6,8 +6,8 @@ import { fileURLToPath } from 'node:url'
 /** The dotnet/ directory; TINGQR_DOTNET_ROOT overrides it (tests use a temp copy). */
 export const ROOT = process.env.TINGQR_DOTNET_ROOT ?? join(dirname(fileURLToPath(import.meta.url)), '..')
 
-/** The four NuGet packages, in publish order (a package is published after everything it depends on). */
-export const PACKAGES = ['TingQR.Core', 'TingQR.Rendering', 'TingQR.AspNetCore', 'TingQR.BankLogos']
+/** The four NuGet packages, in the publish order of release-dotnet.yml (a package is published after everything it depends on). */
+export const PACKAGES = ['TingQR.Core', 'TingQR.Rendering', 'TingQR.BankLogos', 'TingQR.AspNetCore']
 
 /** Plain x.y.z, no leading zeros, no prerelease or build part. */
 export const SEMVER = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/
