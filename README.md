@@ -43,8 +43,7 @@ tingqr code with your app? [Report it](https://github.com/ChuKhaLi/tingqr/issues
 
 <!-- status:nuget -->
 **Status: not released yet.** The four NuGet packages below are complete and have tests in this repository; they are not
-on NuGet yet. The tests of `TingQR.AspNetCore` and `TingQR.BankLogos` have run only locally so far, not yet on GitHub CI
-(see Tests below). Their version number is separate from the npm packages; the four share one version.
+on NuGet yet. Their version number is separate from the npm packages; the four share one version.
 
 | Package | For |
 |---|---|
@@ -96,9 +95,8 @@ that check JavaScript types).
   .NET: the CI workflow is set up to run the tests on Ubuntu and Windows (`net10.0`, plus `net481` on Windows for the
   `netstandard2.0` builds), and mutation testing (Stryker.NET, 90% threshold) is set up for all four packages, with the
   same two exceptions; a release drill installs the packed `.nupkg` files into apps outside the repository and uses
-  them. What has run so far: CI tests and mutation testing of `TingQR.Core` and `TingQR.Rendering` on GitHub; for
-  `TingQR.AspNetCore` and `TingQR.BankLogos`, tests and mutation testing only locally on Windows (no GitHub CI run
-  yet); the release drill only locally on Windows.
+  them. All three have run on GitHub CI for all four packages (first on 2026-11-24); the release drill has run on
+  Ubuntu (CI) and Windows (locally).
 - **Safe by design:** the server integrations do not build QR codes from URL parameters themselves: your `resolve`
   callback or controller chooses the payload, and their READMEs explain why it must not come from the URL (otherwise
   anyone could show a QR for any account on your domain). The VietQR builder writes only the tags banking apps expect and has no

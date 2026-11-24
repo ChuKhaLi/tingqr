@@ -89,7 +89,8 @@ Hướng dẫn cho phần .NET của tingqr. Quy tắc chung: `../CLAUDE.md`. Th
   `perTest`, không loại file nào: hai gói không có `Polyfills.cs`). Chạy từ thư mục test của từng gói, như Core:
   `dotnet tool run dotnet-stryker --config-file ../../stryker-config.aspnetcore.json` trong
   `dotnet/tests/TingQR.AspNetCore.Tests/` (~1,5 phút), `../../stryker-config.banklogos.json` trong
-  `dotnet/tests/TingQR.BankLogos.Tests/` (~1 phút). `mutation-dotnet.yml` có thêm hai job matrix (chưa chạy trên CI).
+  `dotnet/tests/TingQR.BankLogos.Tests/` (~1 phút). `mutation-dotnet.yml` có thêm hai job matrix
+  (đạt trên Ubuntu lần đầu ở PR #11, run 45423456206, 2026-11-24).
   Các quy tắc `disable once` ở trên áp dụng y nguyên.
 - Lần chạy cục bộ trên Windows 2026-11-24:
   - AspNetCore (sau khi thêm kiểm `CacheControl` và test "luôn 200"): 100% = 227 bị giết, 0 quá giờ, 0 sống sót; 77 bị

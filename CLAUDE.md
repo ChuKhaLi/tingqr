@@ -138,10 +138,13 @@ TypeScript và bản .NET, kèm tích hợp sẵn cho Angular, NestJS và ASP.NE
     - Kiểm cục bộ trên Windows 2026-11-24 (sau đợt sửa cuối): `dotnet test` Core 696 và Rendering 330 (net10.0 +
       net481), BankLogos 237 (net10.0 + net481), AspNetCore 132 (net10.0); Stryker.NET AspNetCore và BankLogos 100% (0
       sống sót, số ở `dotnet/CLAUDE.md`); diễn tập NuGet cả 6 mục đạt.
-    - **Chưa kiểm:** chưa job CI nào chạy hai gói mới trên GitHub (`ci-dotnet`, hai job mutation mới, bước
-      `--check-notice` của `ci-ts`); `release-dotnet.yml` chưa chạy lần nào; diễn tập chưa chạy trên Ubuntu; chưa đẩy gói
-      nào lên NuGet; chưa có environment `nuget-release`, biến `NUGET_USER`, policy trên nuget.org. Không có lần quét
-      app mới nào.
+    - CI trên PR #11 (commit `62ec5d3`, 2026-11-24) xanh hết: `ci-dotnet` Ubuntu + Windows (run 45423456208, gồm
+      AspNetCore và BankLogos); `ci-ts` Node 20/22/24 (run 45423456247, gồm bước `--check-notice`); `mutation-dotnet`
+      cả 4 job trên Ubuntu (run 45423456206); `mutation-ts` (run 45423456068); `release-dotnet.yml` job `verify`
+      dry-run (run 45423456218): diễn tập trên Ubuntu 6/6 đạt, app cấu hình sai dừng bằng `SIGABRT`.
+    - **Chưa kiểm:** job `publish` của `release-dotnet.yml` chưa chạy lần nào (OIDC, `NuGet/login`, bước duyệt); chưa
+      đẩy gói nào lên NuGet; chưa có environment `nuget-release`, biến `NUGET_USER`, policy trên nuget.org. Không có lần
+      quét app mới nào.
   - Tiếp theo: Plan 2 Task 5–6 (MoMo, ZaloPay) khi chủ dự án có QR thật; chủ dự án quét thêm app (kể cả bản có icon ngân hàng) và
     thử PNG trong Zalo/Messenger; chủ dự án quyết phát hành npm và NuGet (`docs/RELEASING.md`).
 - **Chủ dự án đã quyết:**

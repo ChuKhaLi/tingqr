@@ -221,10 +221,11 @@ nên đọc lại trước khi làm.
 
 ## Chưa chạy (tính tới 2026-11-24)
 
-- `release-dotnet.yml` chưa chạy lần nào trên GitHub, cả `verify` lẫn `publish`: OIDC, `NuGet/login`, bước duyệt, bước
-  từ chối repo riêng tư, bước bỏ qua gói đã có, `dotnet nuget push` mới chỉ được đọc.
-- Diễn tập mới chạy trên Windows 11 (2026-11-24, phiên bản `0.0.0`, cả 6 mục đạt); chưa chạy trên Ubuntu (đường thoát
-  bằng tín hiệu của app cấu hình sai chỉ có unit test).
+- Job `verify` của `release-dotnet.yml` đã chạy dry-run trên PR #11 (run 45423456218, Ubuntu): đạt. Job `publish` chưa
+  chạy lần nào: OIDC, `NuGet/login`, bước duyệt, bước từ chối repo riêng tư, bước bỏ qua gói đã có, `dotnet nuget push`
+  mới chỉ được đọc.
+- Diễn tập đã chạy trên Windows 11 (cục bộ) và Ubuntu (job `verify` trên), phiên bản `0.0.0`, cả 6 mục đạt; trên Ubuntu
+  app cấu hình sai dừng bằng `SIGABRT`.
 - Chưa đẩy gói nào lên NuGet. Ngày 2026-11-24 repo chưa có environment nào và chưa có biến Actions nào (`gh api
   repos/ChuKhaLi/tingqr/environments`, `gh variable list`), tức chưa có `nuget-release` và `NUGET_USER`. Tiền tố
   `TingQR` và policy trên nuget.org chưa được ghi nhận là đã làm.

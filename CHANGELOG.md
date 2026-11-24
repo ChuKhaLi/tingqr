@@ -109,4 +109,5 @@ no script checks it.
 
 - `node dotnet/scripts/set-version.mjs`, `check-release.mjs`, the release drill (skill `release-drill-dotnet`) and
   `release-dotnet.yml`: only a tag `dotnet-vX.Y.Z` on `main` publishes, after approval in the `nuget-release`
-  environment, with NuGet trusted publishing (no stored API key). Not yet run on GitHub; nothing pushed to NuGet.
+  environment, with NuGet trusted publishing (no stored API key). The `verify` dry run passed on GitHub (PR #11, Ubuntu);
+  `publish` has never run; nothing pushed to NuGet.

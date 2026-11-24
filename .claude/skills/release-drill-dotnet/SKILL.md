@@ -80,7 +80,9 @@ node .claude/skills/release-drill-dotnet/scripts/drill.mjs --out dir  # kiểm, 
 ## Kết quả đã chạy
 
 - 2026-11-24, Windows 11 (10.0.26300), .NET SDK 10.0.203, Node 22.23.3, phiên bản `0.0.0`: cả 6 mục ĐẠT (khoảng 30
-  giây khi gói đã build sẵn). Chưa chạy trên Ubuntu (job `verify` của `release-dotnet.yml` chưa chạy lần nào).
+  giây khi gói đã build sẵn).
+- 2026-11-24, Ubuntu (job `verify` của `release-dotnet.yml`, PR #11, run 45423456218): cả 6 mục ĐẠT; app cấu hình sai
+  dừng bằng tín hiệu `SIGABRT` (mục 5 tính là đúng).
 
 ## Bẫy đã gặp (Windows)
 
