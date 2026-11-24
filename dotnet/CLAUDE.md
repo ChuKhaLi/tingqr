@@ -52,3 +52,21 @@ Hướng dẫn cho phần .NET của tingqr. Quy tắc chung: `../CLAUDE.md`. Th
     kiểm một lần, script không có trong repo).
     `Logo.CheckBox`: `share > MaxClearedShare` thành `>=` (cạnh mã lẻ nên ClearSide²/size² không bao giờ bằng 0,1;
     cách xa ít nhất 1/(10·177²)).
+
+## TingQR.AspNetCore và TingQR.BankLogos: mutation test
+
+- Cấu hình riêng `stryker-config.aspnetcore.json` và `stryker-config.banklogos.json` (ngưỡng chặn 90, `net10.0`,
+  `perTest`, không loại file nào: hai gói không có `Polyfills.cs`). Chạy từ thư mục test của từng gói, như Core:
+  `dotnet tool run dotnet-stryker --config-file ../../stryker-config.aspnetcore.json` trong
+  `dotnet/tests/TingQR.AspNetCore.Tests/` (~1,5 phút), `../../stryker-config.banklogos.json` trong
+  `dotnet/tests/TingQR.BankLogos.Tests/` (~1 phút). `mutation-dotnet.yml` có thêm hai job matrix (chưa chạy trên CI).
+  Các quy tắc `disable once` ở trên áp dụng y nguyên.
+- Lần chạy cục bộ trên Windows 2026-11-24:
+  - AspNetCore: 100% = 211 bị giết, 0 quá giờ, 0 sống sót; 67 bị bỏ qua (17 theo comment `disable`, 50 do bộ lọc
+    "block already covered"), 29 lỗi biên dịch (không tính).
+  - BankLogos: 100% = 66 bị giết, 0 quá giờ, 0 sống sót; 15 bị bỏ qua (4 theo comment `disable`, 11 do bộ lọc), 7 lỗi
+    biên dịch.
+- Ngoài thông báo lỗi, chỉ một chỗ `disable` vì tương đương: `ArgumentNullException.ThrowIfNull(services)` đầu
+  `AddTingQr` (`AddOptions` ngay sau ném đúng lỗi đó). Mã đã viết lại để bỏ đột biến tương đương: so `Service` trong
+  cấu hình bằng `IsWord` (bit 0x20) thay cho đổi chữ thường, `TingQrMvcMarker` lưu chính khoá (chỉ đọc sự có mặt),
+  `BankLogos` đọc tài nguyên bằng `using`.

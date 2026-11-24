@@ -123,7 +123,7 @@ public class MvcContractTests
         Assert.Equal(418, (int)response.StatusCode);
         Assert.StartsWith("InvalidOperationException: A [TingQrSvg] action must return a QR payload string or null",
             await response.Content.ReadAsStringAsync());
-        // A void action gives MVC's EmptyResult, which counts as null only for an action declared to return a string.
+        // A void action gives MVC's EmptyResult, which is not a payload (a returned null is an ObjectResult).
         var empty = await client.GetAsync("/mvc/void.svg");
         Assert.Equal(418, (int)empty.StatusCode);
         Assert.Contains("got Microsoft.AspNetCore.Mvc.EmptyResult", await empty.Content.ReadAsStringAsync(), StringComparison.Ordinal);

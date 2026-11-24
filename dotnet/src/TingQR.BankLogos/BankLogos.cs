@@ -79,10 +79,7 @@ namespace TingQR
             }
             return Uris.GetOrAdd(name, _ =>
             {
-                using var stream = Asm.GetManifestResourceStream(name)!;
-                using var ms = new MemoryStream();
-                stream.CopyTo(ms);
-                var bytes = ms.ToArray();
+                var bytes = Read(name);
                 return "data:" + MimeOf(name, bytes) + ";base64," + Convert.ToBase64String(bytes);
             });
         }
@@ -94,17 +91,21 @@ namespace TingQR
             {
                 return null;
             }
-            var stream = Asm.GetManifestResourceStream(name)!;
             // Sniff the type from the content, as the data URI does; a mislabelled file is a build error in the repo.
-            using var ms = new MemoryStream();
-            stream.CopyTo(ms);
-            stream.Dispose();
-            var bytes = ms.ToArray();
+            var bytes = Read(name);
             return new BankLogoFile(new MemoryStream(bytes, false), MimeOf(name, bytes), name.Substring(Prefix.Length + kind.Length));
         }
 
+        private static byte[] Read(string name)
+        {
+            using var stream = Asm.GetManifestResourceStream(name)!;
+            using var ms = new MemoryStream();
+            stream.CopyTo(ms);
+            return ms.ToArray();
+        }
+
         /// <summary>MIME from the bytes, checked against the extension (as the TypeScript build does).</summary>
-        private static string MimeOf(string name, byte[] bytes)
+        internal static string MimeOf(string name, byte[] bytes)
         {
             var ext = name.Substring(name.LastIndexOf('.') + 1);
             string? sniffed = null;
@@ -125,7 +126,10 @@ namespace TingQR
             }
             if (sniffed != ext)
             {
-                throw new InvalidOperationException(name + ": content is " + (sniffed ?? "unknown") + ", extension says " + ext);
+                // Stryker disable once all : "shown" is only used in the error message
+                var shown = sniffed ?? "unknown";
+                // Stryker disable once String : error message
+                throw new InvalidOperationException(name + ": content is " + shown + ", extension says " + ext);
             }
             return ext == "svg" ? "image/svg+xml" : "image/webp";
         }

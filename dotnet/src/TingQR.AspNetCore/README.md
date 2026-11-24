@@ -143,12 +143,16 @@ public class OrdersController(OrderStore orders, TingQrService tingqr) : Control
 - Put it on an action or a controller. The nearest attribute wins as a whole: an action's `[TingQrSvg("b")]` replaces
   the controller's `[TingQrSvg("a")]` (nothing of `a` is used). Each request is rendered once.
 - **Profile names are checked at startup:** a name not in `Profiles` stops the app with a `TingQrException` naming the
-  controller, action and profile (also on a controller attribute that every action overrides).
+  controller, action and profile (also on a controller attribute that every action overrides, and on a global filter
+  added with `options.Filters.Add(new TingQrSvgAttribute("name"))`).
 - Profiles are checked on their own at startup. A profile `Foreground` without a profile `Background` is checked only as
   a colour, since its contrast depends on `Svg`'s background; a clash between the two (for example a `Svg` logo and a
   profile `Ecc = Ecc.L`) is found per request (500).
 - `[TingQrSvg]` works without `AddTingQr` (e.g. to serve PromptPay codes); `[TingQrSvg("name")]` then stops the app,
-  since there are no profiles.
+  since there are no profiles. A global `TingQrSvgAttribute("name")` without `AddTingQr` cannot be seen at startup, so
+  each of its requests gives a 500.
+- An exception another filter has already handled, and a result another filter set before the action ran, pass
+  through unchanged.
 
 ## Responses and headers
 

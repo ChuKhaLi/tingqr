@@ -18,10 +18,8 @@ public static class TingQrServiceCollectionExtensions
     /// <param name="configure">Sets the options; may be called again to add to them.</param>
     public static IServiceCollection AddTingQr(this IServiceCollection services, Action<TingQrOptions>? configure = null)
     {
-        if (services is null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
+        // Stryker disable once Statement : equivalent, AddOptions below throws the same ArgumentNullException("services")
+        ArgumentNullException.ThrowIfNull(services);
         services.AddOptions<TingQrOptions>();
         if (configure is not null)
         {
@@ -57,18 +55,25 @@ public static class TingQrServiceCollectionExtensions
         });
     }
 
-    /// <summary>Lower-cases ASCII letters only: no culture or Unicode case folding, as everywhere in tingqr.</summary>
-    private static string AsciiLower(string text)
+    /// <summary>
+    /// Whether <paramref name="text"/> is <paramref name="word"/> (lower-case ASCII letters) in any ASCII case: no culture
+    /// or Unicode case folding, as everywhere in tingqr.
+    /// </summary>
+    private static bool IsWord(string text, string word)
     {
-        var chars = text.ToCharArray();
-        for (var i = 0; i < chars.Length; i++)
+        if (text.Length != word.Length)
         {
-            if (chars[i] >= 'A' && chars[i] <= 'Z')
+            return false;
+        }
+        for (var i = 0; i < text.Length; i++)
+        {
+            // Setting bit 0x20 turns 'A'..'Z' into 'a'..'z' and maps no other character onto a lower-case letter.
+            if ((text[i] | 0x20) != word[i])
             {
-                chars[i] = (char)(chars[i] + ('a' - 'A'));
+                return false;
             }
         }
-        return new string(chars);
+        return true;
     }
 
     private static void Bind(IConfiguration section, TingQrOptions options)
@@ -86,13 +91,20 @@ public static class TingQrServiceCollectionExtensions
         var service = section[nameof(TingQrOptions.Service)];
         if (service is not null)
         {
-            options.Service = AsciiLower(service) switch
+            if (IsWord(service, "account"))
             {
-                "account" => VietQrServiceCode.Account,
-                "card" => VietQrServiceCode.Card,
-                _ => throw new TingQrException(TingQrErrorCode.InvalidValue,
-                    "AddTingQr: Service \"" + service + "\" in configuration must be \"account\" or \"card\"."),
-            };
+                options.Service = VietQrServiceCode.Account;
+            }
+            else if (IsWord(service, "card"))
+            {
+                options.Service = VietQrServiceCode.Card;
+            }
+            else
+            {
+                // Stryker disable once String : error message
+                throw new TingQrException(TingQrErrorCode.InvalidValue,
+                    "AddTingQr: Service \"" + service + "\" in configuration must be \"account\" or \"card\".");
+            }
         }
         var cacheControl = section[nameof(TingQrOptions.CacheControl)];
         if (cacheControl is not null)

@@ -44,6 +44,10 @@ jobs:
           cache-dependency-path: ts/pnpm-lock.yaml
       - run: pnpm -C ts install --frozen-lockfile
       - run: pnpm -C ts typecheck
+      # Before the build, which rewrites the notice. ci-dotnet checks it too (NoticeSyncTests), but does not run when only
+      # ts/ changes, e.g. the notice template in gen.mjs.
+      - name: 'dotnet/src/TingQR.BankLogos/LOGOS-NOTICE.md matches gen.mjs and conformance/banks/logos/'
+        run: node ts/packages/bank-logos/scripts/gen.mjs --check-notice
       - run: pnpm -C ts build
       - name: '@tingqr/core has no runtime/peer/optional dependencies and fits the size budget'
         run: node ts/scripts/check-core-package.mjs

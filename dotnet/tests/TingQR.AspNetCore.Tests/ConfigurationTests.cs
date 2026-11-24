@@ -154,6 +154,19 @@ public class ConfigurationTests
     }
 
     [Fact]
+    public async Task Account_in_configuration_overrides_earlier_card()
+    {
+        await using var app = TestApp.Build(b =>
+        {
+            b.Configuration.AddInMemoryCollection(new Dictionary<string, string?> { ["TingQr:Service"] = "Account" });
+            b.Services.AddTingQr(o => o.Service = VietQrServiceCode.Card);
+            b.Services.AddTingQr(b.Configuration.GetSection("TingQr"));
+        });
+        await app.StartAsync();
+        Assert.Equal(VietQrServiceCode.Account, app.Services.GetRequiredService<Microsoft.Extensions.Options.IOptions<TingQrOptions>>().Value.Service);
+    }
+
+    [Fact]
     public async Task Unknown_service_in_configuration_stops_startup()
     {
         await using var app = TestApp.Build(b =>
@@ -207,6 +220,60 @@ public class ConfigurationTests
     {
         var e = await TestApp.StartupError(o => o.Profiles[""] = new SvgOptions());
         Assert.Equal(TingQrErrorCode.InvalidValue, e.Code);
+    }
+
+    [Fact]
+    public async Task Null_profile_stops_startup()
+    {
+        var e = await TestApp.StartupError(o => o.Profiles["none"] = null!);
+        Assert.Equal(TingQrErrorCode.InvalidValue, e.Code);
+    }
+
+    [Theory]
+    [InlineData("wallet")]
+    [InlineData("cards")]
+    [InlineData("car")]
+    [InlineData("accoun")]
+    [InlineData("cord")]
+    [InlineData("acccunt")]
+    [InlineData("")]
+    public async Task Service_in_configuration_must_be_a_whole_word(string text)
+    {
+        await using var app = TestApp.Build(b =>
+        {
+            b.Configuration.AddInMemoryCollection(new Dictionary<string, string?> { ["TingQr:Service"] = text });
+            b.Services.AddTingQr(b.Configuration.GetSection("TingQr"));
+        });
+        var e = await Assert.ThrowsAsync<TingQrException>(() => app.StartAsync());
+        Assert.Equal(TingQrErrorCode.InvalidValue, e.Code);
+    }
+
+    [Fact]
+    public void Default_cache_control_is_private()
+    {
+        Assert.Equal(Contract.DefaultCacheControl, new TingQrOptions().CacheControl);
+    }
+
+    [Fact]
+    public void Null_arguments_throw_ArgumentNullException()
+    {
+        Assert.Throws<ArgumentNullException>(() => TingQrServiceCollectionExtensions.AddTingQr(null!));
+        Assert.Throws<ArgumentNullException>(() => new ServiceCollection().AddTingQr((IConfiguration)null!));
+        Assert.Throws<ArgumentNullException>(() => TingQrEndpointExtensions.WithTingQrSvg<IEndpointConventionBuilder>(null!));
+    }
+
+    [Fact]
+    public void Works_in_a_bare_service_collection()
+    {
+        // No host: AddTingQr itself registers the options it needs.
+        using var provider = new ServiceCollection().AddTingQr(o =>
+        {
+            o.Bank = "MB";
+            o.AccountNumber = TestApp.Account;
+        }).BuildServiceProvider();
+        Assert.Equal("970422", provider.GetRequiredService<TingQrService>().Bin);
+        using var bare = new ServiceCollection().AddTingQr().BuildServiceProvider();
+        Assert.Null(bare.GetRequiredService<TingQrService>().Bin);
     }
 
     [Fact]

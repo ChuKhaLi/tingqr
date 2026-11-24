@@ -27,8 +27,9 @@ internal sealed class TingQrStartupCheck : IHostedService
         {
             foreach (var action in actions.ActionDescriptors.Items)
             {
-                // Controller attributes too, also those every action overrides: a name that is not there is a mistake.
-                foreach (var attribute in action.EndpointMetadata.OfType<TingQrSvgAttribute>())
+                // Controller and global attributes too, also those every action overrides: a name that is not there is a
+                // mistake.
+                foreach (var attribute in action.FilterDescriptors.Select(d => d.Filter).OfType<TingQrSvgAttribute>())
                 {
                     if (attribute.Profile is not null && !resolved.Profiles.ContainsKey(attribute.Profile))
                     {

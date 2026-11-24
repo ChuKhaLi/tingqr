@@ -1,10 +1,11 @@
 name: Mutation (.NET)
 
-# Stryker.NET mutates TingQR.Core (dotnet/stryker-config.json) and TingQR.Rendering (dotnet/stryker-config.rendering.json),
+# Stryker.NET mutates TingQR.Core (dotnet/stryker-config.json), TingQR.Rendering (dotnet/stryker-config.rendering.json),
+# TingQR.AspNetCore (dotnet/stryker-config.aspnetcore.json) and TingQR.BankLogos (dotnet/stryker-config.banklogos.json),
 # one matrix job each; a job fails if its score drops below `thresholds.break` in its config.
 # One OS: the score is expected not to vary by platform; for Core, local runs on Windows (2026-11-22/23) and the first CI
-# run on Ubuntu (PR #10, 2026-11-23) both passed. Rendering has only been run locally on Windows (2026-11-23). The tests
-# run on net10.0 only (net481 is Windows-only).
+# run on Ubuntu (PR #10, 2026-11-23) both passed. Rendering (2026-11-23), AspNetCore and BankLogos (2026-11-24) have
+# only been run locally on Windows. The tests run on net10.0 only (net481 is Windows-only).
 on:
   push:
     branches: [main]
@@ -26,7 +27,7 @@ jobs:
   mutation:
     name: mutation (${{ matrix.project }})
     runs-on: ubuntu-latest
-    timeout-minutes: 30  # ~5 min each locally (2026-11-23)
+    timeout-minutes: 30  # Core and Rendering ~5 min each locally (2026-11-23)
     strategy:
       fail-fast: false  # report both scores even when one fails
       matrix:
@@ -40,6 +41,14 @@ jobs:
           - project: rendering
             dir: dotnet
             config: stryker-config.rendering.json
+          # From their own test project directories too: from dotnet/ Stryker would run every test project that
+          # references the mutated one. ~1.5 and ~1 min locally (2026-11-24).
+          - project: aspnetcore
+            dir: dotnet/tests/TingQR.AspNetCore.Tests
+            config: ../../stryker-config.aspnetcore.json
+          - project: banklogos
+            dir: dotnet/tests/TingQR.BankLogos.Tests
+            config: ../../stryker-config.banklogos.json
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-dotnet@v4

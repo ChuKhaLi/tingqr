@@ -112,6 +112,73 @@ namespace TingQR.Tests
         }
 
         [Fact]
+        public void Lookup_does_not_match_a_prefix_or_the_file_name()
+        {
+            Assert.Null(BankLogos.Logo("97041"));
+            Assert.Null(BankLogos.Logo("970418.svg"));
+            Assert.Null(BankLogos.OpenLogo("970418.svg"));
+            Assert.Null(BankLogos.Icon("m"));
+            Assert.Null(BankLogos.Icon("mb.webp"));
+            Assert.Null(BankLogos.OpenIcon("m"));
+        }
+
+        [Fact]
+        public void Opened_stream_is_read_only()
+        {
+            using var opened = BankLogos.OpenIcon("mb");
+            Assert.False(opened!.Content.CanWrite);
+        }
+
+        private static byte[] Ascii(string text) => System.Text.Encoding.ASCII.GetBytes(text);
+
+        private static byte[] Webp() => Ascii("RIFF\0\0\0\0WEBPVP8L");
+
+        [Fact]
+        public void Sniff_accepts_webp_and_svg_matching_the_extension()
+        {
+            Assert.Equal("image/webp", BankLogos.MimeOf("x/a.webp", Webp()));
+            Assert.Equal("image/webp", BankLogos.MimeOf("x/a.webp", Ascii("RIFF\0\0\0\0WEBP")));
+            Assert.Equal("image/svg+xml", BankLogos.MimeOf("x/a.svg", Ascii("<svg>")));
+            Assert.Equal("image/svg+xml", BankLogos.MimeOf("x/a.svg", Ascii("<svg xmlns=\"http://www.w3.org/2000/svg\"/>")));
+            Assert.Equal("image/svg+xml", BankLogos.MimeOf("x/a.svg", Ascii("<?xml version=\"1.0\"?>\n<svg\nwidth=\"1\"/>")));
+            Assert.Equal("image/svg+xml", BankLogos.MimeOf("x/a.svg", Ascii(new string(' ', 4091) + "<svg>")));
+        }
+
+        [Fact]
+        public void Sniff_rejects_content_that_does_not_match_the_extension()
+        {
+            Assert.Throws<InvalidOperationException>(() => BankLogos.MimeOf("x/a.svg", Webp()));
+            Assert.Throws<InvalidOperationException>(() => BankLogos.MimeOf("x/a.webp", Ascii("<svg>")));
+            // A WebP header shorter than 12 bytes, and one with any byte of RIFF or WEBP wrong.
+            Assert.Throws<InvalidOperationException>(() => BankLogos.MimeOf("x/a.webp", Ascii("RIFF\0\0\0\0WEB")));
+            var good = Webp();
+            foreach (var i in new[] { 0, 1, 2, 3, 8, 9, 10, 11 })
+            {
+                var bad = (byte[])good.Clone();
+                bad[i] = (byte)'x';
+                Assert.Throws<InvalidOperationException>(() => BankLogos.MimeOf("x/a.webp", bad));
+            }
+        }
+
+        [Theory]
+        [InlineData("<svgx>")]
+        [InlineData("<svg")]
+        [InlineData("<?xml?><svg")]
+        [InlineData("abc def")]
+        [InlineData("ab")]
+        [InlineData("")]
+        public void Sniff_rejects_svg_extension_without_an_svg_tag(string content)
+        {
+            Assert.Throws<InvalidOperationException>(() => BankLogos.MimeOf("x/a.svg", Ascii(content)));
+        }
+
+        [Fact]
+        public void Sniff_reads_only_the_first_4096_bytes_for_svg()
+        {
+            Assert.Throws<InvalidOperationException>(() => BankLogos.MimeOf("x/a.svg", Ascii(new string(' ', 4092) + "<svg>")));
+        }
+
+        [Fact]
         public void Null_throws_ArgumentNullException()
         {
             Assert.Throws<ArgumentNullException>(() => BankLogos.Logo(null!));

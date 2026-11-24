@@ -28,8 +28,9 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 10.0.x
-      # BankDataSyncTests runs `node conformance/tools/banks/sync-dotnet.mjs --check` (no install needed); without
-      # Node it would be skipped.
+      # BankDataSyncTests runs `node conformance/tools/banks/sync-dotnet.mjs --check` and NoticeSyncTests (BankLogos)
+      # runs `node ts/packages/bank-logos/scripts/gen.mjs --check-notice` (no install needed for either); with CI set, a
+      # missing Node fails them instead of skipping.
       - uses: actions/setup-node@v5
         with:
           node-version: '22'

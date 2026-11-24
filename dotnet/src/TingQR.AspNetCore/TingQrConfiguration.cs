@@ -47,15 +47,19 @@ internal static class TingQrConfiguration
         if (hasBank != hasAccount)
         {
             var missing = hasBank ? nameof(TingQrOptions.AccountNumber) : nameof(TingQrOptions.Bank);
+            // Stryker disable once all : "present" is only used in the error message
             var present = hasBank ? nameof(TingQrOptions.Bank) : nameof(TingQrOptions.AccountNumber);
+            // Stryker disable once String : error message
             throw new TingQrException(TingQrErrorCode.InvalidValue,
                 "AddTingQr: " + present + " is set but " + missing + " is missing; set both for a receiving account, or neither.");
         }
 
         Bank? bank = null;
+        string? account = null;
         string? staticCode = null;
         if (hasBank)
         {
+            account = options.AccountNumber;
             bank = Banks.Find(options.Bank!);
             if (bank is null)
             {
@@ -84,17 +88,19 @@ internal static class TingQrConfiguration
         {
             if (string.IsNullOrEmpty(pair.Key))
             {
+                // Stryker disable once String : error message
                 throw new TingQrException(TingQrErrorCode.InvalidValue, "AddTingQr: a profile name must not be empty.");
             }
             if (pair.Value is null)
             {
+                // Stryker disable once String : error message
                 throw new TingQrException(TingQrErrorCode.InvalidValue, "AddTingQr: profile \"" + pair.Key + "\" is null.");
             }
             CheckRouteOptions(pair.Value);
             profiles.Add(pair.Key, pair.Value);
         }
 
-        return new ResolvedTingQr(bank, hasAccount ? options.AccountNumber : null, options.Service, options.Svg, profiles, options.CacheControl);
+        return new ResolvedTingQr(bank, account, options.Service, options.Svg, profiles, options.CacheControl);
     }
 
     /// <summary>
@@ -156,6 +162,7 @@ internal static class TingQrConfiguration
         }
         if (logo.Href is null || !logo.Href.StartsWith(DataImage, StringComparison.Ordinal))
         {
+            // Stryker disable once String : error message
             throw new TingQrException(TingQrErrorCode.InvalidValue,
                 "A logo in an SVG served over HTTP must be a data:image/ URI (e.g. from TingQR.BankLogos): an SVG shown as an " +
                 "image cannot load a path or URL, so the logo would be blank.");
