@@ -62,7 +62,7 @@ namespace TingQR.Tests
         }
 
         private static string Rebuild(string payload, Func<TlvField[], TlvField[]> edit)
-            => EmvPayloads.Build(edit(Tlv.Parse(payload).Where(f => f.Tag != "63").Cast<TlvField>().ToArray()));
+            => EmvPayload.Build(edit(Tlv.Parse(payload).Where(f => f.Tag != "63").Cast<TlvField>().ToArray()));
 
         private static TlvField[] Set(TlvField[] f, string tag, string value) => f.Select(x => x.Tag == tag ? new TlvField(tag, value) : x).ToArray();
 

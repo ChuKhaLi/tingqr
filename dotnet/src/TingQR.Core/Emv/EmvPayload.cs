@@ -22,11 +22,7 @@ namespace TingQR.Emv
 
         /// <summary>The payload after surrounding whitespace was removed.</summary>
         public string Raw { get; }
-    }
 
-    /// <summary>Building and parsing EMV payloads.</summary>
-    public static class EmvPayloads
-    {
         /// <summary>Encodes <paramref name="fields"/> (without tag 63), then appends <c>6304</c> and the CRC.</summary>
         public static string Build(IEnumerable<TlvField> fields)
         {
@@ -35,7 +31,7 @@ namespace TingQR.Emv
         }
 
         /// <summary>The first top-level field with <paramref name="tag"/>, or null.</summary>
-        public static TlvNode? GetField(EmvPayload p, string tag) => p.Fields.FirstOrDefault(f => f.Tag == tag);
+        public TlvNode? GetField(string tag) => Fields.FirstOrDefault(f => f.Tag == tag);
 
         // ASCII whitespace plus a UTF-8 BOM and no-break space, like the TS reader.
         private static bool IsEdge(char c) => c == ' ' || c == '\t' || c == '\r' || c == '\n' || c == '﻿' || c == ' ';

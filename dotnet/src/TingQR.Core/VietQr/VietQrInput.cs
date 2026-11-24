@@ -9,8 +9,8 @@ namespace TingQR
         /// <summary>Account or card number, 3–25 ASCII letters or digits.</summary>
         public required string AccountNumber { get; init; }
 
-        /// <summary>Defaults to <see cref="VietQrService.Account"/>.</summary>
-        public VietQrService Service { get; init; } = VietQrService.Account;
+        /// <summary>Defaults to <see cref="VietQrServiceCode.Account"/>.</summary>
+        public VietQrServiceCode Service { get; init; } = VietQrServiceCode.Account;
 
         /// <summary>Whole VND, 1–13 digits, greater than zero. Null (or empty text) for a static QR.</summary>
         public QrAmount? Amount { get; init; }

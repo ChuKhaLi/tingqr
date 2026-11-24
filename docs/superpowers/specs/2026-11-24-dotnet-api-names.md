@@ -85,3 +85,5 @@ Các mục bản brief bắt buộc xét đứng đầu.
 - `VIETQR_GUID`/`VNPAY_GUID` → tên `AID` tương ứng; `VietQrService` → `VietQrServiceCode`.
 - `VnpayQrData.store`/`terminal` so với `KhqrData.storeLabel`/`terminalLabel`: sửa cùng lúc ở hai bản và mẫu, nếu muốn.
 - Task 2 ghi các khác biệt tên còn lại vào `conformance/README.md`.
+- Task 2: `EmvPayloads.GetField` thành phương thức thể hiện `payload.GetField(tag)`; bản TS còn `getField(p, tag)`, chưa cần đổi.
+- Task 2: `QrAmount.HasValue` thành `HasAmount` (.NET); TS không có tương đương.

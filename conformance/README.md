@@ -288,6 +288,20 @@ Dành cho `toSvg` (`@tingqr/render`, `TingQrRender.ToSvg` bên .NET). Mẫu nằ
 
 Chỉ chủ dự án chạy bước 2 khi có dữ liệu thật; Claude không chạy và không đọc trang sinh ra từ dữ liệu thật.
 
+## Tên khác nhau giữa TS và .NET
+
+Trường JSON và giá trị trong `conformance/` giống nhau ở cả hai bản. Chỉ tên trong API khác (đã duyệt 2026-11-24, xem
+`docs/superpowers/specs/2026-11-24-dotnet-api-names.md`):
+
+- `VIETQR_GUID` / `VNPAY_GUID` (TS) so với `VietQr.Aid` / `VnpayQr.Aid` (.NET); giá trị chuỗi như nhau.
+- `VietQrService` (kiểu TS, `'account' | 'card'`) so với enum `VietQrServiceCode` (.NET); thuộc tính `service` /
+  `Service` vẫn giữ tên.
+- `parsePayload` / `buildPayload` / `getField(p, tag)` so với `EmvPayload.Parse` / `EmvPayload.Build` /
+  `payload.GetField(tag)`.
+- Tên mã lỗi dạng chữ (`CRC_MISMATCH`) lấy bằng `code.ToWireName()` (.NET, phương thức mở rộng của `TingQrErrorCode`
+  và `TingQrWarningCode`).
+- `QrAmount.HasAmount` (.NET); `BankApp.VietQrAutofill` (.NET) ứng với trường JSON `vietqrAutofill`.
+
 ## Quy tắc nguồn
 
 - Không tự bịa chuỗi QR. Mẫu `invalid` là mẫu `valid` bị sửa, ghi rõ đã sửa gì.

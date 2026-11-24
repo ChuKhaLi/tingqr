@@ -24,7 +24,7 @@ namespace TingQR.Tests
         private static string F(string tag, string value) => Tlv.Field(tag, value);
 
         private static string Rebuild(string payload, Func<List<TlvField>, IEnumerable<TlvField>> edit)
-            => EmvPayloads.Build(edit(Tlv.Parse(payload).Where(f => f.Tag != "63").Cast<TlvField>().ToList()));
+            => EmvPayload.Build(edit(Tlv.Parse(payload).Where(f => f.Tag != "63").Cast<TlvField>().ToList()));
 
         private static IEnumerable<TlvField> SetTag(List<TlvField> f, string tag, string value)
             => f.Select(x => x.Tag == tag ? new TlvField(tag, value) : x);

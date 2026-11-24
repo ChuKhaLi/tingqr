@@ -48,7 +48,7 @@ export function renderBankDataCs(banks, apps) {
       : 'null'
     return (
       `new BankApp(Id: ${str(a.id)}, Name: ${str(a.name)}, Bin: ${strOrNull(a.bin)}, Ios: ${ios}, Android: ${android}, ` +
-      `Confidence: ${confidence}, VietqrAutofill: ${a.vietqrAutofill})`
+      `Confidence: ${confidence}, VietQrAutofill: ${a.vietqrAutofill})`
     )
   }
   const lines = (items, f) => items.map((x) => `            ${f(x)},\n`).join('')

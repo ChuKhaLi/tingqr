@@ -20,14 +20,14 @@ namespace TingQR.Tests
         [Fact]
         public void ErrorCodesMatchErrorsJson()
         {
-            var names = Enum.GetValues(typeof(TingQrErrorCode)).Cast<TingQrErrorCode>().Select(WireNames.Of).ToList();
+            var names = Enum.GetValues(typeof(TingQrErrorCode)).Cast<TingQrErrorCode>().Select(c => c.ToWireName()).ToList();
             Assert.Equal(CodesIn("errors"), names);
         }
 
         [Fact]
         public void WarningCodesMatchErrorsJson()
         {
-            var names = Enum.GetValues(typeof(TingQrWarningCode)).Cast<TingQrWarningCode>().Select(WireNames.Of).ToList();
+            var names = Enum.GetValues(typeof(TingQrWarningCode)).Cast<TingQrWarningCode>().Select(c => c.ToWireName()).ToList();
             Assert.Equal(CodesIn("warnings"), names);
         }
 

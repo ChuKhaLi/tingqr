@@ -10,7 +10,7 @@ namespace TingQR.Emv
         /// <summary>Every sub-tag of tag 62, keyed by sub-tag; null when tag 62 is absent. Rejects duplicates.</summary>
         public static Dictionary<string, string>? ReadAdditionalData(EmvPayload p)
         {
-            var value = EmvPayloads.GetField(p, "62")?.Value;
+            var value = p.GetField("62")?.Value;
             if (value == null) return null;
             return Tlv.ParseTemplate(value, "62").ToDictionary(n => n.Tag, n => n.Value);
         }
@@ -29,7 +29,7 @@ namespace TingQR.Emv
         /// </summary>
         public static IReadOnlyList<TlvNode>? ReadSchemeTemplate(EmvPayload p, string tag, string guid)
         {
-            var value = EmvPayloads.GetField(p, tag)?.Value;
+            var value = p.GetField(tag)?.Value;
             if (value == null) return null;
             IReadOnlyList<TlvNode> nodes;
             try

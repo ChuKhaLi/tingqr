@@ -19,7 +19,7 @@ namespace TingQR.Tests
         private static string F(string tag, string value) => Tlv.Field(tag, value);
 
         private static string Rebuild(Func<List<TlvField>, IEnumerable<TlvField>> edit)
-            => EmvPayloads.Build(edit(Tlv.Parse(V).Where(f => f.Tag != "63").Cast<TlvField>().ToList()));
+            => EmvPayload.Build(edit(Tlv.Parse(V).Where(f => f.Tag != "63").Cast<TlvField>().ToList()));
 
         private static string Replace(string tag, string value)
             => Rebuild(f => f.Select(x => x.Tag == tag ? new TlvField(tag, value) : x));
@@ -210,7 +210,7 @@ namespace TingQR.Tests
         public void VietQrWhoseTag26IsNotCleanTlvIsUnsupportedScheme(string value)
         {
             var fields = Tlv.Parse(SVietQr).Where(f => f.Tag != "63").Cast<TlvField>().ToList();
-            var p = EmvPayloads.Build(fields.Take(2).Concat(new[] { new TlvField("26", value) }).Concat(fields.Skip(2)));
+            var p = EmvPayload.Build(fields.Take(2).Concat(new[] { new TlvField("26", value) }).Concat(fields.Skip(2)));
             Assert.Equal(TingQrErrorCode.UnsupportedScheme, Fail(VnpayQr.Decode(p)).Code);
         }
 

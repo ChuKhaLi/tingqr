@@ -70,7 +70,7 @@ namespace TingQR
         // Tag 54 text: two decimals, no float arithmetic. Null for no amount.
         private static string? AmountText(QrAmount? amount)
         {
-            if (amount == null || !amount.Value.HasValue) return null;
+            if (amount == null || !amount.Value.HasAmount) return null;
             var text = amount.Value.Text!;
             var dot = text.IndexOf('.');
             var whole = dot == -1 ? text : text.Substring(0, dot);
@@ -169,7 +169,7 @@ namespace TingQR
             };
             if (amount != null) fields.Add(new TlvField("54", amount));
             fields.Add(new TlvField("58", "TH"));
-            return EmvPayloads.Build(fields);
+            return EmvPayload.Build(fields);
         }
 
         /// <summary>
@@ -180,7 +180,7 @@ namespace TingQR
         /// </summary>
         public static TingQrResult<PromptPayData> Decode(string? payload, ParseMode mode = ParseMode.Lenient)
         {
-            var parsed = EmvPayloads.Parse(payload);
+            var parsed = EmvPayload.Parse(payload);
             if (!parsed.Ok) return TingQrResult<PromptPayData>.Failure(parsed.Error!);
             return Read(parsed.Value!, parsed.Warnings, mode);
         }
@@ -204,7 +204,7 @@ namespace TingQR
             return null;
         }
 
-        /// <summary><see cref="Decode"/> on a payload already parsed by <see cref="EmvPayloads.Parse"/>.</summary>
+        /// <summary><see cref="Decode"/> on a payload already parsed by <see cref="EmvPayload.Parse"/>.</summary>
         internal static TingQrResult<PromptPayData> Read(EmvPayload p, IReadOnlyList<TingQrWarning> parsedWarnings, ParseMode mode)
         {
             var warnings = new List<TingQrWarning>(parsedWarnings);
@@ -271,13 +271,13 @@ namespace TingQR
                         "Not a PromptPay payload: no tag 29 or 30 with a PromptPay AID.", "29");
                 }
 
-                if (EmvPayloads.GetField(p, "00")?.Value != "01")
+                if (p.GetField("00")?.Value != "01")
                 {
                     return Fail(TingQrErrorCode.InvalidValue,
                         // Stryker disable once String : error message, or a field name that only appears in one
                         "Tag 00 (payload format indicator) must be \"01\".", "00");
                 }
-                var poi = EmvPayloads.GetField(p, "01")?.Value;
+                var poi = p.GetField("01")?.Value;
                 if (poi == null) return Fail(TingQrErrorCode.MissingTag,
                     // Stryker disable once String : error message, or a field name that only appears in one
                     "Tag 01 (point of initiation) is missing; expected 11 or 12.", "01");
@@ -291,7 +291,7 @@ namespace TingQR
                 var required = new Dictionary<string, string>(StringComparer.Ordinal);
                 foreach (var (tag, fallback) in new[] { ("53", "764"), ("58", "TH") })
                 {
-                    var value = EmvPayloads.GetField(p, tag)?.Value;
+                    var value = p.GetField(tag)?.Value;
                     if (value != null)
                     {
                         required[tag] = value;
@@ -314,12 +314,12 @@ namespace TingQR
                 {
                     Kind = kind,
                     Initiation = poi == "12" ? QrInitiation.Dynamic : QrInitiation.Static,
-                    Amount = EmvPayloads.GetField(p, "54")?.Value,
+                    Amount = p.GetField("54")?.Value,
                     Currency = required["53"],
                     Country = required["58"],
-                    MerchantName = EmvPayloads.GetField(p, "59")?.Value,
-                    MerchantCity = EmvPayloads.GetField(p, "60")?.Value,
-                    MerchantCategoryCode = EmvPayloads.GetField(p, "52")?.Value,
+                    MerchantName = p.GetField("59")?.Value,
+                    MerchantCity = p.GetField("60")?.Value,
+                    MerchantCategoryCode = p.GetField("52")?.Value,
                     AdditionalData = Fields.ReadAdditionalData(p),
                     ExtraFields = Fields.ReadExtraFields(p, interpreted),
                     SubFields = subFields,

@@ -7,8 +7,8 @@ namespace TingQR
     /// <param name="Ios">The iOS URL scheme, or null when none is known.</param>
     /// <param name="Android">The Android intent parts, or null when none are known.</param>
     /// <param name="Confidence">How many independent sources agree on the scheme(s), package and host emitted here. Neither value means anyone opened the app.</param>
-    /// <param name="VietqrAutofill">dl.vietqr.io can pre-fill amount and message for this app (per vietqr.io). tingqr itself only opens apps.</param>
-    public sealed record BankApp(string Id, string Name, string? Bin, BankAppIos? Ios, BankAppAndroid? Android, BankAppConfidence Confidence, bool VietqrAutofill);
+    /// <param name="VietQrAutofill">dl.vietqr.io can pre-fill amount and message for this app (per vietqr.io). tingqr itself only opens apps.</param>
+    public sealed record BankApp(string Id, string Name, string? Bin, BankAppIos? Ios, BankAppAndroid? Android, BankAppConfidence Confidence, bool VietQrAutofill);
 
     /// <summary>How an app opens on iOS.</summary>
     /// <param name="Scheme">URL scheme; the link is <c>&lt;scheme&gt;://</c>.</param>

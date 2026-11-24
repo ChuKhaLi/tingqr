@@ -25,7 +25,7 @@ string payload = VietQr.Encode(new VietQrInput
 TingQrResult<VietQrData> result = VietQr.Decode(payload);          // lenient by default; never throws on bad data
 TingQrResult<VietQrData> strict = VietQr.Decode(payload, ParseMode.Strict);
 if (result.Ok) Console.WriteLine(result.Value!.AccountNumber);
-else Console.WriteLine(WireNames.Of(result.Error!.Code));           // e.g. "CRC_MISMATCH"
+else Console.WriteLine(result.Error!.Code.ToWireName());           // e.g. "CRC_MISMATCH"
 
 TingQrResult<DetectResult> any = TingQrDetector.Detect(payload);   // which scheme is it?
 Console.WriteLine(any.Value!.Scheme);                               // VietQr
@@ -46,13 +46,13 @@ TypeScript version.
 | ---------------------------------------------------- | ----------------------------------------------------------------- |
 | `VERSION`                                            | `TingQrVersion.Value`                                             |
 | `TingQrError` (`code`, `tag`, `fields`)              | `TingQrException` (`Code`, `Tag`, `Fields`)                       |
-| `ERROR_CODES` / `WARNING_CODES` (and their types)    | `TingQrErrorCode` / `TingQrWarningCode` enums; `WireNames.Of` gives the shared string |
+| `ERROR_CODES` / `WARNING_CODES` (and their types)    | `TingQrErrorCode` / `TingQrWarningCode` enums; `ToWireName()` gives the shared string |
 | `Result<T>` (`ok`, `value`, `warnings`, `error`)     | `TingQrResult<T>` (`Ok`, `Value`, `Warnings`, `Error`)            |
 | `Warning` (`code`, `message`, `tag`)                 | `TingQrWarning` (`Code`, `Message`, `Tag`)                        |
 | `encodeVietQr` / `decodeVietQr`                      | `VietQr.Encode` / `VietQr.Decode`                                 |
-| `VIETQR_GUID`                                        | `VietQr.Guid`                                                     |
+| `VIETQR_GUID`                                        | `VietQr.Aid`                                                     |
 | `decodeVnpayQr`                                      | `VnpayQr.Decode`                                                  |
-| `VNPAY_GUID`                                         | `VnpayQr.Guid`                                                    |
+| `VNPAY_GUID`                                         | `VnpayQr.Aid`                                                    |
 | `encodePromptPayQr` / `decodePromptPayQr`            | `PromptPayQr.Encode` / `PromptPayQr.Decode`                       |
 | `PROMPTPAY_AID`                                      | `PromptPayQr.Aid` (`CreditTransfer`, `Ota`, `BillPayment`, `BillPaymentCrossBorder`) |
 | `encodeKhqr` / `decodeKhqr`                          | `Khqr.Encode` / `Khqr.Decode`                                     |
@@ -61,7 +61,7 @@ TypeScript version.
 | `Detected` / `DetectResult` (`scheme`, `data`, `alsoMatches`) | `DetectResult` (`Scheme`, `object Data`, `AlsoMatches`); cast `Data` by `Scheme` |
 | `removeVietnameseAccents`                            | `VietnameseText.RemoveAccents`                                    |
 | `{ mode: 'strict' }`                                 | `ParseMode.Strict` (`TingQR.Emv`)                                 |
-| `parsePayload` / `buildPayload` / `getField`         | `EmvPayloads.Parse` / `EmvPayloads.Build` / `EmvPayloads.GetField` (`TingQR.Emv`) |
+| `parsePayload` / `buildPayload` / `getField`         | `EmvPayload.Parse` / `EmvPayload.Build` / `EmvPayload.GetField` (instance method, `TingQR.Emv`) |
 | `EmvPayload`                                         | `EmvPayload` (`Fields`, `Crc`, `Raw`) (`TingQR.Emv`)              |
 | `field` / `encodeFields` / `parseTlv` / `parseTemplate` | `Tlv.Field` / `Tlv.EncodeFields` / `Tlv.Parse` / `Tlv.ParseTemplate` (`TingQR.Emv`) |
 | `TlvField` / `TlvNode`                               | `TlvField` / `TlvNode` (`TingQR.Emv`)                             |

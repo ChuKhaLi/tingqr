@@ -22,20 +22,20 @@ namespace TingQR.Tests
         public void BuildAppends6304AndTheCrc()
         {
             var fields = Tlv.Parse(S).Where(f => f.Tag != "63").Cast<TlvField>();
-            Assert.Equal(S, EmvPayloads.Build(fields));
+            Assert.Equal(S, EmvPayload.Build(fields));
         }
 
         [Fact]
         public void ReadsAValidPayloadWithoutWarnings()
         {
-            var r = EmvPayloads.Parse(S);
+            var r = EmvPayload.Parse(S);
             Assert.True(r.Ok);
             var p = r.Value!;
             Assert.Equal("AE9F", p.Crc);
             Assert.Equal(S, p.Raw);
             Assert.Equal(new[] { "00", "01", "38", "53", "58", "63" }, p.Fields.Select(f => f.Tag).ToArray());
-            Assert.Equal("VN", EmvPayloads.GetField(p, "58")!.Value);
-            Assert.Null(EmvPayloads.GetField(p, "54"));
+            Assert.Equal("VN", p.GetField("58")!.Value);
+            Assert.Null(p.GetField("54"));
             Assert.Empty(r.Warnings);
         }
 
@@ -45,7 +45,7 @@ namespace TingQR.Tests
         [InlineData(" ", "\t")]
         public void TrimsWhitespaceAndWarns(string after, string before)
         {
-            var r = EmvPayloads.Parse(before + S + after);
+            var r = EmvPayload.Parse(before + S + after);
             Assert.True(r.Ok);
             Assert.Equal(new[] { TingQrWarningCode.TrimmedWhitespace }, Codes(r));
             Assert.Equal(S, r.Value!.Raw);
@@ -57,7 +57,7 @@ namespace TingQR.Tests
         [InlineData("\r\n", "﻿ ")]
         public void StripsBomAndNoBreakSpacesAndWarns(string after, string before)
         {
-            var r = EmvPayloads.Parse(before + S + after);
+            var r = EmvPayload.Parse(before + S + after);
             Assert.True(r.Ok);
             Assert.Equal(new[] { TingQrWarningCode.TrimmedWhitespace }, Codes(r));
             Assert.Equal(S, r.Value!.Raw);
@@ -66,7 +66,7 @@ namespace TingQR.Tests
         [Fact]
         public void AcceptsLowercaseCrcAndWarns()
         {
-            var r = EmvPayloads.Parse(S.Substring(0, S.Length - 4) + "ae9f");
+            var r = EmvPayload.Parse(S.Substring(0, S.Length - 4) + "ae9f");
             Assert.True(r.Ok);
             Assert.Equal(new[] { TingQrWarningCode.LowercaseCrc }, Codes(r));
             Assert.Equal("AE9F", r.Value!.Crc);
@@ -74,22 +74,22 @@ namespace TingQR.Tests
         }
 
         [Fact]
-        public void ReportsCrcMismatch() => Assert.Equal(TingQrErrorCode.CrcMismatch, Fail(EmvPayloads.Parse(S.Substring(0, S.Length - 1) + "0")).Code);
+        public void ReportsCrcMismatch() => Assert.Equal(TingQrErrorCode.CrcMismatch, Fail(EmvPayload.Parse(S.Substring(0, S.Length - 1) + "0")).Code);
 
         [Fact]
-        public void ReportsCrcMissingWithoutTag63() => Assert.Equal(TingQrErrorCode.CrcMissing, Fail(EmvPayloads.Parse(S.Substring(0, S.Length - 8))).Code);
+        public void ReportsCrcMissingWithoutTag63() => Assert.Equal(TingQrErrorCode.CrcMissing, Fail(EmvPayload.Parse(S.Substring(0, S.Length - 8))).Code);
 
         [Fact]
-        public void ReportsCrcMissingWhenTag63IsNotLast() => Assert.Equal(TingQrErrorCode.CrcMissing, Fail(EmvPayloads.Parse(S + "0002AB")).Code);
+        public void ReportsCrcMissingWhenTag63IsNotLast() => Assert.Equal(TingQrErrorCode.CrcMissing, Fail(EmvPayload.Parse(S + "0002AB")).Code);
 
         [Fact]
-        public void WrapsTlvErrorsIntoAResult() => Assert.Equal(TingQrErrorCode.Truncated, Fail(EmvPayloads.Parse("0002")).Code);
+        public void WrapsTlvErrorsIntoAResult() => Assert.Equal(TingQrErrorCode.Truncated, Fail(EmvPayload.Parse("0002")).Code);
 
         [Fact]
         public void RejectsADuplicatedTopLevelTag()
         {
             var fields = Tlv.Parse(S).Where(f => f.Tag != "63").Cast<TlvField>().Concat(new[] { new TlvField("58", "TH") });
-            var e = Fail(EmvPayloads.Parse(EmvPayloads.Build(fields)));
+            var e = Fail(EmvPayload.Parse(EmvPayload.Build(fields)));
             Assert.Equal(TingQrErrorCode.DuplicateTag, e.Code);
             Assert.Equal("58", e.Tag);
         }
@@ -101,38 +101,38 @@ namespace TingQR.Tests
         [InlineData("6305XAE9F")]
         [InlineData("6305AE9FX")]
         public void ReportsCrcMissingWhenTag63IsNotFourHexDigits(string tail)
-            => Assert.Equal(TingQrErrorCode.CrcMissing, Fail(EmvPayloads.Parse(S.Substring(0, S.Length - 8) + tail)).Code);
+            => Assert.Equal(TingQrErrorCode.CrcMissing, Fail(EmvPayload.Parse(S.Substring(0, S.Length - 8) + tail)).Code);
 
         [Fact]
         public void ReportsCrcMissingWhenLastFieldIsHexButNotTag63()
-            => Assert.Equal(TingQrErrorCode.CrcMissing, Fail(EmvPayloads.Parse(S + "0004ABCD")).Code);
+            => Assert.Equal(TingQrErrorCode.CrcMissing, Fail(EmvPayload.Parse(S + "0004ABCD")).Code);
 
         [Fact]
         public void ParseNullIsInvalidValue()
         {
-            var r = EmvPayloads.Parse(null);
+            var r = EmvPayload.Parse(null);
             Assert.False(r.Ok);
             Assert.Equal(TingQrErrorCode.InvalidValue, r.Error!.Code);
         }
 
         [Fact]
-        public void ParseEmptyIsCrcMissing() => Assert.Equal(TingQrErrorCode.CrcMissing, Fail(EmvPayloads.Parse("")).Code);
+        public void ParseEmptyIsCrcMissing() => Assert.Equal(TingQrErrorCode.CrcMissing, Fail(EmvPayload.Parse("")).Code);
 
         [Fact]
         public void ReadAdditionalDataKeysBySubTag()
         {
-            var body = EmvPayloads.Build(new[] { new TlvField("00", "01"), new TlvField("62", "0103ABC0502XY") });
-            var p = EmvPayloads.Parse(body).Value!;
+            var body = EmvPayload.Build(new[] { new TlvField("00", "01"), new TlvField("62", "0103ABC0502XY") });
+            var p = EmvPayload.Parse(body).Value!;
             var d = Fields.ReadAdditionalData(p)!;
             Assert.Equal("ABC", d["01"]);
             Assert.Equal("XY", d["05"]);
-            Assert.Null(Fields.ReadAdditionalData(EmvPayloads.Parse(S).Value!));
+            Assert.Null(Fields.ReadAdditionalData(EmvPayload.Parse(S).Value!));
         }
 
         [Fact]
         public void ReadExtraFieldsReturnsUninterpretedTags()
         {
-            var p = EmvPayloads.Parse(S).Value!;
+            var p = EmvPayload.Parse(S).Value!;
             var extra = Fields.ReadExtraFields(p, new HashSet<string> { "00", "01", "38", "53", "58", "63" });
             Assert.Null(extra);
             extra = Fields.ReadExtraFields(p, new HashSet<string> { "00", "01", "38", "53", "63" })!;
@@ -143,7 +143,7 @@ namespace TingQR.Tests
         [Fact]
         public void ReadSchemeTemplateMatchesGuidCaseInsensitively()
         {
-            var p = EmvPayloads.Parse(S).Value!;
+            var p = EmvPayload.Parse(S).Value!;
             Assert.NotNull(Fields.ReadSchemeTemplate(p, "38", "A000000727"));
             Assert.Null(Fields.ReadSchemeTemplate(p, "38", "A000000999"));
             Assert.Null(Fields.ReadSchemeTemplate(p, "26", "A000000727"));
@@ -152,14 +152,14 @@ namespace TingQR.Tests
         [Fact]
         public void ReadSchemeTemplateIgnoresMalformedTemplateOfAnotherScheme()
         {
-            var p = EmvPayloads.Parse(EmvPayloads.Build(new[] { new TlvField("38", "00") })).Value!;
+            var p = EmvPayload.Parse(EmvPayload.Build(new[] { new TlvField("38", "00") })).Value!;
             Assert.Null(Fields.ReadSchemeTemplate(p, "38", "A000000727"));
         }
 
         [Fact]
         public void ReadSchemeTemplateReportsDuplicateSubTagOnceGuidMatches()
         {
-            var p = EmvPayloads.Parse(EmvPayloads.Build(new[] { new TlvField("38", "0004ABCD0102xx0102yy") })).Value!;
+            var p = EmvPayload.Parse(EmvPayload.Build(new[] { new TlvField("38", "0004ABCD0102xx0102yy") })).Value!;
             var e = Assert.Throws<TingQrException>(() => Fields.ReadSchemeTemplate(p, "38", "ABCD"));
             Assert.Equal(TingQrErrorCode.DuplicateTag, e.Code);
             Assert.Equal("38.01", e.Tag);

@@ -12,7 +12,7 @@ namespace TingQR
         public required string AccountNumber { get; init; }
 
         /// <summary>Tag 38.02.</summary>
-        public required VietQrService Service { get; init; }
+        public required VietQrServiceCode Service { get; init; }
 
         /// <summary>Tag 01: <c>11</c> static, <c>12</c> dynamic.</summary>
         public required QrInitiation Initiation { get; init; }

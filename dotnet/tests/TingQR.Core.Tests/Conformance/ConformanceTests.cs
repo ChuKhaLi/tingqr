@@ -118,8 +118,8 @@ namespace TingQR.Tests.Conformance
             Assert.Equal(21, Vectors().Count(row => VectorRunner.Vectors[(string)row[0]]["scheme"]!.GetValue<string>() == "khqr"));
         }
 
-        private static readonly IReadOnlyDictionary<string, VietQrService> VietQrServices =
-            new Dictionary<string, VietQrService> { ["account"] = VietQrService.Account, ["card"] = VietQrService.Card };
+        private static readonly IReadOnlyDictionary<string, VietQrServiceCode> VietQrServices =
+            new Dictionary<string, VietQrServiceCode> { ["account"] = VietQrServiceCode.Account, ["card"] = VietQrServiceCode.Card };
 
         private static object? VietQrInputOf(JsonNode node)
         {
@@ -128,7 +128,7 @@ namespace TingQR.Tests.Conformance
             {
                 BankBin = i.String("bankBin")!,
                 AccountNumber = i.String("accountNumber")!,
-                Service = i.Enum("service", VietQrServices) ?? VietQrService.Account,
+                Service = i.Enum("service", VietQrServices) ?? VietQrServiceCode.Account,
                 Amount = i.Amount("amount"),
                 Purpose = i.String("purpose"),
             };

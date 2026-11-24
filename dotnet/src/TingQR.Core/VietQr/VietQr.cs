@@ -9,12 +9,12 @@ namespace TingQR
     public static class VietQr
     {
         /// <summary>NAPAS VietQR GUID in tag 38.00.</summary>
-        public const string Guid = "A000000727";
+        public const string Aid = "A000000727";
 
         private static readonly HashSet<string> InterpretedTags =
             new HashSet<string>(StringComparer.Ordinal) { "00", "01", "38", "52", "53", "54", "58", "59", "60", "62", "63" };
 
-        private static string ServiceCode(VietQrService s) => s == VietQrService.Card ? "QRIBFTTC" : "QRIBFTTA";
+        private static string ServiceCode(VietQrServiceCode s) => s == VietQrServiceCode.Card ? "QRIBFTTC" : "QRIBFTTA";
 
         // Character tests are written out rather than as Regex: .NET's \d matches every Unicode digit and its $
         // matches before a final \n, unlike the JavaScript patterns of the TS implementation.
@@ -33,7 +33,7 @@ namespace TingQR
 
         private static string? AmountText(QrAmount? amount)
         {
-            if (amount == null || !amount.Value.HasValue) return null;
+            if (amount == null || !amount.Value.HasAmount) return null;
             var text = amount.Value.Text!;
             if (!IsAmount(text))
             {
@@ -78,7 +78,7 @@ namespace TingQR
                     "Purpose must be printable ASCII; banking apps reject accented text. Use VietnameseText.RemoveAccents() first.",
                     "62");
             }
-            if (input.Service != VietQrService.Account && input.Service != VietQrService.Card)
+            if (input.Service != VietQrServiceCode.Account && input.Service != VietQrServiceCode.Card)
             {
                 throw new TingQrException(TingQrErrorCode.InvalidValue,
                     // Stryker disable once String : error message, or a field name that only appears in one
@@ -86,7 +86,7 @@ namespace TingQR
             }
 
             var beneficiary = Tlv.Field("00", input.BankBin) + Tlv.Field("01", input.AccountNumber);
-            var merchant = Tlv.Field("00", Guid) + Tlv.Field("01", beneficiary) + Tlv.Field("02", ServiceCode(input.Service));
+            var merchant = Tlv.Field("00", Aid) + Tlv.Field("01", beneficiary) + Tlv.Field("02", ServiceCode(input.Service));
             var fields = new List<TlvField>
             {
                 new TlvField("00", "01"),
@@ -97,7 +97,7 @@ namespace TingQR
             if (amount != null) fields.Add(new TlvField("54", amount));
             fields.Add(new TlvField("58", "VN"));
             if (purpose != null) fields.Add(new TlvField("62", Tlv.Field("08", purpose)));
-            return EmvPayloads.Build(fields);
+            return EmvPayload.Build(fields);
         }
 
         /// <summary>
@@ -107,7 +107,7 @@ namespace TingQR
         /// </summary>
         public static TingQrResult<VietQrData> Decode(string? payload, ParseMode mode = ParseMode.Lenient)
         {
-            var parsed = EmvPayloads.Parse(payload);
+            var parsed = EmvPayload.Parse(payload);
             if (!parsed.Ok) return TingQrResult<VietQrData>.Failure(parsed.Error!);
             return Read(parsed.Value!, parsed.Warnings, mode);
         }
@@ -117,13 +117,13 @@ namespace TingQR
         private static TingQrResult<VietQrData> Fail(TingQrErrorCode code, string message, string tag)
             => TingQrResult<VietQrData>.Failure(new TingQrException(code, message, tag));
 
-        /// <summary><see cref="Decode"/> on a payload already parsed by <see cref="EmvPayloads.Parse"/>.</summary>
+        /// <summary><see cref="Decode"/> on a payload already parsed by <see cref="EmvPayload.Parse"/>.</summary>
         internal static TingQrResult<VietQrData> Read(EmvPayload p, IReadOnlyList<TingQrWarning> parsedWarnings, ParseMode mode)
         {
             var warnings = new List<TingQrWarning>(parsedWarnings);
             try
             {
-                var merchant = Fields.ReadSchemeTemplate(p, "38", Guid);
+                var merchant = Fields.ReadSchemeTemplate(p, "38", Aid);
                 if (merchant == null)
                 {
                     return Fail(TingQrErrorCode.UnsupportedScheme,
@@ -149,20 +149,20 @@ namespace TingQR
                 if (serviceCode == null) return Fail(TingQrErrorCode.MissingTag,
                     // Stryker disable once String : error message, or a field name that only appears in one
                     "Tag 38.02 (service code) is missing.", "38.02");
-                VietQrService service;
-                if (serviceCode == "QRIBFTTA") service = VietQrService.Account;
-                else if (serviceCode == "QRIBFTTC") service = VietQrService.Card;
+                VietQrServiceCode service;
+                if (serviceCode == "QRIBFTTA") service = VietQrServiceCode.Account;
+                else if (serviceCode == "QRIBFTTC") service = VietQrServiceCode.Card;
                 else return Fail(TingQrErrorCode.InvalidValue,
                     // Stryker disable once String : error message, or a field name that only appears in one
                     $"Service code \"{serviceCode}\" is not QRIBFTTA or QRIBFTTC.", "38.02");
 
-                if (EmvPayloads.GetField(p, "00")?.Value != "01")
+                if (p.GetField("00")?.Value != "01")
                 {
                     return Fail(TingQrErrorCode.InvalidValue,
                         // Stryker disable once String : error message, or a field name that only appears in one
                         "Tag 00 (payload format indicator) must be \"01\".", "00");
                 }
-                var poi = EmvPayloads.GetField(p, "01")?.Value;
+                var poi = p.GetField("01")?.Value;
                 if (poi == null) return Fail(TingQrErrorCode.MissingTag, "Tag 01 (point of initiation) is missing; expected 11 or 12.", "01");
                 if (poi != "11" && poi != "12")
                 {
@@ -174,7 +174,7 @@ namespace TingQR
                 var required = new Dictionary<string, string>(StringComparer.Ordinal);
                 foreach (var (tag, fallback) in new[] { ("53", "704"), ("58", "VN") })
                 {
-                    var value = EmvPayloads.GetField(p, tag)?.Value;
+                    var value = p.GetField(tag)?.Value;
                     if (value != null)
                     {
                         required[tag] = value;
@@ -205,12 +205,12 @@ namespace TingQR
                     Initiation = poi == "12" ? QrInitiation.Dynamic : QrInitiation.Static,
                     Currency = required["53"],
                     Country = required["58"],
-                    Amount = EmvPayloads.GetField(p, "54")?.Value,
+                    Amount = p.GetField("54")?.Value,
                     AdditionalData = additional,
                     Purpose = purpose,
-                    MerchantName = EmvPayloads.GetField(p, "59")?.Value,
-                    MerchantCity = EmvPayloads.GetField(p, "60")?.Value,
-                    MerchantCategoryCode = EmvPayloads.GetField(p, "52")?.Value,
+                    MerchantName = p.GetField("59")?.Value,
+                    MerchantCity = p.GetField("60")?.Value,
+                    MerchantCategoryCode = p.GetField("52")?.Value,
                     ExtraFields = Fields.ReadExtraFields(p, InterpretedTags),
                 };
                 return TingQrResult<VietQrData>.Success(data, warnings);

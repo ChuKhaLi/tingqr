@@ -20,13 +20,13 @@ namespace TingQR.Tests
 
         private static string Rebuild(string payload, Func<List<TlvField>, IEnumerable<TlvField>> edit)
         {
-            var fields = EmvPayloads.Parse(payload).Value!.Fields
+            var fields = EmvPayload.Parse(payload).Value!.Fields
                 .Where(f => f.Tag != "63").Select(f => new TlvField(f.Tag, f.Value)).ToList();
-            return EmvPayloads.Build(edit(fields));
+            return EmvPayload.Build(edit(fields));
         }
 
         private static TlvField Tag26OfVnpay() =>
-            EmvPayloads.Parse(VnpaySample).Value!.Fields.Where(f => f.Tag == "26").Select(f => new TlvField(f.Tag, f.Value)).Single();
+            EmvPayload.Parse(VnpaySample).Value!.Fields.Where(f => f.Tag == "26").Select(f => new TlvField(f.Tag, f.Value)).Single();
 
         [Fact]
         public void DetectNullIsInvalidValue()
@@ -40,7 +40,7 @@ namespace TingQR.Tests
         [Fact]
         public void UnknownSchemeCarriesFields()
         {
-            var payload = EmvPayloads.Build(new[]
+            var payload = EmvPayload.Build(new[]
             {
                 new TlvField("00", "01"), new TlvField("01", "11"),
                 new TlvField("29", Tlv.Field("00", "A000000999")), new TlvField("58", "TH"),
@@ -49,7 +49,7 @@ namespace TingQR.Tests
             Assert.False(r.Ok);
             Assert.Equal(TingQrErrorCode.UnknownScheme, r.Error!.Code);
             Assert.NotEmpty(r.Error.Fields!);
-            Assert.Equal(EmvPayloads.Parse(payload).Value!.Fields, r.Error.Fields);
+            Assert.Equal(EmvPayload.Parse(payload).Value!.Fields, r.Error.Fields);
         }
 
         [Fact]
@@ -138,7 +138,7 @@ namespace TingQR.Tests
         [Fact]
         public void AtAccountInNonCambodianCodeIsUnknownScheme()
         {
-            var payload = EmvPayloads.Build(new[]
+            var payload = EmvPayload.Build(new[]
             {
                 new TlvField("00", "01"), new TlvField("01", "11"),
                 new TlvField("30", Tlv.Field("00", "user@example") + Tlv.Field("01", "M1") + Tlv.Field("02", "Bank")),
