@@ -1,7 +1,7 @@
 # conformance/
 
 Nguồn sự thật chung cho mọi ngôn ngữ của tingqr. Bản TypeScript (`ts/`) và bản .NET (`dotnet/`) chạy cùng một bộ mẫu
-thử ở đây, nên hai bản cho cùng kết quả trên mọi hành vi có mẫu (trừ 7 mẫu kiểm kiểu, xem dưới; mẫu `render` từ Plan 8b).
+thử ở đây, nên hai bản cho cùng kết quả trên mọi hành vi có mẫu (trừ 7 mẫu kiểm kiểu, xem dưới; mẫu `render` chạy bởi `TingQR.Rendering`).
 
 - `vectors.schema.json`: JSON Schema của một file mẫu thử.
 - `errors.json`: bảng mã lỗi và mã cảnh báo dùng chung. Không ngôn ngữ nào được có mã ngoài bảng.
@@ -116,6 +116,9 @@ Ba luật chung nữa, cùng loại:
 - **Chưa có loại mẫu, chỉ có test của từng bản:** `isKhqrExpired` / `Khqr.IsExpired`, `removeVietnameseAccents` /
   `VietnameseText.RemoveAccents`, `fields` của lỗi `UNKNOWN_SCHEME` (`TingQrError.fields` / `TingQrException.Fields`)
   và `tag` của cảnh báo. Hai bản có thể lệch ở những chỗ này mà bộ mẫu không bắt được.
+  - Kiểm kiểu lúc chạy của `@tingqr/render` không có mẫu và chỉ có ở TypeScript: `boostEcc` không phải boolean, `size`
+    không phải số hay chuỗi, `logo.size` không phải số, `margin` là chuỗi. Bên C# các trường hợp này không viết được vì
+    kiểu tĩnh (`bool?`, `SvgSize?`, `double?`, `int?`).
 - **`null` trong `expected`:** bộ chạy .NET bỏ mọi thuộc tính C# mang `null` khi đổi kết quả sang JSON (coi `null` như
   vắng, giống trường tuỳ chọn bị bỏ ở TypeScript). Vì vậy một mẫu ghi `"x": null` bên trong `expected` sẽ đỏ ở .NET:
   trường tuỳ chọn không có giá trị thì bỏ hẳn khỏi mẫu, không ghi `null`. (Riêng `expected.result: null` của mẫu
@@ -215,13 +218,14 @@ Nguồn cho `@tingqr/bank-logos` và `TingQR.BankLogos` sau này.
 
 ## Mẫu ma trận (`kind: "matrix"`, `scheme: "render"`)
 
-Dành cho bộ vẽ QR (`@tingqr/render`, sau này `TingQR.Rendering`). Mẫu nằm ở `vectors/render/`.
+Dành cho bộ vẽ QR (`@tingqr/render`, `TingQR.Rendering` bên .NET). Mẫu nằm ở `vectors/render/`. Hiện có 19 mẫu ma trận
+(sinh từ Nayuki gốc) và 8 mẫu lỗi tuỳ chọn `render-invalid-*` viết tay (nguồn: thiết kế render, mục 5.2).
 
 - `input`: `{ text, ecc?, boostEcc?, minVersion?, maxVersion?, mask? }`. Không có `payload`, không có `error`.
 - `expected`: `{ size, version, ecc, mask, rows }`. `rows[y]` là chuỗi `0`/`1`, `1` là ô tối.
 - **Quy tắc so sánh:** gọi `toMatrix(input.text, các trường còn lại của input)`. Kết quả phải đúng `size`, `version`,
   `ecc` (mức thực dùng, sau khi nâng) và `mask`, và `rows[y][x] === '1'` khi và chỉ khi `modules[y][x]`.
-- Mẫu `encode-invalid` có `scheme: "render"` đặt tuỳ chọn ngay trong `input` (`{ text, ...tuỳ chọn }`). `toMatrix` phải
+- Mẫu `encode-invalid` có `scheme: "render"` (không có `render`) đặt tuỳ chọn ngay trong `input` (`{ text, ...tuỳ chọn }`). `toMatrix` phải
   ném lỗi có đúng mã `error`.
 - Mẫu ma trận chạy bằng bộ chạy riêng của `@tingqr/render`. Bộ chạy của `@tingqr/core` bỏ qua chúng, vì `render` phụ
   thuộc `core`.

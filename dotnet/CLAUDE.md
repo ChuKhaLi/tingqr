@@ -36,15 +36,19 @@ Hướng dẫn cho phần .NET của tingqr. Quy tắc chung: `../CLAUDE.md`. Th
 - Bộ mã hoá QR là port từng dòng từ `ts/packages/render/src/qrcodegen.ts` (Nayuki v1.8.0, MIT; ghi công trong `NOTICE`). File port đó không chạy mutation test.
 - **Mutation test:** cấu hình riêng `stryker-config.rendering.json` (cùng ngưỡng chặn 90, loại `QrCodeGen.cs` và
   `Polyfills.cs`): `dotnet tool run dotnet-stryker --config-file stryker-config.rendering.json` trong `dotnet/` (~5 phút).
-  Workflow `mutation-dotnet.yml` chạy Core và Rendering thành hai job (matrix), job nào dưới ngưỡng thì fail. Các quy tắc
+  Workflow `mutation-dotnet.yml` chạy Core và Rendering thành hai job (matrix), job nào dưới ngưỡng thì fail (job Rendering chưa chạy trên CI; Ubuntu chưa chạy). Các quy tắc
   `disable once` ở trên áp dụng y nguyên.
   - Trong Rendering, mã đã được viết lại để bỏ đột biến tương đương (không đổi hành vi; lý do ghi ngay tại dòng):
     `JsNumber` (`Math.Sign`, so sánh đặt tại biên đạt được, chia thay cho dịch bit, `biased != 1`, điểm bắt đầu
     `Log10` + 1 thay cho hai vòng chỉnh), `Color.Lin` (`channel <= 10`), `Svg.IsPositiveLength` (một biểu thức, không
     còn nhánh chỉ net481 chạy tới), `Svg.AppendModulePath` (đọc hàng trực tiếp, vượt biên thì ném lỗi).
+  - Lần chạy cục bộ trên Windows 2026-11-24: 99,41% = 475 bị giết + 28 quá giờ trên 506 được tính, 3 sống sót (dưới),
+    87 bị bỏ qua (34 theo comment `disable`, 53 do bộ lọc "block already covered"), `QrCodeGen.cs` bị loại (876). Core
+    (2026-11-23): 1506 bị giết, 12 quá giờ, 0 sống sót, 291 bị bỏ qua.
   - Ba đột biến sống sót được chấp nhận: tương đương, nhưng nằm chung dòng với đột biến cùng loại giết được nên không
     `disable` được, và viết lại thì không còn giống bản TS. `Layout.CheckColours`: `Luminance(fg) >= Luminance(bg)` thành
     `>` (độ sáng bằng nhau thì tỉ lệ là 1, vẫn bị từ chối) và `ContrastRatio < MinContrast` thành `<=` (không cặp màu
-    24 bit nào cho đúng 4,5; gần nhất lệch 7,9e-14, đo bằng công thức `color.ts` trên Node 22, 2026-11-23).
+    24 bit nào cho đúng 4,5; gần nhất lệch 7,9e-14, đo bằng công thức `color.ts` trên Node 22, 2026-11-23;
+    kiểm một lần, script không có trong repo).
     `Logo.CheckBox`: `share > MaxClearedShare` thành `>=` (cạnh mã lẻ nên ClearSide²/size² không bao giờ bằng 0,1;
     cách xa ít nhất 1/(10·177²)).

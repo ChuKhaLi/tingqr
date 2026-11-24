@@ -10,15 +10,16 @@ Planned as 0.1.0, after MoMo and ZaloPay recognition and scans with more banking
 ### TingQR.Core (.NET, not released)
 
 - C# port of `@tingqr/core` (Plan 8a): VietQR, VNPAY-QR, PromptPay, KHQR, `TingQrDetector.Detect`, banks and bank-app
-  links, checked against the same `conformance/` vectors (render vectors not yet; four type-check vectors are checked
-  as non-convertible). Targets `net10.0` and `netstandard2.0`.
+  links, checked against the same `conformance/` vectors (render vectors are run by TingQR.Rendering; four type-check
+  vectors are checked as non-convertible). Targets `net10.0` and `netstandard2.0`.
 - Version number and package policy are decided in Plan 8c; the repository still reads `0.0.0`.
 
 ### TingQR.Rendering (.NET, not released)
 
 - C# port of `@tingqr/render` (Plan 8b): `TingQrRender.ToMatrix`, `ToSvg`, `CheckSvgOptions`, with the optional centre
-  logo (provisional limits). No PNG. The SVG is byte for byte the TypeScript output on 63 new golden vectors in
-  `conformance/vectors/render/`; the matrices are also checked on the 27 Nayuki vectors. Targets `net10.0` and
+  logo (provisional limits). No PNG. The SVG is byte for byte the TypeScript output on 80 new golden vectors in
+  `conformance/vectors/render/`; the matrices are also checked on the 19 Nayuki matrix vectors and the 8 hand-written
+  option-error vectors. Tested on `net10.0` and `net481`, local Windows; CI not yet run. Targets `net10.0` and
   `netstandard2.0`; the encoder is ported from Project Nayuki's generator v1.8.0 (MIT).
 
 ### @tingqr/core
@@ -40,6 +41,8 @@ Planned as 0.1.0, after MoMo and ZaloPay recognition and scans with more banking
   reports no size (0×0) fills the logo box instead of failing; Chrome 157 reports a size for such SVGs and draws them
   correctly, an engine reporting 0×0 has not been tried.
 - `checkSvgOptions(options)`: check render options without rendering (used by the HTTP integrations at startup).
+- `null` options are the defaults in `toMatrix`, `toSvg` and `checkSvgOptions`, and `logo: null` means no logo (also on
+  canvas), like .NET; a `null` in another option is still `INVALID_VALUE`.
 - QR encoder ported from Project Nayuki's QR Code generator v1.8.0 (MIT).
 
 ### @tingqr/bank-logos

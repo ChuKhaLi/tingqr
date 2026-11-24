@@ -109,11 +109,13 @@ TypeScript và bản .NET, kèm tích hợp sẵn cho Angular, NestJS và ASP.NE
   - **Plan 8b** (2026-11-23, nhánh `plan-8b`): `docs/superpowers/plans/2026-11-23-plan-8b-dotnet-rendering.md`, thiết kế
     `docs/superpowers/specs/2026-11-23-tingqr-dotnet-rendering-design.md`. `TingQR.Rendering` (C#, net10.0 +
     netstandard2.0): `ToMatrix`, `ToSvg`, `CheckSvgOptions`; không có PNG. Bộ mã hoá Nayuki port từ bản TS.
-    - Mẫu: 27 mẫu ma trận (sinh từ Nayuki gốc) và 63 mẫu SVG mới (`gen-svg.mjs`, sinh từ chính `toSvg` của tingqr, nên
-      chỉ chứng minh hai bản khớp nhau, không phải oracle độc lập). Test chạy trên `net10.0` và `net481` (Windows,
-      cục bộ).
-    - Stryker.NET cục bộ 2026-11-23: Rendering 99,41% (3 sống sót, tương đương, ghi trong `dotnet/CLAUDE.md`), Core
-      100%. Người duyệt đã so ngẫu nhiên với Node (1500 bộ tuỳ chọn, 574 640 số `size`), 0 lệch; đó là kiểm lúc duyệt,
+    - Mẫu: 19 mẫu ma trận (sinh từ Nayuki gốc), 8 mẫu lỗi tuỳ chọn viết tay và 80 mẫu SVG mới (`gen-svg.mjs`, sinh từ
+      chính `toSvg` của tingqr, `source` ghi commit có thật, nên chỉ chứng minh hai bản khớp nhau, không phải oracle
+      độc lập). Test chạy trên `net10.0` và `net481` (Windows, cục bộ).
+    - Stryker.NET cục bộ trên Windows: Rendering (2026-11-24) 99,41% = 475 bị giết + 28 quá giờ trên 506 đột biến được
+      tính, 3 sống sót (tương đương, ghi trong `dotnet/CLAUDE.md`), 87 bị bỏ qua (34 theo comment `Stryker disable`, 53
+      do bộ lọc "block already covered"), `QrCodeGen.cs` bị loại (876). Core (2026-11-23) 100%: 1506 bị giết, 12 quá
+      giờ, 0 sống sót, 291 bị bỏ qua. Người duyệt đã so ngẫu nhiên với Node (1500 bộ tuỳ chọn, 574 640 số `size`), 0 lệch; đó là kiểm lúc duyệt,
       không phải test trong repo.
     - **Chưa kiểm:** job `mutation-dotnet` cho Rendering và lần chạy Ubuntu trên CI; khớp TS ngoài các mẫu.
   - Tiếp theo: Plan 2 Task 5–6 (MoMo, ZaloPay) khi chủ dự án có QR thật; chủ dự án quét thêm app (kể cả bản có icon ngân hàng) và
