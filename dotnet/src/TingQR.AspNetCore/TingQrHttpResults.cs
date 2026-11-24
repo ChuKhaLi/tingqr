@@ -16,7 +16,10 @@ public static class TingQrHttpResults
     /// </summary>
     /// <param name="payload">The QR payload the app built; never build it from URL or query parameters.</param>
     /// <param name="options">SVG options merged over <see cref="TingQrOptions.Svg"/> key by key.</param>
-    /// <param name="cacheControl">Cache-Control header; null or blank means <see cref="TingQrOptions.CacheControl"/>, then "private, max-age=300".</param>
+    /// <param name="cacheControl">
+    /// Cache-Control header; null or blank means <see cref="TingQrOptions.CacheControl"/>, then "private, max-age=300".
+    /// Printable ASCII only: a control or non-ASCII character gives the 500.
+    /// </param>
     public static IResult Svg(string? payload, SvgOptions? options = null, string? cacheControl = null) =>
         SvgResponse.For(payload, options, cacheControl, checkRoute: true);
 }

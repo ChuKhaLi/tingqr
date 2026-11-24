@@ -31,6 +31,7 @@ internal sealed class TingQrStartupCheck : IHostedService
                 // mistake.
                 foreach (var attribute in action.FilterDescriptors.Select(d => d.Filter).OfType<TingQrSvgAttribute>())
                 {
+                    attribute.CheckCacheControl(TingQrSvgMvcFilter.Describe(action));
                     if (attribute.Profile is not null && !resolved.Profiles.ContainsKey(attribute.Profile))
                     {
                         throw new TingQrException(TingQrErrorCode.InvalidValue,

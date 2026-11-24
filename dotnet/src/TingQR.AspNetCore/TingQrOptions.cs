@@ -37,7 +37,8 @@ public sealed class TingQrOptions
 
     /// <summary>
     /// Cache-Control header of served QR codes; default "private, max-age=300". A payment QR carries an account number
-    /// and often an amount, so shared caches (CDNs) must not keep it.
+    /// and often an amount, so shared caches (CDNs) must not keep it. Printable ASCII only: a control character (CR, LF,
+    /// tab…) or a non-ASCII character stops the app at startup.
     /// </summary>
     public string CacheControl { get; set; } = "private, max-age=300";
 }

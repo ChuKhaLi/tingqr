@@ -70,6 +70,7 @@ internal static class TingQrConfiguration
             staticCode = VietQr.Encode(new VietQrInput { BankBin = bank.Bin, AccountNumber = options.AccountNumber!, Service = options.Service });
         }
 
+        CheckCacheControl(options.CacheControl, "AddTingQr: CacheControl");
         CheckServedLogo(options.Svg);
         if (options.Svg is not null)
         {
@@ -147,6 +148,30 @@ internal static class TingQrConfiguration
             Size = route.Size ?? appWide.Size,
             Logo = route.Logo ?? appWide.Logo,
         };
+    }
+
+    /// <summary>
+    /// A Cache-Control value is sent as a header as is: Kestrel refuses a control character (CR, LF, tab…) or a non-ASCII
+    /// character when it writes the header, i.e. on every request. Refuse it here, where it is configured, instead.
+    /// Null (not set) passes; blank values fall back to the default where they are used.
+    /// </summary>
+    /// <param name="value">The value to check.</param>
+    /// <param name="what">Where the value comes from, for the message (e.g. "AddTingQr: CacheControl").</param>
+    public static void CheckCacheControl(string? value, string what)
+    {
+        if (value is null)
+        {
+            return;
+        }
+        foreach (var c in value)
+        {
+            if (c < ' ' || c > '~')
+            {
+                // Stryker disable once String : error message
+                throw new TingQrException(TingQrErrorCode.InvalidValue,
+                    what + " must contain only printable ASCII characters (no CR, LF or other control characters).");
+            }
+        }
     }
 
     /// <summary>

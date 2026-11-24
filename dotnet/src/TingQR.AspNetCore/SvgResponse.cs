@@ -58,6 +58,9 @@ internal static class SvgResponse
             // IOptions<TingQrOptions> resolves (with defaults) even without AddTingQr once options are registered; an
             // app without either gets the defaults too.
             var options = httpContext.RequestServices.GetService<IOptions<TingQrOptions>>()?.Value;
+            var cacheControl = !IsBlank(_cacheControl) ? _cacheControl!
+                : !IsBlank(options?.CacheControl) ? options!.CacheControl
+                : DefaultCacheControl;
             string svg;
             try
             {
@@ -65,15 +68,16 @@ internal static class SvgResponse
                 {
                     TingQrConfiguration.CheckRouteOptions(_route);
                 }
+                // Checked where it is configured too; this covers TingQrHttpResults.Svg and values no startup check saw
+                // (a global [TingQrSvg] filter without AddTingQr).
+                // Stryker disable once String : error message
+                TingQrConfiguration.CheckCacheControl(cacheControl, "Cache-Control");
                 svg = TingQrRender.ToSvg(_payload, TingQrConfiguration.Merge(options?.Svg, _route));
             }
             catch (TingQrException e)
             {
                 return Error(e).ExecuteAsync(httpContext);
             }
-            var cacheControl = !IsBlank(_cacheControl) ? _cacheControl!
-                : !IsBlank(options?.CacheControl) ? options!.CacheControl
-                : DefaultCacheControl;
             var response = httpContext.Response;
             response.StatusCode = StatusCodes.Status200OK;
             response.ContentType = "image/svg+xml; charset=utf-8";

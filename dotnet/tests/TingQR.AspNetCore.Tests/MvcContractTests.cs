@@ -1,3 +1,8 @@
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Options;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
@@ -32,6 +37,15 @@ public class MvcContractTests
         await Contract.AssertSvg(await client.PostAsync("/mvc/qr.svg", null), svg);
         await Contract.AssertSvg(await client.PutAsync("/mvc/qr.svg", null), svg);
         await Contract.AssertSvg(await client.PatchAsync("/mvc/qr.svg", null), svg);
+    }
+
+    [Fact]
+    public async Task Status_set_by_action_is_overridden_with_200()
+    {
+        // A served SVG is always 200, whatever status the action set before returning the payload.
+        var (app, client, _) = await MvcTestApp.Serve(Svg);
+        await using var _app = app;
+        await Contract.AssertSvg(await client.PostAsync("/mvc/accepted.svg", null), TingQrRender.ToSvg(Payload));
     }
 
     [Fact]
@@ -192,18 +206,58 @@ public class MvcContractTests
     [Fact]
     public async Task Action_attribute_overrides_controller_and_renders_once()
     {
-        var (app, client, _) = await MvcTestApp.Serve(new[] { typeof(MvcProfilesController) }, o =>
+        // Every SVG response looks up IOptions<TingQrOptions> once, when it runs (startup reads it once more, before the
+        // count is reset): counting the lookups counts the renders of a request.
+        var options = new TingQrOptions { Svg = new SvgOptions { Margin = 2 } };
+        options.Profiles["a"] = new SvgOptions { Margin = 8, Background = "#ffffee" };
+        options.Profiles["b"] = new SvgOptions { Foreground = "#112233" };
+        var renders = 0;
+        await using var app = TestApp.Build(b =>
         {
-            o.Svg = new SvgOptions { Margin = 2 };
-            o.Profiles["a"] = new SvgOptions { Margin = 8, Background = "#ffffee" };
-            o.Profiles["b"] = new SvgOptions { Foreground = "#112233" };
+            b.Services.AddTingQr();
+            b.Services.AddSingleton<IOptions<TingQrOptions>>(_ => new CountingOptions(options, () => Interlocked.Increment(ref renders)));
+            b.Services.AddControllers().ConfigureApplicationPartManager(manager =>
+            {
+                manager.ApplicationParts.Clear();
+                manager.ApplicationParts.Add(new MvcTestApp.TypesPart(new[] { typeof(MvcProfilesController) }));
+            });
         });
-        await using var _app = app;
+        app.MapControllers();
+        await app.StartAsync();
+        var client = app.GetTestClient();
+
         // The action's profile wins as a whole: nothing of "a" (not its Background either) is applied.
+        Volatile.Write(ref renders, 0);
         await Contract.AssertSvg(await client.GetAsync("/mvc/profiles/action.svg"),
             TingQrRender.ToSvg(Payload, new SvgOptions { Margin = 2, Foreground = "#112233" }));
+        Assert.Equal(1, Volatile.Read(ref renders));
+
+        Volatile.Write(ref renders, 0);
         await Contract.AssertSvg(await client.GetAsync("/mvc/profiles/controller.svg"),
             TingQrRender.ToSvg(Payload, new SvgOptions { Margin = 8, Background = "#ffffee" }));
+        Assert.Equal(1, Volatile.Read(ref renders));
+    }
+
+    /// <summary>IOptions that calls <c>onRead</c> each time its value is read.</summary>
+    private sealed class CountingOptions : IOptions<TingQrOptions>
+    {
+        private readonly TingQrOptions _value;
+        private readonly Action _onRead;
+
+        public CountingOptions(TingQrOptions value, Action onRead)
+        {
+            _value = value;
+            _onRead = onRead;
+        }
+
+        public TingQrOptions Value
+        {
+            get
+            {
+                _onRead();
+                return _value;
+            }
+        }
     }
 
     [Fact]
@@ -234,6 +288,13 @@ public class MvcSvgController : ControllerBase
 {
     [HttpGet("qr.svg"), HttpPost("qr.svg"), HttpPut("qr.svg"), HttpPatch("qr.svg"), TingQrSvg]
     public string Qr() => Contract.VietQr;
+
+    [HttpPost("accepted.svg"), TingQrSvg]
+    public string AcceptedStatus()
+    {
+        Response.StatusCode = StatusCodes.Status202Accepted;
+        return Contract.VietQr;
+    }
 
     [HttpGet("promptpay.svg"), TingQrSvg]
     public string PromptPay() => Contract.PromptPay;

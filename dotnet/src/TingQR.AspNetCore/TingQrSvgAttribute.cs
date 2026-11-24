@@ -33,7 +33,10 @@ public sealed class TingQrSvgAttribute : Attribute, IFilterFactory, IControllerM
     /// <summary>The profile name, or null for the app-wide options only.</summary>
     public string? Profile { get; }
 
-    /// <summary>Cache-Control header; null or blank means <see cref="TingQrOptions.CacheControl"/>, then "private, max-age=300".</summary>
+    /// <summary>
+    /// Cache-Control header; null or blank means <see cref="TingQrOptions.CacheControl"/>, then "private, max-age=300".
+    /// Printable ASCII only: a control or non-ASCII character stops the app at startup.
+    /// </summary>
     public string? CacheControl { get; set; }
 
     /// <inheritdoc />
@@ -43,11 +46,21 @@ public sealed class TingQrSvgAttribute : Attribute, IFilterFactory, IControllerM
     public IFilterMetadata CreateInstance(IServiceProvider serviceProvider) => new TingQrSvgMvcFilter(this);
 
     /// <summary>Without AddTingQr there are no profiles: a profile name stops the app when the controllers are mapped.</summary>
-    void IControllerModelConvention.Apply(ControllerModel controller) =>
-        RequireAddTingQr(controller.Application, controller.ControllerType.Name);
+    void IControllerModelConvention.Apply(ControllerModel controller) => CheckAtStartup(controller.Application, controller.ControllerType.Name);
 
     void IActionModelConvention.Apply(ActionModel action) =>
-        RequireAddTingQr(action.Controller?.Application, action.Controller?.ControllerType.Name + "." + action.ActionMethod.Name);
+        CheckAtStartup(action.Controller?.Application, action.Controller?.ControllerType.Name + "." + action.ActionMethod.Name);
+
+    /// <summary>A <see cref="CacheControl"/> that Kestrel would refuse on every request stops the app instead.</summary>
+    internal void CheckCacheControl(string where) =>
+        // Stryker disable once String : error message
+        TingQrConfiguration.CheckCacheControl(CacheControl, "[TingQrSvg] on " + where + ": CacheControl");
+
+    private void CheckAtStartup(ApplicationModel? application, string where)
+    {
+        CheckCacheControl(where);
+        RequireAddTingQr(application, where);
+    }
 
     internal string UnknownProfileMessage(string where) =>
         "AddTingQr: [TingQrSvg(\"" + Profile + "\")] on " + where + ": no profile \"" + Profile + "\" in AddTingQr Profiles";

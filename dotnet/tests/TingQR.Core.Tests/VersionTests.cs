@@ -7,8 +7,13 @@ namespace TingQR.Tests
     public class VersionTests
     {
         [Fact]
-        public void Constant_matches_assembly_informational_version() =>
-            Assert.StartsWith(TingQrVersion.Value,
-                typeof(TingQrVersion).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()!.InformationalVersion);
+        public void Constant_equals_assembly_informational_version_without_build_metadata()
+        {
+            // The SDK appends "+<commit>" (source link) to the informational version; the rest must equal the constant
+            // exactly, so a truncated constant ("0.0", "") fails too.
+            var informational = typeof(TingQrVersion).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()!.InformationalVersion;
+            var plus = informational.IndexOf('+');
+            Assert.Equal(TingQrVersion.Value, plus < 0 ? informational : informational.Substring(0, plus));
+        }
     }
 }

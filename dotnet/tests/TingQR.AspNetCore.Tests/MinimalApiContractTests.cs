@@ -63,6 +63,29 @@ public class MinimalApiContractTests
     }
 
     [Fact]
+    public async Task Status_set_by_handler_is_overridden_with_200()
+    {
+        // A served SVG is always 200, whatever status the handler set before returning the payload.
+        var (app, client, _) = await Serve(a =>
+        {
+            a.MapPost("/qr.svg", (HttpContext context) =>
+            {
+                context.Response.StatusCode = StatusCodes.Status202Accepted;
+                return Payload;
+            }).WithTingQrSvg();
+            a.MapPost("/result.svg", (HttpContext context) =>
+            {
+                context.Response.StatusCode = StatusCodes.Status201Created;
+                return TingQrHttpResults.Svg(Payload);
+            });
+        });
+        await using var _app = app;
+        var svg = TingQrRender.ToSvg(Payload);
+        await Contract.AssertSvg(await client.PostAsync("/qr.svg", null), svg);
+        await Contract.AssertSvg(await client.PostAsync("/result.svg", null), svg);
+    }
+
+    [Fact]
     public async Task Null_and_empty_return_404()
     {
         var (app, client, _) = await Serve(a =>

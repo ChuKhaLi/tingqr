@@ -21,7 +21,10 @@ public static class TingQrEndpointExtensions
     /// SVG options merged over <see cref="TingQrOptions.Svg"/> key by key. Checked right here: a bad option or a logo
     /// that is not a <c>data:image/</c> URI throws <see cref="TingQrException"/> at startup.
     /// </param>
-    /// <param name="cacheControl">Cache-Control header; null or blank means <see cref="TingQrOptions.CacheControl"/>, then "private, max-age=300".</param>
+    /// <param name="cacheControl">
+    /// Cache-Control header; null or blank means <see cref="TingQrOptions.CacheControl"/>, then "private, max-age=300".
+    /// Printable ASCII only: a control or non-ASCII character throws <see cref="TingQrException"/> right here.
+    /// </param>
     public static TBuilder WithTingQrSvg<TBuilder>(this TBuilder builder, SvgOptions? options = null, string? cacheControl = null)
         where TBuilder : IEndpointConventionBuilder
     {
@@ -30,6 +33,8 @@ public static class TingQrEndpointExtensions
             throw new ArgumentNullException(nameof(builder));
         }
         TingQrConfiguration.CheckRouteOptions(options);
+        // Stryker disable once String : error message
+        TingQrConfiguration.CheckCacheControl(cacheControl, "WithTingQrSvg: cacheControl");
         var filter = new TingQrSvgEndpointFilter(options, cacheControl);
         return builder.AddEndpointFilter(filter);
     }

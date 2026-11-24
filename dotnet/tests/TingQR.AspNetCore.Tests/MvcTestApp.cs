@@ -52,17 +52,18 @@ internal static class MvcTestApp
     }
 
     /// <summary>The exception that stops the app (mapping the controllers or starting the host).</summary>
-    public static async Task<TingQrException> StartupError(Type[] controllers, Action<TingQrOptions>? tingQr = null)
+    public static async Task<TingQrException> StartupError(Type[] controllers, Action<TingQrOptions>? tingQr = null,
+        Action<MvcOptions>? mvc = null)
     {
         return await Assert.ThrowsAsync<TingQrException>(async () =>
         {
-            await using var app = Build(controllers, tingQr);
+            await using var app = Build(controllers, tingQr, mvc);
             app.MapControllers();
             await app.StartAsync();
         });
     }
 
-    private sealed class TypesPart : ApplicationPart, IApplicationPartTypeProvider
+    internal sealed class TypesPart : ApplicationPart, IApplicationPartTypeProvider
     {
         public TypesPart(Type[] types)
         {
