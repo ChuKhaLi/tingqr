@@ -200,7 +200,7 @@ Dành cho `findBank` và `appsForBank` (`@tingqr/core/banks`).
 
 ## Logo và icon (`banks/logos/`)
 
-Nguồn cho `@tingqr/bank-logos` và `TingQR.BankLogos` sau này.
+Nguồn cho `@tingqr/bank-logos` và `TingQR.BankLogos`.
 
 - `manifest.json` là chỉ mục. Mỗi mục có:
   - `file`: `logo/<bin>.svg|webp` hoặc `icon/<id>.webp`;
@@ -215,6 +215,8 @@ Nguồn cho `@tingqr/bank-logos` và `TingQR.BankLogos` sau này.
 - **Data URI:** `data:<mime>;base64,` + base64 chuẩn RFC 4648, có padding.
 - **Danh sách khoá** (`LOGO_BINS`, `ICON_IDS`) xếp ordinal.
 - Bản CJS của gói npm trả đường dẫn file thay vì data URI. Đây là chi tiết đóng gói riêng của JavaScript.
+- `TingQR.BankLogos` (.NET) có hàm tra cứu (`BankLogos.Logo(bin)`, `Icon(id)`, `OpenLogo`, `OpenIcon`, `LogoBins`, `IconIds`); gói npm
+  dùng import từng module, không có hàm tra cứu. Cả hai sinh `LOGOS-NOTICE.md` từ cùng `manifest.json` (`gen.mjs`).
 
 ## Mẫu ma trận (`kind: "matrix"`, `scheme: "render"`)
 
