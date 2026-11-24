@@ -32,6 +32,8 @@ jobs:
         node: ['20', '22', '24']
     steps:
       - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0 # gen-svg.mjs --check verifies that each SVG vector's stamped commit is an ancestor of HEAD
       # No `version:` here: the action reads `packageManager` from the root package.json, and setting both
       # with different strings ("10" vs "10.34.1") makes it fail with "Multiple versions of pnpm specified".
       - uses: pnpm/action-setup@v6
