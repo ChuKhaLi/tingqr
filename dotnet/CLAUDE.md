@@ -46,7 +46,8 @@ Hướng dẫn cho phần .NET của tingqr. Quy tắc chung: `../CLAUDE.md`. Th
 - Bộ mã hoá QR là port từng dòng từ `ts/packages/render/src/qrcodegen.ts` (Nayuki v1.8.0, MIT; ghi công trong `NOTICE`). File port đó không chạy mutation test.
 - **Mutation test:** cấu hình riêng `stryker-config.rendering.json` (cùng ngưỡng chặn 90, loại `QrCodeGen.cs` và
   `Polyfills.cs`): `dotnet tool run dotnet-stryker --config-file stryker-config.rendering.json` trong `dotnet/` (~5 phút).
-  Workflow `mutation-dotnet.yml` chạy Core và Rendering thành hai job (matrix), job nào dưới ngưỡng thì fail (job Rendering chưa chạy trên CI; Ubuntu chưa chạy). Các quy tắc
+  Workflow `mutation-dotnet.yml` chạy Core và Rendering thành hai job (matrix), job nào dưới ngưỡng thì fail. Job
+  `mutation (rendering)` đã xanh trên Ubuntu (run 45330277776, `main` `b684bca`, 2026-11-24). Các quy tắc
   `disable once` ở trên áp dụng y nguyên.
   - Trong Rendering, mã đã được viết lại để bỏ đột biến tương đương (không đổi hành vi; lý do ghi ngay tại dòng):
     `JsNumber` (`Math.Sign`, so sánh đặt tại biên đạt được, chia thay cho dịch bit, `biased != 1`, điểm bắt đầu
@@ -91,10 +92,12 @@ Hướng dẫn cho phần .NET của tingqr. Quy tắc chung: `../CLAUDE.md`. Th
   `dotnet/tests/TingQR.BankLogos.Tests/` (~1 phút). `mutation-dotnet.yml` có thêm hai job matrix (chưa chạy trên CI).
   Các quy tắc `disable once` ở trên áp dụng y nguyên.
 - Lần chạy cục bộ trên Windows 2026-11-24:
-  - AspNetCore: 100% = 211 bị giết, 0 quá giờ, 0 sống sót; 67 bị bỏ qua (17 theo comment `disable`, 50 do bộ lọc
-    "block already covered"), 29 lỗi biên dịch (không tính).
+  - AspNetCore (sau khi thêm kiểm `CacheControl` và test "luôn 200"): 100% = 227 bị giết, 0 quá giờ, 0 sống sót; 77 bị
+    bỏ qua (22 theo comment `disable`, 55 do bộ lọc "block already covered"), 29 lỗi biên dịch (không tính).
   - BankLogos: 100% = 66 bị giết, 0 quá giờ, 0 sống sót; 15 bị bỏ qua (4 theo comment `disable`, 11 do bộ lọc), 7 lỗi
     biên dịch.
+- Số comment `disable` trong mã nguồn: AspNetCore 13 (11 `String : error message`, 1 `all` cho biến chỉ dùng trong
+  thông báo, 1 tương đương bên dưới), BankLogos 2 (1 `String`, 1 `all`).
 - Ngoài thông báo lỗi, chỉ một chỗ `disable` vì tương đương: `ArgumentNullException.ThrowIfNull(services)` đầu
   `AddTingQr` (`AddOptions` ngay sau ném đúng lỗi đó). Mã đã viết lại để bỏ đột biến tương đương: so `Service` trong
   cấu hình bằng `IsWord` (bit 0x20) thay cho đổi chữ thường, `TingQrMvcMarker` lưu chính khoá (chỉ đọc sự có mặt),

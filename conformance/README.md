@@ -315,16 +315,30 @@ Plan 8c, 2026-11-24; README của gói ghi cho người dùng):
 - **`Cache-Control` rỗng:** `null`, chuỗi rỗng hay chỉ khoảng trắng (ở tham số `cacheControl`, `CacheControl` của
   attribute, `TingQrOptions.CacheControl`) bị bỏ qua, dùng mức tiếp theo, cuối cùng là mặc định `private, max-age=300`.
   Không bao giờ gửi header `Cache-Control` rỗng.
+- **`Cache-Control` chỉ nhận ASCII in được** (0x20–0x7E). Có CR, LF, tab, ký tự điều khiển khác hay ký tự ngoài ASCII
+  thì Kestrel từ chối lúc ghi header, tức lỗi ở mọi request; vì vậy `AddTingQr`, `WithTingQrSvg` và `[TingQrSvg]` (lúc
+  `MapControllers` hay lúc khởi động) ném `TingQrException` `INVALID_VALUE`, còn `TingQrHttpResults.Svg` cho 500 theo
+  hợp đồng. Hono và NestJS chưa có luật này.
+- **Tài khoản nhận là tuỳ chọn.** `AddTingQr` không có `Bank` và `AccountNumber` (cả hai cùng trống) vẫn khởi động được,
+  để app chỉ phục vụ QR khác (PromptPay…); khi đó `PaymentQr` ném `INVALID_VALUE`, `Bin`/`Bank` là `null`. Chỉ có một
+  trong hai thì dừng lúc khởi động. NestJS bắt buộc `bank` (`INVALID_VALUE` lúc khởi động).
 - **`[TingQrSvg]` (MVC):** attribute gần nhất (action hơn controller hơn bộ lọc toàn cục) thắng **cả khối**, rồi bộ
   tuỳ chọn của nó gộp từng khoá lên `Svg` chung, như `getAllAndOverride` của NestJS. Không gộp từng khoá giữa action và
   controller.
 - **Chỉ giá trị action trả về là chuỗi QR.** Kết quả action tự dựng (`NotFound()`, `BadRequest("…")`, `Ok("…")`,
   `StatusCode(409, "…")`, `NoContent()`, `EmptyResult`…) ném `InvalidOperationException` (lỗi lập trình, thuộc mục
-  `notInContract`), để chữ không bao giờ bị vẽ thành QR do nhầm. Muốn 404 thì trả `null`.
+  `notInContract`), để chữ không bao giờ bị vẽ thành QR do nhầm. Muốn 404 thì trả `null`. Action `void` cũng vậy: MVC
+  biến nó thành `EmptyResult`, nên nó ném `InvalidOperationException`, trong khi NestJS coi `undefined` là giá trị vắng
+  và trả 404 (mục `empty` của hợp đồng).
 - **`TingQrHttpResults.Svg` không bao giờ ném.** Nó chạy theo request, nên tuỳ chọn sai hay logo không bắt đầu
   `data:image/` cho 500 theo hợp đồng (chỉ mã, thông báo ghi log), không chặn app khởi động. Đây là ngoại lệ có chủ ý
   của luật `configuration` và `logo` ("kiểm khi cấu hình"); `WithTingQrSvg`, `Svg` chung và các profile vẫn kiểm lúc
-  cấu hình.
+  cấu hình. Chuỗi `null` hay `""` cho 404 (mục `empty`); helper tương ứng của Hono, `tingqrSvg(c, payload)`, không kiểm
+  chuỗi rỗng: nó gọi thẳng `toSvg`, mà `toSvg('')` không ném (thử trên bản build của `@tingqr/render` ngày 2026-11-24),
+  nên nó trả 200 với QR của chuỗi rỗng.
+- **Exception filter của app không bao giờ thấy `TingQrException`.** Cả ba lối (Minimal API, `TingQrHttpResults`, MVC)
+  tự viết 500; `UseExceptionHandler` và exception filter MVC của app không thấy nó. NestJS thì đẩy lỗi qua filter của app
+  (hợp đồng cho phép, mục `tingQrError.note`).
 - **Log:** `ILogger`, category `TingQR.AspNetCore.TingQrSvg`, mức Error (hợp đồng ghi `console.error` cho Hono,
   `Logger` cho NestJS).
 

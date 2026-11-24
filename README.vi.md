@@ -40,7 +40,9 @@ của tingqr bằng app của mình? [Báo kết quả](https://github.com/ChuKh
 ## .NET
 
 <!-- status:nuget -->
-**Trạng thái: chưa phát hành.** Bốn gói NuGet dưới đây đã xong và có test trong repo này, nhưng chưa có trên NuGet. Số
+**Trạng thái: chưa phát hành.** Bốn gói NuGet dưới đây đã xong và có test trong repo này, nhưng chưa có trên NuGet. Test
+của `TingQR.AspNetCore` và `TingQR.BankLogos` mới chạy trên máy cục bộ, chưa chạy trên CI của GitHub (xem mục Test bên
+dưới). Số
 phiên bản của chúng riêng với các gói npm; bốn gói dùng chung một số.
 
 | Gói | Dùng để |
@@ -88,9 +90,12 @@ if (found.ok && found.value.scheme === 'vietqr') {
   tên một app khi bảng đó có dòng tương ứng.
 - **Test:** unit test và mẫu thử trên Ubuntu và Windows, Node 20, 22, 24. Mutation test (ngưỡng 90%) cho `core` và
   `render`, trừ bộ mã hoá QR port từ Nayuki và dữ liệu ngân hàng sinh tự động. Mỗi gói có ngân sách dung lượng và có bước kiểm dependency.
-  .NET: workflow CI chạy test trên Ubuntu và Windows (`net10.0`, thêm `net481` trên Windows cho bản `netstandard2.0`);
-  mutation test (Stryker.NET, ngưỡng 90%) cho cả bốn gói, cùng hai ngoại lệ như trên; bước diễn tập phát hành cài các
-  file `.nupkg` đã đóng gói vào app nằm ngoài repo rồi dùng thử.
+  .NET: workflow CI được cấu hình để chạy test trên Ubuntu và Windows (`net10.0`, thêm `net481` trên Windows cho bản
+  `netstandard2.0`), và mutation test (Stryker.NET, ngưỡng 90%) được cấu hình cho cả bốn gói, cùng hai ngoại lệ như
+  trên; bước diễn tập phát hành cài các file `.nupkg` đã đóng gói vào app nằm ngoài repo rồi dùng thử. Những gì đã chạy:
+  test CI và mutation test của `TingQR.Core` và `TingQR.Rendering` trên GitHub; với `TingQR.AspNetCore` và
+  `TingQR.BankLogos`, test và mutation test mới chạy cục bộ trên Windows (chưa chạy trên CI của GitHub); bước diễn tập
+  mới chạy cục bộ trên Windows.
 - **An toàn từ thiết kế:** gói tích hợp máy chủ không tự dựng QR từ tham số URL: `resolve` hay controller của bạn quyết
   chuỗi QR, và README của từng gói giải thích vì sao chuỗi đó không được lấy từ URL (nếu không, ai cũng dùng được tên
   miền của bạn để hiện QR trỏ vào tài khoản bất kỳ). Bộ tạo VietQR chỉ ghi các tag mà app ngân hàng cần, không có tuỳ

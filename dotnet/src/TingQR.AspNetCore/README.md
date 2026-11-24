@@ -15,6 +15,10 @@ dotnet add package TingQR.AspNetCore
 dotnet add package TingQR.BankLogos   # optional: bank logos for the middle of the code
 ```
 
+> **Logos are provisional.** Codes with a *test* logo in the middle were read by MB Bank and MyVIB
+> (`conformance/scans.md`); a code with a real bank icon from `TingQR.BankLogos` has not been scanned yet, and the logo
+> size limits are provisional too. Check `conformance/scans.md` before printing a sign with a logo.
+
 ## Configure the receiving account
 
 ```csharp
@@ -63,8 +67,9 @@ builder.Services.AddTingQr(builder.Configuration.GetSection("TingQr"), o =>
 app.MapGet("/pay", (TingQrService tingqr) => tingqr.PaymentQr(50000L, "ORDER A1")); // VietQR string
 ```
 
-Without an amount you get a static code. A purpose with Vietnamese accents throws `TingQrException` (`NonAscii`): banking
-apps reject it. Without a configured account, `PaymentQr` throws `TingQrException` (`InvalidValue`). `tingqr.Bin` and
+Without an amount you get a static code. A purpose with Vietnamese accents throws `TingQrException` (`NonAscii`): tingqr
+allows only printable ASCII in the purpose (its own rule, `conformance/schemes/vietqr.md`; not a recorded banking-app
+behaviour). Without a configured account, `PaymentQr` throws `TingQrException` (`InvalidValue`). `tingqr.Bin` and
 `tingqr.Bank` give the configured bank (null without an account).
 
 ## Serve the QR as an image
@@ -119,6 +124,7 @@ builder.Services.AddTingQr(o =>
 {
     o.Bank = "MB";
     o.AccountNumber = "0123456789";
+    // A real bank icon in the middle: not scanned yet (see "Logos are provisional" above).
     o.Profiles["mb"] = new SvgOptions { Logo = new LogoOptions { Href = BankLogos.Icon("mb")! } };
 });
 
@@ -138,10 +144,13 @@ public class OrdersController(OrderStore orders, TingQrService tingqr) : Control
   value is drawn. Any other result throws `InvalidOperationException` (a programming error), so text is never turned
   into a QR code by mistake: an `int`, a `void` action, or a result the action builds itself, such as `NotFound()`,
   `BadRequest("msg")`, `Ok("msg")` or `StatusCode(409, "msg")` from an `ActionResult<string>`. Return null for a 404.
+  A `void` action (MVC gives an `EmptyResult`) throws too, where `@tingqr/nestjs` answers 404 for `undefined`: return
+  `null` instead.
 - `[TingQrSvg]` uses `AddTingQr`'s `Svg` only; `[TingQrSvg("mb")]` merges the profile over `Svg` key by key (a profile
   logo replaces the whole logo). `[TingQrSvg(CacheControl = "no-store")]` sets the header.
 - Put it on an action or a controller. The nearest attribute wins as a whole: an action's `[TingQrSvg("b")]` replaces
-  the controller's `[TingQrSvg("a")]` (nothing of `a` is used). Each request is rendered once.
+  the controller's `[TingQrSvg("a")]` (nothing of `a` is used). Only the nearest attribute renders: each request is
+  rendered once.
 - **Profile names are checked at startup:** a name not in `Profiles` stops the app with a `TingQrException` naming the
   controller, action and profile (also on a controller attribute that every action overrides, and on a global filter
   added with `options.Filters.Add(new TingQrSvgAttribute("name"))`).
@@ -178,7 +187,9 @@ Minimal API (`WithTingQrSvg`, `TingQrHttpResults.Svg`) and MVC (`[TingQrSvg]`) f
   `Content-Security-Policy: default-src 'none'; img-src data:; style-src 'unsafe-inline'`, and
   `Cache-Control: private, max-age=300` (the code carries an account number and often an amount, so shared caches must
   not keep it). Change `Cache-Control` per route (`cacheControl`, `CacheControl = …`) or app-wide
-  (`TingQrOptions.CacheControl`); null or blank falls back to the next level, then to the default.
+  (`TingQrOptions.CacheControl`); null or blank falls back to the next level, then to the default. The value must be
+  printable ASCII (no CR, LF, tab or other control character, no accents): otherwise `AddTingQr`, `WithTingQrSvg` and
+  `[TingQrSvg(CacheControl = …)]` stop the app at startup, and `TingQrHttpResults.Svg` gives a 500.
 - A logo must be a `data:image/` URI (e.g. from `TingQR.BankLogos`): an SVG shown as an image cannot load a path or
   URL, so other logos are rejected at startup (`WithTingQrSvg`, `Svg`, profiles) or give a 500 (`TingQrHttpResults`).
 - An SVG `<img>` may not be savable by long-press in chat apps' in-app browsers (not tested).

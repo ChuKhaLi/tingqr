@@ -63,7 +63,8 @@ Planned as 0.1.0, after MoMo and ZaloPay recognition and scans with more banking
 Not published. The repository reads `0.0.0`; the first number is chosen when the owner decides to release.
 
 Each .NET release entry names the `conformance/` commit whose vectors it passes (for example "passes `conformance/` at
-`abc1234`"), so a reader can tell which shared behaviour a version has.
+`abc1234`"), so a reader can tell which shared behaviour a version has. This is a manual step of `docs/RELEASING.md`:
+no script checks it.
 
 ### TingQR.Core
 
@@ -100,6 +101,8 @@ Each .NET release entry names the `conformance/` commit whose vectors it passes 
   a `500` with only `{"error":{"code":"…"}}`; the message goes to `ILogger`. A served SVG is always `200`.
   `TingQrHttpResults.Svg` never throws (bad options are a `500`). Only the value an action returns is drawn; a result
   the action builds itself throws `InvalidOperationException`.
+- A `CacheControl` with a control character (CR, LF, tab…) or a non-ASCII character stops the app at startup
+  (`AddTingQr`, `WithTingQrSvg`, `[TingQrSvg]`), or gives a `500` from `TingQrHttpResults.Svg`.
 - Targets `net10.0` only.
 
 ### Release (NuGet)

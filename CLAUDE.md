@@ -133,10 +133,11 @@ TypeScript và bản .NET, kèm tích hợp sẵn cho Angular, NestJS và ASP.NE
       - skill `release-drill-dotnet`, workflow `release-dotnet.yml` (tag `dotnet-v*`, environment `nuget-release`,
         trusted publishing), phần NuGet của `docs/RELEASING.md`.
     - Quyết khi làm: SVG luôn 200 (ASP.NET Core không có `@HttpCode`); `[TingQrSvg]` gần nhất thắng cả khối; chỉ giá trị
-      action trả về được vẽ; `TingQrHttpResults.Svg` không bao giờ ném; `CacheControl` rỗng → mặc định.
-    - Kiểm cục bộ trên Windows 2026-11-24: `dotnet test` Core 696 và Rendering 330 (net10.0 + net481), BankLogos 237
-      (net10.0 + net481), AspNetCore 100 (net10.0); Stryker.NET AspNetCore và BankLogos 100% (0 sống sót, số ở
-      `dotnet/CLAUDE.md`); diễn tập NuGet cả 6 mục đạt.
+      action trả về được vẽ; `TingQrHttpResults.Svg` không bao giờ ném; `CacheControl` rỗng → mặc định; `CacheControl`
+      có ký tự điều khiển hay ngoài ASCII → dừng lúc khởi động (`TingQrHttpResults.Svg`: 500).
+    - Kiểm cục bộ trên Windows 2026-11-24 (sau đợt sửa cuối): `dotnet test` Core 696 và Rendering 330 (net10.0 +
+      net481), BankLogos 237 (net10.0 + net481), AspNetCore 132 (net10.0); Stryker.NET AspNetCore và BankLogos 100% (0
+      sống sót, số ở `dotnet/CLAUDE.md`); diễn tập NuGet cả 6 mục đạt.
     - **Chưa kiểm:** chưa job CI nào chạy hai gói mới trên GitHub (`ci-dotnet`, hai job mutation mới, bước
       `--check-notice` của `ci-ts`); `release-dotnet.yml` chưa chạy lần nào; diễn tập chưa chạy trên Ubuntu; chưa đẩy gói
       nào lên NuGet; chưa có environment `nuget-release`, biến `NUGET_USER`, policy trên nuget.org. Không có lần quét

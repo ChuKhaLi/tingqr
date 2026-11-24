@@ -28,5 +28,12 @@ string? logo = BankLogos.Logo("970422");        // data URI by BIN, or null
 using BankLogoFile? file = BankLogos.OpenIcon("mb"); // stream + ContentType + FileName
 ```
 
+> **Provisional.** Codes with a *test* logo in the middle were read by MB Bank and MyVIB (`conformance/scans.md`); a
+> code with a real bank icon from this package has not been scanned yet. `TingQR.Rendering`'s logo size limits are
+> provisional too. Check `conformance/scans.md` before printing a sign with a logo.
+
 Keys are matched exactly (ordinal, no trimming, case-sensitive): `"MB"` is not `"mb"`. A `null` argument throws
 `ArgumentNullException`; an unknown key returns `null`. `BankLogos.LogoBins` and `BankLogos.IconIds` list the keys.
+
+This package looks images up with functions (`BankLogos.Icon("mb")`); the npm package `@tingqr/bank-logos` imports
+one module per image instead (`import mb from '@tingqr/bank-logos/icon/mb'`), so bundlers can tree-shake.

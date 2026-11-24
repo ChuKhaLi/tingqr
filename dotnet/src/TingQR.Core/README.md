@@ -41,7 +41,7 @@ Bank? bank = Banks.Find("970422");                                   // or "MB",
 string link = BankApps.Link("mb", AppPlatform.Android, "https://example.com/pay");
 ```
 
-(Compiled and run on `net10.0` and `net481` in a console project outside the repo, 2026-11-23.)
+(Compiled and run on `net10.0` and `net481` in a console project outside the repo, 2026-11-24.)
 
 Readers return a result carrying `Warnings` and an error instead of throwing; builders and bank lookups throw
 `TingQrException` with the shared codes from `conformance/errors.json`. Readers default to lenient mode, like the

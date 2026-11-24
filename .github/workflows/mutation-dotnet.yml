@@ -4,8 +4,10 @@ name: Mutation (.NET)
 # TingQR.AspNetCore (dotnet/stryker-config.aspnetcore.json) and TingQR.BankLogos (dotnet/stryker-config.banklogos.json),
 # one matrix job each; a job fails if its score drops below `thresholds.break` in its config.
 # One OS: the score is expected not to vary by platform; for Core, local runs on Windows (2026-11-22/23) and the first CI
-# run on Ubuntu (PR #10, 2026-11-23) both passed. Rendering (2026-11-23), AspNetCore and BankLogos (2026-11-24) have
-# only been run locally on Windows. The tests run on net10.0 only (net481 is Windows-only).
+# run on Ubuntu (PR #10, 2026-11-23) both passed; for Rendering, local runs on Windows (2026-11-23/24) and the job
+# `mutation (rendering)` on Ubuntu (run 45330277776, main b684bca, 2026-11-24) both passed. AspNetCore and BankLogos
+# (2026-11-24) have only been run locally on Windows; their jobs have not run on CI yet. The tests run on net10.0 only
+# (net481 is Windows-only).
 on:
   push:
     branches: [main]
