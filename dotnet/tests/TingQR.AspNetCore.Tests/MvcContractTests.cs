@@ -129,6 +129,25 @@ public class MvcContractTests
         Assert.Contains("got Microsoft.AspNetCore.Mvc.EmptyResult", await empty.Content.ReadAsStringAsync(), StringComparison.Ordinal);
     }
 
+    [Theory]
+    [InlineData("/mvc/bad-request.svg", "BadRequestObjectResult")]
+    [InlineData("/mvc/not-found.svg", "NotFoundObjectResult")]
+    [InlineData("/mvc/ok.svg", "OkObjectResult")]
+    [InlineData("/mvc/conflict.svg", "ObjectResult")]
+    [InlineData("/mvc/object-result-status.svg", "ObjectResult")]
+    public async Task Action_result_with_text_is_not_a_payload(string path, string resultType)
+    {
+        // Only the value an action returns (MVC wraps it in a plain ObjectResult without a status) is a payload; a result
+        // the action built itself, such as BadRequest("msg"), must never be drawn as a QR code.
+        var (app, client, logs) = await MvcTestApp.Serve(Svg, exceptionHandler: true);
+        await using var _app = app;
+        var response = await client.GetAsync(path);
+        Assert.Equal(418, (int)response.StatusCode);
+        Assert.StartsWith("InvalidOperationException: A [TingQrSvg] action must return a QR payload string or null (also as Task<string> or " +
+            "ActionResult<string>); got Microsoft.AspNetCore.Mvc." + resultType + " from ", await response.Content.ReadAsStringAsync());
+        Assert.DoesNotContain(logs.Entries, e => e.Category == "TingQR.AspNetCore.TingQrSvg");
+    }
+
     [Fact]
     public async Task Works_without_AddTingQr()
     {
@@ -267,6 +286,21 @@ public class MvcSvgController : ControllerBase
 
     [HttpGet("int.svg"), TingQrSvg]
     public int Int() => 42;
+
+    [HttpGet("bad-request.svg"), TingQrSvg]
+    public ActionResult<string> BadRequestText() => BadRequest("msg");
+
+    [HttpGet("not-found.svg"), TingQrSvg]
+    public ActionResult<string> NotFoundText() => NotFound("msg");
+
+    [HttpGet("ok.svg"), TingQrSvg]
+    public ActionResult<string> OkText() => Ok("msg");
+
+    [HttpGet("conflict.svg"), TingQrSvg]
+    public ActionResult<string> ConflictText() => StatusCode(409, "msg");
+
+    [HttpGet("object-result-status.svg"), TingQrSvg]
+    public ActionResult<string> ObjectResultWithStatus() => new ObjectResult("msg") { StatusCode = 200 };
 
     [HttpGet("void.svg"), TingQrSvg]
     public void Void()

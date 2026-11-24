@@ -92,13 +92,25 @@ internal sealed class TingQrSvgMvcFilter : IAsyncActionFilter
     private static bool TryGetPayload(ActionExecutedContext executed, out string? payload)
     {
         payload = null;
-        switch (executed.Result)
+        var result = executed.Result;
+        // Only the value the action returned is a payload. MVC wraps a returned string (also from Task<string>) in a plain
+        // ObjectResult with DeclaredType string and no status, and the value of an ActionResult<string> the same way with
+        // status 200. A result the action built itself (BadRequest("msg"), NotFound("msg"), Ok("msg"),
+        // StatusCode(409, "msg"), new ObjectResult("msg")) has another type or no DeclaredType, and must never be drawn as
+        // a QR code.
+        if (result is not null && result.GetType() == typeof(ObjectResult))
         {
-            case ObjectResult { Value: null }:
+            var value = (ObjectResult)result;
+            if (value.DeclaredType == typeof(string) && (value.StatusCode is null || value.StatusCode == StatusCodes.Status200OK)
+                && (value.Value is null || value.Value is string))
+            {
+                payload = (string?)value.Value;
                 return true;
-            case ObjectResult { Value: string text }:
-                payload = text;
-                return true;
+            }
+            return false;
+        }
+        switch (result)
+        {
             case EmptyResult or NoContentResult:
                 // What MVC may make of null from an action declared to return a string.
                 return ReturnsString(executed.ActionDescriptor);

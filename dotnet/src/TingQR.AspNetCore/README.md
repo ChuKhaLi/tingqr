@@ -134,8 +134,10 @@ public class OrdersController(OrderStore orders, TingQrService tingqr) : Control
 }
 ```
 
-- The action returns `string?`, also as `Task<string?>` or `ActionResult<string?>`. Another result (an `int`, a
-  `void` action, `NotFound()` from an `ActionResult<string>`) throws `InvalidOperationException`.
+- The action returns `string?`, also as `Task<string?>` or the value of an `ActionResult<string?>`. Only that returned
+  value is drawn. Any other result throws `InvalidOperationException` (a programming error), so text is never turned
+  into a QR code by mistake: an `int`, a `void` action, or a result the action builds itself, such as `NotFound()`,
+  `BadRequest("msg")`, `Ok("msg")` or `StatusCode(409, "msg")` from an `ActionResult<string>`. Return null for a 404.
 - `[TingQrSvg]` uses `AddTingQr`'s `Svg` only; `[TingQrSvg("mb")]` merges the profile over `Svg` key by key (a profile
   logo replaces the whole logo). `[TingQrSvg(CacheControl = "no-store")]` sets the header.
 - Put it on an action or a controller. The nearest attribute wins as a whole: an action's `[TingQrSvg("b")]` replaces
