@@ -126,8 +126,8 @@ namespace TingQR.Rendering.Tests
         [Theory]
         [InlineData("\tlogo.png")]
         [InlineData("\rlogo.png")]
-        [InlineData(" logo.png")]
-        [InlineData(" logo.png")]
+        [InlineData("\u2000logo.png")]
+        [InlineData("\u200Alogo.png")]
         public void RejectsLeadingWhitespaceAtTheEndsOfJsRanges(string href)
         {
             Fails(() => Logo.CheckHref(href));
@@ -136,8 +136,8 @@ namespace TingQR.Rendering.Tests
         [Theory]
         [InlineData("\u0008logo.png")]
         [InlineData("\u000Elogo.png")]
-        [InlineData("῿logo.png")]
-        [InlineData("​logo.png")]
+        [InlineData("\u1FFFlogo.png")]
+        [InlineData("\u200Blogo.png")]
         public void AcceptsCharactersJustOutsideJsWhitespace(string href)
         {
             Assert.Equal(href, Logo.CheckHref(href));

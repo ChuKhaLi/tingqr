@@ -348,18 +348,17 @@ namespace TingQR.Rendering.Tests
         }
 
         [Fact]
-        public void ParallelCallsAgree()
+        public async Task ParallelCallsAgree()
         {
             var expected = Sample();
-            var results = new string[8][];
-            var threads = Enumerable.Range(0, 8).Select(t => new Thread(() =>
+            // LongRunning gives each task its own thread; an exception in any task surfaces from WhenAll and fails the test.
+            var tasks = Enumerable.Range(0, 8).Select(_ => Task.Factory.StartNew(() =>
             {
                 var mine = new string[50];
                 for (var i = 0; i < 50; i++) mine[i] = Sample();
-                results[t] = mine;
-            })).ToList();
-            threads.ForEach(t => t.Start());
-            threads.ForEach(t => t.Join());
+                return mine;
+            }, CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default)).ToArray();
+            var results = await Task.WhenAll(tasks);
             Assert.All(results.SelectMany(r => r), r => Assert.Equal(expected, r));
             Assert.Equal(400, results.Sum(r => r.Length));
         }

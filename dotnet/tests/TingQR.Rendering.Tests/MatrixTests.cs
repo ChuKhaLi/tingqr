@@ -49,14 +49,11 @@ namespace TingQR.Rendering.Tests
             var before = m.IsDark(0, 0);
             Assert.False(m.Modules is bool[][]);
             Assert.False(m.Modules[0] is bool[]);
-            if (m.Modules is IList<IReadOnlyList<bool>> rows)
-            {
-                Assert.Throws<NotSupportedException>(() => rows[0] = new bool[m.Size]);
-            }
-            if (m.Modules[0] is IList<bool> row)
-            {
-                Assert.Throws<NotSupportedException>(() => row[0] = !before);
-            }
+            // Array.AsReadOnly wrappers implement IList but throw on every write; asserted unconditionally.
+            var rows = Assert.IsAssignableFrom<IList<IReadOnlyList<bool>>>(m.Modules);
+            Assert.Throws<NotSupportedException>(() => rows[0] = new bool[m.Size]);
+            var row = Assert.IsAssignableFrom<IList<bool>>(m.Modules[0]);
+            Assert.Throws<NotSupportedException>(() => row[0] = !before);
             Assert.Equal(before, m.IsDark(0, 0));
             Assert.Equal(before, m.Modules[0][0]);
         }
