@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -29,6 +30,8 @@ public static class TingQrServiceCollectionExtensions
         services.TryAddSingleton(sp => TingQrConfiguration.Resolve(sp.GetRequiredService<IOptions<TingQrOptions>>().Value));
         services.TryAddSingleton(sp => new TingQrService(sp.GetRequiredService<ResolvedTingQr>()));
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IHostedService, TingQrStartupCheck>());
+        // Lets [TingQrSvg("name")] tell, when MVC builds its actions, that profiles may exist (checked at startup).
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<MvcOptions>, TingQrMvcMarker>());
         return services;
     }
 

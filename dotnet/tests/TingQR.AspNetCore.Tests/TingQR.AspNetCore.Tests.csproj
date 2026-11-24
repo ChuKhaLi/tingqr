@@ -12,5 +12,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\TingQR.AspNetCore\TingQR.AspNetCore.csproj" />
+    <ProjectReference Include="..\..\src\TingQR.BankLogos\TingQR.BankLogos.csproj" />
   </ItemGroup>
 </Project>

@@ -170,6 +170,18 @@ public class MinimalApiContractTests
     }
 
     [Fact]
+    public async Task TingQrException_after_await_returns_500()
+    {
+        var (app, client, _) = await Serve(a => a.MapGet("/qr.svg", async Task<string> () =>
+        {
+            await Task.Yield();
+            throw new TingQrException(TingQrErrorCode.CrcMismatch, "secret config");
+        }).WithTingQrSvg(), exceptionHandler: true);
+        await using var _app = app;
+        await Contract.AssertError(await client.GetAsync("/qr.svg"), "CRC_MISMATCH");
+    }
+
+    [Fact]
     public async Task WithTingQrSvg_bad_option_throws_at_mapping()
     {
         await using var app = TestApp.Build(_ => { });

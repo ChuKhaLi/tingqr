@@ -4,7 +4,7 @@
     <RootNamespace>TingQR.AspNetCore</RootNamespace>
     <PackageId>TingQR.AspNetCore</PackageId>
     <IsPackable>true</IsPackable>
-    <Description>ASP.NET Core integration for tingqr: configure the receiving account once, build VietQR payment codes with TingQrService, and serve QR codes as SVG images.</Description>
+    <Description>ASP.NET Core integration for tingqr: configure the receiving account once, build VietQR payment codes with TingQrService, and serve QR codes as SVG images from Minimal API endpoints and MVC controllers. Does not confirm payments or receive webhooks.</Description>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
