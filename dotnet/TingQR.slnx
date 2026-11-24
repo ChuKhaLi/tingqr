@@ -3,10 +3,12 @@
     <Project Path="src/TingQR.Core/TingQR.Core.csproj" />
     <Project Path="src/TingQR.Rendering/TingQR.Rendering.csproj" />
     <Project Path="src/TingQR.BankLogos/TingQR.BankLogos.csproj" />
+    <Project Path="src/TingQR.AspNetCore/TingQR.AspNetCore.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/TingQR.Core.Tests/TingQR.Core.Tests.csproj" />
     <Project Path="tests/TingQR.Rendering.Tests/TingQR.Rendering.Tests.csproj" />
     <Project Path="tests/TingQR.BankLogos.Tests/TingQR.BankLogos.Tests.csproj" />
+    <Project Path="tests/TingQR.AspNetCore.Tests/TingQR.AspNetCore.Tests.csproj" />
   </Folder>
 </Solution>
