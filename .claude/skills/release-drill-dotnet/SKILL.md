@@ -61,8 +61,10 @@ node .claude/skills/release-drill-dotnet/scripts/drill.mjs --out dir  # kiểm, 
    `[TingQrSvg("logo")]` (profile có logo `BankLogos.Icon("mb")`). Build, chạy thẳng `dotnet web.dll` (không qua
    `dotnet run`, để dừng tiến trình không bỏ sót tiến trình con) trên một cổng trống của `127.0.0.1`, đợi tối đa 60 giây,
    gọi hai route qua HTTP thật (`fetch` của Node): 200, bốn header đúng `conformance/http/svg-response.json`, thân bắt
-   đầu `<svg`, chỉ route MVC có logo. Rồi chạy lại với `--DrillBank NOT-A-BANK`: app phải thoát với mã khác 0 và có
-   `TingQrException` trong đầu ra (cấu hình sai chặn khởi động).
+   đầu `<svg`, chỉ route MVC có logo. Rồi chạy lại với `--DrillBank NOT-A-BANK`: app phải tự dừng trong 60 giây, bằng mã thoát
+   khác 0 (Windows: 0xE0434352) hoặc bằng tín hiệu (Linux: ngoại lệ .NET không bắt làm tiến trình nhận SIGABRT), và
+   đầu ra phải có `TingQrException` hay `INVALID_VALUE`, để một lỗi khác không lọt (cấu hình sai chặn khởi động). Cách
+   xét nằm ở `scripts/bad-config-exit.mjs`, có test `dotnet/scripts/test/drill-bad-config.test.mjs`.
 6. **Không còn tiến trình nào chạy:** mọi tiến trình mục 5 khởi động đều đã thoát (script luôn dừng chúng, kể cả khi
    hỏng).
 

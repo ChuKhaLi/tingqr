@@ -13,6 +13,8 @@ import { dirname, isAbsolute, join, relative, resolve } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { inflateRawSync } from 'node:zlib'
 
+import { judgeBadConfigExit } from './bad-config-exit.mjs'
+
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..', '..', '..')
 const { PACKAGES, readDotnetVersion } = await import(pathToFileURL(join(ROOT, 'dotnet', 'scripts', 'release-common.mjs')).href)
 const CHECKS = 6
@@ -118,7 +120,7 @@ function startApp(dll, args, cwd) {
   child.stdout.on('data', (d) => { output += d })
   child.stderr.on('data', (d) => { output += d })
   const exited = new Promise((res) => child.once('exit', (code, signal) => res({ code, signal })))
-  return { child, exited, output: () => output.slice(-4000) }
+  return { child, exited, output: () => output.slice(-4000), fullOutput: () => output }
 }
 
 async function stop(app) {
@@ -330,20 +332,24 @@ public class QrController(TingQrService tingqr) : ControllerBase
       await stop(app)
     }
 
-    // A wrong bank must stop the app at startup (non-zero exit), not serve 500s later.
+    // A wrong bank must stop the app at startup, not serve 500s later. How it stops differs by OS (an exit code on
+    // Windows, SIGABRT on Linux): judgeBadConfigExit decides, and has tests.
     const bad = startApp(dll, ['--urls', `http://127.0.0.1:${await freePort()}`, '--DrillBank', 'NOT-A-BANK'], web)
-    const timeout = new Promise((r) => setTimeout(() => r('timeout'), 60_000))
+    let timer
+    const timeout = new Promise((r) => { timer = setTimeout(() => r('timeout'), 60_000) })
     const outcome = await Promise.race([bad.exited, timeout])
-    if (outcome === 'timeout') {
-      await stop(bad)
-      problems.push('with DrillBank=NOT-A-BANK the app was still running after 60 s')
-    } else if (outcome.code === 0 || outcome.code === null) {
-      problems.push(`with DrillBank=NOT-A-BANK the app exited with ${outcome.code ?? outcome.signal}`)
-    } else if (!bad.output().includes('TingQrException')) {
-      problems.push(`with DrillBank=NOT-A-BANK the app exited ${outcome.code} without a TingQrException:\n${bad.output()}`)
-    }
+    clearTimeout(timer)
+    const timedOut = outcome === 'timeout'
+    if (timedOut) await stop(bad)
+    const verdict = judgeBadConfigExit({
+      timedOut,
+      code: timedOut ? null : outcome.code,
+      signal: timedOut ? null : outcome.signal,
+      output: bad.fullOutput(),
+    })
+    if (!verdict.ok) problems.push(`with DrillBank=NOT-A-BANK: ${verdict.reason}`)
     if (problems.length) throw new Error(problems.join('\n'))
-    return `2 routes on port ${port}; bad bank exited with ${outcome.code}`
+    return `2 routes on port ${port}; bad bank ${verdict.reason}`
   })
 
   await check('6. no app process left running', () => {
