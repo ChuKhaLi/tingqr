@@ -4,7 +4,15 @@ C# port of `@tingqr/render`: turn any text (usually a payment QR payload from `T
 an SVG string. It does not confirm payments, receive webhooks or produce PNG files.
 
 **Status: not released.** Version `0.0.0`, not on NuGet. Targets `net10.0` and `netstandard2.0` (so it also runs on
-.NET Framework 4.6.1+; tested on `net481`). It depends on `TingQR.Core` and has no other dependency.
+.NET Framework 4.6.1+; tested on `net481`). It depends on `TingQR.Core` and has no other dependency. The four TingQR
+packages share one version, separate from the npm packages.
+
+Once released, install it from NuGet:
+
+```sh
+dotnet add package TingQR.Rendering
+dotnet add package TingQR.BankLogos   # optional: bank logos for the middle of the code
+```
 
 ## Usage
 

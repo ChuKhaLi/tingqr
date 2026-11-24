@@ -1,4 +1,7 @@
-# Phát hành các gói npm của tingqr
+# Phát hành các gói của tingqr
+
+Hai đường phát hành riêng, mỗi đường một số phiên bản: sáu gói npm (tag `ts-v*`, phần đầu file này) và bốn gói NuGet
+(tag `dotnet-v*`, phần [NuGet (.NET)](#nuget-net) cuối file).
 
 Thiết kế: `docs/superpowers/specs/2026-11-21-tingqr-release-design.md`. Workflow: `.github/workflows/release-ts.yml`.
 Diễn tập: skill `release-drill` (`node .claude/skills/release-drill/scripts/drill.mjs`).
@@ -127,3 +130,101 @@ tarball từ artifact chỉ mới được đọc, chưa được chạy. Lần 
 - Bản 0.0.1 không có provenance, vì phát hành tay.
 - Chưa hỗ trợ phát hành bản tiền phát hành (`-rc`, `-beta`). Workflow từ chối loại tag này cho tới khi có luồng dist-tag
   riêng.
+
+# NuGet (.NET)
+
+Thiết kế: `docs/superpowers/specs/2026-11-24-tingqr-dotnet-aspnetcore-release-design.md`. Workflow:
+`.github/workflows/release-dotnet.yml` (comment đầu file ghi lý do từng bước). Diễn tập: skill `release-drill-dotnet`
+(`node .claude/skills/release-drill-dotnet/scripts/drill.mjs`).
+
+Bốn gói `TingQR.Core`, `TingQR.Rendering`, `TingQR.BankLogos`, `TingQR.AspNetCore` dùng chung một số phiên bản, riêng
+với npm. Số đặt ở `dotnet/Directory.Build.props` và `TingQrVersion.Value`, bằng `node dotnet/scripts/set-version.mjs`.
+
+**Phát hành lên NuGet không rút lại được:** một số phiên bản đã đẩy lên thì không dùng lại được, và trang của bản đó
+(kể cả README) không đổi. nuget.org chỉ cho ẩn (unlist) một bản, không cho xoá; điều này chưa đọc lại ở nguồn gốc trong
+Plan 8c, nên kiểm lại trên nuget.org trước lần đầu.
+
+Mọi lệnh phát hành thật chỉ chạy trong CI, sau khi chủ dự án duyệt. Khi nào phát hành bản .NET đầu tiên là chủ dự án
+quyết.
+
+## Trusted publishing trên nuget.org (đọc ngày 2026-11-24)
+
+Nguồn: https://learn.microsoft.com/nuget/nuget-org/trusted-publishing (trang cập nhật 2026-09-01) và
+https://github.com/NuGet/login (README và `action.yml` bản v1.2.0). Đọc qua công cụ tải trang, chưa đối chiếu bằng mắt;
+nên đọc lại trước khi làm.
+
+- Policy thuộc về một owner (tài khoản hay tổ chức trên nuget.org) và áp dụng cho mọi gói của owner đó (có thể thu hẹp
+  bằng scope: mẫu tên gói, gói mới và/hoặc bản mới). Vì vậy **không cần bản giữ chỗ** như npm.
+- Policy ghi: owner của repo, tên repo, **chỉ tên file** workflow, environment (không bắt buộc; ở đây đặt
+  `nuget-release`).
+- Với repo riêng tư, policy có thể ở trạng thái "tạm thời hiệu lực" 7 ngày, vì nuget.org cần ID của repo và owner từ lần
+  phát hành thành công đầu tiên; quá 7 ngày không phát hành thì policy hết hiệu lực (khởi động lại được). Workflow vẫn từ
+  chối phát hành từ repo riêng tư (lý do: bước duyệt, xem dưới), nên tạo (hay khởi động lại) policy ngay trước tag đầu.
+- `NuGet/login` cần `user` là **tên hồ sơ** nuget.org, không phải email. Nó trả một API key tạm, hạn 1 giờ, mỗi token
+  OIDC một key; job cần `id-token: write`.
+
+## Một lần, trước bản NuGet đầu tiên (chủ dự án làm)
+
+0. **Repo phải công khai** (bước 0–1 của phần npm ở trên: rà lịch sử, rồi mở công khai). Job `publish` từ chối chạy khi
+   repo còn riêng tư: với repo riêng tư, người duyệt của environment chỉ có ở gói Enterprise, nên đẩy tag là phát hành
+   luôn.
+1. **Tài khoản nuget.org**, bật xác thực hai lớp.
+2. **Giữ tiền tố `TingQR`** (ID prefix reservation), để không ai khác đặt được gói tên `TingQR.*`. Cách xin theo
+   hướng dẫn của nuget.org (https://learn.microsoft.com/nuget/nuget-org/id-prefix-reservation; chưa đọc trong Plan 8c,
+   đọc trước khi làm). Không cần chờ xong bước này mới phát hành, nhưng nên xin sớm.
+3. **Trusted publishing policy** trên nuget.org (trang tài khoản → Trusted Publishing), điền:
+   - owner `ChuKhaLi`, repository `tingqr`;
+   - workflow `release-dotnet.yml`;
+   - environment `nuget-release`.
+
+   Đổi tên file workflow hay environment thì policy hỏng, phải sửa policy.
+4. **GitHub environment `nuget-release`** (Settings → Environments), chủ dự án là người duyệt bắt buộc (required
+   reviewer). **Kiểm lại trước tag đầu tiên:** mở environment, thấy dòng "Required reviewers" có tên chủ dự án. Không có
+   người duyệt thì GitHub chạy `publish` mà không chờ ai.
+5. **Biến repo `NUGET_USER`** (Settings → Secrets and variables → Actions → Variables): tên hồ sơ nuget.org (không phải
+   email). Đây là biến, không phải secret, vì tên hồ sơ là công khai.
+
+## Mỗi lần phát hành NuGet
+
+1. `node dotnet/scripts/set-version.mjs X.Y.Z` (chỉ nhận `x.y.z`; đặt cả `Directory.Build.props` và
+   `TingQrVersion.Value`).
+2. **Sửa dòng trạng thái trong 6 README:** 4 file `dotnet/src/*/README.md` và, ở `README.md`, `README.vi.md`, đoạn ngay
+   sau `<!-- status:nuget -->` (không dòng trống giữa marker và đoạn). Không còn "not released" / "not on NuGet" /
+   "chưa phát hành" / "chưa có trên NuGet".
+   - `check-release --tag` (chạy trong job `verify` khi chạy bằng tag) từ chối nếu còn các câu đó, nếu tag lệch số
+     phiên bản, nếu số là `0.0.0` hay không phải `x.y.z`.
+   - Kiểm trước ở máy: `node dotnet/scripts/check-release.mjs --tag dotnet-vX.Y.Z`.
+3. Viết mục `X.Y.Z` trong phần NuGet của `CHANGELOG.md` (chuyển từ "Unreleased (NuGet, .NET)"), **ghi commit
+   `conformance/` mà bản này đạt**.
+4. Chạy diễn tập: `node .claude/skills/release-drill-dotnet/scripts/drill.mjs`. Bước này gọi mạng tới nuget.org.
+5. Commit, mở PR, chờ CI xanh, gộp vào `main`.
+6. Tag và đẩy tag, từng tag một:
+   - `git tag dotnet-vX.Y.Z`
+   - `git push origin dotnet-vX.Y.Z`
+7. Xem job `verify` của `Release (.NET)`: build, test, test script Node, `check-release --tag`, tag phải nằm trên
+   `main`, diễn tập với `--out packages`, lưu `.nupkg` + `.snupkg` làm artifact (giữ 7 ngày).
+8. Duyệt job `publish` trong environment `nuget-release`. Job đăng nhập bằng `NuGet/login` rồi đẩy đúng các gói `verify`
+   đã diễn tập, theo thứ tự `TingQR.Core` → `TingQR.Rendering` → `TingQR.BankLogos` → `TingQR.AspNetCore` (mỗi
+   `.snupkg` đi kèm `.nupkg` của nó).
+
+**Chỉ tag mới phát hành.** Chạy tay và PR sửa máy móc phát hành chỉ chạy `verify` (không kiểm tag và README).
+
+## Khi phát hành NuGet hỏng giữa chừng
+
+- **Lỗi tạm thời** làm `publish` dừng giữa chừng: bấm "Re-run failed jobs". Trước mỗi gói, job hỏi nuget.org
+  (`v3-flatcontainer`) xem số này đã có chưa; có rồi thì bỏ qua gói đó. nuget.org chỉ liệt kê bản mới sau khi đánh chỉ
+  mục (vài phút), nên chạy lại ngay sau một lần đẩy dở vẫn có thể hỏng ở gói vừa đẩy: đợi rồi chạy lại. Không dùng
+  `--skip-duplicate`.
+- Artifact giữ 7 ngày; quá hạn thì phát hành số mới.
+- **Lỗi trong gói:** đừng phát hành lại cùng số. Sửa, rồi phát hành `X.Y.(Z+1)` cho **cả bốn gói**. Bản hỏng thì ẩn
+  (unlist) trên nuget.org.
+
+## Chưa chạy (tính tới 2026-11-24)
+
+- `release-dotnet.yml` chưa chạy lần nào trên GitHub, cả `verify` lẫn `publish`: OIDC, `NuGet/login`, bước duyệt, bước
+  từ chối repo riêng tư, bước bỏ qua gói đã có, `dotnet nuget push` mới chỉ được đọc.
+- Diễn tập mới chạy trên Windows 11 (2026-11-24, phiên bản `0.0.0`, cả 6 mục đạt); chưa chạy trên Ubuntu (đường thoát
+  bằng tín hiệu của app cấu hình sai chỉ có unit test).
+- Chưa đẩy gói nào lên NuGet. Ngày 2026-11-24 repo chưa có environment nào và chưa có biến Actions nào (`gh api
+  repos/ChuKhaLi/tingqr/environments`, `gh variable list`), tức chưa có `nuget-release` và `NUGET_USER`. Tiền tố
+  `TingQR` và policy trên nuget.org chưa được ghi nhận là đã làm.

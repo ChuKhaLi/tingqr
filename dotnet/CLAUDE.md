@@ -1,15 +1,25 @@
 # CLAUDE.md (dotnet)
 
-Hướng dẫn cho phần .NET của tingqr. Quy tắc chung: `../CLAUDE.md`. Thiết kế: `docs/superpowers/specs/2026-11-22-tingqr-dotnet-core-design.md`.
+Hướng dẫn cho phần .NET của tingqr. Quy tắc chung: `../CLAUDE.md`. Thiết kế: `docs/superpowers/specs/2026-11-22-tingqr-dotnet-core-design.md` (Core), `2026-11-23-tingqr-dotnet-rendering-design.md` (Rendering), `2026-11-24-tingqr-dotnet-aspnetcore-release-design.md` (AspNetCore, BankLogos, NuGet).
 
 ## Lệnh
 
 - Từ gốc repo: `dotnet build dotnet/TingQR.slnx`, `dotnet test dotnet/TingQR.slnx` (SDK 10). `pnpm test:all` chạy cả TS và .NET.
-- Test chạy trên `net10.0`, và thêm `net481` trên Windows để bản `netstandard2.0` thật sự được chạy.
+- Test chạy trên `net10.0`, và thêm `net481` trên Windows để bản `netstandard2.0` thật sự được chạy (Core, Rendering,
+  BankLogos; AspNetCore chỉ `net10.0`).
+- Test script Node của .NET: `node --test dotnet/scripts/test/*.test.mjs` (`set-version`, `check-release`, cách xét
+  của diễn tập). Dạng thư mục `node --test dotnet/scripts/test/` không tìm thấy test trên Node cục bộ.
+- Số phiên bản: `node dotnet/scripts/set-version.mjs x.y.z` (đặt `Directory.Build.props` và `TingQrVersion.Value`);
+  `node dotnet/scripts/check-release.mjs [--tag dotnet-vX.Y.Z]`. Bốn gói chung một số, riêng với npm. Repo giữ `0.0.0`.
+- Diễn tập NuGet: skill `release-drill-dotnet` (`node .claude/skills/release-drill-dotnet/scripts/drill.mjs`, gọi mạng
+  tới nuget.org). Dùng trước khi phát hành và khi sửa `.csproj`/`Directory.Build.props`. Phát hành: `docs/RELEASING.md`
+  phần NuGet.
 
 ## Khung đích
 
-- `TingQR.Core`: `net10.0;netstandard2.0`. Không `PackageReference` lúc chạy; polyfill viết trong mã nguồn, `internal` (`Polyfills.cs`). Nếu `netstandard2.0` buộc phải thêm gói lúc chạy thì bỏ nó và ghi `Ruling:`.
+- `TingQR.Core`, `TingQR.Rendering`, `TingQR.BankLogos`: `net10.0;netstandard2.0`. `TingQR.AspNetCore`: chỉ `net10.0`
+  (`FrameworkReference Microsoft.AspNetCore.App`).
+- `TingQR.Core`: không `PackageReference` lúc chạy; polyfill viết trong mã nguồn, `internal` (`Polyfills.cs`). Nếu `netstandard2.0` buộc phải thêm gói lúc chạy thì bỏ nó và ghi `Ruling:`.
 - Không thêm `net8.0`. Kiểm ngày 2026-11-22 tại https://dotnet.microsoft.com/platform/support/policy/dotnet-core: .NET 8 hết hỗ trợ ngày 2026-11-10 (đã hết), .NET 10 (LTS) hỗ trợ tới 2028-11-14. Chỉ đọc qua công cụ tải trang, chưa đối chiếu bằng mắt.
 
 ## Quy ước
@@ -52,6 +62,25 @@ Hướng dẫn cho phần .NET của tingqr. Quy tắc chung: `../CLAUDE.md`. Th
     kiểm một lần, script không có trong repo).
     `Logo.CheckBox`: `share > MaxClearedShare` thành `>=` (cạnh mã lẻ nên ClearSide²/size² không bao giờ bằng 0,1;
     cách xa ít nhất 1/(10·177²)).
+
+## TingQR.BankLogos
+
+- `src/TingQR.BankLogos` (tests `tests/TingQR.BankLogos.Tests`): ảnh trong `conformance/banks/logos/` nhúng làm
+  embedded resource lúc build (glob MSBuild, không chép file). Không dependency, không tham chiếu Core. Lớp `BankLogos`
+  nằm trong namespace `TingQR`.
+- `LOGOS-NOTICE.md` của gói là file sinh bằng `ts/packages/bank-logos/scripts/gen.mjs` (cùng manifest với bản npm), được
+  commit; `NoticeSyncTests` và `node ts/packages/bank-logos/scripts/gen.mjs --check-notice` (trong `ci-ts`, trước bước
+  build) kiểm nó khớp. Không sửa tay.
+- Cache data URI chỉ giữ ảnh có trong gói (khoá lạ không làm cache lớn lên).
+
+## TingQR.AspNetCore
+
+- `src/TingQR.AspNetCore` (tests `tests/TingQR.AspNetCore.Tests`, `TestServer`): `AddTingQr`, `TingQrService`,
+  `WithTingQrSvg`, `TingQrHttpResults.Svg`, `[TingQrSvg]`. Hợp đồng HTTP: `conformance/http/svg-response.json`; chỗ
+  .NET khác NestJS ghi ở `conformance/README.md` (mục "`TingQR.AspNetCore` và hợp đồng HTTP") và README của gói.
+- `TingQrSvgAttribute` cũng là `IControllerModelConvention`/`IActionModelConvention`: cách duy nhất để
+  `[TingQrSvg("x")]` thiếu `AddTingQr` dừng app (ném ở `MapControllers`). Có `AddTingQr` thì `TingQrStartupCheck` kiểm
+  tên profile qua `FilterDescriptors`.
 
 ## TingQR.AspNetCore và TingQR.BankLogos: mutation test
 

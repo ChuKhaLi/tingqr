@@ -282,9 +282,10 @@ tree khớp với vietqr.io ở cả 15 app nó có.
   - `TingQrModule.forRoot({ defaultBank, … })`.
   - `TingQrService`, bọc lõi.
   - Tuỳ chọn một controller mẫu trả SVG.
-- **`TingQR.AspNetCore` (v0.2):**
-  - `services.AddTingQr()`.
-  - Minimal API endpoint mẫu trả SVG.
+- **`TingQR.AspNetCore`** (làm ở Plan 8c; thiết kế chi tiết: `docs/superpowers/specs/2026-11-24-tingqr-dotnet-aspnetcore-release-design.md`):
+  - `services.AddTingQr()`, `TingQrService.PaymentQr`.
+  - Trả SVG từ Minimal API (`WithTingQrSvg`, `TingQrHttpResults.Svg`) và MVC (`[TingQrSvg]`, profile đặt tên), theo hợp
+    đồng `conformance/http/svg-response.json`.
 
 ### 5.7 Bảng thử trên app thật **[Claude]**
 
@@ -307,7 +308,9 @@ tree khớp với vietqr.io ở cả 15 app nó có.
 - **Hai đường phát hành riêng, đều dùng OIDC (trusted publishing), không lưu token:**
   - Tag `ts-v*` phát hành lên npm.
   - Tag `dotnet-v*` phát hành lên NuGet.
-- **Số phiên bản:** các gói npm dùng chung một số phiên bản.
+- **Số phiên bản:** các gói npm dùng chung một số phiên bản. Bốn gói NuGet (`TingQR.Core`, `TingQR.Rendering`,
+  `TingQR.BankLogos`, `TingQR.AspNetCore`) dùng chung một số khác, riêng với npm (Plan 8c), đặt ở
+  `dotnet/Directory.Build.props` bằng `node dotnet/scripts/set-version.mjs`.
 - Có lệnh diễn tập phát hành, như skill `release-drill` của `zkteco-protocol`.
 - **Bắt buộc hỏi chủ dự án** trước mọi lệnh phát hành. Lệnh phát hành thật chỉ chạy trong CI.
 

@@ -12,8 +12,9 @@ thử ở đây, nên hai bản cho cùng kết quả trên mọi hành vi có m
     2026-11-22) không báo 0×0 mà báo 150×150 cho SVG chỉ có `viewBox` vuông, 300×150 khi không có `viewBox`, và vẽ đúng;
     chưa thử trình duyệt nào báo 0×0. SVG không vẽ ra gì (ví dụ `<svg/>`) cho ô logo trống, không báo lỗi.
 - `http/svg-response.json`: hợp đồng HTTP chung của mọi gói tích hợp trả QR dạng ảnh SVG (`@tingqr/hono`,
-  `@tingqr/nestjs`, sau này `TingQR.AspNetCore`): status, header, thân lỗi 500, luật logo, cái gì kiểm lúc cấu hình. Test của từng gói đọc file
-  này, không tự chép header.
+  `@tingqr/nestjs`, `TingQR.AspNetCore`): status, header, thân lỗi 500, luật logo, cái gì kiểm lúc cấu hình. Test của
+  từng gói đọc file này, không tự chép header. Chỗ `TingQR.AspNetCore` đọc hợp đồng theo cách riêng: xem mục
+  "`TingQR.AspNetCore` và hợp đồng HTTP" dưới.
 - `schemes/<id>.md`: mô tả từng loại QR (tag, GUID, quy tắc, nguồn).
 - `vectors/<id>/*.json`: mẫu thử, mỗi file một mẫu, tên file trùng `id`.
 - `tools/crc16.py`: CRC-16/CCITT-FALSE viết bằng Python, độc lập với tingqr, để tính lại CRC của mẫu dựng tay hoặc sửa.
@@ -303,6 +304,29 @@ Trường JSON và giá trị trong `conformance/` giống nhau ở cả hai b�
 - Tên mã lỗi dạng chữ (`CRC_MISMATCH`) lấy bằng `code.ToWireName()` (.NET, phương thức mở rộng của `TingQrErrorCode`
   và `TingQrWarningCode`).
 - `QrAmount.HasAmount` (.NET); `BankApp.VietQrAutofill` (.NET) ứng với trường JSON `vietqrAutofill`.
+
+## `TingQR.AspNetCore` và hợp đồng HTTP
+
+Những điểm hợp đồng `http/svg-response.json` để ngỏ hay chỉ nói cho NestJS, và cách `TingQR.AspNetCore` làm (quyết trong
+Plan 8c, 2026-11-24; README của gói ghi cho người dùng):
+
+- **SVG trả ra luôn `200`.** Hợp đồng giữ status app đặt rõ trên route (NestJS `@HttpCode`). ASP.NET Core không có
+  attribute status theo route tương đương, nên không có gì để giữ: status 200 được đặt rõ, đè mọi status endpoint đã đặt.
+- **`Cache-Control` rỗng:** `null`, chuỗi rỗng hay chỉ khoảng trắng (ở tham số `cacheControl`, `CacheControl` của
+  attribute, `TingQrOptions.CacheControl`) bị bỏ qua, dùng mức tiếp theo, cuối cùng là mặc định `private, max-age=300`.
+  Không bao giờ gửi header `Cache-Control` rỗng.
+- **`[TingQrSvg]` (MVC):** attribute gần nhất (action hơn controller hơn bộ lọc toàn cục) thắng **cả khối**, rồi bộ
+  tuỳ chọn của nó gộp từng khoá lên `Svg` chung, như `getAllAndOverride` của NestJS. Không gộp từng khoá giữa action và
+  controller.
+- **Chỉ giá trị action trả về là chuỗi QR.** Kết quả action tự dựng (`NotFound()`, `BadRequest("…")`, `Ok("…")`,
+  `StatusCode(409, "…")`, `NoContent()`, `EmptyResult`…) ném `InvalidOperationException` (lỗi lập trình, thuộc mục
+  `notInContract`), để chữ không bao giờ bị vẽ thành QR do nhầm. Muốn 404 thì trả `null`.
+- **`TingQrHttpResults.Svg` không bao giờ ném.** Nó chạy theo request, nên tuỳ chọn sai hay logo không bắt đầu
+  `data:image/` cho 500 theo hợp đồng (chỉ mã, thông báo ghi log), không chặn app khởi động. Đây là ngoại lệ có chủ ý
+  của luật `configuration` và `logo` ("kiểm khi cấu hình"); `WithTingQrSvg`, `Svg` chung và các profile vẫn kiểm lúc
+  cấu hình.
+- **Log:** `ILogger`, category `TingQR.AspNetCore.TingQrSvg`, mức Error (hợp đồng ghi `console.error` cho Hono,
+  `Logger` cho NestJS).
 
 ## Quy tắc nguồn
 

@@ -88,7 +88,11 @@ metadata, workflow phát hành chỉ chờ chủ dự án bật.
 - **MVC:** `[TingQrSvg]` hoặc `[TingQrSvg("order")]` trên action hoặc controller (chủ dự án chọn **bộ tuỳ chọn đặt
   tên**). Tham số attribute C# chỉ được là hằng số, nên tuỳ chọn riêng (kể cả logo data URI lấy lúc chạy) khai báo trong
   `AddTingQr`: `o.Profiles["order"] = new SvgOptions { … }`; attribute chỉ ghi tên bộ và (tuỳ chọn) `CacheControl`.
-  - Thứ tự gộp, từng khoá một: bộ của action đè bộ của controller đè `Svg` chung. Mỗi request vẽ đúng một lần.
+  - ~~Thứ tự gộp, từng khoá một: bộ của action đè bộ của controller đè `Svg` chung.~~ **Đã đổi khi làm (Plan 8c Task 7,
+    plan được chủ dự án duyệt):** attribute gần nhất (action hơn controller hơn bộ lọc toàn cục) thắng **cả khối**, rồi
+    bộ của nó gộp từng khoá lên `Svg` chung. Lý do: giống `getAllAndOverride` của `@TingQrSvg()` NestJS, và một bộ tên
+    riêng là một ý định trọn vẹn (gộp `a` của controller với `b` của action ra một tổ hợp không ai khai báo). Mỗi request
+    vẽ đúng một lần.
   - Mỗi bộ được kiểm khi app khởi động như tuỳ chọn route (`CheckSvgOptions`, logo `data:image/`); tên bộ mà attribute
     trỏ tới nhưng không khai báo → app không chạy.
 - **Hợp đồng (cả hai đường, cả `TingQrResults.Svg`):**
@@ -179,6 +183,30 @@ metadata, workflow phát hành chỉ chờ chủ dự án bật.
 - Mutation (Stryker.NET, ngưỡng 90) cho `TingQR.AspNetCore` và `TingQR.BankLogos`, mỗi gói một cấu hình, chạy từ thư mục
   test của chính nó (bài học Core); thêm vào matrix của `mutation-dotnet.yml`.
 - Cập nhật: spec chung 5.6 (bỏ "v0.2", trỏ về tài liệu này), 5.8 (số phiên bản riêng), `CLAUDE.md`, `dotnet/CLAUDE.md`.
+
+## Đã đổi hay chốt khi làm (Plan 8c, 2026-11-24)
+
+Ghi lại để spec không nói khác code. Chi tiết cho người dùng ở `dotnet/src/TingQR.AspNetCore/README.md`, cho hợp đồng ở
+`conformance/README.md` (mục "`TingQR.AspNetCore` và hợp đồng HTTP").
+
+- **Tên:** `TingQrResults` thành `TingQrHttpResults`; lớp `BankLogos` nằm trong namespace `TingQR` (gói vẫn là
+  `TingQR.BankLogos`); các tên khác theo bảng đã duyệt `2026-11-24-dotnet-api-names.md`.
+- **`[TingQrSvg]` gần nhất thắng cả khối** (xem mục MVC ở trên).
+- **`TingQrHttpResults.Svg` không bao giờ ném**, kể cả khi tuỳ chọn sai: kiểm (`CheckSvgOptions`, logo `data:image/`)
+  chạy lúc thực thi, lỗi thành 500 theo hợp đồng. Dòng "`TingQrResults`… kiểm ngay khi gọi" ở mục "Kiểm tuỳ chọn khi
+  cấu hình" chỉ đúng với `WithTingQrSvg`.
+- **SVG luôn `200`:** ASP.NET Core không có cơ chế tương đương `@HttpCode`, nên không có status nào để giữ.
+- **`CacheControl` `null`, rỗng hay chỉ khoảng trắng** (tham số, attribute, `TingQrOptions`) → dùng mức tiếp theo, cuối
+  cùng là `private, max-age=300`; không kiểm lúc khởi động vì không có giá trị nào sai.
+- **Chỉ giá trị action trả về là chuỗi QR:** `BadRequest("…")`, `Ok("…")`, `StatusCode(409, "…")`, `NotFound()`,
+  `NoContent()`, `EmptyResult`… từ action `[TingQrSvg]` → `InvalidOperationException`. Ngoại lệ mà bộ lọc khác đã xử lý,
+  và kết quả bộ lọc khác đặt trước khi action chạy, đi qua nguyên vẹn.
+- **`TingQrSvgAttribute` là `Attribute, IFilterFactory, IControllerModelConvention, IActionModelConvention`** (hai giao
+  diện convention MVC công khai). Lý do: không có `AddTingQr` thì không có hosted service nào quét được lúc khởi động;
+  convention là cách duy nhất để `[TingQrSvg("x")]` thiếu `AddTingQr` làm app dừng, và nó ném ngay ở
+  `app.MapControllers()` (đo trong test), trước `StartAsync`. Có `AddTingQr` thì hosted service kiểm tên profile qua
+  `FilterDescriptors` của mọi action (gồm cả bộ lọc toàn cục). Bộ lọc toàn cục `TingQrSvgAttribute("x")` không có
+  `AddTingQr` thì không thấy được lúc khởi động: mỗi request của nó là 500.
 
 ## Để builder quyết
 

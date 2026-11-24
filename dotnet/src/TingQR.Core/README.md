@@ -5,7 +5,14 @@ banks and banking apps. It does not draw QR images, confirm payments or receive 
 
 **Status: not released.** Version `0.0.0`, not on NuGet. Targets `net10.0` and `netstandard2.0`. Tests run on `net10.0`
 (Ubuntu and Windows) and `net481` (Windows) in `ci-dotnet`; first green run on PR #10, 2026-11-23, together with
-`mutation-dotnet`. Plan 8a covers this package only; rendering is in `TingQR.Rendering` (Plan 8b), ASP.NET Core comes later.
+`mutation-dotnet`. Drawing QR images is in `TingQR.Rendering`, bank logos in `TingQR.BankLogos`, the ASP.NET Core
+integration in `TingQR.AspNetCore`. The four packages share one version, separate from the npm packages.
+
+Once released, install it from NuGet:
+
+```sh
+dotnet add package TingQR.Core
+```
 
 ## Usage
 

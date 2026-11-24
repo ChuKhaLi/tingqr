@@ -117,9 +117,32 @@ TypeScript và bản .NET, kèm tích hợp sẵn cho Angular, NestJS và ASP.NE
       do bộ lọc "block already covered"), `QrCodeGen.cs` bị loại (876). Core (2026-11-23) 100%: 1506 bị giết, 12 quá
       giờ, 0 sống sót, 291 bị bỏ qua. Người duyệt đã so ngẫu nhiên với Node (1500 bộ tuỳ chọn, 574 640 số `size`), 0 lệch; đó là kiểm lúc duyệt,
       không phải test trong repo.
-    - **Chưa kiểm:** job `mutation-dotnet` cho Rendering và lần chạy Ubuntu trên CI; khớp TS ngoài các mẫu.
+    - Sau khi gộp `main` (2026-11-24, commit `b684bca`): `ci-dotnet` xanh trên Ubuntu và Windows (run 45330277344),
+      job `mutation (rendering)` xanh (run 45330277776).
+    - **Chưa kiểm:** khớp TS ngoài các mẫu.
+  - **Plan 8c** (2026-11-24, nhánh `plan-8c`): `docs/superpowers/plans/2026-11-24-plan-8c-aspnetcore-banklogos-nuget.md`,
+    thiết kế `docs/superpowers/specs/2026-11-24-tingqr-dotnet-aspnetcore-release-design.md` (mục "Đã đổi hay chốt khi
+    làm").
+    - Xong:
+      - đổi tên API công khai .NET trước khi khoá (chủ dự án duyệt, `docs/superpowers/specs/2026-11-24-dotnet-api-names.md`;
+        tên lệch TS ghi ở `conformance/README.md`);
+      - `TingQR.BankLogos` (net10.0 + netstandard2.0, ảnh nhúng, `LOGOS-NOTICE.md` .NET sinh bằng `gen.mjs`);
+      - `TingQR.AspNetCore` (net10.0): `AddTingQr`, `TingQrService`, `WithTingQrSvg`, `TingQrHttpResults.Svg`,
+        `[TingQrSvg]` với profile đặt tên;
+      - một số phiên bản NuGet chung cho bốn gói, riêng với npm (`dotnet/scripts/set-version.mjs`, `check-release.mjs`);
+      - skill `release-drill-dotnet`, workflow `release-dotnet.yml` (tag `dotnet-v*`, environment `nuget-release`,
+        trusted publishing), phần NuGet của `docs/RELEASING.md`.
+    - Quyết khi làm: SVG luôn 200 (ASP.NET Core không có `@HttpCode`); `[TingQrSvg]` gần nhất thắng cả khối; chỉ giá trị
+      action trả về được vẽ; `TingQrHttpResults.Svg` không bao giờ ném; `CacheControl` rỗng → mặc định.
+    - Kiểm cục bộ trên Windows 2026-11-24: `dotnet test` Core 696 và Rendering 330 (net10.0 + net481), BankLogos 237
+      (net10.0 + net481), AspNetCore 100 (net10.0); Stryker.NET AspNetCore và BankLogos 100% (0 sống sót, số ở
+      `dotnet/CLAUDE.md`); diễn tập NuGet cả 6 mục đạt.
+    - **Chưa kiểm:** chưa job CI nào chạy hai gói mới trên GitHub (`ci-dotnet`, hai job mutation mới, bước
+      `--check-notice` của `ci-ts`); `release-dotnet.yml` chưa chạy lần nào; diễn tập chưa chạy trên Ubuntu; chưa đẩy gói
+      nào lên NuGet; chưa có environment `nuget-release`, biến `NUGET_USER`, policy trên nuget.org. Không có lần quét
+      app mới nào.
   - Tiếp theo: Plan 2 Task 5–6 (MoMo, ZaloPay) khi chủ dự án có QR thật; chủ dự án quét thêm app (kể cả bản có icon ngân hàng) và
-    thử PNG trong Zalo/Messenger; Plan 8 (.NET).
+    thử PNG trong Zalo/Messenger; chủ dự án quyết phát hành npm và NuGet (`docs/RELEASING.md`).
 - **Chủ dự án đã quyết:**
   - Mục đích chính là một thư viện mã nguồn mở có tiếng; dùng phụ trong Noel tree (`../noel-tree`, Angular 21 SSR trên
     Cloudflare Workers).
