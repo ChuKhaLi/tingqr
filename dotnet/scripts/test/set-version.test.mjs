@@ -1,5 +1,5 @@
 // Tests for set-version.mjs, run on temp copies of the two files.
-// Run: node --test dotnet/scripts/test/
+// Run: node --test dotnet/scripts/test/*.test.mjs
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { spawnSync } from 'node:child_process'
