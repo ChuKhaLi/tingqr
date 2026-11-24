@@ -68,6 +68,8 @@ test('every vector file matches vectors.schema.json and the shared codes', () =>
     if (v.error !== undefined) expect(errorCodes.has(v.error), `${file}: unknown error ${v.error}`).toBe(true)
     for (const w of v.warnings ?? []) expect(warningCodes.has(w), `${file}: unknown warning ${w}`).toBe(true)
     if (v.payload !== undefined) expect(v.payload.includes('\r'), `${file}: payload contains CR`).toBe(false)
+    // The SVG runners pick vectors by kind/render and count them against the render-svg-* files.
+    if (v.id.startsWith('render-svg-')) expect(v.kind === 'svg' || v.render === 'svg', `${file}: render-svg-* is not an SVG vector`).toBe(true)
   }
 })
 

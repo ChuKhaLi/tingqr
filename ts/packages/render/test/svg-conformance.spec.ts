@@ -24,7 +24,8 @@ const vectors: Vector[] = readdirSync(DIR)
   .map((n) => JSON.parse(readFileSync(join(DIR, n), 'utf8')) as Vector)
   .filter((v) => v.kind === 'svg' || v.render === 'svg')
 
-test('the runner sees every SVG vector: at least 25 that render and at least 20 that throw', () => {
+test('the runner sees every SVG vector: one per render-svg-* file, at least 25 that render and at least 20 that throw', () => {
+  expect(vectors.length).toBe(readdirSync(DIR).filter((n) => n.startsWith('render-svg-') && n.endsWith('.json')).length)
   expect(vectors.filter((v) => v.kind === 'svg').length).toBeGreaterThanOrEqual(25)
   expect(vectors.filter((v) => v.kind === 'encode-invalid').length).toBeGreaterThanOrEqual(20)
 })
