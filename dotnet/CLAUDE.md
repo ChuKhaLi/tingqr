@@ -1,15 +1,25 @@
 # CLAUDE.md (dotnet)
 
-Hướng dẫn cho phần .NET của tingqr. Quy tắc chung: `../CLAUDE.md`. Thiết kế: `docs/superpowers/specs/2026-11-22-tingqr-dotnet-core-design.md`.
+Hướng dẫn cho phần .NET của tingqr. Quy tắc chung: `../CLAUDE.md`. Thiết kế: `docs/superpowers/specs/2026-11-22-tingqr-dotnet-core-design.md` (Core), `2026-11-23-tingqr-dotnet-rendering-design.md` (Rendering), `2026-11-24-tingqr-dotnet-aspnetcore-release-design.md` (AspNetCore, BankLogos, NuGet).
 
 ## Lệnh
 
 - Từ gốc repo: `dotnet build dotnet/TingQR.slnx`, `dotnet test dotnet/TingQR.slnx` (SDK 10). `pnpm test:all` chạy cả TS và .NET.
-- Test chạy trên `net10.0`, và thêm `net481` trên Windows để bản `netstandard2.0` thật sự được chạy.
+- Test chạy trên `net10.0`, và thêm `net481` trên Windows để bản `netstandard2.0` thật sự được chạy (Core, Rendering,
+  BankLogos; AspNetCore chỉ `net10.0`).
+- Test script Node của .NET: `node --test dotnet/scripts/test/*.test.mjs` (`set-version`, `check-release`, cách xét
+  của diễn tập). Dạng thư mục `node --test dotnet/scripts/test/` không tìm thấy test trên Node cục bộ.
+- Số phiên bản: `node dotnet/scripts/set-version.mjs x.y.z` (đặt `Directory.Build.props` và `TingQrVersion.Value`);
+  `node dotnet/scripts/check-release.mjs [--tag dotnet-vX.Y.Z]`. Bốn gói chung một số, riêng với npm. Repo giữ `0.0.0`.
+- Diễn tập NuGet: skill `release-drill-dotnet` (`node .claude/skills/release-drill-dotnet/scripts/drill.mjs`, gọi mạng
+  tới nuget.org). Dùng trước khi phát hành và khi sửa `.csproj`/`Directory.Build.props`. Phát hành: `docs/RELEASING.md`
+  phần NuGet.
 
 ## Khung đích
 
-- `TingQR.Core`: `net10.0;netstandard2.0`. Không `PackageReference` lúc chạy; polyfill viết trong mã nguồn, `internal` (`Polyfills.cs`). Nếu `netstandard2.0` buộc phải thêm gói lúc chạy thì bỏ nó và ghi `Ruling:`.
+- `TingQR.Core`, `TingQR.Rendering`, `TingQR.BankLogos`: `net10.0;netstandard2.0`. `TingQR.AspNetCore`: chỉ `net10.0`
+  (`FrameworkReference Microsoft.AspNetCore.App`).
+- `TingQR.Core`: không `PackageReference` lúc chạy; polyfill viết trong mã nguồn, `internal` (`Polyfills.cs`). Nếu `netstandard2.0` buộc phải thêm gói lúc chạy thì bỏ nó và ghi `Ruling:`.
 - Không thêm `net8.0`. Kiểm ngày 2026-11-22 tại https://dotnet.microsoft.com/platform/support/policy/dotnet-core: .NET 8 hết hỗ trợ ngày 2026-11-10 (đã hết), .NET 10 (LTS) hỗ trợ tới 2028-11-14. Chỉ đọc qua công cụ tải trang, chưa đối chiếu bằng mắt.
 
 ## Quy ước
@@ -36,7 +46,8 @@ Hướng dẫn cho phần .NET của tingqr. Quy tắc chung: `../CLAUDE.md`. Th
 - Bộ mã hoá QR là port từng dòng từ `ts/packages/render/src/qrcodegen.ts` (Nayuki v1.8.0, MIT; ghi công trong `NOTICE`). File port đó không chạy mutation test.
 - **Mutation test:** cấu hình riêng `stryker-config.rendering.json` (cùng ngưỡng chặn 90, loại `QrCodeGen.cs` và
   `Polyfills.cs`): `dotnet tool run dotnet-stryker --config-file stryker-config.rendering.json` trong `dotnet/` (~5 phút).
-  Workflow `mutation-dotnet.yml` chạy Core và Rendering thành hai job (matrix), job nào dưới ngưỡng thì fail (job Rendering chưa chạy trên CI; Ubuntu chưa chạy). Các quy tắc
+  Workflow `mutation-dotnet.yml` chạy Core và Rendering thành hai job (matrix), job nào dưới ngưỡng thì fail. Job
+  `mutation (rendering)` đã xanh trên Ubuntu (run 45330277776, `main` `b684bca`, 2026-11-24). Các quy tắc
   `disable once` ở trên áp dụng y nguyên.
   - Trong Rendering, mã đã được viết lại để bỏ đột biến tương đương (không đổi hành vi; lý do ghi ngay tại dòng):
     `JsNumber` (`Math.Sign`, so sánh đặt tại biên đạt được, chia thay cho dịch bit, `biased != 1`, điểm bắt đầu
@@ -52,3 +63,43 @@ Hướng dẫn cho phần .NET của tingqr. Quy tắc chung: `../CLAUDE.md`. Th
     kiểm một lần, script không có trong repo).
     `Logo.CheckBox`: `share > MaxClearedShare` thành `>=` (cạnh mã lẻ nên ClearSide²/size² không bao giờ bằng 0,1;
     cách xa ít nhất 1/(10·177²)).
+
+## TingQR.BankLogos
+
+- `src/TingQR.BankLogos` (tests `tests/TingQR.BankLogos.Tests`): ảnh trong `conformance/banks/logos/` nhúng làm
+  embedded resource lúc build (glob MSBuild, không chép file). Không dependency, không tham chiếu Core. Lớp `BankLogos`
+  nằm trong namespace `TingQR`.
+- `LOGOS-NOTICE.md` của gói là file sinh bằng `ts/packages/bank-logos/scripts/gen.mjs` (cùng manifest với bản npm), được
+  commit; `NoticeSyncTests` và `node ts/packages/bank-logos/scripts/gen.mjs --check-notice` (trong `ci-ts`, trước bước
+  build) kiểm nó khớp. Không sửa tay.
+- Cache data URI chỉ giữ ảnh có trong gói (khoá lạ không làm cache lớn lên).
+
+## TingQR.AspNetCore
+
+- `src/TingQR.AspNetCore` (tests `tests/TingQR.AspNetCore.Tests`, `TestServer`): `AddTingQr`, `TingQrService`,
+  `WithTingQrSvg`, `TingQrHttpResults.Svg`, `[TingQrSvg]`. Hợp đồng HTTP: `conformance/http/svg-response.json`; chỗ
+  .NET khác NestJS ghi ở `conformance/README.md` (mục "`TingQR.AspNetCore` và hợp đồng HTTP") và README của gói.
+- `TingQrSvgAttribute` cũng là `IControllerModelConvention`/`IActionModelConvention`: cách duy nhất để
+  `[TingQrSvg("x")]` thiếu `AddTingQr` dừng app (ném ở `MapControllers`). Có `AddTingQr` thì `TingQrStartupCheck` kiểm
+  tên profile qua `FilterDescriptors`.
+
+## TingQR.AspNetCore và TingQR.BankLogos: mutation test
+
+- Cấu hình riêng `stryker-config.aspnetcore.json` và `stryker-config.banklogos.json` (ngưỡng chặn 90, `net10.0`,
+  `perTest`, không loại file nào: hai gói không có `Polyfills.cs`). Chạy từ thư mục test của từng gói, như Core:
+  `dotnet tool run dotnet-stryker --config-file ../../stryker-config.aspnetcore.json` trong
+  `dotnet/tests/TingQR.AspNetCore.Tests/` (~1,5 phút), `../../stryker-config.banklogos.json` trong
+  `dotnet/tests/TingQR.BankLogos.Tests/` (~1 phút). `mutation-dotnet.yml` có thêm hai job matrix
+  (đạt trên Ubuntu lần đầu ở PR #11, run 45423456206, 2026-11-24).
+  Các quy tắc `disable once` ở trên áp dụng y nguyên.
+- Lần chạy cục bộ trên Windows 2026-11-24:
+  - AspNetCore (sau khi thêm kiểm `CacheControl` và test "luôn 200"): 100% = 227 bị giết, 0 quá giờ, 0 sống sót; 77 bị
+    bỏ qua (22 theo comment `disable`, 55 do bộ lọc "block already covered"), 29 lỗi biên dịch (không tính).
+  - BankLogos: 100% = 66 bị giết, 0 quá giờ, 0 sống sót; 15 bị bỏ qua (4 theo comment `disable`, 11 do bộ lọc), 7 lỗi
+    biên dịch.
+- Số comment `disable` trong mã nguồn: AspNetCore 13 (11 `String : error message`, 1 `all` cho biến chỉ dùng trong
+  thông báo, 1 tương đương bên dưới), BankLogos 2 (1 `String`, 1 `all`).
+- Ngoài thông báo lỗi, chỉ một chỗ `disable` vì tương đương: `ArgumentNullException.ThrowIfNull(services)` đầu
+  `AddTingQr` (`AddOptions` ngay sau ném đúng lỗi đó). Mã đã viết lại để bỏ đột biến tương đương: so `Service` trong
+  cấu hình bằng `IsWord` (bit 0x20) thay cho đổi chữ thường, `TingQrMvcMarker` lưu chính khoá (chỉ đọc sự có mặt),
+  `BankLogos` đọc tài nguyên bằng `using`.

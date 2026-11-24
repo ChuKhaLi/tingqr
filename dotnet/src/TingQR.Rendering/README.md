@@ -4,7 +4,15 @@ C# port of `@tingqr/render`: turn any text (usually a payment QR payload from `T
 an SVG string. It does not confirm payments, receive webhooks or produce PNG files.
 
 **Status: not released.** Version `0.0.0`, not on NuGet. Targets `net10.0` and `netstandard2.0` (so it also runs on
-.NET Framework 4.6.1+; tested on `net481`). It depends on `TingQR.Core` and has no other dependency.
+.NET Framework 4.6.1+; tested on `net481`). It depends on `TingQR.Core` and has no other dependency. The four TingQR
+packages share one version, separate from the npm packages.
+
+Once released, install it from NuGet:
+
+```sh
+dotnet add package TingQR.Rendering
+dotnet add package TingQR.BankLogos   # optional: bank logos for the middle of the code
+```
 
 ## Usage
 
@@ -68,7 +76,7 @@ rejected.
 - Stryker.NET, local, Windows: `TingQR.Rendering` (2026-11-24) 99.41% = 475 killed + 28 timeouts of 506 counted
   mutants, 3 survived (all equivalent, documented in `dotnet/CLAUDE.md`), 87 ignored (34 by `Stryker disable` comments,
   53 by the block-already-covered filter); the ported encoder `QrCodeGen.cs` is excluded (876 mutants). `TingQR.Core`
-  (2026-11-23) 100%: 1506 killed, 12 timeouts, 0 survived, 291 ignored. CI for the Rendering job has not run yet.
+  (2026-11-23) 100%: 1506 killed, 12 timeouts, 0 survived, 291 ignored. The Rendering mutation job has also passed on GitHub CI (Ubuntu).
 - During review the output was also compared with the TypeScript version on 1,500 random option combinations and
   574,640 numbers for `size`, with no difference. These were one-off checks, not tests in the repo.
 

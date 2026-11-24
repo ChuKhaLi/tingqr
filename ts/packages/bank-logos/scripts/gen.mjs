@@ -40,13 +40,17 @@ const LICENSES = {
   'trademark-no-license': 'không có giấy phép; nhãn hiệu của chủ sở hữu',
 }
 
-export function renderNotice(manifest) {
+export function renderNotice(manifest, target = 'npm') {
+  const codeLine =
+    target === 'dotnet'
+      ? 'Chỉ code (file `.dll` và tài liệu `.xml`) là MIT, xem https://github.com/ChuKhaLi/tingqr/blob/main/LICENSE.'
+      : 'Chỉ code (các file `.js`, `.cjs`, `.d.ts`) là MIT, xem `LICENSE`.'
   const rows = manifest
     .map((e) => `| \`${e.file}\` | ${e.sourceUrl}${e.pageUrl ? ` ([trang Commons](${e.pageUrl}))` : ''} | ${LICENSES[e.license]} | ${e.processed ?? 'giữ nguyên'} |`)
     .join('\n')
   return `# Logo ngân hàng và icon app: ghi chú thương hiệu
 
-**Ảnh trong gói này không thuộc giấy phép MIT.** Chỉ code (các file \`.js\`, \`.cjs\`, \`.d.ts\`) là MIT, xem \`LICENSE\`.
+**Ảnh trong gói này không thuộc giấy phép MIT.** ${codeLine}
 
 - Mỗi logo và icon là nhãn hiệu của ngân hàng hoặc công ty sở hữu nó. VietQR và NAPAS247 là nhãn hiệu của NAPAS.
 - Ảnh chỉ dùng để người dùng nhận ra ngân hàng nhận tiền hay app cần mở. Việc tingqr đóng gói ảnh không có nghĩa
@@ -92,7 +96,23 @@ function build() {
   put('dist/index.d.ts', types)
   put('dist/index.d.cts', types)
   put('LOGOS-NOTICE.md', renderNotice(manifest))
+  put('../../../dotnet/src/TingQR.BankLogos/LOGOS-NOTICE.md', renderNotice(manifest, 'dotnet'))
   console.log(`bank-logos: ${manifest.length} images`)
 }
 
-if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) build()
+/** Exit 1 when the committed .NET notice differs from the one generated from conformance/banks/logos/ now. */
+function checkNotice() {
+  const manifest = JSON.parse(readFileSync(join(conformanceDir(), 'banks', 'logos', 'manifest.json'), 'utf8')).files
+  const file = join(PKG, '..', '..', '..', 'dotnet', 'src', 'TingQR.BankLogos', 'LOGOS-NOTICE.md')
+  const committed = existsSync(file) ? readFileSync(file, 'utf8') : null
+  if (committed !== renderNotice(manifest, 'dotnet')) {
+    console.error('dotnet/src/TingQR.BankLogos/LOGOS-NOTICE.md is out of date: run `pnpm -C ts --filter @tingqr/bank-logos build`')
+    process.exit(1)
+  }
+  console.log('bank-logos: .NET LOGOS-NOTICE.md is current')
+}
+
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  if (process.argv.includes('--check-notice')) checkNotice()
+  else build()
+}

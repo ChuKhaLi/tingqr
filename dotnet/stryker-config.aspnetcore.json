@@ -1,0 +1,17 @@
+{
+  "stryker-config": {
+    "project": "TingQR.AspNetCore.csproj",
+    "target-framework": "net10.0",
+    "reporters": [
+      "cleartext",
+      "progress",
+      "html"
+    ],
+    "thresholds": {
+      "high": 95,
+      "low": 90,
+      "break": 90
+    },
+    "coverage-analysis": "perTest"
+  }
+}

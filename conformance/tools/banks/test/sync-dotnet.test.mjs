@@ -48,9 +48,9 @@ namespace TingQR
 
         internal static BankApp[] Apps() => new BankApp[]
         {
-            new BankApp(Id: "mb", Name: "MB Bank", Bin: "970422", Ios: new BankAppIos(Scheme: "mbbank"), Android: new BankAppAndroid(Package: "com.mbmobile", Scheme: "mbbank", Host: ""), Confidence: BankAppConfidence.SingleSource, VietqrAutofill: true),
-            new BankApp(Id: "momo", Name: "MoMo", Bin: null, Ios: new BankAppIos(Scheme: "momo"), Android: null, Confidence: BankAppConfidence.MultiSource, VietqrAutofill: false),
-            new BankApp(Id: "nab", Name: "Nam A", Bin: "970428", Ios: null, Android: new BankAppAndroid(Package: "ops.namabank.com.vn", Scheme: "deeplinkapp", Host: "nab/softotp"), Confidence: BankAppConfidence.SingleSource, VietqrAutofill: false),
+            new BankApp(Id: "mb", Name: "MB Bank", Bin: "970422", Ios: new BankAppIos(Scheme: "mbbank"), Android: new BankAppAndroid(Package: "com.mbmobile", Scheme: "mbbank", Host: ""), Confidence: BankAppConfidence.SingleSource, VietQrAutofill: true),
+            new BankApp(Id: "momo", Name: "MoMo", Bin: null, Ios: new BankAppIos(Scheme: "momo"), Android: null, Confidence: BankAppConfidence.MultiSource, VietQrAutofill: false),
+            new BankApp(Id: "nab", Name: "Nam A", Bin: "970428", Ios: null, Android: new BankAppAndroid(Package: "ops.namabank.com.vn", Scheme: "deeplinkapp", Host: "nab/softotp"), Confidence: BankAppConfidence.SingleSource, VietQrAutofill: false),
         };
     }
 }

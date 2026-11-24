@@ -29,7 +29,7 @@ namespace TingQR
         /// </summary>
         public static TingQrResult<DetectResult> Detect(string? payload)
         {
-            var parsed = EmvPayloads.Parse(payload);
+            var parsed = EmvPayload.Parse(payload);
             if (!parsed.Ok) return TingQrResult<DetectResult>.Failure(parsed.Error!);
             var p = parsed.Value!;
             QrScheme? foundScheme = null;

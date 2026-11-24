@@ -69,7 +69,7 @@ namespace TingQR
         // Tag 54 as the SDK writes it: KHR whole, USD whole or with two decimals. Null for no amount.
         private static string? AmountText(QrAmount? amount, bool usd)
         {
-            if (amount == null || !amount.Value.HasValue) return null;
+            if (amount == null || !amount.Value.HasAmount) return null;
             var raw = amount.Value.Text!;
             string? output = null;
             if (!usd)
@@ -282,7 +282,7 @@ namespace TingQR
                 fields.Add(new TlvField("99", Tlv.Field("00", createdAt.ToString(CultureInfo.InvariantCulture))
                     + Tlv.Field("01", expiresAt.Value.ToString(CultureInfo.InvariantCulture))));
             }
-            return EmvPayloads.Build(fields);
+            return EmvPayload.Build(fields);
         }
 
         /// <summary>
@@ -294,7 +294,7 @@ namespace TingQR
         /// </summary>
         public static TingQrResult<KhqrData> Decode(string? payload, ParseMode mode = ParseMode.Lenient)
         {
-            var parsed = EmvPayloads.Parse(payload);
+            var parsed = EmvPayload.Parse(payload);
             if (!parsed.Ok) return TingQrResult<KhqrData>.Failure(parsed.Error!);
             return Read(parsed.Value!, parsed.Warnings, mode);
         }
@@ -307,7 +307,7 @@ namespace TingQR
         // The sub-fields of tag 29/30 when it is clean TLV whose 00 is a Bakong account ('name@bank').
         private static IReadOnlyList<TlvNode>? ReadAccount(EmvPayload p, string tag)
         {
-            var value = EmvPayloads.GetField(p, tag)?.Value;
+            var value = p.GetField(tag)?.Value;
             if (value == null) return null;
             IReadOnlyList<TlvNode> nodes;
             try
@@ -326,13 +326,13 @@ namespace TingQR
 
         private static bool IsTimestamp(string s) => s.Length == 13 && s.All(IsAsciiDigit);
 
-        /// <summary><see cref="Decode"/> on a payload already parsed by <see cref="EmvPayloads.Parse"/>.</summary>
+        /// <summary><see cref="Decode"/> on a payload already parsed by <see cref="EmvPayload.Parse"/>.</summary>
         internal static TingQrResult<KhqrData> Read(EmvPayload p, IReadOnlyList<TingQrWarning> parsedWarnings, ParseMode mode)
         {
             var warnings = new List<TingQrWarning>(parsedWarnings);
             try
             {
-                var country = EmvPayloads.GetField(p, "58")?.Value;
+                var country = p.GetField("58")?.Value;
                 if (country != null && country != "KH")
                 {
                     return Fail(TingQrErrorCode.UnsupportedScheme,
@@ -363,13 +363,13 @@ namespace TingQR
                     }
                 }
 
-                if (EmvPayloads.GetField(p, "00")?.Value != "01")
+                if (p.GetField("00")?.Value != "01")
                 {
                     return Fail(TingQrErrorCode.InvalidValue,
                         // Stryker disable once String : error message, or a field name that only appears in one
                         "Tag 00 (payload format indicator) must be \"01\".", "00");
                 }
-                var poi = EmvPayloads.GetField(p, "01")?.Value;
+                var poi = p.GetField("01")?.Value;
                 if (poi == null) return Fail(TingQrErrorCode.MissingTag,
                     // Stryker disable once String : error message, or a field name that only appears in one
                     "Tag 01 (point of initiation) is missing; expected 11 or 12.", "01");
@@ -383,7 +383,7 @@ namespace TingQR
                 var standard = new Dictionary<string, string>(StringComparer.Ordinal);
                 foreach (var tag in new[] { "52", "53", "58", "59", "60" })
                 {
-                    var v = EmvPayloads.GetField(p, tag)?.Value;
+                    var v = p.GetField(tag)?.Value;
                     if (v != null)
                     {
                         standard[tag] = v;
@@ -404,7 +404,7 @@ namespace TingQR
                 var additional = Fields.ReadAdditionalData(p);
 
                 KhqrAlternateLanguageData? alternate = null;
-                var language = EmvPayloads.GetField(p, "64")?.Value;
+                var language = p.GetField("64")?.Value;
                 if (language != null)
                 {
                     var nodes = Tlv.ParseTemplate(language, "64");
@@ -418,7 +418,7 @@ namespace TingQR
 
                 Dictionary<string, string>? timestamp = null;
                 long? createdAt = null, expiresAt = null;
-                var stamp = EmvPayloads.GetField(p, "99")?.Value;
+                var stamp = p.GetField("99")?.Value;
                 if (stamp != null)
                 {
                     timestamp = Tlv.ParseTemplate(stamp, "99").ToDictionary(n => n.Tag, n => n.Value);
@@ -465,12 +465,12 @@ namespace TingQR
                     Initiation = dynamic ? QrInitiation.Dynamic : QrInitiation.Static,
                     Currency = currency,
                     CurrencyAlpha = currency == "116" ? "KHR" : currency == "840" ? "USD" : null,
-                    Amount = EmvPayloads.GetField(p, "54")?.Value,
+                    Amount = p.GetField("54")?.Value,
                     MerchantCategoryCode = Std("52"),
                     MerchantName = Std("59"),
                     MerchantCity = Std("60"),
-                    PostalCode = EmvPayloads.GetField(p, "61")?.Value,
-                    UnionPay = EmvPayloads.GetField(p, "15")?.Value,
+                    PostalCode = p.GetField("61")?.Value,
+                    UnionPay = p.GetField("15")?.Value,
                     Country = standard["58"],
                     AdditionalData = additional,
                     BillNumber = Extra("01"),

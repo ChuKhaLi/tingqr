@@ -51,7 +51,7 @@ namespace TingQR
         public static implicit operator QrAmount(string? value) => new QrAmount(value);
 
         /// <summary>False for <c>default</c>, a null string or an empty string.</summary>
-        public bool HasValue => _form != Form.None;
+        public bool HasAmount => _form != Form.None;
 
         /// <summary>True when created from a number rather than text.</summary>
         public bool IsNumber => _form == Form.Number;

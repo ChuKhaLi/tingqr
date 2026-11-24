@@ -1,26 +1,11 @@
 # Changelog
 
-All six npm packages share one version. Nothing has been published yet; see `docs/RELEASING.md`. Whether the .NET
-packages (Plan 8) share that version or have their own is decided in Plan 8.
+Two release lines with their own version numbers: the six npm packages share one version (tags `ts-v*`), the four
+NuGet packages share another (tags `dotnet-v*`). Nothing has been published yet; see `docs/RELEASING.md`.
 
-## Unreleased
+## Unreleased (npm)
 
 Planned as 0.1.0, after MoMo and ZaloPay recognition and scans with more banking apps.
-
-### TingQR.Core (.NET, not released)
-
-- C# port of `@tingqr/core` (Plan 8a): VietQR, VNPAY-QR, PromptPay, KHQR, `TingQrDetector.Detect`, banks and bank-app
-  links, checked against the same `conformance/` vectors (render vectors are run by TingQR.Rendering; four type-check
-  vectors are checked as non-convertible). Targets `net10.0` and `netstandard2.0`.
-- Version number and package policy are decided in Plan 8c; the repository still reads `0.0.0`.
-
-### TingQR.Rendering (.NET, not released)
-
-- C# port of `@tingqr/render` (Plan 8b): `TingQrRender.ToMatrix`, `ToSvg`, `CheckSvgOptions`, with the optional centre
-  logo (provisional limits). No PNG. The SVG is byte for byte the TypeScript output on 80 new golden vectors in
-  `conformance/vectors/render/`; the matrices are also checked on the 19 Nayuki matrix vectors and the 8 hand-written
-  option-error vectors. Tested on `net10.0` and `net481`, local Windows; CI not yet run. Targets `net10.0` and
-  `netstandard2.0`; the encoder is ported from Project Nayuki's generator v1.8.0 (MIT).
 
 ### @tingqr/core
 
@@ -72,3 +57,57 @@ Planned as 0.1.0, after MoMo and ZaloPay recognition and scans with more banking
 
 - Only a tag that points to a commit on `main` publishes, and two releases never run at once (GitHub keeps one waiting
   run per group, so push one tag at a time). Not yet run on GitHub.
+
+## Unreleased (NuGet, .NET)
+
+Not published. The repository reads `0.0.0`; the first number is chosen when the owner decides to release.
+
+Each .NET release entry names the `conformance/` commit whose vectors it passes (for example "passes `conformance/` at
+`abc1234`"), so a reader can tell which shared behaviour a version has. This is a manual step of `docs/RELEASING.md`:
+no script checks it.
+
+### TingQR.Core
+
+- C# port of `@tingqr/core` (Plan 8a): VietQR, VNPAY-QR, PromptPay, KHQR, `TingQrDetector.Detect`, banks and bank-app
+  links, checked against the same `conformance/` vectors (render vectors are run by TingQR.Rendering; the type-check
+  vectors are checked as non-convertible). Targets `net10.0` and `netstandard2.0`.
+- Public names reviewed before release (Plan 8c, approved by the owner): `VietQr.Aid` / `VnpayQr.Aid`,
+  `EmvPayload.Parse` / `Build` and `payload.GetField(tag)`, `code.ToWireName()`, `VietQrServiceCode`,
+  `QrAmount.HasAmount`, `BankApp.VietQrAutofill`. Differences from the TypeScript names are listed in
+  `conformance/README.md`.
+- `TingQrVersion.Value` equals the package version (`node dotnet/scripts/set-version.mjs` sets both).
+
+### TingQR.Rendering
+
+- C# port of `@tingqr/render` (Plan 8b): `TingQrRender.ToMatrix`, `ToSvg`, `CheckSvgOptions`, with the optional centre
+  logo (provisional limits). No PNG. The SVG is byte for byte the TypeScript output on 80 golden vectors in
+  `conformance/vectors/render/`; the matrices are also checked on the 19 Nayuki matrix vectors and the 8 hand-written
+  option-error vectors. Targets `net10.0` and `netstandard2.0`; the encoder is ported from Project Nayuki's generator
+  v1.8.0 (MIT).
+
+### TingQR.BankLogos
+
+- The bank logos and app icons of `conformance/banks/logos/`, embedded in the assembly: `BankLogos.Logo(bin)`,
+  `Icon(appId)` (data URI or `null`), `OpenLogo`, `OpenIcon`, `LogoBins`, `IconIds`. Exact, case-sensitive keys. Images
+  are trademarks, not MIT: the package licence is its `LOGOS-NOTICE.md`, generated from the same manifest as the npm
+  notice. Targets `net10.0` and `netstandard2.0`; no dependencies.
+
+### TingQR.AspNetCore
+
+- `AddTingQr` (code or an `IConfiguration` section): the receiving account, app-wide `Svg` options and named profiles
+  are checked when the app starts; a mistake stops it with a `TingQrException`. `TingQrService.PaymentQr`.
+- Serve SVG with the shared HTTP contract (`conformance/http/svg-response.json`) from Minimal API
+  (`WithTingQrSvg`, `TingQrHttpResults.Svg`) and MVC (`[TingQrSvg]`, `[TingQrSvg("profile")]`). A `TingQrException` is
+  a `500` with only `{"error":{"code":"…"}}`; the message goes to `ILogger`. A served SVG is always `200`.
+  `TingQrHttpResults.Svg` never throws (bad options are a `500`). Only the value an action returns is drawn; a result
+  the action builds itself throws `InvalidOperationException`.
+- A `CacheControl` with a control character (CR, LF, tab…) or a non-ASCII character stops the app at startup
+  (`AddTingQr`, `WithTingQrSvg`, `[TingQrSvg]`), or gives a `500` from `TingQrHttpResults.Svg`.
+- Targets `net10.0` only.
+
+### Release (NuGet)
+
+- `node dotnet/scripts/set-version.mjs`, `check-release.mjs`, the release drill (skill `release-drill-dotnet`) and
+  `release-dotnet.yml`: only a tag `dotnet-vX.Y.Z` on `main` publishes, after approval in the `nuget-release`
+  environment, with NuGet trusted publishing (no stored API key). The `verify` dry run passed on GitHub (PR #11, Ubuntu);
+  `publish` has never run; nothing pushed to NuGet.

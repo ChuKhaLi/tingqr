@@ -12,8 +12,9 @@ thử ở đây, nên hai bản cho cùng kết quả trên mọi hành vi có m
     2026-11-22) không báo 0×0 mà báo 150×150 cho SVG chỉ có `viewBox` vuông, 300×150 khi không có `viewBox`, và vẽ đúng;
     chưa thử trình duyệt nào báo 0×0. SVG không vẽ ra gì (ví dụ `<svg/>`) cho ô logo trống, không báo lỗi.
 - `http/svg-response.json`: hợp đồng HTTP chung của mọi gói tích hợp trả QR dạng ảnh SVG (`@tingqr/hono`,
-  `@tingqr/nestjs`, sau này `TingQR.AspNetCore`): status, header, thân lỗi 500, luật logo, cái gì kiểm lúc cấu hình. Test của từng gói đọc file
-  này, không tự chép header.
+  `@tingqr/nestjs`, `TingQR.AspNetCore`): status, header, thân lỗi 500, luật logo, cái gì kiểm lúc cấu hình. Test của
+  từng gói đọc file này, không tự chép header. Chỗ `TingQR.AspNetCore` đọc hợp đồng theo cách riêng: xem mục
+  "`TingQR.AspNetCore` và hợp đồng HTTP" dưới.
 - `schemes/<id>.md`: mô tả từng loại QR (tag, GUID, quy tắc, nguồn).
 - `vectors/<id>/*.json`: mẫu thử, mỗi file một mẫu, tên file trùng `id`.
 - `tools/crc16.py`: CRC-16/CCITT-FALSE viết bằng Python, độc lập với tingqr, để tính lại CRC của mẫu dựng tay hoặc sửa.
@@ -200,7 +201,7 @@ Dành cho `findBank` và `appsForBank` (`@tingqr/core/banks`).
 
 ## Logo và icon (`banks/logos/`)
 
-Nguồn cho `@tingqr/bank-logos` và `TingQR.BankLogos` sau này.
+Nguồn cho `@tingqr/bank-logos` và `TingQR.BankLogos`.
 
 - `manifest.json` là chỉ mục. Mỗi mục có:
   - `file`: `logo/<bin>.svg|webp` hoặc `icon/<id>.webp`;
@@ -215,6 +216,8 @@ Nguồn cho `@tingqr/bank-logos` và `TingQR.BankLogos` sau này.
 - **Data URI:** `data:<mime>;base64,` + base64 chuẩn RFC 4648, có padding.
 - **Danh sách khoá** (`LOGO_BINS`, `ICON_IDS`) xếp ordinal.
 - Bản CJS của gói npm trả đường dẫn file thay vì data URI. Đây là chi tiết đóng gói riêng của JavaScript.
+- `TingQR.BankLogos` (.NET) có hàm tra cứu (`BankLogos.Logo(bin)`, `Icon(id)`, `OpenLogo`, `OpenIcon`, `LogoBins`, `IconIds`); gói npm
+  dùng import từng module, không có hàm tra cứu. Cả hai sinh `LOGOS-NOTICE.md` từ cùng `manifest.json` (`gen.mjs`).
 
 ## Mẫu ma trận (`kind: "matrix"`, `scheme: "render"`)
 
@@ -287,6 +290,57 @@ Dành cho `toSvg` (`@tingqr/render`, `TingQrRender.ToSvg` bên .NET). Mẫu nằ
 4. Quét, **dừng ở màn hình xác nhận**, rồi ghi kết quả vào `conformance/scans.md`.
 
 Chỉ chủ dự án chạy bước 2 khi có dữ liệu thật; Claude không chạy và không đọc trang sinh ra từ dữ liệu thật.
+
+## Tên khác nhau giữa TS và .NET
+
+Trường JSON và giá trị trong `conformance/` giống nhau ở cả hai bản. Chỉ tên trong API khác (đã duyệt 2026-11-24, xem
+`docs/superpowers/specs/2026-11-24-dotnet-api-names.md`):
+
+- `VIETQR_GUID` / `VNPAY_GUID` (TS) so với `VietQr.Aid` / `VnpayQr.Aid` (.NET); giá trị chuỗi như nhau.
+- `VietQrService` (kiểu TS, `'account' | 'card'`) so với enum `VietQrServiceCode` (.NET); thuộc tính `service` /
+  `Service` vẫn giữ tên.
+- `parsePayload` / `buildPayload` / `getField(p, tag)` so với `EmvPayload.Parse` / `EmvPayload.Build` /
+  `payload.GetField(tag)`.
+- Tên mã lỗi dạng chữ (`CRC_MISMATCH`) lấy bằng `code.ToWireName()` (.NET, phương thức mở rộng của `TingQrErrorCode`
+  và `TingQrWarningCode`).
+- `QrAmount.HasAmount` (.NET); `BankApp.VietQrAutofill` (.NET) ứng với trường JSON `vietqrAutofill`.
+
+## `TingQR.AspNetCore` và hợp đồng HTTP
+
+Những điểm hợp đồng `http/svg-response.json` để ngỏ hay chỉ nói cho NestJS, và cách `TingQR.AspNetCore` làm (quyết trong
+Plan 8c, 2026-11-24; README của gói ghi cho người dùng):
+
+- **SVG trả ra luôn `200`.** Hợp đồng giữ status app đặt rõ trên route (NestJS `@HttpCode`). ASP.NET Core không có
+  attribute status theo route tương đương, nên không có gì để giữ: status 200 được đặt rõ, đè mọi status endpoint đã đặt.
+- **`Cache-Control` rỗng:** `null`, chuỗi rỗng hay chỉ khoảng trắng (ở tham số `cacheControl`, `CacheControl` của
+  attribute, `TingQrOptions.CacheControl`) bị bỏ qua, dùng mức tiếp theo, cuối cùng là mặc định `private, max-age=300`.
+  Không bao giờ gửi header `Cache-Control` rỗng.
+- **`Cache-Control` chỉ nhận ASCII in được** (0x20–0x7E). Có CR, LF, tab, ký tự điều khiển khác hay ký tự ngoài ASCII
+  thì Kestrel từ chối lúc ghi header, tức lỗi ở mọi request; vì vậy `AddTingQr`, `WithTingQrSvg` và `[TingQrSvg]` (lúc
+  `MapControllers` hay lúc khởi động) ném `TingQrException` `INVALID_VALUE`, còn `TingQrHttpResults.Svg` cho 500 theo
+  hợp đồng. Hono và NestJS chưa có luật này.
+- **Tài khoản nhận là tuỳ chọn.** `AddTingQr` không có `Bank` và `AccountNumber` (cả hai cùng trống) vẫn khởi động được,
+  để app chỉ phục vụ QR khác (PromptPay…); khi đó `PaymentQr` ném `INVALID_VALUE`, `Bin`/`Bank` là `null`. Chỉ có một
+  trong hai thì dừng lúc khởi động. NestJS bắt buộc `bank` (`INVALID_VALUE` lúc khởi động).
+- **`[TingQrSvg]` (MVC):** attribute gần nhất (action hơn controller hơn bộ lọc toàn cục) thắng **cả khối**, rồi bộ
+  tuỳ chọn của nó gộp từng khoá lên `Svg` chung, như `getAllAndOverride` của NestJS. Không gộp từng khoá giữa action và
+  controller.
+- **Chỉ giá trị action trả về là chuỗi QR.** Kết quả action tự dựng (`NotFound()`, `BadRequest("…")`, `Ok("…")`,
+  `StatusCode(409, "…")`, `NoContent()`, `EmptyResult`…) ném `InvalidOperationException` (lỗi lập trình, thuộc mục
+  `notInContract`), để chữ không bao giờ bị vẽ thành QR do nhầm. Muốn 404 thì trả `null`. Action `void` cũng vậy: MVC
+  biến nó thành `EmptyResult`, nên nó ném `InvalidOperationException`, trong khi NestJS coi `undefined` là giá trị vắng
+  và trả 404 (mục `empty` của hợp đồng).
+- **`TingQrHttpResults.Svg` không bao giờ ném.** Nó chạy theo request, nên tuỳ chọn sai hay logo không bắt đầu
+  `data:image/` cho 500 theo hợp đồng (chỉ mã, thông báo ghi log), không chặn app khởi động. Đây là ngoại lệ có chủ ý
+  của luật `configuration` và `logo` ("kiểm khi cấu hình"); `WithTingQrSvg`, `Svg` chung và các profile vẫn kiểm lúc
+  cấu hình. Chuỗi `null` hay `""` cho 404 (mục `empty`); helper tương ứng của Hono, `tingqrSvg(c, payload)`, không kiểm
+  chuỗi rỗng: nó gọi thẳng `toSvg`, mà `toSvg('')` không ném (thử trên bản build của `@tingqr/render` ngày 2026-11-24),
+  nên nó trả 200 với QR của chuỗi rỗng.
+- **Exception filter của app không bao giờ thấy `TingQrException`.** Cả ba lối (Minimal API, `TingQrHttpResults`, MVC)
+  tự viết 500; `UseExceptionHandler` và exception filter MVC của app không thấy nó. NestJS thì đẩy lỗi qua filter của app
+  (hợp đồng cho phép, mục `tingQrError.note`).
+- **Log:** `ILogger`, category `TingQR.AspNetCore.TingQrSvg`, mức Error (hợp đồng ghi `console.error` cho Hono,
+  `Logger` cho NestJS).
 
 ## Quy tắc nguồn
 

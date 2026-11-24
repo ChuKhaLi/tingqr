@@ -2,11 +2,11 @@ using System;
 
 namespace TingQR
 {
-    /// <summary>Maps codes to the names used in <c>conformance/errors.json</c>.</summary>
-    public static class WireNames
+    /// <summary>Extension methods that map codes to the names used in <c>conformance/errors.json</c>.</summary>
+    public static class TingQrCodeExtensions
     {
         /// <summary>Wire name of an error code, e.g. <c>CRC_MISSING</c>.</summary>
-        public static string Of(TingQrErrorCode c)
+        public static string ToWireName(this TingQrErrorCode c)
         {
             switch (c)
             {
@@ -30,7 +30,7 @@ namespace TingQR
         }
 
         /// <summary>Wire name of a warning code, e.g. <c>LOWERCASE_CRC</c>.</summary>
-        public static string Of(TingQrWarningCode c)
+        public static string ToWireName(this TingQrWarningCode c)
         {
             switch (c)
             {

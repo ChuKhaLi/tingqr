@@ -25,6 +25,9 @@ import mb from '@tingqr/bank-logos/icon/mb' // "data:image/webp;base64,..."
 import bidv from '@tingqr/bank-logos/logo/970418'
 ```
 
+The .NET package `TingQR.BankLogos` has the same images behind lookup functions (`BankLogos.Icon("mb")`) instead of
+one import per image.
+
 **Tree-shaking:** a bundle carries only the images you import. The package's tests check this with esbuild: one icon
 import gives exactly one image, and the package root gives none.
 

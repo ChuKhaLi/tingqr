@@ -1,0 +1,168 @@
+name: Release (.NET)
+
+# Publishes the four TingQR NuGet packages. See docs/RELEASING.md before the first release.
+#
+# - Only a tag `dotnet-vX.Y.Z` publishes, because only a tag run checks the tag against the version and refuses READMEs
+#   that still say "not released" (check-release --tag). `workflow_dispatch` and pull requests that touch the release
+#   machinery are always dry runs.
+# - The irreversible step needs a deliberate act (the tag) and then a human approval on the `nuget-release` environment,
+#   given with the verify results already visible. Required reviewers exist only on public repositories (or private ones
+#   on GitHub Enterprise), so `publish` refuses to run from a private repository: there the tag alone would publish.
+# - NuGet authentication is trusted publishing (OIDC, NuGet/login): no NuGet API key is stored. The trusted publishing
+#   policy on nuget.org names THIS FILE NAME and the `nuget-release` environment: renaming either breaks publishing
+#   until the policy is updated.
+# - `publish` pushes exactly the packages `verify` packed and drilled (artifact), in dependency order.
+#
+# Trusted publishing, read 2026-11-24 at https://learn.microsoft.com/nuget/nuget-org/trusted-publishing (page updated
+# 2026-09-01; read through a page-fetch tool, not checked by eye) and in https://github.com/NuGet/login (README and
+# action.yml at v1.2.0):
+# - The policy belongs to an owner (a nuget.org user or organization) and applies to every package that owner owns,
+#   optionally narrowed by scopes (a package-name glob, new packages and/or new versions). So no placeholder version is
+#   needed before the first publish (unlike npm). Fields: repository owner, repository, workflow file NAME only
+#   (`release-dotnet.yml`), environment (optional; we set `nuget-release`).
+# - Private repositories: a policy for one may start "temporarily active" for 7 days, because nuget.org needs the
+#   repository and owner IDs from a first successful publish to lock the policy; with no publish in those 7 days it
+#   becomes inactive (the window can be restarted). This is not a reason to publish from a private repository; the
+#   refusal below stays for the approval-gate reason above. Create (or restart) the policy shortly before the first tag.
+# - NuGet/login inputs: `user` (required: the nuget.org profile name, NOT the e-mail; the docs suggest a secret, it is
+#   public, so here it is the variable vars.NUGET_USER), `token-service-url` and `audience` (defaults for nuget.org,
+#   left as is). Output: `NUGET_API_KEY`, a temporary key valid for 1 hour; one OIDC token gives one key. Needs
+#   `id-token: write`. Login therefore runs right before the pushes.
+
+on:
+  push:
+    tags: ['dotnet-v*']
+  workflow_dispatch: # always a dry run
+  pull_request:
+    paths:
+      - '.github/workflows/release-dotnet.yml'
+      - 'dotnet/scripts/set-version.mjs'
+      - 'dotnet/scripts/check-release.mjs'
+      - 'dotnet/scripts/release-common.mjs'
+      - 'dotnet/scripts/test/**'
+      - 'dotnet/Directory.Build.props'
+      - '.claude/skills/release-drill-dotnet/**'
+
+permissions:
+  contents: read
+
+# Every tag push (the only event that publishes) shares one group, so a release never runs alongside another one and a
+# running release is never cancelled. GitHub keeps only one pending run per group: a third tag pushed while one runs and
+# one waits cancels the waiting one. Push one tag at a time (the run waits for approval in nuget-release) and re-run a
+# cancelled one. PR and manual dry-runs (even on a tag ref) keep a group per event and ref.
+concurrency:
+  group: ${{ github.event_name == 'push' && github.ref_type == 'tag' && 'release-dotnet-publish' || format('release-dotnet-{0}-{1}', github.event_name, github.ref) }}
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    # The drill's HTTP requests have no timeout of their own: a hung app must not hold the runner for GitHub's 6 h default.
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0 # the tag check below needs main's history
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      # The tests run Node scripts (bank data and notice checks), and the release scripts and drill are Node.
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+          # setup-node v5 turns on caching from package.json "packageManager" (pnpm), which is not installed here.
+          package-manager-cache: false
+      - run: dotnet build dotnet/TingQR.slnx -c Release
+      - run: dotnet test dotnet/TingQR.slnx -c Release
+      # The file-glob form: `node --test <directory>` does not find the tests on every Node version.
+      - run: node --test dotnet/scripts/test/*.test.mjs
+
+      # The tag is the version claim, so it is checked, not trusted. check-release --tag does every tag check (tag equals
+      # dotnet-v<version>, plain x.y.z with no prerelease, not 0.0.0, READMEs no longer say "not released") and has
+      # tests; no shell pattern here.
+      - name: The tag must be exactly dotnet-v<version>, shared by all four packages
+        if: github.ref_type == 'tag'
+        run: node dotnet/scripts/check-release.mjs --tag "$GITHUB_REF_NAME"
+      # A tag can point at any commit, e.g. on an unreviewed branch. Only reviewed code on main is published.
+      - name: The tag must point to a commit on main
+        if: github.ref_type == 'tag'
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin main
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" FETCH_HEAD; then
+            echo "::error::The tag $GITHUB_REF_NAME must point to a commit on main."
+            exit 1
+          fi
+      - name: Directory.Build.props and TingQrVersion.Value agree
+        if: github.ref_type != 'tag'
+        run: node dotnet/scripts/check-release.mjs
+
+      # Packs the four packages, reads every .nupkg, installs them into console and web apps outside the repo (TingQR.*
+      # only from the packed folder, the rest from nuget.org) and uses them as a consumer would. --out keeps the exact
+      # files that will be published.
+      - name: Release drill
+        run: node .claude/skills/release-drill-dotnet/scripts/drill.mjs --out packages
+      - uses: actions/upload-artifact@v4
+        with:
+          name: packages
+          path: |
+            packages/*.nupkg
+            packages/*.snupkg
+          if-no-files-found: error
+          retention-days: 7
+
+  publish:
+    needs: verify
+    # A tag only: the tag run is the one that checked tag, version and README status (see the comment at the top).
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/dotnet-v')
+    runs-on: ubuntu-latest
+    # Login and four pushes.
+    timeout-minutes: 15
+    environment: nuget-release
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Refuse to publish from a private repository
+        if: github.event.repository.private
+        run: |
+          echo "::error::This repository is private: the nuget-release approval gate does not apply, so publishing is refused. See docs/RELEASING.md."
+          exit 1
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - uses: actions/download-artifact@v4
+        with:
+          name: packages
+          path: packages
+      # Pinned to a commit: this step holds the OIDC token and returns the API key, so a moved tag of a third-party
+      # action must not be able to change it. Bump the SHA deliberately, keeping the tag comment.
+      - name: NuGet login (OIDC, temporary API key)
+        id: login
+        uses: NuGet/login@8d196754b4036150537f80ac539e15c2f1028841 # v1.2.0
+        with:
+          user: ${{ vars.NUGET_USER }}
+      # Dependency order. Re-runnable: a package whose version nuget.org already lists (pushed by an earlier attempt of
+      # this same release) is skipped by name, so "Re-run failed jobs" finishes a release that stopped halfway. Not
+      # --skip-duplicate: that would also hide a conflict this check did not expect. nuget.org lists a new version only
+      # after indexing (minutes), so a re-run right after a partial push can still fail on that package: wait and re-run.
+      # Each .snupkg next to its .nupkg is pushed to the symbol server by the same command.
+      - name: dotnet nuget push, in dependency order
+        env:
+          NUGET_API_KEY: ${{ steps.login.outputs.NUGET_API_KEY }}
+        run: |
+          set -euo pipefail
+          version="${GITHUB_REF_NAME#dotnet-v}"
+          for p in TingQR.Core TingQR.Rendering TingQR.BankLogos TingQR.AspNetCore; do
+            lower="$(echo "$p" | tr '[:upper:]' '[:lower:]')"
+            # Read the whole index first: `curl | grep -q` under pipefail can fail with SIGPIPE when grep stops early.
+            # A 404 (package never pushed) gives an empty index.
+            index="$(curl -fsS "https://api.nuget.org/v3-flatcontainer/$lower/index.json" 2>/dev/null || true)"
+            if grep -qF "\"$version\"" <<<"$index"; then
+              echo "$p $version is already on nuget.org: skipped"
+              continue
+            fi
+            dotnet nuget push "packages/$p.$version.nupkg" --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json
+          done

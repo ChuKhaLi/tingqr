@@ -110,11 +110,11 @@ namespace TingQR.Tests.Conformance
         private static void ExpectValue(JsonObject v, Outcome o, string mode, IReadOnlyList<string> warnings)
         {
             var id = Str(v, "id")!;
-            Check(o.Ok, id, $"{mode}: expected success, got {(o.Error == null ? "?" : WireNames.Of(o.Error.Code) + " " + o.Error.Tag + ": " + o.Error.Message)}");
+            Check(o.Ok, id, $"{mode}: expected success, got {(o.Error == null ? "?" : o.Error.Code.ToWireName() + " " + o.Error.Tag + ": " + o.Error.Message)}");
             var actual = ResultJson.ToNode(o.Value);
             Check(ResultJson.JsonEquals(actual, v["expected"]), id,
                 $"{mode}: value\n  expected {ResultJson.Show(v["expected"])}\n  actual   {ResultJson.Show(actual)}");
-            var codes = o.Warnings.Select(w => WireNames.Of(w.Code)).ToList();
+            var codes = o.Warnings.Select(w => w.Code.ToWireName()).ToList();
             Check(codes.SequenceEqual(warnings), id,
                 $"{mode}: warnings [{string.Join(",", codes)}], expected [{string.Join(",", warnings)}]");
         }
@@ -125,7 +125,7 @@ namespace TingQR.Tests.Conformance
             var id = Str(v, "id")!;
             var error = Str(v, "error");
             var errorTag = Str(v, "errorTag");
-            var actualCode = o.Ok ? null : WireNames.Of(o.Error!.Code);
+            var actualCode = o.Ok ? null : o.Error!.Code.ToWireName();
             Check(actualCode == error, id, $"{mode}: error {actualCode ?? "(none)"}, expected {error}");
             if (errorTag != null) Check(o.Error!.Tag == errorTag, id, $"{mode}: error tag {o.Error.Tag ?? "(none)"}, expected {errorTag}");
         }
@@ -175,7 +175,7 @@ namespace TingQR.Tests.Conformance
                     {
                         if (TryEncode(r, v, out var payload, out var thrown))
                         {
-                            Check(thrown == null, id, $"encode threw {(thrown == null ? "" : WireNames.Of(thrown.Code) + ": " + thrown.Message)}");
+                            Check(thrown == null, id, $"encode threw {(thrown == null ? "" : thrown.Code.ToWireName() + ": " + thrown.Message)}");
                             Check(payload is string s && s == Str(v, "payload"), id,
                                 $"encode gave\n  {payload}\n  expected\n  {Str(v, "payload")}");
                         }
@@ -194,7 +194,7 @@ namespace TingQR.Tests.Conformance
                     if (TryEncode(r, v, out _, out var error))
                     {
                         Check(error != null, id, $"encode did not throw TingQrException; expected {Str(v, "error")}");
-                        Check(WireNames.Of(error!.Code) == Str(v, "error"), id, $"encode threw {WireNames.Of(error.Code)}, expected {Str(v, "error")}");
+                        Check(error!.Code.ToWireName() == Str(v, "error"), id, $"encode threw {error.Code.ToWireName()}, expected {Str(v, "error")}");
                         var tag = Str(v, "errorTag");
                         if (tag != null) Check(error.Tag == tag, id, $"encode error tag {error.Tag ?? "(none)"}, expected {tag}");
                     }
@@ -202,14 +202,14 @@ namespace TingQR.Tests.Conformance
                 case "link":
                     if (TryEncode(r, v, out var link, out var linkError))
                     {
-                        Check(linkError == null, id, $"link threw {(linkError == null ? "" : WireNames.Of(linkError.Code))}");
+                        Check(linkError == null, id, $"link threw {(linkError == null ? "" : linkError.Code.ToWireName())}");
                         Check(link is string l && l == Str((JsonObject)v["expected"]!, "link"), id, $"link {link}, expected {v["expected"]!["link"]}");
                     }
                     break;
                 case "lookup":
                     if (TryEncode(r, v, out var found, out var lookupError))
                     {
-                        Check(lookupError == null, id, $"lookup threw {(lookupError == null ? "" : WireNames.Of(lookupError.Code))}");
+                        Check(lookupError == null, id, $"lookup threw {(lookupError == null ? "" : lookupError.Code.ToWireName())}");
                         var expected = v["expected"]!["result"];
                         var actual = ResultJson.ToNode(found);
                         Check(ResultJson.JsonEquals(actual, expected), id, $"lookup {ResultJson.Show(actual)}, expected {ResultJson.Show(expected)}");

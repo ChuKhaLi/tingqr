@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net10.0;netstandard2.0</TargetFrameworks>
+    <RootNamespace>TingQR.BankLogos</RootNamespace>
+    <PackageId>TingQR.BankLogos</PackageId>
+    <IsPackable>true</IsPackable>
+    <Description>Vietnamese bank logos and banking-app icons as data URIs or streams, for payment QR codes. The images are trademarks of their owners and are not MIT-licensed; see LOGOS-NOTICE.md.</Description>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseFile>LOGOS-NOTICE.md</PackageLicenseFile>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="" />
+    <None Include="LOGOS-NOTICE.md" Pack="true" PackagePath="" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="TingQR.BankLogos.Tests" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)../../../conformance/banks/logos/logo/*" LogicalName="TingQR.BankLogos/logo/%(Filename)%(Extension)" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)../../../conformance/banks/logos/icon/*" LogicalName="TingQR.BankLogos/icon/%(Filename)%(Extension)" />
+  </ItemGroup>
+</Project>

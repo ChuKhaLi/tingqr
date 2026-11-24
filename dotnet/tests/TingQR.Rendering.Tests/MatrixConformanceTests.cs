@@ -88,7 +88,7 @@ namespace TingQR.Rendering.Tests
             else
             {
                 var thrown = Assert.Throws<TingQrException>(() => TingQrRender.ToMatrix(text, options));
-                Assert.Equal((string)v["error"]!, WireNames.Of(thrown.Code));
+                Assert.Equal((string)v["error"]!, thrown.Code.ToWireName());
             }
         }
 

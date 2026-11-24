@@ -3,10 +3,15 @@
     <TargetFrameworks>net10.0;netstandard2.0</TargetFrameworks>
     <RootNamespace>TingQR</RootNamespace>
     <PackageId>TingQR.Core</PackageId>
-    <Version>0.0.0</Version>
     <IsPackable>true</IsPackable>
+    <Description>Encode, decode and detect payment QR codes (VietQR first), plus a Vietnamese bank and app directory. No dependencies.</Description>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="" />
+  </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="TingQR.Core.Tests" />
   </ItemGroup>

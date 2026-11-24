@@ -3,10 +3,16 @@
     <TargetFrameworks>net10.0;netstandard2.0</TargetFrameworks>
     <RootNamespace>TingQR.Rendering</RootNamespace>
     <PackageId>TingQR.Rendering</PackageId>
-    <Version>0.0.0</Version>
     <IsPackable>true</IsPackable>
+    <Description>Render payment QR payloads as a module matrix or SVG, with an optional centre logo. QR encoder ported from Project Nayuki (MIT).</Description>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="" />
+    <None Include="NOTICE" Pack="true" PackagePath="" />
+  </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="TingQR.Rendering.Tests" />
   </ItemGroup>

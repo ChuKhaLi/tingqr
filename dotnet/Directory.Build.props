@@ -8,4 +8,21 @@
   <PropertyGroup Condition="'$(TargetFramework)' == 'net10.0'">
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
+  <!-- One version for every package; set it with `node dotnet/scripts/set-version.mjs x.y.z`. -->
+  <PropertyGroup>
+    <Version>0.0.0</Version>
+    <Authors>Chung Nguyen</Authors>
+    <Copyright>Copyright (c) Chung Nguyen</Copyright>
+    <RepositoryUrl>https://github.com/ChuKhaLi/tingqr</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageProjectUrl>https://github.com/ChuKhaLi/tingqr</PackageProjectUrl>
+    <PackageTags>vietqr;napas;qr;payment;emvco;promptpay;khqr</PackageTags>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+  </PropertyGroup>
 </Project>

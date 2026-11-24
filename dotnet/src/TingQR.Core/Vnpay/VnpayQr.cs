@@ -9,7 +9,7 @@ namespace TingQR
     public static class VnpayQr
     {
         /// <summary>VNPAY GUID in tag 26.00.</summary>
-        public const string Guid = "A000000775";
+        public const string Aid = "A000000775";
 
         private static readonly HashSet<string> InterpretedTags =
             new HashSet<string>(StringComparer.Ordinal) { "00", "01", "26", "52", "53", "54", "58", "59", "60", "62", "63" };
@@ -29,18 +29,18 @@ namespace TingQR
         /// </summary>
         public static TingQrResult<VnpayQrData> Decode(string? payload, ParseMode mode = ParseMode.Lenient)
         {
-            var parsed = EmvPayloads.Parse(payload);
+            var parsed = EmvPayload.Parse(payload);
             if (!parsed.Ok) return TingQrResult<VnpayQrData>.Failure(parsed.Error!);
             return Read(parsed.Value!, parsed.Warnings, mode);
         }
 
-        /// <summary><see cref="Decode"/> on a payload already parsed by <see cref="EmvPayloads.Parse"/>.</summary>
+        /// <summary><see cref="Decode"/> on a payload already parsed by <see cref="EmvPayload.Parse"/>.</summary>
         internal static TingQrResult<VnpayQrData> Read(EmvPayload p, IReadOnlyList<TingQrWarning> parsedWarnings, ParseMode mode)
         {
             var warnings = new List<TingQrWarning>(parsedWarnings);
             try
             {
-                var provider = Fields.ReadSchemeTemplate(p, "26", Guid);
+                var provider = Fields.ReadSchemeTemplate(p, "26", Aid);
                 if (provider == null)
                 {
                     return Fail(TingQrErrorCode.UnsupportedScheme,
@@ -52,13 +52,13 @@ namespace TingQR
                     // Stryker disable once String : error message, or a field name that only appears in one
                     "Tag 26.01 (merchant ID) is missing.", "26.01");
 
-                if (EmvPayloads.GetField(p, "00")?.Value != "01")
+                if (p.GetField("00")?.Value != "01")
                 {
                     return Fail(TingQrErrorCode.InvalidValue,
                         // Stryker disable once String : error message, or a field name that only appears in one
                         "Tag 00 (payload format indicator) must be \"01\".", "00");
                 }
-                var poi = EmvPayloads.GetField(p, "01")?.Value;
+                var poi = p.GetField("01")?.Value;
                 if (poi == null) return Fail(TingQrErrorCode.MissingTag,
                     // Stryker disable once String : error message, or a field name that only appears in one
                     "Tag 01 (point of initiation) is missing; expected 11 or 12.", "01");
@@ -72,7 +72,7 @@ namespace TingQR
                 var standard = new Dictionary<string, string>(StringComparer.Ordinal);
                 foreach (var tag in StandardTags)
                 {
-                    var value = EmvPayloads.GetField(p, tag)?.Value;
+                    var value = p.GetField(tag)?.Value;
                     if (value != null)
                     {
                         standard[tag] = value;
@@ -107,7 +107,7 @@ namespace TingQR
                     MerchantId = merchantId,
                     ProviderData = providerData.Count > 0 ? providerData.ToDictionary(n => n.Tag, n => n.Value) : null,
                     Initiation = poi == "12" ? QrInitiation.Dynamic : QrInitiation.Static,
-                    Amount = EmvPayloads.GetField(p, "54")?.Value,
+                    Amount = p.GetField("54")?.Value,
                     Currency = standard["53"],
                     Country = standard["58"],
                     MerchantName = Std("59"),

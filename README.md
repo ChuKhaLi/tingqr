@@ -1,14 +1,14 @@
 # tingqr
 
-Build, read and draw payment QR codes: VietQR first, then cross-border Southeast Asia (PromptPay, KHQR). TypeScript
-today, .NET next. Offline, typed, and tested against sourced sample codes.
+Build, read and draw payment QR codes: VietQR first, then cross-border Southeast Asia (PromptPay, KHQR). For
+TypeScript and [.NET](#net). Offline, typed, and tested against sourced sample codes.
 
 > **tingqr does not confirm payments and does not receive webhooks.** It only builds, reads and draws QR codes. To know
 > that money arrived, use your bank's or a payment provider's notification (for example SePay).
 
 <!-- status:npm -->
 **Status: not released yet.** v0.1 waits for MoMo and ZaloPay recognition and for scans with more banking apps. The
-packages below are complete and tested in this repository; they are not on npm yet.
+npm packages below are complete and tested in this repository; they are not on npm yet.
 
 The goal: read every QR that Vietnamese banking apps can scan. The table below says how far the evidence goes today.
 
@@ -39,6 +39,24 @@ tingqr code with your app? [Report it](https://github.com/ChuKhaLi/tingqr/issues
 | [`@tingqr/hono`](ts/packages/hono) | Serve a QR as SVG from your own Hono routes (Workers, Node). |
 | [`@tingqr/nestjs`](ts/packages/nestjs) | Configure the receiving account once, `paymentQr()`, and `@TingQrSvg()` for controllers (Express, Fastify). |
 
+## .NET
+
+<!-- status:nuget -->
+**Status: not released yet.** The four NuGet packages below are complete and have tests in this repository; they are not
+on NuGet yet. Their version number is separate from the npm packages; the four share one version.
+
+| Package | For |
+|---|---|
+| [`TingQR.Core`](dotnet/src/TingQR.Core) | C# port of `@tingqr/core`: build and read VietQR, PromptPay, KHQR; read VNPAY-QR; `TingQrDetector.Detect`; banks and banking-app links. `net10.0` and `netstandard2.0`, no dependencies. |
+| [`TingQR.Rendering`](dotnet/src/TingQR.Rendering) | C# port of `@tingqr/render`: module matrix and SVG, same output as the TypeScript version on the shared vectors. No PNG. `net10.0` and `netstandard2.0`. |
+| [`TingQR.BankLogos`](dotnet/src/TingQR.BankLogos) | The same bank logos and app icons as `@tingqr/bank-logos`, embedded, looked up by BIN or app id. Images are trademarks, not MIT. |
+| [`TingQR.AspNetCore`](dotnet/src/TingQR.AspNetCore) | `AddTingQr` (receiving account checked at startup), `TingQrService.PaymentQr`, and SVG from Minimal API (`WithTingQrSvg`, `TingQrHttpResults.Svg`) or MVC (`[TingQrSvg]`). `net10.0`. |
+
+```csharp
+string payload = VietQr.Encode(new VietQrInput { BankBin = "970422", AccountNumber = "0123456789", Amount = 50000L });
+string svg = TingQrRender.ToSvg(payload);
+```
+
 ## A quick look
 
 ```ts
@@ -68,11 +86,17 @@ if (found.ok && found.value.scheme === 'vietqr') {
 - **Sample codes with a source.** Behaviour is pinned by vectors in [`conformance/vectors/`](conformance/vectors), and
   each vector names its source: the output of independent libraries (two that agree where possible; some schemes have
   only one), a sample published with such a library, tingqr's own written rules for invalid input, or a mutation of one
-  of these. No vector comes from a captured real-world code yet. The same vectors will test the .NET version.
+  of these. No vector comes from a captured real-world code yet. The .NET packages run the same vectors (except a few
+that check JavaScript types).
 - **Real-app scans** are recorded only by the person who scanned ([`conformance/scans.md`](conformance/scans.md)). This
   README claims an app only when that table has a row for it.
 - **Tests:** unit tests and conformance vectors on Ubuntu and Windows, Node 20, 22 and 24. Mutation testing (90%
   threshold) for `core` and `render`, except the ported QR encoder and the generated bank data. Each package has a size budget and checks of its dependencies.
+  .NET: the CI workflow is set up to run the tests on Ubuntu and Windows (`net10.0`, plus `net481` on Windows for the
+  `netstandard2.0` builds), and mutation testing (Stryker.NET, 90% threshold) is set up for all four packages, with the
+  same two exceptions; a release drill installs the packed `.nupkg` files into apps outside the repository and uses
+  them. All three have run on GitHub CI for all four packages (first on 2026-11-24); the release drill has run on
+  Ubuntu (CI) and Windows (locally).
 - **Safe by design:** the server integrations do not build QR codes from URL parameters themselves: your `resolve`
   callback or controller chooses the payload, and their READMEs explain why it must not come from the URL (otherwise
   anyone could show a QR for any account on your domain). The VietQR builder writes only the tags banking apps expect and has no
@@ -81,9 +105,10 @@ if (found.ok && found.value.scheme === 'vietqr') {
 ## Licence
 
 MIT, see [`LICENSE`](LICENSE). Exceptions and credits:
-- the bank logos and app icons in `@tingqr/bank-logos` are trademarks of their owners, not MIT; see its
-  [`LOGOS-NOTICE.md`](ts/packages/bank-logos/LOGOS-NOTICE.md);
-- the QR encoder in `@tingqr/render` is ported from Project Nayuki's QR Code generator (MIT);
+- the bank logos and app icons in `@tingqr/bank-logos` and `TingQR.BankLogos` are trademarks of their owners, not
+  MIT; see [`LOGOS-NOTICE.md`](ts/packages/bank-logos/LOGOS-NOTICE.md) (npm) and
+  [`LOGOS-NOTICE.md`](dotnet/src/TingQR.BankLogos/LOGOS-NOTICE.md) (.NET);
+- the QR encoder in `@tingqr/render` and `TingQR.Rendering` is ported from Project Nayuki's QR Code generator (MIT);
 - inspired by [`vietqr/vietqr-node`](https://github.com/vietqr/vietqr-node) (MIT, Casso).
 
 Tiếng Việt: [README.vi.md](README.vi.md).

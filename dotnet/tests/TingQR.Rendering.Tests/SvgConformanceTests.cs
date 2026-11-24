@@ -81,7 +81,7 @@ namespace TingQR.Rendering.Tests
             Assert.Equal("encode-invalid", (string)v["kind"]!);
             var error = (string)v["error"]!;
             var thrown = Assert.Throws<TingQrException>(() => TingQrRender.ToSvg(text, options));
-            Assert.Equal(error, WireNames.Of(thrown.Code));
+            Assert.Equal(error, thrown.Code.ToWireName());
             // textDependent: the error needs the text (too long, logo too big), so CheckSvgOptions cannot know it.
             var textDependent = v.TryGetPropertyValue("textDependent", out var t) && (bool)t!;
             if (textDependent)
@@ -91,7 +91,7 @@ namespace TingQR.Rendering.Tests
             else
             {
                 var checkThrown = Assert.Throws<TingQrException>(() => TingQrRender.CheckSvgOptions(options));
-                Assert.Equal(error, WireNames.Of(checkThrown.Code));
+                Assert.Equal(error, checkThrown.Code.ToWireName());
             }
         }
 

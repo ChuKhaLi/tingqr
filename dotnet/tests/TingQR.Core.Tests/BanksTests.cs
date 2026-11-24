@@ -38,7 +38,7 @@ namespace TingQR.Tests
             Assert.Null(Banks.Find("168999")!.Swift);
             Assert.Equal(new BankAppAndroid("vn.com.techcombank.bb.app", "tcb", "applink"), BankApps.Find("tcb")!.Android);
             Assert.Equal(BankAppConfidence.MultiSource, BankApps.Find("tcb")!.Confidence);
-            Assert.True(BankApps.Find("mb")!.VietqrAutofill);
+            Assert.True(BankApps.Find("mb")!.VietQrAutofill);
             var momo = BankApps.Find("momo")!;
             Assert.Equal(new BankAppIos("momo"), momo.Ios);
             Assert.Null(momo.Android);
