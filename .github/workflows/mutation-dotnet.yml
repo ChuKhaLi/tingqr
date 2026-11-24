@@ -31,9 +31,14 @@ jobs:
       fail-fast: false  # report both scores even when one fails
       matrix:
         include:
+          # Core runs from its own test project directory, so Stryker uses TingQR.Core.Tests only. From dotnet/ it
+          # would also run TingQR.Rendering.Tests (it references Core), doubling the time past the 30-minute timeout
+          # (cancelled on main 2026-11-24, run 45319736051).
           - project: core
-            config: stryker-config.json
+            dir: dotnet/tests/TingQR.Core.Tests
+            config: ../../stryker-config.json
           - project: rendering
+            dir: dotnet
             config: stryker-config.rendering.json
     steps:
       - uses: actions/checkout@v5
@@ -43,11 +48,11 @@ jobs:
       - run: dotnet tool restore
         working-directory: dotnet
       - run: dotnet tool run dotnet-stryker --config-file ${{ matrix.config }}
-        working-directory: dotnet
+        working-directory: ${{ matrix.dir }}
       - name: Upload mutation report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: mutation-report-dotnet-${{ matrix.project }}
-          path: dotnet/StrykerOutput/
+          path: ${{ matrix.dir }}/StrykerOutput/
           if-no-files-found: ignore
