@@ -14,6 +14,9 @@
     <None Include="LOGOS-NOTICE.md" Pack="true" PackagePath="" />
   </ItemGroup>
   <ItemGroup>
+    <InternalsVisibleTo Include="TingQR.BankLogos.Tests" />
+  </ItemGroup>
+  <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)../../../conformance/banks/logos/logo/*" LogicalName="TingQR.BankLogos/logo/%(Filename)%(Extension)" />
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)../../../conformance/banks/logos/icon/*" LogicalName="TingQR.BankLogos/icon/%(Filename)%(Extension)" />
   </ItemGroup>

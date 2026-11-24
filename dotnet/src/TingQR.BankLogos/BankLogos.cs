@@ -21,7 +21,7 @@ namespace TingQR
 
         private static readonly Lazy<string[]> Names = new Lazy<string[]>(() => Asm.GetManifestResourceNames());
 
-        private static readonly ConcurrentDictionary<string, string?> Uris = new ConcurrentDictionary<string, string?>(StringComparer.Ordinal);
+        private static readonly ConcurrentDictionary<string, string> Uris = new ConcurrentDictionary<string, string>(StringComparer.Ordinal);
 
         private static readonly Lazy<IReadOnlyList<string>> LogoKeys = new Lazy<IReadOnlyList<string>>(() => Keys("logo/"));
 
@@ -66,20 +66,26 @@ namespace TingQR
                 && n.IndexOf('.', start.Length) == -1);
         }
 
+        /// <summary>Number of cached data URIs; only embedded images are ever cached, so never more than their count.</summary>
+        internal static int CachedCount => Uris.Count;
+
         private static string? DataUri(string kind, string key)
-            => Uris.GetOrAdd(kind + key, _ =>
+        {
+            // Unknown keys (arbitrary caller input) must not touch the cache, or it would grow without bound.
+            var name = ResourceName(kind, key);
+            if (name == null)
             {
-                var name = ResourceName(kind, key);
-                if (name == null)
-                {
-                    return null;
-                }
+                return null;
+            }
+            return Uris.GetOrAdd(name, _ =>
+            {
                 using var stream = Asm.GetManifestResourceStream(name)!;
                 using var ms = new MemoryStream();
                 stream.CopyTo(ms);
                 var bytes = ms.ToArray();
                 return "data:" + MimeOf(name, bytes) + ";base64," + Convert.ToBase64String(bytes);
             });
+        }
 
         private static BankLogoFile? Open(string kind, string key)
         {

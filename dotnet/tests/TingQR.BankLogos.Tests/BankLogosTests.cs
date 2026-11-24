@@ -128,6 +128,17 @@ namespace TingQR.Tests
         }
 
         [Fact]
+        public void Unknown_keys_do_not_grow_the_cache()
+        {
+            for (var i = 0; i < 1000; i++)
+            {
+                Assert.Null(BankLogos.Logo("unknown-" + i));
+                Assert.Null(BankLogos.Icon("unknown-" + i));
+            }
+            Assert.True(BankLogos.CachedCount <= Manifest.Count, "cache holds " + BankLogos.CachedCount + " entries");
+        }
+
+        [Fact]
         public void Logo_works_as_svg_logo()
         {
             const string payload = "00020101021138540010A00000072701240006970422011001234567890208QRIBFTTA53037045802VN6304B1A7";
