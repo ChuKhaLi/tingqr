@@ -94,8 +94,9 @@ namespace TingQR.Rendering.Tests
             Assert.True(Color.ContrastRatio(new Rgb(0x76, 0x76, 0x76), White) >= 4.5);
         }
 
-        // Real TS values, from this script (node 22; contrastRatio is not exported by dist, so the formula of color.ts is
-        // repeated, and toSvg of the built dist confirms the verdict):
+        // Values from the formula of color.ts, re-typed in a one-off script (node 22; contrastRatio is not exported by
+        // dist); toSvg of the built dist confirms the verdict. .NET's Math.Pow differs from JavaScript's ** by 1 ulp on
+        // about 40 of the 256 channel values, which changes no verdict:
         //   node /tmp/c.mjs  (imports file:///.../ts/packages/render/dist/index.js)
         //   76 4.542224959605253 accepted      (toSvg('A', { foreground: '#767676' }))
         //   77 4.478089453577214 rejected      (toSvg('A', { foreground: '#777777' }))

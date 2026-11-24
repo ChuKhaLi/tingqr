@@ -80,7 +80,9 @@ namespace TingQR.Rendering
             // whose candidates are 0 and 10^(E+1) (or larger), and taking 10^(E+1) there differs from the step at E only
             // if 9 × 10^E is also in range and closer, which needs a rounding range over 5% of x, i.e. a subnormal below
             // about 10 × 2^-1074 (a BigInt port of this method matched JavaScript's String for every multiple of 2^-1074 up
-            // to 300000, every power of two and the doubles around every power of ten, 2026-11-23).
+            // to 300000, every power of two and the doubles around every power of ten, 2026-11-23; a one-off check during
+            // review, not a test in the repo. The C# itself was compared with Node's String on 574,640 doubles on both
+            // net10.0 and net481 during review, also one-off).
             // Math.Log10 is off by far less than 1, so floor + 1 is >= E.
             var exp10 = (int)Math.Floor(Math.Log10(x)) + 1;
 

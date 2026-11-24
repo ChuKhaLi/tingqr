@@ -48,32 +48,35 @@ rejected.
 | `toMatrix(text, options)`                           | `TingQrRender.ToMatrix(text, MatrixOptions?)`              |
 | `toSvg(text, options)`                              | `TingQrRender.ToSvg(text, SvgOptions?)`                    |
 | `checkSvgOptions(options)`                          | `TingQrRender.CheckSvgOptions(SvgOptions?)`                |
-| `QrMatrix` (`size`, `version`, `ecc`, `mask`, `modules`) | `QrMatrix` (`Size`, `Version`, `Ecc`, `Mask`, `Modules`, `IsDark(x, y)`) |
+| `QrMatrix` (`size`, `version`, `ecc`, `mask`, `modules`) | `QrMatrix` (`Size`, `Version`, `Ecc`, `Mask`, `Modules`; `IsDark(x, y)` is .NET-only) |
 | `Ecc` (`'L' \| 'M' \| 'Q' \| 'H'`)                  | `Ecc` enum (`L`, `M`, `Q`, `H`)                            |
 | `MatrixOptions` (`ecc`, `boostEcc`, `minVersion`, `maxVersion`, `mask`) | `MatrixOptions` (same, PascalCase; null = default) |
 | `SvgOptions` (adds `margin`, `foreground`, `background`, `size`, `logo`) | `SvgOptions : MatrixOptions` (same, PascalCase) |
 | `size?: number \| string`                           | `SvgSize?` (implicit from `double`/`int` or `string`)      |
 | `LogoOptions` (`href`, `size`, `padding`, `background`) | `LogoOptions` (`Href` required, the rest optional)     |
 | `TingQrError`                                       | `TingQrException` (from `TingQR.Core`)                     |
-| `toPng`, `drawQr` (`@tingqr/render/canvas`)         | not ported                                                 |
+| `@tingqr/render/canvas`: `toPng`, `toPngBlob`, `toPngDataUrl`, `drawQr`, `CanvasOptions`, `CanvasLike`, `Canvas2DLike` | not ported |
 
 ## What has been checked
 
-- 27 matrix vectors in `conformance/vectors/render/`, generated from the original Nayuki library, and 63 SVG vectors
-  (default, every option, every rejected option). The SVG vectors are the output of tingqr's own TypeScript code, so they
+- 19 matrix vectors in `conformance/vectors/render/`, generated from the original Nayuki library, 8 hand-written
+  option-error vectors for `ToMatrix`, and 80 SVG vectors (45 that render, 35 that are rejected: each option and the
+  main rejections). The SVG vectors are the output of tingqr's own TypeScript code, so they
   prove the two implementations agree, not that the SVG is right; the matrices inside them come from the port, not from
   an independent oracle. The TypeScript and .NET tests read the same files. Tests pass on `net10.0` and `net481`
   (Windows, local, 2026-11-23); the Ubuntu run is not done yet.
-- Stryker.NET, local, Windows, 2026-11-23: `TingQR.Rendering` 99.41% (3 surviving mutants, all equivalent, documented in
-  `dotnet/CLAUDE.md`), `TingQR.Core` 100%. The ported encoder file is excluded from mutation. CI for the Rendering job
-  has not run yet.
+- Stryker.NET, local, Windows: `TingQR.Rendering` (2026-11-24) 99.41% = 475 killed + 28 timeouts of 506 counted
+  mutants, 3 survived (all equivalent, documented in `dotnet/CLAUDE.md`), 87 ignored (34 by `Stryker disable` comments,
+  53 by the block-already-covered filter); the ported encoder `QrCodeGen.cs` is excluded (876 mutants). `TingQR.Core`
+  (2026-11-23) 100%: 1506 killed, 12 timeouts, 0 survived, 291 ignored. CI for the Rendering job has not run yet.
 - During review the output was also compared with the TypeScript version on 1,500 random option combinations and
   574,640 numbers for `size`, with no difference. These were one-off checks, not tests in the repo.
 
 ## Limits
 
 - No PNG. Draw the SVG yourself, or use `@tingqr/render/canvas` in a browser.
-- On .NET Framework, creating the options needs C# 9 or later (`init` and `required` members).
+- Creating the options needs a C# 11-aware compiler (VS 2022 17.4+ / .NET 7 SDK+, for `required`) with `LangVersion`
+  9 or later (`init`); .NET Framework projects default to C# 7.3, so set `LangVersion` there.
 - The output is only guaranteed to match the TypeScript version on the vectors above.
 - The centre logo limits are provisional until more banking apps have scanned a code with a logo
   (`conformance/scans.md`).

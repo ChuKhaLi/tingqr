@@ -2,7 +2,7 @@ using System.Globalization;
 
 namespace TingQR.Rendering
 {
-    /// <summary>Draws payment QR codes: module matrices (and, later, SVG).</summary>
+    /// <summary>Draws payment QR codes: module matrices and SVG strings.</summary>
     public static partial class TingQrRender
     {
         private static TingQrException Invalid(string message) => new TingQrException(TingQrErrorCode.InvalidValue, message);

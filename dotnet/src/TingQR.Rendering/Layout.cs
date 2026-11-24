@@ -2,7 +2,7 @@ using System.Globalization;
 
 namespace TingQR.Rendering
 {
-    /// <summary>Options shared by every renderer (SVG, later others); Task 5's public SvgOptions maps onto this.</summary>
+    /// <summary>The options of <see cref="SvgOptions"/> except Size: what every renderer shares.</summary>
     internal sealed record LayoutOptions : MatrixOptions
     {
         /// <summary>Quiet zone in modules, 0–16; default 4.</summary>
