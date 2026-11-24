@@ -12,8 +12,8 @@ Bản .NET phải vẽ được QR, và phải vẽ **giống hệt** bản TS: 
 `toSvg(payload, options)` và `TingQR.AspNetCore` (8c) sẽ trả đúng chuỗi đó.
 
 - **Mục tiêu:** gói `TingQR.Rendering` làm được phần `@tingqr/render` làm ở máy chủ: `ToMatrix`, `ToSvg`, logo ở giữa,
-  mọi luật kiểm tuỳ chọn (viền, màu và độ tương phản, cỡ, logo, ECC), `CheckSvgOptions`. Đạt cả 27 mẫu
-  `conformance/vectors/render/` và các mẫu SVG mới (dưới).
+  mọi luật kiểm tuỳ chọn (viền, màu và độ tương phản, cỡ, logo, ECC), `CheckSvgOptions`. Đạt cả 27 mẫu có sẵn ở
+  `conformance/vectors/render/` (19 mẫu ma trận sinh từ Nayuki gốc, 8 mẫu lỗi tuỳ chọn viết tay) và các mẫu SVG mới (dưới).
 - **Không làm:** vẽ PNG trên canvas (`@tingqr/render/canvas` chỉ chạy trong trình duyệt); vẽ PNG phía máy chủ (spec chung:
   sau v0.1, gói riêng, được dùng thư viện native); trang quét thử; phát hành NuGet (8c).
 - **Không được:**
@@ -26,7 +26,7 @@ Bản .NET phải vẽ được QR, và phải vẽ **giống hệt** bản TS: 
 | Cách | Đánh giá |
 |---|---|
 | **1. Port `ts/packages/render/src/qrcodegen.ts` (Nayuki v1.8.0, bản trong repo) sang C# từng dòng** (chọn) | Cùng một nguồn với bản TS, so dòng với dòng được; mẫu ma trận sinh từ đúng file Nayuki gốc này |
-| 2. Chép `manuelbl/QrCodeGenerator` (C#, MIT) | Ít việc hơn, nhưng là một bản port khác của Nayuki, có thể khác phiên bản, kéo theo API thừa; chỉ dựa vào 27 mẫu để tin là khớp |
+| 2. Chép `manuelbl/QrCodeGenerator` (C#, MIT) | Ít việc hơn, nhưng là một bản port khác của Nayuki, có thể khác phiên bản, kéo theo API thừa; chỉ dựa vào 19 mẫu ma trận (cùng 8 mẫu lỗi tuỳ chọn viết tay) để tin là khớp |
 
 Chủ dự án chọn cách 1 (2026-11-23). Spec chung 5.6 từng ghi "port từ `manuelbl/QrCodeGenerator`"; quyết định này thay
 nó (ghi lại trong spec chung khi làm).
@@ -55,13 +55,14 @@ Tương ứng `ts/packages/render/src/` trừ `canvas.ts`:
 
 ## Mẫu thử
 
-- **27 mẫu ma trận có sẵn** (`kind: "matrix"`, `scheme: "render"`): bộ chạy .NET mới trong project test của gói, so
+- **27 mẫu có sẵn: 19 mẫu ma trận** (`kind: "matrix"`, `scheme: "render"`, sinh từ Nayuki gốc) **và 8 mẫu lỗi tuỳ
+  chọn viết tay** (`render-invalid-*`): bộ chạy .NET mới trong project test của gói, so
   đúng luật ở `conformance/README.md` (mục "Mẫu ma trận") như bộ chạy TS `ts/packages/render/test/matrix-conformance.spec.ts`.
 - **Mẫu SVG mới** (cần cho 8c, hiện chưa có): `kind: "svg"`, `scheme: "render"`, `input: { text, options }`,
   `expected: { svg }`; và mẫu lỗi tuỳ chọn (`kind: "encode-invalid"`, `scheme: "render"`, `error`).
   - Sinh bằng một script mới (`conformance/tools/render/gen-svg.mjs` hay tương đương) chạy `toSvg` của bản TS đã build.
     **Nguồn ghi rõ:** "đầu ra của `@tingqr/render` (TypeScript) ở commit …; mẫu vàng để hai bản khớp nhau, không phải
-    oracle độc lập". Ma trận bên trong SVG đã được 27 mẫu oracle bảo đảm; mẫu SVG chỉ ghim phần trình bày.
+    oracle độc lập". Bộ mã hoá được 19 mẫu ma trận oracle kiểm; ma trận bên trong SVG do bản port sinh ra, mẫu SVG chỉ ghim phần trình bày.
   - Phủ: mặc định; viền 0 và lớn; màu tuỳ chọn; nền `transparent`; `size` số và chuỗi độ dài (`40mm`, `100%`); logo với
     `size`, `padding`, `background`; ECC khác nhau; văn bản byte có chữ Khmer/emoji; ca tương phản sát ngưỡng (đạt và
     không đạt); mỗi lỗi tuỳ chọn mà `toSvg`/`checkSvgOptions` có.

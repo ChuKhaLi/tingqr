@@ -27,7 +27,8 @@
         "encode-invalid",
         "matrix",
         "link",
-        "lookup"
+        "lookup",
+        "svg"
       ]
     },
     "payload": {
@@ -68,6 +69,14 @@
     "errorTag": {
       "type": "string",
       "pattern": "^[0-9]{2}(\\.[0-9]{2})*$"
+    },
+    "render": {
+      "enum": [
+        "svg"
+      ]
+    },
+    "textDependent": {
+      "type": "boolean"
     }
   },
   "allOf": [
@@ -106,7 +115,8 @@
               "enum": [
                 "matrix",
                 "link",
-                "lookup"
+                "lookup",
+                "svg"
               ]
             }
           }
@@ -381,6 +391,89 @@
             }
           ]
         }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "svg"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "input",
+          "expected"
+        ],
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "payload"
+              ]
+            },
+            {
+              "required": [
+                "error"
+              ]
+            },
+            {
+              "required": [
+                "render"
+              ]
+            }
+          ]
+        },
+        "properties": {
+          "expected": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "svg"
+            ],
+            "properties": {
+              "svg": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "render"
+        ]
+      },
+      "then": {
+        "properties": {
+          "kind": {
+            "const": "encode-invalid"
+          },
+          "scheme": {
+            "const": "render"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "textDependent"
+        ]
+      },
+      "then": {
+        "properties": {
+          "render": {
+            "const": "svg"
+          }
+        },
+        "required": [
+          "render"
+        ]
       }
     }
   ]

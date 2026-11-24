@@ -73,3 +73,9 @@ test.each(BAD)('%s: same INVALID_VALUE and message as toSvg', (_name, options, t
   expect(fromLayout.code).toBe('INVALID_VALUE')
   expect(fromLayout).toEqual(failure(() => toSvg(text, options)))
 })
+
+test('layout: logo null means no logo (canvas shares layout with toSvg)', () => {
+  const l = layout(TEXT, { logo: null } as unknown as SvgOptions)
+  expect(l.logo).toBeUndefined()
+  expect(l.modules).toEqual(layout(TEXT).modules)
+})

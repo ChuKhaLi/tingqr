@@ -68,6 +68,8 @@ test('every vector file matches vectors.schema.json and the shared codes', () =>
     if (v.error !== undefined) expect(errorCodes.has(v.error), `${file}: unknown error ${v.error}`).toBe(true)
     for (const w of v.warnings ?? []) expect(warningCodes.has(w), `${file}: unknown warning ${w}`).toBe(true)
     if (v.payload !== undefined) expect(v.payload.includes('\r'), `${file}: payload contains CR`).toBe(false)
+    // The SVG runners pick vectors by kind/render and count them against the render-svg-* files.
+    if (v.id.startsWith('render-svg-')) expect(v.kind === 'svg' || v.render === 'svg', `${file}: render-svg-* is not an SVG vector`).toBe(true)
   }
 })
 
@@ -163,4 +165,38 @@ test('schema rejects a lookup vector without expected.result, or with a payload 
   expect(validate({ ...lookup, error: 'INVALID_VALUE' })).toBe(false)
   const { input: _i, ...noInput } = lookup
   expect(validate(noInput)).toBe(false)
+})
+
+const svg = {
+  id: 'x',
+  scheme: 'render',
+  kind: 'svg',
+  input: { text: 'A', margin: 2 },
+  expected: { svg: '<svg></svg>' },
+  source: 'test fixture inside conformance-format.spec.ts',
+}
+
+test('schema accepts an svg vector with input and expected.svg and no payload', () => {
+  expect(validate(svg), ajv.errorsText(validate.errors)).toBe(true)
+})
+
+test('schema rejects an svg vector without input or expected.svg, or with a payload, error or render', () => {
+  const { input: _i, ...noInput } = svg
+  const { expected: _e, ...noExpected } = svg
+  expect(validate(noInput)).toBe(false)
+  expect(validate(noExpected)).toBe(false)
+  expect(validate({ ...svg, expected: {} })).toBe(false)
+  expect(validate({ ...svg, expected: { svg: 1 } })).toBe(false)
+  expect(validate({ ...svg, expected: { svg: '<svg/>', rows: [] } })).toBe(false)
+  expect(validate({ ...svg, payload: '000201' })).toBe(false)
+  expect(validate({ ...svg, error: 'INVALID_VALUE' })).toBe(false)
+  expect(validate({ ...svg, render: 'svg' })).toBe(false)
+})
+
+test('schema accepts render: "svg" only on an encode-invalid vector of scheme render', () => {
+  const invalid = { id: 'x', scheme: 'render', kind: 'encode-invalid', render: 'svg', input: { text: 'A', margin: -1 }, error: 'INVALID_VALUE', source: 'test fixture inside conformance-format.spec.ts' }
+  expect(validate(invalid), ajv.errorsText(validate.errors)).toBe(true)
+  expect(validate({ ...invalid, render: 'png' })).toBe(false)
+  expect(validate({ ...invalid, scheme: 'vietqr' })).toBe(false)
+  expect(validate({ ...invalid, kind: 'matrix', expected: { size: 21, version: 1, ecc: 'M', mask: 0, rows: [] }, error: undefined })).toBe(false)
 })

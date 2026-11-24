@@ -165,3 +165,26 @@ describe('checkSvgOptions: every option that does not depend on the text, checke
     expect(() => checkSvgOptions(options)).not.toThrow()
   })
 })
+
+describe('null options are the defaults, like .NET (conformance/README.md "Mẫu SVG")', () => {
+  const LOGO = 'data:image/png;base64,AAAA'
+  test('toSvg and checkSvgOptions with null options', () => {
+    expect(toSvg('TINGQR', null as unknown as SvgOptions)).toBe(toSvg('TINGQR'))
+    expect(() => checkSvgOptions(null as unknown as SvgOptions)).not.toThrow()
+  })
+  test('logo: null means no logo', () => {
+    const options = { minVersion: 5, logo: null } as unknown as SvgOptions
+    expect(toSvg('TINGQR', options)).toBe(toSvg('TINGQR', { minVersion: 5 }))
+    expect(toSvg('TINGQR', { ...options, ecc: 'L' })).toBe(toSvg('TINGQR', { minVersion: 5, ecc: 'L' }))
+    expect(() => checkSvgOptions({ ...options, ecc: 'L' })).not.toThrow()
+    expect(toSvg('TINGQR', { minVersion: 5, logo: { href: LOGO } })).not.toBe(toSvg('TINGQR', options))
+  })
+  test.each(['margin', 'foreground', 'background', 'size', 'minVersion', 'maxVersion', 'mask'])(
+    'a null %s is still INVALID_VALUE in TypeScript (.NET reads it as not set)',
+    (name) => {
+      const options = { [name]: null } as unknown as SvgOptions
+      expect(() => toSvg('TINGQR', options)).toThrow(expect.objectContaining({ code: 'INVALID_VALUE' }))
+      expect(() => checkSvgOptions(options)).toThrow(expect.objectContaining({ code: 'INVALID_VALUE' }))
+    },
+  )
+})

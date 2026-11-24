@@ -82,7 +82,7 @@ function checkLogoOptions(logo: LogoOptions, background: string) {
 function checkedParts(options: LayoutOptions, background: string) {
   const { logo, margin: _m, foreground: _f, background: _b, ...matrixOptions } = options
   // Every logo option is checked before encoding, so a bad option is reported even when the text is also too long.
-  const logoParts = logo === undefined ? undefined : checkLogoOptions(logo, background)
+  const logoParts = logo == null ? undefined : checkLogoOptions(logo, background)
   if (logoParts !== undefined) {
     if (matrixOptions.ecc !== undefined && matrixOptions.ecc !== 'H') {
       throw invalid(`A logo needs ECC H; got ecc '${String(matrixOptions.ecc)}'. Leave ecc unset or pass 'H'.`)

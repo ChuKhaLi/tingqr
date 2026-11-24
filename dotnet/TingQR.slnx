@@ -1,8 +1,10 @@
 <Solution>
   <Folder Name="/src/">
     <Project Path="src/TingQR.Core/TingQR.Core.csproj" />
+    <Project Path="src/TingQR.Rendering/TingQR.Rendering.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/TingQR.Core.Tests/TingQR.Core.Tests.csproj" />
+    <Project Path="tests/TingQR.Rendering.Tests/TingQR.Rendering.Tests.csproj" />
   </Folder>
 </Solution>

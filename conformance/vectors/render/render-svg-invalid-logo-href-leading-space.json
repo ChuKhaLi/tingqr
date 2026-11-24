@@ -1,0 +1,16 @@
+{
+  "id": "render-svg-invalid-logo-href-leading-space",
+  "scheme": "render",
+  "kind": "encode-invalid",
+  "render": "svg",
+  "input": {
+    "text": "ting ting qr",
+    "minVersion": 5,
+    "logo": {
+      "href": " logo.png"
+    }
+  },
+  "error": "INVALID_VALUE",
+  "source": "@tingqr/render toSvg (TypeScript) at d82ce48; golden output so the two implementations agree, not an independent oracle (the encoder is checked against the original Nayuki on the matrix vectors; the matrices inside these SVGs come from the port)",
+  "note": "a relative path starting with a space"
+}

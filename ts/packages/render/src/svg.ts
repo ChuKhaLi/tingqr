@@ -58,14 +58,14 @@ export function forEachRun(
  * too big for a small code) are still only known when toSvg runs.
  */
 export function checkSvgOptions(options: SvgOptions = {}): void {
-  const { size, ...rest } = options
+  const { size, ...rest } = options ?? {} // null is the defaults too, like .NET
   checkLayoutOptions(rest)
   sizeAttr(size)
 }
 
 /** Render `text` as a QR code SVG string. No DOM: runs in browsers, Node, Workers and SSR. */
 export function toSvg(text: string, options: SvgOptions = {}): string {
-  const { margin = 4, foreground = '#000000', background = '#ffffff', size, ...rest } = options
+  const { margin = 4, foreground = '#000000', background = '#ffffff', size, ...rest } = options ?? {}
   checkMargin(margin)
   checkColours(foreground, background)
   const dimensions = sizeAttr(size)

@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { TingQrError } from '@tingqr/core'
 import { CONFORMANCE_DIR } from './conformance-root.js'
-import { toMatrix } from '../src/index.js'
+import { toMatrix, type MatrixOptions } from '../src/index.js'
 
 const ALNUM = JSON.parse(readFileSync(join(CONFORMANCE_DIR, 'vectors', 'render', 'render-vietqr-alnum.json'), 'utf8')).input.text
 
@@ -79,4 +79,8 @@ test.each(['\uD800', 'a\uDC00b', '😀'.slice(0, 1)])('text with an unpaired sur
   const e = thrown(() => toMatrix(text))
   expect(e.code).toBe('INVALID_VALUE')
   expect(e.message).toContain('surrogate')
+})
+
+test('null options are the defaults, like .NET', () => {
+  expect(toMatrix('TINGQR', null as unknown as MatrixOptions)).toEqual(toMatrix('TINGQR'))
 })

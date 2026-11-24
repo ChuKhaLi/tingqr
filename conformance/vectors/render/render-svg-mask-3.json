@@ -1,0 +1,14 @@
+{
+  "id": "render-svg-mask-3",
+  "scheme": "render",
+  "kind": "svg",
+  "input": {
+    "text": "ting ting qr",
+    "mask": 3
+  },
+  "expected": {
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 29 29\" shape-rendering=\"crispEdges\"><rect width=\"29\" height=\"29\" fill=\"#ffffff\"/><path fill=\"#000000\" d=\"M4 4h7v1h-7zM12 4h2v1h-2zM15 4h1v1h-1zM18 4h7v1h-7zM4 5h1v1h-1zM10 5h1v1h-1zM12 5h1v1h-1zM14 5h1v1h-1zM16 5h1v1h-1zM18 5h1v1h-1zM24 5h1v1h-1zM4 6h1v1h-1zM6 6h3v1h-3zM10 6h1v1h-1zM15 6h2v1h-2zM18 6h1v1h-1zM20 6h3v1h-3zM24 6h1v1h-1zM4 7h1v1h-1zM6 7h3v1h-3zM10 7h1v1h-1zM12 7h1v1h-1zM14 7h1v1h-1zM18 7h1v1h-1zM20 7h3v1h-3zM24 7h1v1h-1zM4 8h1v1h-1zM6 8h3v1h-3zM10 8h1v1h-1zM18 8h1v1h-1zM20 8h3v1h-3zM24 8h1v1h-1zM4 9h1v1h-1zM10 9h1v1h-1zM13 9h1v1h-1zM18 9h1v1h-1zM24 9h1v1h-1zM4 10h7v1h-7zM12 10h1v1h-1zM14 10h1v1h-1zM16 10h1v1h-1zM18 10h7v1h-7zM12 11h1v1h-1zM14 11h1v1h-1zM4 12h1v1h-1zM6 12h2v1h-2zM9 12h3v1h-3zM13 12h2v1h-2zM18 12h1v1h-1zM21 12h1v1h-1zM23 12h2v1h-2zM6 13h1v1h-1zM8 13h2v1h-2zM11 13h3v1h-3zM16 13h5v1h-5zM24 13h1v1h-1zM5 14h2v1h-2zM9 14h2v1h-2zM13 14h1v1h-1zM16 14h1v1h-1zM19 14h1v1h-1zM23 14h2v1h-2zM4 15h1v1h-1zM7 15h3v1h-3zM11 15h1v1h-1zM16 15h1v1h-1zM19 15h3v1h-3zM23 15h1v1h-1zM4 16h1v1h-1zM6 16h1v1h-1zM8 16h3v1h-3zM12 16h2v1h-2zM15 16h1v1h-1zM18 16h3v1h-3zM23 16h1v1h-1zM12 17h1v1h-1zM15 17h1v1h-1zM17 17h2v1h-2zM20 17h1v1h-1zM22 17h2v1h-2zM4 18h7v1h-7zM12 18h2v1h-2zM18 18h3v1h-3zM22 18h1v1h-1zM4 19h1v1h-1zM10 19h1v1h-1zM12 19h1v1h-1zM19 19h1v1h-1zM21 19h2v1h-2zM4 20h1v1h-1zM6 20h3v1h-3zM10 20h1v1h-1zM14 20h2v1h-2zM19 20h1v1h-1zM21 20h3v1h-3zM4 21h1v1h-1zM6 21h3v1h-3zM10 21h1v1h-1zM12 21h1v1h-1zM14 21h4v1h-4zM19 21h1v1h-1zM21 21h1v1h-1zM23 21h1v1h-1zM4 22h1v1h-1zM6 22h3v1h-3zM10 22h1v1h-1zM12 22h2v1h-2zM15 22h2v1h-2zM21 22h1v1h-1zM4 23h1v1h-1zM10 23h1v1h-1zM17 23h2v1h-2zM21 23h1v1h-1zM24 23h1v1h-1zM4 24h7v1h-7zM12 24h3v1h-3zM18 24h1v1h-1zM20 24h1v1h-1zM22 24h1v1h-1z\"/></svg>"
+  },
+  "source": "@tingqr/render toSvg (TypeScript) at d82ce48; golden output so the two implementations agree, not an independent oracle (the encoder is checked against the original Nayuki on the matrix vectors; the matrices inside these SVGs come from the port)",
+  "note": "a fixed mask"
+}
