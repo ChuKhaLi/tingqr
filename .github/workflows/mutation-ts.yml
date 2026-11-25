@@ -24,7 +24,9 @@ permissions:
 jobs:
   mutation:
     runs-on: ubuntu-latest
-    timeout-minutes: 30  # core alone took ~13 min on CI (2026-11-19)
+    # core alone took ~13 min on CI (2026-11-19); core and render took 22 min on PR #11 (2026-11-24), close to the
+    # old 30-minute limit.
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v5
       - uses: pnpm/action-setup@v6
