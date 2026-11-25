@@ -57,6 +57,9 @@ const CASES = [
   { id: 'render-version-40-byte-full', text: repeatTo('tingqr ', 2953), options: { ecc: 'L', minVersion: 40, maxVersion: 40 } },
   // Numeric mode from version 10 up has a 12-bit character count (10 bits below).
   { id: 'render-numeric-version-10', text: repeatTo('0123456789', 500), options: { ecc: 'M', minVersion: 10, maxVersion: 10 } },
+  // 7089 digits is the numeric-mode capacity of version 40 at ECC L, the longest text any QR code holds; one more digit
+  // is render-invalid-too-long-7090-digits below.
+  { id: 'render-numeric-version-40-full', text: repeatTo('0123456789', 7089), options: { ecc: 'L' } },
 ]
 
 /** `unit` repeated and cut to exactly `length` characters. */
@@ -76,6 +79,11 @@ const INVALID = [
     'render-invalid-too-long',
     { text: 'a'.repeat(1274), maxVersion: 40, ecc: 'H', boostEcc: false },
     'one byte over version 40 at ECC H (1273 bytes in byte mode); the same text fits at ECC L',
+  ],
+  [
+    'render-invalid-too-long-7090-digits',
+    { text: repeatTo('0123456789', 7090), ecc: 'L' },
+    'one digit over the numeric-mode capacity of version 40 at ECC L (7089, render-numeric-version-40-full); the original encoder throws "Data too long"',
   ],
   [
     'render-invalid-lone-surrogate',

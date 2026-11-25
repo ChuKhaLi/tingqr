@@ -48,6 +48,14 @@ test('parsePayload accepts a lowercase CRC and warns', () => {
   const r = parsePayload(S.slice(0, -4) + 'ae9f')
   expect(r.ok).toBe(true)
   expect(codes(r)).toEqual(['LOWERCASE_CRC'])
+  expect(r.ok ? r.warnings.map((w) => w.tag) : []).toEqual(['63'])
+})
+
+test('TRIMMED_WHITESPACE has no tag and comes before LOWERCASE_CRC', () => {
+  const r = parsePayload(' ' + S.slice(0, -4) + 'ae9f ')
+  expect(r.ok).toBe(true)
+  expect(codes(r)).toEqual(['TRIMMED_WHITESPACE', 'LOWERCASE_CRC'])
+  expect(r.ok ? r.warnings.map((w) => w.tag) : []).toEqual([undefined, '63'])
 })
 
 test('parsePayload reports CRC_MISMATCH for a wrong CRC', () => {
