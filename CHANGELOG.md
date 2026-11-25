@@ -16,6 +16,8 @@ Planned as 0.1.0, after MoMo and ZaloPay recognition and scans with more banking
 - Shared error and warning codes (`conformance/errors.json`). Encoders called without an input object throw
   `INVALID_VALUE`, never a `TypeError`; a code without tag 01 is `MISSING_TAG` on `01`.
 - KHQR: the tag 64 language code must be 2 letters (ISO 639-1).
+- The VietQR `NON_ASCII` message for an accented purpose states tingqr's rule (printable ASCII only) instead of
+  claiming that banking apps reject accents; the code is unchanged.
 - `@tingqr/core/banks`: Vietnamese banks (`findBank`), banking apps (`findBankApp`, `appsForBank`) and links that open
   them (`bankAppLink`).
 
@@ -76,6 +78,14 @@ no script checks it.
   `QrAmount.HasAmount`, `BankApp.VietQrAutofill`. Differences from the TypeScript names are listed in
   `conformance/README.md`.
 - `TingQrVersion.Value` equals the package version (`node dotnet/scripts/set-version.mjs` sets both).
+- Returned lists and dictionaries are read-only (`Warnings`, `EmvPayload.Fields`, `Tlv.Parse`, `TlvNode.Children`,
+  `TingQrException.Fields`, `AlsoMatches`, decoded dictionaries): casting back to `IList<T>`/`IDictionary<,>` and
+  writing throws `NotSupportedException`. The constructors of `EmvPayload`, `TingQrException`, `TlvNode` and
+  `TingQrResult<T>.Success` copy the list they are given.
+- `VietnameseText.RemoveAccents` no longer throws on a lone surrogate (kept as is) and strips combining marks outside
+  the BMP after a Latin letter, matching `removeVietnameseAccents`; `null` throws `ArgumentNullException`.
+- The VietQR `NON_ASCII` message for an accented purpose states tingqr's rule (printable ASCII only) instead of
+  claiming that banking apps reject accents; the code is unchanged.
 
 ### TingQR.Rendering
 
@@ -84,13 +94,15 @@ no script checks it.
   `conformance/vectors/render/`; the matrices are also checked on the 19 Nayuki matrix vectors and the 8 hand-written
   option-error vectors. Targets `net10.0` and `netstandard2.0`; the encoder is ported from Project Nayuki's generator
   v1.8.0 (MIT).
+- `SvgSize` has value equality (`IEquatable<SvgSize>`, `==`, `!=`): same form and same value (pixels by `==` of
+  `double`, lengths ordinal).
 
 ### TingQR.BankLogos
 
 - The bank logos and app icons of `conformance/banks/logos/`, embedded in the assembly: `BankLogos.Logo(bin)`,
-  `Icon(appId)` (data URI or `null`), `OpenLogo`, `OpenIcon`, `LogoBins`, `IconIds`. Exact, case-sensitive keys. Images
-  are trademarks, not MIT: the package licence is its `LOGOS-NOTICE.md`, generated from the same manifest as the npm
-  notice. Targets `net10.0` and `netstandard2.0`; no dependencies.
+  `Icon(appId)` (data URI or `null`), `OpenLogo`, `OpenIcon`, `LogoBins`, `IconIds` (read-only lists). Exact,
+  case-sensitive keys. Images are trademarks, not MIT: the package licence is its `LOGOS-NOTICE.md`, generated from the
+  same manifest as the npm notice. Targets `net10.0` and `netstandard2.0`; no dependencies.
 
 ### TingQR.AspNetCore
 

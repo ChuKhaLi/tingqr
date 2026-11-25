@@ -20,13 +20,16 @@ namespace TingQR
         /// <summary>The value; default when <see cref="Ok"/> is false.</summary>
         public T? Value { get; }
 
-        /// <summary>Warnings raised on success; empty on failure.</summary>
+        /// <summary>Warnings raised on success; empty on failure. Read-only.</summary>
         public IReadOnlyList<TingQrWarning> Warnings { get; }
 
         /// <summary>The error; null when <see cref="Ok"/> is true.</summary>
         public TingQrException? Error { get; }
 
-        /// <summary>Builds a successful result.</summary>
+        /// <summary>
+        /// Builds a successful result. <paramref name="warnings"/> is copied: later changes to the caller's list are not
+        /// seen, and <see cref="Warnings"/> is read-only.
+        /// </summary>
         public static TingQrResult<T> Success(T value, IReadOnlyList<TingQrWarning> warnings)
             => new TingQrResult<T>(true, value, warnings, null);
 

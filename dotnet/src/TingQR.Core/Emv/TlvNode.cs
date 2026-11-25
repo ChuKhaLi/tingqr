@@ -11,12 +11,15 @@ namespace TingQR.Emv
     /// <summary>A TLV field with optional parsed sub-fields.</summary>
     /// <param name="Tag">Two-digit tag.</param>
     /// <param name="Value">Field value.</param>
-    /// <param name="Children">Parsed sub-fields, when the field is a template.</param>
+    /// <param name="Children">Parsed sub-fields, when the field is a template. Copied: later changes to the caller's list are not seen.</param>
     public sealed record TlvNode(string Tag, string Value, IReadOnlyList<TlvNode>? Children = null) : TlvField(Tag, Value)
     {
         private readonly IReadOnlyList<TlvNode>? _children = ReadOnly.ListOrNull(Children);
 
-        /// <summary>Parsed sub-fields, when the field is a template. A read-only copy of the list given.</summary>
+        /// <summary>
+        /// Parsed sub-fields, when the field is a template. A read-only copy of the list given (in the constructor or in
+        /// <c>init</c>/<c>with</c>): later changes to the caller's list are not seen.
+        /// </summary>
         public IReadOnlyList<TlvNode>? Children
         {
             get => _children;

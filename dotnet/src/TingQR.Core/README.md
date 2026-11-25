@@ -90,7 +90,9 @@ Everything is in the `TingQR` namespace except the EMV layer and `ParseMode`, wh
   `==`. Compare the fields you need.
 - **Read-only results.** Lists and dictionaries the library returns (`Warnings`, `EmvPayload.Fields`, `TlvNode.Children`,
   `TingQrException.Fields`, `AlsoMatches`, the dictionaries of decoded data, `Banks.All`...) are read-only wrappers:
-  casting one to `IList<T>` or `IDictionary<,>` and changing it throws `NotSupportedException`.
+  casting one to `IList<T>` or `IDictionary<,>` and changing it throws `NotSupportedException`. They are snapshots:
+  the public constructors (`EmvPayload`, `TingQrException`, `TlvNode`) and `TingQrResult<T>.Success` copy the list
+  they are given, so later changes to your list are not seen.
 - **`BankApps.Link` and `fallbackUrl`.** .NET has no WHATWG URL parser, so a small checker produces the normalised
   URL. It rejects (`INVALID_VALUE`) URLs WHATWG would accept and rewrite: user info, IPv6, non-canonical IPv4, `%` or
   `\` in the host, `\` or `.`/`..` segments in the path (also percent-encoded, `%2e`, `.%2e`), a last host label

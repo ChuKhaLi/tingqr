@@ -6,7 +6,10 @@ namespace TingQR.Emv
     /// <summary>A parsed EMV merchant-presented payload with a verified CRC.</summary>
     public sealed class EmvPayload
     {
-        /// <summary>Creates a payload.</summary>
+        /// <summary>
+        /// Creates a payload. <paramref name="fields"/> is copied: later changes to the caller's list are not seen, and
+        /// <see cref="Fields"/> is read-only.
+        /// </summary>
         public EmvPayload(IReadOnlyList<TlvNode> fields, string crc, string raw)
         {
             Fields = ReadOnly.List(fields);
@@ -14,7 +17,7 @@ namespace TingQR.Emv
             Raw = raw;
         }
 
-        /// <summary>Top-level fields, including tag 63.</summary>
+        /// <summary>Top-level fields, including tag 63. Read-only.</summary>
         public IReadOnlyList<TlvNode> Fields { get; }
 
         /// <summary>The CRC, uppercase.</summary>
