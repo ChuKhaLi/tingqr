@@ -1,0 +1,14 @@
+{
+  "id": "khqr-expiry-not-13-digits-none",
+  "scheme": "khqr-expiry",
+  "kind": "expiry",
+  "payload": "00020101021229460015john_smith@devb0111855122334550208Dev Bank52045999530384054031005802KH5910John Smith6010PHNOM PENH62670106#123450211855122334550311Coffee Shop0709Cashier_10810Buy coffee64280002km0108ចន ស្មីន0206ភ្នំពញ992200131726821915797010126304E232",
+  "input": {
+    "nowMs": 1726822035798
+  },
+  "expected": {
+    "result": null
+  },
+  "source": "conformance/schemes/khqr.md (isKhqrExpired: true when nowMs > expiresAt, as the Bakong SDK; undefined, written null, when the decoded code has no 13-digit expiresAt), expected value worked out by hand",
+  "note": "99.01 is not 13 digits: lenient mode keeps it only in timestamp, expiresAt is absent. payload copied unchanged from conformance/vectors/khqr/khqr-expiry-not-13-digits.json."
+}

@@ -28,7 +28,9 @@
         "matrix",
         "link",
         "lookup",
-        "svg"
+        "svg",
+        "expiry",
+        "text"
       ]
     },
     "payload": {
@@ -77,6 +79,40 @@
     },
     "textDependent": {
       "type": "boolean"
+    },
+    "warningTags": {
+      "type": "array",
+      "items": {
+        "anyOf": [
+          {
+            "type": "string",
+            "pattern": "^[0-9]{2}(.[0-9]{2})*$"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      }
+    },
+    "errorFields": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "tag",
+          "value"
+        ],
+        "properties": {
+          "tag": {
+            "type": "string",
+            "pattern": "^[0-9]{2}$"
+          },
+          "value": {
+            "type": "string"
+          }
+        }
+      }
     }
   },
   "allOf": [
@@ -116,7 +152,8 @@
                 "matrix",
                 "link",
                 "lookup",
-                "svg"
+                "svg",
+                "text"
               ]
             }
           }
@@ -474,6 +511,172 @@
         "required": [
           "render"
         ]
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "warnings"
+        ],
+        "properties": {
+          "warnings": {
+            "type": "array",
+            "minItems": 1
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "warningTags"
+        ]
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "warningTags"
+        ]
+      },
+      "then": {
+        "required": [
+          "warnings"
+        ]
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "errorFields"
+        ]
+      },
+      "then": {
+        "properties": {
+          "kind": {
+            "const": "invalid"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "error"
+        ],
+        "properties": {
+          "error": {
+            "const": "UNKNOWN_SCHEME"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "errorFields"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "expiry"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "payload",
+          "input",
+          "expected"
+        ],
+        "not": {
+          "required": [
+            "error"
+          ]
+        },
+        "properties": {
+          "input": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "nowMs"
+            ],
+            "properties": {
+              "nowMs": {
+                "type": "integer"
+              }
+            }
+          },
+          "expected": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "result"
+            ],
+            "properties": {
+              "result": {
+                "type": [
+                  "boolean",
+                  "null"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "text"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "input",
+          "expected"
+        ],
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "payload"
+              ]
+            },
+            {
+              "required": [
+                "error"
+              ]
+            }
+          ]
+        },
+        "properties": {
+          "input": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "text"
+            ],
+            "properties": {
+              "text": {
+                "type": "string"
+              }
+            }
+          },
+          "expected": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "result"
+            ],
+            "properties": {
+              "result": {
+                "type": "string"
+              }
+            }
+          }
+        }
       }
     }
   ]

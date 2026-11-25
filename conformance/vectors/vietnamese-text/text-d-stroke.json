@@ -1,0 +1,13 @@
+{
+  "id": "text-d-stroke",
+  "scheme": "vietnamese-text",
+  "kind": "text",
+  "input": {
+    "text": "Đặng Văn Đức đi đâu"
+  },
+  "expected": {
+    "result": "Dang Van Duc di dau"
+  },
+  "source": "Unicode rule of removeVietnameseAccents (conformance/README.md): NFD, drop every combining mark (General_Category M, by code point, so marks outside the BMP too) that follows an ASCII letter A-Z/a-z, map đ/Đ to d/D, NFC; expected value worked out by hand from the Unicode Character Database (decompositions, General_Category), not from tingqr",
+  "note": "đ (U+0111) and Đ (U+0110) have no decomposition; the rule maps them to d/D."
+}

@@ -1,0 +1,14 @@
+{
+  "id": "khqr-expiry-static-none",
+  "scheme": "khqr-expiry",
+  "kind": "expiry",
+  "payload": "00020101021130470009khqr@aclb0111855124649170215ACLEDA Bank Plc5204599953038405802KH5907BUN MAO6010Phnom Penh6102126213020901050033164310002KM0107BUN MAO0210Phnom Penh6304E313",
+  "input": {
+    "nowMs": 1726822035798
+  },
+  "expected": {
+    "result": null
+  },
+  "source": "conformance/schemes/khqr.md (isKhqrExpired: true when nowMs > expiresAt, as the Bakong SDK; undefined, written null, when the decoded code has no 13-digit expiresAt), expected value worked out by hand",
+  "note": "Static code without tag 99: no expiresAt, so no answer whatever nowMs is. payload copied unchanged from conformance/vectors/khqr/khqr-sdk-merchant-acleda.json."
+}

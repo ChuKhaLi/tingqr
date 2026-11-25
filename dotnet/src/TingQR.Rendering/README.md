@@ -68,7 +68,7 @@ lengths with the same string (ordinal).
 
 ## What has been checked
 
-- 19 matrix vectors in `conformance/vectors/render/`, generated from the original Nayuki library, 8 hand-written
+- 23 matrix vectors (versions up to 40) in `conformance/vectors/render/`, generated from the original Nayuki library, 8 hand-written
   option-error vectors for `ToMatrix`, and 80 SVG vectors (45 that render, 35 that are rejected: each option and the
   main rejections). The SVG vectors are the output of tingqr's own TypeScript code, so they
   prove the two implementations agree, not that the SVG is right; the matrices inside them come from the port, not from

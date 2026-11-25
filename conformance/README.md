@@ -77,13 +77,15 @@ thử ở đây, nên hai bản cho cùng kết quả trên mọi hành vi có m
 |---|---|---|
 | `id` | có | `^[a-z0-9-]+$`, trùng tên file |
 | `scheme` | có | ví dụ `vietqr` |
-| `kind` | có | `valid`: đọc ra `expected` ở chế độ chặt (riêng `scheme: detect`, không có chế độ chặt: `detect` đọc ra `expected`). `invalid`: cả hai chế độ đều báo `error`. `lenient`: chế độ chặt báo `error`, chế độ chấp nhận lệch chuẩn đọc ra `expected` kèm `warnings`. `encode-invalid`: tạo mã từ `input` phải báo lỗi `error` (kèm `errorTag` nếu có); không có `payload` |
+| `kind` | có | `valid`: đọc ra `expected` ở chế độ chặt (riêng `scheme: detect`, không có chế độ chặt: `detect` đọc ra `expected`). `invalid`: cả hai chế độ đều báo `error`. `lenient`: chế độ chặt báo `error`, chế độ chấp nhận lệch chuẩn đọc ra `expected` kèm `warnings`. `encode-invalid`: tạo mã từ `input` phải báo lỗi `error` (kèm `errorTag` nếu có); không có `payload`. `matrix`, `svg`, `link`, `lookup`, `expiry`, `text`: xem mục riêng của từng loại dưới |
 | `payload` | trừ `encode-invalid` | chuỗi QR, không chứa `\r` |
 | `input` | không | chỉ ở `valid`: tạo mã từ `input` phải ra đúng `payload` từng byte, trừ khi `roundTrip: false` |
 | `expected` | `valid`, `lenient` | dữ liệu đọc ra |
 | `warnings` | `lenient` | mã cảnh báo mong đợi |
+| `warningTags` | khi `warnings` không rỗng | tag của từng cảnh báo, cùng thứ tự và cùng số phần tử với `warnings`; `null` cho cảnh báo không có tag (`TRIMMED_WHITESPACE`). Mẫu không có `warnings` thì không có cảnh báo nào, nên cũng không có tag |
 | `error` | `invalid`, `lenient`, `encode-invalid` | mã lỗi mong đợi |
 | `errorTag` | không | tag kèm lỗi, dạng `62` hoặc `38.01` |
+| `errorFields` | `error: UNKNOWN_SCHEME` (chỉ ở mẫu `invalid`) | các trường cấp ngoài cùng mà lỗi mang theo (`TingQrError.fields` / `TingQrException.Fields`): mảng `{ tag, value }` theo thứ tự trong chuỗi, kể cả tag `63` (CRC) |
 | `source` | có | nguồn: đặc tả (mục, trang), repo kèm giấy phép, oracle kèm phiên bản, hoặc "rút từ QR thật của <loại>, chụp ngày D" |
 | `derived`, `derivedFrom` | khi sửa từ mẫu khác | `derivedFrom` là `id` mẫu gốc |
 | `note` | không | ghi đã sửa gì, đã chạy lệnh gì |
@@ -114,21 +116,21 @@ Ba luật chung nữa, cùng loại:
   - `render-svg-invalid-margin-fraction` (`margin` 1.5, kiểu `int?`).
   - `render-svg-invalid-logo-padding-fraction` (`logo.padding` 1.5, kiểu `int?`).
 - **Thông báo lỗi** không bắt buộc giống từng chữ giữa các bản (luật "không có đầu vào" ở trên cũng nằm trong luật này).
-- **Chưa có loại mẫu, chỉ có test của từng bản:** `isKhqrExpired` / `Khqr.IsExpired`, `removeVietnameseAccents` /
-  `VietnameseText.RemoveAccents`, `fields` của lỗi `UNKNOWN_SCHEME` (`TingQrError.fields` / `TingQrException.Fields`)
-  và `tag` của cảnh báo. Hai bản có thể lệch ở những chỗ này mà bộ mẫu không bắt được.
-  - `removeVietnameseAccents` / `VietnameseText.RemoveAccents` với `null` (hay thứ không phải chuỗi ở TypeScript) là
-    lỗi lập trình, không phải `TingQrError`: TypeScript ném `TypeError`, .NET ném `ArgumentNullException`. Surrogate lẻ
-    được giữ nguyên ở cả hai bản (JavaScript `normalize` để nguyên nó; .NET chuẩn hoá từng đoạn giữa các surrogate lẻ),
-    và dấu nằm ngoài BMP (cặp surrogate) sau chữ Latin cũng bị bỏ như `\p{M}` có cờ `u`. Kết quả mong đợi của các test
-    .NET lấy từ bản TS chạy trên Node 22.23.3 (2026-11-25).
-  - Kiểm kiểu lúc chạy của `@tingqr/render` không có mẫu và chỉ có ở TypeScript: `boostEcc` không phải boolean, `size`
+- **Tag của cảnh báo** (`warningTags`): `MISSING_OPTIONAL_TAG` mang đúng tag bị thiếu. Thứ tự: các tag chuẩn thiếu
+  theo thứ tự số (`52`, `53`, `58`, `59`, `60`), rồi `99.01` (KHQR động không có hạn đọc được). `LOWERCASE_CRC` mang
+  `63`; `TRIMMED_WHITESPACE` không có tag (`null`). Hai cảnh báo này của bước đọc chuỗi đứng trước cảnh báo của loại
+  QR. Giá trị trong mẫu đọc bằng tay từ chuỗi QR (tag nào vắng), không lấy từ đầu ra của tingqr. Chưa có mẫu nào mang
+  `TRIMMED_WHITESPACE` hay `LOWERCASE_CRC`.
+- `removeVietnameseAccents` / `VietnameseText.RemoveAccents` với `null` (hay thứ không phải chuỗi ở TypeScript) là lỗi
+  lập trình, không phải `TingQrError`: TypeScript ném `TypeError`, .NET ném `ArgumentNullException`. Không có mẫu cho
+  trường hợp này (chỉ test riêng). Phần còn lại có mẫu `text` (dưới).
+- Kiểm kiểu lúc chạy của `@tingqr/render` không có mẫu và chỉ có ở TypeScript: `boostEcc` không phải boolean, `size`
     không phải số hay chuỗi, `logo.size` không phải số, `margin` là chuỗi. Bên C# các trường hợp này không viết được vì
     kiểu tĩnh (`bool?`, `SvgSize?`, `double?`, `int?`).
 - **`null` trong `expected`:** bộ chạy .NET bỏ mọi thuộc tính C# mang `null` khi đổi kết quả sang JSON (coi `null` như
   vắng, giống trường tuỳ chọn bị bỏ ở TypeScript). Vì vậy một mẫu ghi `"x": null` bên trong `expected` sẽ đỏ ở .NET:
   trường tuỳ chọn không có giá trị thì bỏ hẳn khỏi mẫu, không ghi `null`. (Riêng `expected.result: null` của mẫu
-  `lookup` là giá trị kết quả, không phải thuộc tính bị bỏ.)
+  `lookup` và `expiry` là giá trị kết quả, không phải thuộc tính bị bỏ.)
 - **Số tiền không nguyên:** bản .NET nhận `decimal` (`QrAmount`), JavaScript nhận `number` (double). Hai kiểu chỉ viết
   ra chữ số khác nhau khi số có hơn 15 chữ số có nghĩa (double làm tròn), nhỏ hơn 1e-6 hay từ 1e21 trở lên (JavaScript
   dùng dạng mũ). Mọi hàm tạo mã đều từ chối các giá trị đó (`INVALID_VALUE`, tag `54`): VietQR chỉ nhận số nguyên 1–13
@@ -151,6 +153,32 @@ Ba luật chung nữa, cùng loại:
     (ném `INVALID_VALUE`). C# không phân biệt tham số vắng với `null`, nên `BankApps.Link(..., null)` là không có
     fallback.
 
+## Mẫu hết hạn KHQR (`kind: "expiry"`, `scheme: "khqr-expiry"`)
+
+Dành cho `isKhqrExpired` / `Khqr.IsExpired`. Mẫu nằm ở `vectors/khqr-expiry/`.
+
+- `payload`: chuỗi KHQR, chép nguyên từ một mẫu trong `vectors/khqr/` (`note` ghi mẫu nào). `input`: `{ nowMs }` (số
+  nguyên, mili-giây Unix). `expected`: `{ result }`, `true`, `false` hoặc `null`. Không có `error`.
+- **Quy tắc so sánh:** đọc `payload` ở chế độ chấp nhận lệch chuẩn (phải thành công), rồi gọi
+  `isKhqrExpired(data, input.nowMs)`. Kết quả phải bằng `result`; `undefined` (TypeScript) và `null` (.NET) ghi là `null`.
+- Giá trị mong đợi theo luật ở `schemes/khqr.md`: `true` khi `nowMs > expiresAt` (như SDK Bakong, nên đúng biên là
+  `false`), `null` khi không có `expiresAt` 13 chữ số. Có mẫu trước hạn, đúng biên, sau hạn, và ba mẫu không có hạn (QR
+  tĩnh, QR động chỉ có `99.00`, `99.01` không phải 13 chữ số).
+
+## Mẫu bỏ dấu tiếng Việt (`kind: "text"`, `scheme: "vietnamese-text"`)
+
+Dành cho `removeVietnameseAccents` / `VietnameseText.RemoveAccents`. Mẫu nằm ở `vectors/vietnamese-text/`.
+
+- `input`: `{ text }`; `expected`: `{ result }`, đều là chuỗi. Không có `payload`, không có `error`.
+- **Quy tắc so sánh:** `removeVietnameseAccents(input.text)` phải bằng `result` từng đơn vị UTF-16.
+- **Luật** (cả hai bản): chuẩn hoá NFD; bỏ mọi dấu kết hợp (General_Category `M`, tính theo code point nên kể cả dấu
+  ngoài BMP) đứng ngay sau một chữ ASCII `A`–`Z`/`a`–`z`; đổi `đ`/`Đ` thành `d`/`D`; chuẩn hoá NFC. Dấu sau chữ không
+  phải ASCII (Thái, Khmer, Hy Lạp...) và sau chữ số được giữ. Surrogate lẻ giữ nguyên (JavaScript `normalize` để nguyên
+  nó; .NET chuẩn hoá từng đoạn giữa các surrogate lẻ), và dấu sau surrogate lẻ không tính là đứng sau chữ cái.
+- Giá trị mong đợi tính bằng tay theo luật trên từ bảng Unicode (phân rã, General_Category), không lấy từ tingqr. Đối
+  chiếu thêm bằng một hàm viết lại luật trên Node 22.23.3 (`String.prototype.normalize`, 2026-11-25).
+- Trong file, dấu kết hợp và surrogate lẻ viết dạng `\uXXXX` cho dễ đọc. Bộ chạy .NET đọc chuỗi có surrogate lẻ qua
+  `JsonInput.String` (System.Text.Json từ chối nó khi đọc thẳng).
 ## Mẫu link mở app (`kind: "link"`, `scheme: "bank-app-link"`)
 
 Dành cho `bankAppLink` (`@tingqr/core/banks`). Mẫu nằm ở `vectors/bank-app-link/`.
@@ -226,8 +254,8 @@ Nguồn cho `@tingqr/bank-logos` và `TingQR.BankLogos`.
 
 ## Mẫu ma trận (`kind: "matrix"`, `scheme: "render"`)
 
-Dành cho bộ vẽ QR (`@tingqr/render`, `TingQR.Rendering` bên .NET). Mẫu nằm ở `vectors/render/`. Hiện có 19 mẫu ma trận
-(sinh từ Nayuki gốc) và 8 mẫu lỗi tuỳ chọn `render-invalid-*` viết tay (nguồn: thiết kế render, mục 5.2).
+Dành cho bộ vẽ QR (`@tingqr/render`, `TingQR.Rendering` bên .NET). Mẫu nằm ở `vectors/render/`. Hiện có 23 mẫu ma trận
+(sinh từ Nayuki gốc; có phiên bản 27, 32, 40 và chế độ số ở phiên bản 10) và 8 mẫu lỗi tuỳ chọn `render-invalid-*` viết tay (nguồn: thiết kế render, mục 5.2).
 
 - `input`: `{ text, ecc?, boostEcc?, minVersion?, maxVersion?, mask? }`. Không có `payload`, không có `error`.
 - `expected`: `{ size, version, ecc, mask, rows }`. `rows[y]` là chuỗi `0`/`1`, `1` là ô tối.

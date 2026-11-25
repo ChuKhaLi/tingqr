@@ -1,0 +1,13 @@
+{
+  "id": "text-lowercase-vowels",
+  "scheme": "vietnamese-text",
+  "kind": "text",
+  "input": {
+    "text": "àáảãạ ăằắẳẵặ âầấẩẫậ èéẻẽẹ êềếểễệ ìíỉĩị òóỏõọ ôồốổỗộ ơờớởỡợ ùúủũụ ưừứửữự ỳýỷỹỵ"
+  },
+  "expected": {
+    "result": "aaaaa aaaaaa aaaaaa eeeee eeeeee iiiii ooooo oooooo oooooo uuuuu uuuuuu yyyyy"
+  },
+  "source": "Unicode rule of removeVietnameseAccents (conformance/README.md): NFD, drop every combining mark (General_Category M, by code point, so marks outside the BMP too) that follows an ASCII letter A-Z/a-z, map đ/Đ to d/D, NFC; expected value worked out by hand from the Unicode Character Database (decompositions, General_Category), not from tingqr",
+  "note": "Every Vietnamese lowercase vowel with each tone mark. ă/â/ê/ô/ơ/ư decompose to a base letter plus breve, circumflex or horn (U+0306, U+0302, U+031B), all Mn."
+}

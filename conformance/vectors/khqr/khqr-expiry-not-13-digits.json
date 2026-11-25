@@ -44,6 +44,9 @@
   "warnings": [
     "MISSING_OPTIONAL_TAG"
   ],
+  "warningTags": [
+    "99.01"
+  ],
   "source": "mutation of khqr-sdk-individual-usd",
   "derived": true,
   "derivedFrom": "khqr-sdk-individual-usd",

@@ -57,6 +57,22 @@ namespace TingQR.Tests.Conformance
                 i.Done();
                 return BankApps.ForBank(bin).Select(a => a.Id).ToList();
             }, null);
+            // `expiry` vectors: Khqr.Decode(payload) (lenient), then Khqr.IsExpired(data, nowMs); null is JSON null.
+            VectorRunner.RegisterExpiry("khqr-expiry", (payload, mode) => Khqr.Decode(payload, mode), (data, node) =>
+            {
+                var i = JsonInput.Of(node);
+                var nowMs = i.Long("nowMs") ?? throw new InputConversionException("input.nowMs is missing.");
+                i.Done();
+                return Khqr.IsExpired((KhqrData)data, nowMs);
+            });
+            // `text` vectors: VietnameseText.RemoveAccents(text).
+            VectorRunner.Register("vietnamese-text", node =>
+            {
+                var i = JsonInput.Of(node);
+                var text = i.String("text") ?? throw new InputConversionException("input.text is missing.");
+                i.Done();
+                return VietnameseText.RemoveAccents(text);
+            }, null);
         }
 
         private static readonly IReadOnlyDictionary<string, AppPlatform> AppPlatforms =

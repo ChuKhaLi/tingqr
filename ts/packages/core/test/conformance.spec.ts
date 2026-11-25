@@ -13,6 +13,8 @@ import {
   decodeVietQr,
   decodeVnpayQr,
   encodeVietQr,
+  isKhqrExpired,
+  removeVietnameseAccents,
   type ParseMode,
   type Result,
 } from '../src/index.js'
@@ -21,6 +23,12 @@ import { appsForBank, bankAppLink, findBank } from '../src/banks.js'
 interface SchemeRunner {
   encode?: (input: any) => unknown
   decode: (payload: string, options?: { mode?: ParseMode }) => Result<unknown>
+  /** `expiry` vectors: the result of a check on the decoded (lenient) payload. */
+  expiry?: (data: any, input: any) => unknown
+}
+
+const noDecode = (scheme: string) => () => {
+  throw new Error(`${scheme} vectors have no payload to decode`)
 }
 
 const SCHEMES: Record<string, SchemeRunner> = {
@@ -55,19 +63,25 @@ const SCHEMES: Record<string, SchemeRunner> = {
       throw new Error('bank-apps-for-bank vectors have no payload to decode')
     },
   },
+  // `expiry` vectors: decodeKhqr(payload) (lenient), then isKhqrExpired(data, nowMs); undefined is written null.
+  'khqr-expiry': { decode: decodeKhqr, expiry: (data, i) => isKhqrExpired(data, i.nowMs) ?? null },
+  // `text` vectors: removeVietnameseAccents(text).
+  'vietnamese-text': { encode: (i) => removeVietnameseAccents(i.text), decode: noDecode('vietnamese-text') },
 }
 
 interface Vector {
   id: string
   scheme: string
-  kind: 'valid' | 'invalid' | 'lenient' | 'encode-invalid' | 'link' | 'lookup'
+  kind: 'valid' | 'invalid' | 'lenient' | 'encode-invalid' | 'link' | 'lookup' | 'expiry' | 'text'
   payload: string
   input?: unknown
   roundTrip?: boolean
   expected?: unknown
   warnings?: string[]
+  warningTags?: (string | null)[]
   error?: string
   errorTag?: string
+  errorFields?: { tag: string; value: string }[]
 }
 
 const VECTORS = join(CONFORMANCE_DIR, 'vectors')
@@ -98,6 +112,11 @@ function errorOf(r: Result<unknown>, v: Vector): [string | undefined, string | u
   return [errorCode(r), v.errorTag === undefined || r.ok ? undefined : r.error.tag]
 }
 
+/** The tag of each warning (null when it has none), in order; a vector without warnings expects none. */
+function warningTags(r: Result<unknown>): (string | null)[] {
+  return r.ok ? r.warnings.map((w) => w.tag ?? null) : []
+}
+
 test('render vectors live only in vectors/render/ (run by @tingqr/render); this runner sees all others', () => {
   const renderDir = join(VECTORS, 'render')
   const renderFiles = files(renderDir).length
@@ -115,6 +134,7 @@ describe.each(vectors.map((v) => [v.id, v] as const))('%s', (_id, v) => {
       if (!r.ok) return
       expect(r.value).toStrictEqual(v.expected)
       expect(r.warnings.map((w) => w.code)).toEqual(v.warnings ?? [])
+      expect(warningTags(r)).toEqual(v.warningTags ?? [])
     })
     test('decodes to the same expected in lenient mode, with the same warnings', () => {
       const r = runner(v).decode(v.payload, { mode: 'lenient' })
@@ -122,6 +142,7 @@ describe.each(vectors.map((v) => [v.id, v] as const))('%s', (_id, v) => {
       if (!r.ok) return
       expect(r.value).toStrictEqual(v.expected)
       expect(r.warnings.map((w) => w.code)).toEqual(v.warnings ?? [])
+      expect(warningTags(r)).toEqual(v.warningTags ?? [])
     })
     if (v.input !== undefined && v.roundTrip !== false) {
       test('encodes input to payload byte for byte', () => {
@@ -135,6 +156,12 @@ describe.each(vectors.map((v) => [v.id, v] as const))('%s', (_id, v) => {
     test.each(['strict', 'lenient'] as const)('fails with the expected error in %s mode', (mode) => {
       expect(errorOf(runner(v).decode(v.payload, { mode }), v)).toEqual([v.error, v.errorTag])
     })
+    if (v.errorFields !== undefined) {
+      test.each(['strict', 'lenient'] as const)('error carries the expected top-level fields in %s mode', (mode) => {
+        const r = runner(v).decode(v.payload, { mode })
+        expect(r.ok ? undefined : r.error.fields).toStrictEqual(v.errorFields)
+      })
+    }
   }
   if (v.kind === 'encode-invalid') {
     test('encode throws the expected TingQrError code and tag', () => {
@@ -161,11 +188,25 @@ describe.each(vectors.map((v) => [v.id, v] as const))('%s', (_id, v) => {
       if (!r.ok) return
       expect(r.value).toStrictEqual(v.expected)
       expect(r.warnings.map((w) => w.code)).toEqual(v.warnings)
+      expect(warningTags(r)).toEqual(v.warningTags ?? [])
     })
   }
   if (v.kind === 'link') {
     test('builds exactly the expected link from input', () => {
       expect(runner(v).encode!(v.input)).toBe((v.expected as { link: string }).link)
+    })
+  }
+  if (v.kind === 'expiry') {
+    test('decodes the payload (lenient) and checks expiry at input.nowMs', () => {
+      const r = runner(v).decode(v.payload)
+      expect(errorCode(r)).toBeUndefined()
+      if (!r.ok) return
+      expect(runner(v).expiry!(r.value, v.input)).toBe((v.expected as { result: unknown }).result)
+    })
+  }
+  if (v.kind === 'text') {
+    test('transforms input.text into exactly expected.result', () => {
+      expect(runner(v).encode!(v.input)).toBe((v.expected as { result: string }).result)
     })
   }
   if (v.kind === 'lookup') {

@@ -1,0 +1,13 @@
+{
+  "id": "text-non-bmp-mark",
+  "scheme": "vietnamese-text",
+  "kind": "text",
+  "input": {
+    "text": "a\ud834\udd67b α\ud834\udd67"
+  },
+  "expected": {
+    "result": "ab α\ud834\udd67"
+  },
+  "source": "Unicode rule of removeVietnameseAccents (conformance/README.md): NFD, drop every combining mark (General_Category M, by code point, so marks outside the BMP too) that follows an ASCII letter A-Z/a-z, map đ/Đ to d/D, NFC; expected value worked out by hand from the Unicode Character Database (decompositions, General_Category), not from tingqr",
+  "note": "U+1D167 (MUSICAL SYMBOL COMBINING TREMOLO-1, Mn) is outside the BMP (a surrogate pair): dropped after an ASCII letter, kept after α."
+}

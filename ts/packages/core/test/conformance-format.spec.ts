@@ -200,3 +200,95 @@ test('schema accepts render: "svg" only on an encode-invalid vector of scheme re
   expect(validate({ ...invalid, scheme: 'vietqr' })).toBe(false)
   expect(validate({ ...invalid, kind: 'matrix', expected: { size: 21, version: 1, ecc: 'M', mask: 0, rows: [] }, error: undefined })).toBe(false)
 })
+
+test('every non-empty warnings list has a warningTags list of the same length', () => {
+  for (const file of files) {
+    const v = JSON.parse(readFileSync(file, 'utf8'))
+    if ((v.warnings ?? []).length === 0 && v.warningTags === undefined) continue
+    expect(v.warningTags?.length, `${file}: warningTags`).toBe(v.warnings?.length)
+  }
+})
+
+const lenient = {
+  id: 'x',
+  scheme: 'vietqr',
+  kind: 'lenient',
+  payload: '000201',
+  expected: {},
+  error: 'MISSING_TAG',
+  warnings: ['MISSING_OPTIONAL_TAG'],
+  warningTags: ['58'],
+  source: 'test fixture inside conformance-format.spec.ts',
+}
+
+test('schema requires warningTags (tag or null per warning) when there are warnings', () => {
+  expect(validate(lenient), ajv.errorsText(validate.errors)).toBe(true)
+  expect(validate({ ...lenient, warningTags: [null] })).toBe(true)
+  expect(validate({ ...lenient, warningTags: ['99.01'] })).toBe(true)
+  const { warningTags: _t, ...noTags } = lenient
+  expect(validate(noTags)).toBe(false)
+  expect(validate({ ...lenient, warningTags: ['5'] })).toBe(false)
+  expect(validate({ ...base, warningTags: [] })).toBe(false)
+  expect(validate({ ...base, warnings: [] })).toBe(true)
+})
+
+const unknown = {
+  id: 'x',
+  scheme: 'detect',
+  kind: 'invalid',
+  payload: '000201',
+  error: 'UNKNOWN_SCHEME',
+  errorFields: [{ tag: '00', value: '01' }],
+  source: 'test fixture inside conformance-format.spec.ts',
+}
+
+test('schema requires errorFields on UNKNOWN_SCHEME and allows it only on invalid vectors', () => {
+  expect(validate(unknown), ajv.errorsText(validate.errors)).toBe(true)
+  const { errorFields: _f, ...noFields } = unknown
+  expect(validate(noFields)).toBe(false)
+  expect(validate({ ...unknown, error: 'CRC_MISMATCH' })).toBe(true)
+  expect(validate({ ...unknown, errorFields: [{ tag: '0', value: '01' }] })).toBe(false)
+  expect(validate({ ...unknown, errorFields: [{ tag: '00' }] })).toBe(false)
+  expect(validate({ ...unknown, errorFields: [{ tag: '00', value: '01', children: [] }] })).toBe(false)
+  expect(validate({ ...lenient, errorFields: [] })).toBe(false)
+})
+
+const expiry = {
+  id: 'x',
+  scheme: 'khqr-expiry',
+  kind: 'expiry',
+  payload: '000201',
+  input: { nowMs: 1 },
+  expected: { result: false },
+  source: 'test fixture inside conformance-format.spec.ts',
+}
+
+test('schema accepts an expiry vector with payload, input.nowMs and expected.result boolean or null', () => {
+  expect(validate(expiry), ajv.errorsText(validate.errors)).toBe(true)
+  expect(validate({ ...expiry, expected: { result: null } })).toBe(true)
+  const { payload: _p, ...noPayload } = expiry
+  expect(validate(noPayload)).toBe(false)
+  expect(validate({ ...expiry, input: {} })).toBe(false)
+  expect(validate({ ...expiry, input: { nowMs: 1.5 } })).toBe(false)
+  expect(validate({ ...expiry, input: { nowMs: 1, extra: 1 } })).toBe(false)
+  expect(validate({ ...expiry, expected: { result: 'yes' } })).toBe(false)
+  expect(validate({ ...expiry, error: 'INVALID_VALUE' })).toBe(false)
+})
+
+const text = {
+  id: 'x',
+  scheme: 'vietnamese-text',
+  kind: 'text',
+  input: { text: 'Việt' },
+  expected: { result: 'Viet' },
+  source: 'test fixture inside conformance-format.spec.ts',
+}
+
+test('schema accepts a text vector with input.text and expected.result and no payload', () => {
+  expect(validate(text), ajv.errorsText(validate.errors)).toBe(true)
+  expect(validate({ ...text, payload: '000201' })).toBe(false)
+  expect(validate({ ...text, error: 'INVALID_VALUE' })).toBe(false)
+  expect(validate({ ...text, input: { text: 1 } })).toBe(false)
+  expect(validate({ ...text, expected: { result: null } })).toBe(false)
+  expect(validate({ ...text, expected: {} })).toBe(false)
+})

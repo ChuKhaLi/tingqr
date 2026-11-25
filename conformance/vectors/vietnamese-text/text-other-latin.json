@@ -1,0 +1,13 @@
+{
+  "id": "text-other-latin",
+  "scheme": "vietnamese-text",
+  "kind": "text",
+  "input": {
+    "text": "Façade naïve Ñandú ß ø Ł"
+  },
+  "expected": {
+    "result": "Facade naive Nandu ß ø Ł"
+  },
+  "source": "Unicode rule of removeVietnameseAccents (conformance/README.md): NFD, drop every combining mark (General_Category M, by code point, so marks outside the BMP too) that follows an ASCII letter A-Z/a-z, map đ/Đ to d/D, NFC; expected value worked out by hand from the Unicode Character Database (decompositions, General_Category), not from tingqr",
+  "note": "Marks after any ASCII letter are dropped, not only Vietnamese ones. ß, ø and Ł have no canonical decomposition, so they stay."
+}

@@ -1,0 +1,13 @@
+{
+  "id": "text-emoji",
+  "scheme": "vietnamese-text",
+  "kind": "text",
+  "input": {
+    "text": "Cà phê ☕ 😀 👍🏽 ❤\ufe0f 1\ufe0f\u20e3"
+  },
+  "expected": {
+    "result": "Ca phe ☕ 😀 👍🏽 ❤\ufe0f 1\ufe0f\u20e3"
+  },
+  "source": "Unicode rule of removeVietnameseAccents (conformance/README.md): NFD, drop every combining mark (General_Category M, by code point, so marks outside the BMP too) that follows an ASCII letter A-Z/a-z, map đ/Đ to d/D, NFC; expected value worked out by hand from the Unicode Character Database (decompositions, General_Category), not from tingqr",
+  "note": "Emoji stay. U+FE0F (variation selector) and U+20E3 (keycap) are Mn but follow ❤ or the digit 1, not an ASCII letter; the skin-tone modifier U+1F3FD is Sk, not a mark."
+}

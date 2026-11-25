@@ -1,0 +1,14 @@
+{
+  "id": "khqr-expiry-after",
+  "scheme": "khqr-expiry",
+  "kind": "expiry",
+  "payload": "00020101021229460015john_smith@devb0111855122334550208Dev Bank52045999530384054031005802KH5910John Smith6010PHNOM PENH62670106#123450211855122334550311Coffee Shop0709Cashier_10810Buy coffee64280002km0108ចន ស្មីន0206ភ្នំពញ993400131726821915797011317268220357976304B73E",
+  "input": {
+    "nowMs": 1726822035798
+  },
+  "expected": {
+    "result": true
+  },
+  "source": "conformance/schemes/khqr.md (isKhqrExpired: true when nowMs > expiresAt, as the Bakong SDK; undefined, written null, when the decoded code has no 13-digit expiresAt), expected value worked out by hand",
+  "note": "nowMs is 1 ms after expiresAt 1726822035797. payload copied unchanged from conformance/vectors/khqr/khqr-sdk-individual-usd.json."
+}
