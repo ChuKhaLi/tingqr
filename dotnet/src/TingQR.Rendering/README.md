@@ -47,7 +47,8 @@ Every function throws `TingQrException` with code `INVALID_VALUE` (shared with t
 a bad option, a lone surrogate in the text or text that does not fit. `SvgOptions` inherits `MatrixOptions`, so one
 options object works for both functions. `SvgSize` converts implicitly from a number (px) or a string (`"40mm"`,
 `"100%"`); `Size = null` means no width/height, but `Size = (string?)null` is a size that is a null string, and is
-rejected.
+rejected. Two `SvgSize` values are equal (`==`, `Equals`) when both are pixels with equal numbers, or both
+lengths with the same string (ordinal).
 
 ## TypeScript to .NET
 

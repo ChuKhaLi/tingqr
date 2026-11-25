@@ -9,7 +9,7 @@ namespace TingQR.Emv
         /// <summary>Creates a payload.</summary>
         public EmvPayload(IReadOnlyList<TlvNode> fields, string crc, string raw)
         {
-            Fields = fields;
+            Fields = ReadOnly.List(fields);
             Crc = crc;
             Raw = raw;
         }

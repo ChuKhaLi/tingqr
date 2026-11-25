@@ -14,8 +14,8 @@
     <PackageReference Include="System.Text.Json" />
   </ItemGroup>
   <ItemGroup>
-    <!-- The strict vector-input reader of the core runner, shared rather than copied. -->
-    <Compile Include="..\TingQR.Core.Tests\Conformance\JsonInput.cs" Link="Conformance\JsonInput.cs" />
+    <!-- Test helpers shared by the test projects (dotnet/tests/Shared), linked rather than copied. -->
+    <Compile Include="..\Shared\JsonInput.cs" Link="Shared\JsonInput.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\TingQR.Core\TingQR.Core.csproj" />

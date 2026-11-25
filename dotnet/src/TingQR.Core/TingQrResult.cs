@@ -10,7 +10,7 @@ namespace TingQR
         {
             Ok = ok;
             Value = value;
-            Warnings = warnings;
+            Warnings = ReadOnly.List(warnings);
             Error = error;
         }
 

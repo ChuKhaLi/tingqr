@@ -105,7 +105,7 @@ namespace TingQR
                 var data = new VnpayQrData
                 {
                     MerchantId = merchantId,
-                    ProviderData = providerData.Count > 0 ? providerData.ToDictionary(n => n.Tag, n => n.Value) : null,
+                    ProviderData = providerData.Count > 0 ? ReadOnly.Dictionary(providerData.ToDictionary(n => n.Tag, n => n.Value)) : null,
                     Initiation = poi == "12" ? QrInitiation.Dynamic : QrInitiation.Static,
                     Amount = p.GetField("54")?.Value,
                     Currency = standard["53"],

@@ -14,6 +14,11 @@
     <PackageReference Include="System.Text.Json" />
   </ItemGroup>
   <ItemGroup>
+    <!-- Test helpers shared by the test projects (dotnet/tests/Shared), linked rather than copied. -->
+    <Compile Include="..\Shared\JsonInput.cs" Link="Shared\JsonInput.cs" />
+    <Compile Include="..\Shared\NodeFactAttribute.cs" Link="Shared\NodeFactAttribute.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\..\src\TingQR.Core\TingQR.Core.csproj" />
   </ItemGroup>
 </Project>

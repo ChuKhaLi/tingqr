@@ -117,6 +117,11 @@ Ba luật chung nữa, cùng loại:
 - **Chưa có loại mẫu, chỉ có test của từng bản:** `isKhqrExpired` / `Khqr.IsExpired`, `removeVietnameseAccents` /
   `VietnameseText.RemoveAccents`, `fields` của lỗi `UNKNOWN_SCHEME` (`TingQrError.fields` / `TingQrException.Fields`)
   và `tag` của cảnh báo. Hai bản có thể lệch ở những chỗ này mà bộ mẫu không bắt được.
+  - `removeVietnameseAccents` / `VietnameseText.RemoveAccents` với `null` (hay thứ không phải chuỗi ở TypeScript) là
+    lỗi lập trình, không phải `TingQrError`: TypeScript ném `TypeError`, .NET ném `ArgumentNullException`. Surrogate lẻ
+    được giữ nguyên ở cả hai bản (JavaScript `normalize` để nguyên nó; .NET chuẩn hoá từng đoạn giữa các surrogate lẻ),
+    và dấu nằm ngoài BMP (cặp surrogate) sau chữ Latin cũng bị bỏ như `\p{M}` có cờ `u`. Kết quả mong đợi của các test
+    .NET lấy từ bản TS chạy trên Node 22.23.3 (2026-11-25).
   - Kiểm kiểu lúc chạy của `@tingqr/render` không có mẫu và chỉ có ở TypeScript: `boostEcc` không phải boolean, `size`
     không phải số hay chuỗi, `logo.size` không phải số, `margin` là chuỗi. Bên C# các trường hợp này không viết được vì
     kiểu tĩnh (`bool?`, `SvgSize?`, `double?`, `int?`).

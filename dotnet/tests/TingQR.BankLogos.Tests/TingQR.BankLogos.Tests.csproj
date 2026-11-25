@@ -14,6 +14,10 @@
     <PackageReference Include="System.Text.Json" />
   </ItemGroup>
   <ItemGroup>
+    <!-- Test helpers shared by the test projects (dotnet/tests/Shared), linked rather than copied. -->
+    <Compile Include="..\Shared\NodeFactAttribute.cs" Link="Shared\NodeFactAttribute.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <!-- Core and Rendering only for the Logo_works_as_svg_logo test; the package itself references neither. -->
     <ProjectReference Include="..\..\src\TingQR.BankLogos\TingQR.BankLogos.csproj" />
     <ProjectReference Include="..\..\src\TingQR.Core\TingQR.Core.csproj" />

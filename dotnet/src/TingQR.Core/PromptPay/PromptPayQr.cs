@@ -188,8 +188,8 @@ namespace TingQR
         private static TingQrResult<PromptPayData> Fail(TingQrErrorCode code, string message, string tag)
             => TingQrResult<PromptPayData>.Failure(new TingQrException(code, message, tag));
 
-        private static Dictionary<string, string> SubFieldsOf(IReadOnlyList<TlvNode> nodes)
-            => nodes.Where(n => n.Tag != "00").ToDictionary(n => n.Tag, n => n.Value);
+        private static IReadOnlyDictionary<string, string> SubFieldsOf(IReadOnlyList<TlvNode> nodes)
+            => ReadOnly.Dictionary(nodes.Where(n => n.Tag != "00").ToDictionary(n => n.Tag, n => n.Value));
 
         private static string? Sub(IReadOnlyList<TlvNode> nodes, string tag) => nodes.FirstOrDefault(n => n.Tag == tag)?.Value;
 

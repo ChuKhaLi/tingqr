@@ -22,7 +22,7 @@ namespace TingQR
         {
             Code = code;
             Tag = tag;
-            Fields = fields;
+            Fields = ReadOnly.ListOrNull(fields);
         }
     }
 }

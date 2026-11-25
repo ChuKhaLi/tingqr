@@ -206,6 +206,20 @@ namespace TingQR.Tests
         }
 
         [Fact]
+        public void Key_lists_cannot_be_changed_by_casting()
+        {
+            foreach (var keys in new[] { BankLogos.LogoBins, BankLogos.IconIds })
+            {
+                // Also checks the order: whichever test first reads a key list is the one Stryker runs on Keys (a
+                // static Lazy), so each such test must notice a wrong order.
+                Assert.Equal(keys.OrderBy(k => k, StringComparer.Ordinal), keys);
+                var mutable = Assert.IsAssignableFrom<IList<string>>(keys);
+                Assert.Throws<NotSupportedException>(() => mutable[0] = "x");
+                Assert.Throws<NotSupportedException>(() => mutable.Add("x"));
+            }
+        }
+
+        [Fact]
         public void Logo_works_as_svg_logo()
         {
             const string payload = "00020101021138540010A00000072701240006970422011001234567890208QRIBFTTA53037045802VN6304B1A7";
