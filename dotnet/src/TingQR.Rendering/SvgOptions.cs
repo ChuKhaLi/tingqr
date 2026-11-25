@@ -1,3 +1,5 @@
+using System;
+
 namespace TingQR.Rendering
 {
     /// <summary>
@@ -37,7 +39,7 @@ namespace TingQR.Rendering
     /// Converts implicitly from <see cref="double"/> (and so from <see cref="int"/>) and from <see cref="string"/>; it is
     /// checked only when the SVG is rendered or the options are checked.
     /// </summary>
-    public readonly struct SvgSize
+    public readonly struct SvgSize : IEquatable<SvgSize>
     {
         private readonly double _pixels;
         private readonly string? _length;
@@ -79,5 +81,31 @@ namespace TingQR.Rendering
 
         /// <summary>The value as written in the width/height attributes (JavaScript's <c>String(size)</c>).</summary>
         public override string ToString() => IsLength ? _length ?? string.Empty : JsNumber.ToString(_pixels);
+
+        /// <summary>
+        /// Same form and same value: pixels compare with <c>==</c> of <see cref="double"/> (so 0 equals -0 and NaN equals
+        /// nothing), lengths compare ordinally.
+        /// </summary>
+        /// <remarks>
+        /// A NaN pixel size is not equal to itself: <c>Equals</c> and <c>==</c> return false for two NaN sizes, even a size
+        /// compared with itself. The compiler-generated equality of <see cref="SvgOptions"/> uses this method, so two
+        /// <see cref="SvgOptions"/> with <c>Size = double.NaN</c> are not equal either (before value equality, NaN sizes
+        /// were equal). NaN is rejected when rendering, so this only affects hash sets and dictionaries.
+        /// </remarks>
+        public bool Equals(SvgSize other)
+            => IsLength == other.IsLength && _pixels == other._pixels && string.Equals(_length, other._length, StringComparison.Ordinal);
+
+        /// <inheritdoc />
+        public override bool Equals(object? obj) => obj is SvgSize other && Equals(other);
+
+        /// <inheritdoc />
+        public override int GetHashCode()
+            => IsLength ? (_length == null ? 1 : StringComparer.Ordinal.GetHashCode(_length)) : _pixels.GetHashCode();
+
+        /// <summary>Equality.</summary>
+        public static bool operator ==(SvgSize left, SvgSize right) => left.Equals(right);
+
+        /// <summary>Inequality.</summary>
+        public static bool operator !=(SvgSize left, SvgSize right) => !left.Equals(right);
     }
 }

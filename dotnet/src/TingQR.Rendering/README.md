@@ -47,7 +47,8 @@ Every function throws `TingQrException` with code `INVALID_VALUE` (shared with t
 a bad option, a lone surrogate in the text or text that does not fit. `SvgOptions` inherits `MatrixOptions`, so one
 options object works for both functions. `SvgSize` converts implicitly from a number (px) or a string (`"40mm"`,
 `"100%"`); `Size = null` means no width/height, but `Size = (string?)null` is a size that is a null string, and is
-rejected.
+rejected. Two `SvgSize` values are equal (`==`, `Equals`) when both are pixels with equal numbers, or both
+lengths with the same string (ordinal).
 
 ## TypeScript to .NET
 
@@ -67,16 +68,18 @@ rejected.
 
 ## What has been checked
 
-- 19 matrix vectors in `conformance/vectors/render/`, generated from the original Nayuki library, 8 hand-written
-  option-error vectors for `ToMatrix`, and 80 SVG vectors (45 that render, 35 that are rejected: each option and the
-  main rejections). The SVG vectors are the output of tingqr's own TypeScript code, so they
-  prove the two implementations agree, not that the SVG is right; the matrices inside them come from the port, not from
-  an independent oracle. The TypeScript and .NET tests read the same files. Tests pass on `net10.0` and `net481`
-  (Windows, local, 2026-11-23); the Ubuntu run is not done yet.
-- Stryker.NET, local, Windows: `TingQR.Rendering` (2026-11-24) 99.41% = 475 killed + 28 timeouts of 506 counted
-  mutants, 3 survived (all equivalent, documented in `dotnet/CLAUDE.md`), 87 ignored (34 by `Stryker disable` comments,
-  53 by the block-already-covered filter); the ported encoder `QrCodeGen.cs` is excluded (876 mutants). `TingQR.Core`
-  (2026-11-23) 100%: 1506 killed, 12 timeouts, 0 survived, 291 ignored. The Rendering mutation job has also passed on GitHub CI (Ubuntu).
+- 24 matrix vectors (versions up to 40, including 7089 digits at version 40) in `conformance/vectors/render/`,
+  generated from the original Nayuki library, 9 hand-written error vectors for `ToMatrix` (options, and 7090 digits),
+  and 80 SVG vectors (45 that render, 35 that are rejected: each option and the main rejections). The SVG vectors are
+  the output of tingqr's own TypeScript code, so they prove the two implementations agree, not that the SVG is right;
+  the matrices inside them come from the port, not from an independent oracle. The TypeScript and .NET tests read the
+  same files. Tests pass on `net10.0` and `net481` (Windows, local, 2026-11-26).
+- Stryker.NET, local, Windows: `TingQR.Rendering` (2026-11-25) 99.42% = 486 killed + 31 timeouts of 520 counted
+  mutants, 3 survived (all equivalent, documented in `dotnet/CLAUDE.md`); the ported encoder `QrCodeGen.cs` is excluded
+  (876 mutants). `TingQR.Core` (2026-11-25) 100%: 1556 killed, 16 timeouts, 0 survived.
+- The Rendering mutation job passed on GitHub CI (Ubuntu, 2026-11-24), but only for the code before the 2026-11-25
+  changes. Those changes (the matrix vectors for versions 10, 27, 32 and 40, the 7089- and 7090-digit vectors, the
+  early rejection of texts over 7089 characters, `SvgSize` value equality) have not run on CI or on Linux.
 - During review the output was also compared with the TypeScript version on 1,500 random option combinations and
   574,640 numbers for `size`, with no difference. These were one-off checks, not tests in the repo.
 

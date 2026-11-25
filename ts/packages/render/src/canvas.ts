@@ -1,7 +1,7 @@
 /// <reference lib="dom" />
 // Browser-only subpath (@tingqr/render/canvas): DOM types are referenced here and nowhere else in the package.
 import { TingQrError } from '@tingqr/core'
-import { invalid, layout, type LayoutOptions } from './layout.js'
+import { invalid, layout, type Layout, type LayoutOptions } from './layout.js'
 import { forEachRun } from './svg.js'
 
 /** The part of CanvasRenderingContext2D that tingqr uses. */
@@ -59,14 +59,23 @@ async function loadLogo(href: string): Promise<LoadedImage> {
   throw new TingQrError('LOGO_LOAD_FAILED', 'The logo decoded to an empty image.')
 }
 
+/** Check the options and encode `text`: the INVALID_VALUE errors of toSvg, raised before any canvas is touched. */
+function prepare(text: string, options: CanvasOptions | null): { l: Layout; scale: number } {
+  const { scale = 8, ...layoutOptions } = options ?? {} // null is the defaults too, like toSvg and .NET
+  return { scale: checkScale(scale), l: layout(text, layoutOptions) }
+}
+
 /**
  * Draw `text` as a QR code on `canvas`, resizing it to (modules + 2 × margin) × scale pixels. Same options, checks and
  * errors as toSvg; browser only (needs a canvas). Async because a logo has to load before anything is drawn.
  */
 export async function drawQr(canvas: CanvasLike, text: string, options: CanvasOptions = {}): Promise<void> {
-  const { scale: rawScale = 8, ...layoutOptions } = options
-  const scale = checkScale(rawScale)
-  const l = layout(text, layoutOptions)
+  const { l, scale } = prepare(text, options)
+  await paint(canvas, l, scale)
+}
+
+/** Draw an encoded layout on `canvas`: the logo is loaded first, so nothing is drawn when it fails. */
+async function paint(canvas: CanvasLike, l: Layout, scale: number): Promise<void> {
   const logo = l.logo === undefined ? undefined : { ...l.logo, image: await loadLogo(l.logo.href) }
   const ctx = canvas.getContext('2d')
   if (ctx === null) throw new TingQrError('NO_CANVAS', 'The canvas has no 2D context.')
@@ -147,9 +156,11 @@ function dataUrlOf(canvas: HTMLCanvasElement): string {
   return url
 }
 
-async function drawn(text: string, options: CanvasOptions): Promise<HTMLCanvasElement> {
-  const canvas = newCanvasChecked(text, options)
-  await drawQr(canvas, text, options)
+/** Encode once, then draw on a new canvas. Bad options are INVALID_VALUE even where there is no canvas. */
+async function drawn(text: string, options: CanvasOptions | null): Promise<HTMLCanvasElement> {
+  const { l, scale } = prepare(text, options)
+  const canvas = newCanvas()
+  await paint(canvas, l, scale)
   return canvas
 }
 
@@ -169,12 +180,4 @@ export async function toPng(text: string, options: CanvasOptions = {}): Promise<
   const canvas = await drawn(text, options)
   const dataUrl = dataUrlOf(canvas)
   return { blob: await blobOf(canvas), dataUrl }
-}
-
-/** Report bad options as INVALID_VALUE even where there is no canvas. */
-function newCanvasChecked(text: string, options: CanvasOptions): HTMLCanvasElement {
-  const { scale = 8, ...layoutOptions } = options
-  checkScale(scale)
-  layout(text, layoutOptions)
-  return newCanvas()
 }

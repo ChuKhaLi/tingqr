@@ -2,8 +2,10 @@
 //   node conformance/tools/render/gen-svg.mjs           write the files (build first: pnpm -C ts/packages/render build)
 //   node conformance/tools/render/gen-svg.mjs --check   exit 1 if a file is missing, stale, has no case, or cites a
 //                                                       commit that is not an ancestor of HEAD
-// The commit in each `source` is the last commit that touched STAMP_PATHS (the render source and these tools), so it is
-// a real commit that stays reachable once the branch is merged. Writing refuses while those paths have uncommitted
+// The commit in each `source` is the commit at generation time: the last commit that touched STAMP_PATHS (the render
+// source and these tools). It is a real commit that stays reachable once the branch is merged with a MERGE COMMIT; a
+// squash or rebase merge rewrites it, and --check then reports it as not an ancestor (regenerate the vectors on the
+// merged branch). Writing refuses while those paths have uncommitted
 // changes: commit the generator or source change first, then regenerate. --check compares the files without the commit,
 // so a later commit alone does not make them stale.
 import { execFileSync, spawnSync } from 'node:child_process'
@@ -79,13 +81,19 @@ export function staleFiles(dir, expected) {
   return problems
 }
 
-/** Problems with the commit each render-svg-* file in `dir` cites: none, or one for which `isAncestor(commit)` is false. */
+/**
+ * Problems with the commit each render-svg-* file in `dir` cites: none, or one for which `isAncestor(commit)` is false.
+ * Assumes branches are merged with a merge commit (history kept); after a squash or rebase merge the cited commit is not
+ * in HEAD's history, which is why the message names that cause and the fix.
+ */
 export function unreachableStamps(dir, isAncestor) {
   const problems = []
   for (const f of readdirSync(dir).filter((n) => n.startsWith('render-svg-')).sort()) {
     const commit = COMMIT.exec(readFileSync(join(dir, f), 'utf8'))?.[1]
     if (commit === undefined) problems.push(`${f}: no source commit`)
-    else if (!isAncestor(commit)) problems.push(`${f}: source commit ${commit} is not an ancestor of HEAD`)
+    else if (!isAncestor(commit)) problems.push(
+        `${f}: source commit ${commit} is not an ancestor of HEAD (likely a squash or rebase merge rewrote it, or the commit was never pushed; regenerate the vectors with node conformance/tools/render/gen-svg.mjs)`,
+      )
   }
   return problems
 }

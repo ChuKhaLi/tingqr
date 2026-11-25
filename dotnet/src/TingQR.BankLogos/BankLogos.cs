@@ -52,11 +52,12 @@ namespace TingQR
         private static IReadOnlyList<string> Keys(string kind)
         {
             var start = Prefix + kind;
-            return Names.Value
+            // Array.AsReadOnly: a bare array cast to IList<string> could be written to.
+            return Array.AsReadOnly(Names.Value
                 .Where(n => n.StartsWith(start, StringComparison.Ordinal))
                 .Select(n => Path.GetFileNameWithoutExtension(n))
                 .OrderBy(k => k, StringComparer.Ordinal)
-                .ToArray();
+                .ToArray());
         }
 
         private static string? ResourceName(string kind, string key)

@@ -145,6 +145,17 @@ TypeScript và bản .NET, kèm tích hợp sẵn cho Angular, NestJS và ASP.NE
     - **Chưa kiểm:** job `publish` của `release-dotnet.yml` chưa chạy lần nào (OIDC, `NuGet/login`, bước duyệt); chưa
       đẩy gói nào lên NuGet; chưa có environment `nuget-release`, biến `NUGET_USER`, policy trên nuget.org. Không có lần
       quét app mới nào.
+  - **Dọn lỗi nhỏ sau Plan 8c** (2026-11-25, nhánh `minors-after-8c`): `docs/superpowers/plans/2026-11-25-minors-after-8c.md`.
+    - Xong: tài liệu và công cụ nhỏ; .NET trả danh sách/từ điển chỉ đọc, `SvgSize` so theo giá trị, `RemoveAccents` khớp
+      TS (surrogate lẻ, dấu ngoài BMP), `JsonInput.Double` chặn tràn; canvas nhận `null`, `toPng*` mã hoá một lần, cả hai
+      bản từ chối văn bản quá 7089 đơn vị UTF-16 trước khi mã hoá; mẫu mới (ma trận phiên bản lớn, biên 7089/7090 chữ số,
+      hết hạn KHQR, bỏ dấu, `warningTags` kể cả `TRIMMED_WHITESPACE`/`LOWERCASE_CRC`, `errorFields`).
+    - **Chưa làm (có lý do):** PromptPay đọc tag 64 (chưa có đặc tả), bộ đọc thứ hai cho `check-promptpay` (cần chọn
+      oracle), deprecate 0.0.1 (chỉ sau 0.1.0).
+    - **CI GitHub chưa chạy cho nhánh này:** Actions lỗi thanh toán ngày 2026-11-25; chủ dự án chọn gộp không chờ CI.
+      PR #12 (nâng thời hạn mutation lên 45 phút) cũng gộp không qua CI. Mọi kết quả là cục bộ (Windows): `pnpm test:all`,
+      Stryker.NET Core 100%, Rendering 99,42% (3 tương đương đã ghi), BankLogos 100%; Stryker TS render 94,11% (không
+      thấp hơn trước).
   - Tiếp theo: Plan 2 Task 5–6 (MoMo, ZaloPay) khi chủ dự án có QR thật; chủ dự án quét thêm app (kể cả bản có icon ngân hàng) và
     thử PNG trong Zalo/Messenger; chủ dự án quyết phát hành npm và NuGet (`docs/RELEASING.md`).
 - **Chủ dự án đã quyết:**

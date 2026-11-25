@@ -1,0 +1,13 @@
+{
+  "id": "text-lone-surrogates",
+  "scheme": "vietnamese-text",
+  "kind": "text",
+  "input": {
+    "text": "\ud800 ả\udc00 a\ud800\u0301 b\udbff"
+  },
+  "expected": {
+    "result": "\ud800 a\udc00 a\ud800\u0301 b\udbff"
+  },
+  "source": "tingqr's rule of removeVietnameseAccents (conformance/README.md; which code points are marks and how text normalises come from each runtime's Unicode tables, so marks newer than a runtime's tables may differ, e.g. on .NET Framework; the lone-surrogate clause is tingqr's own, matching JavaScript normalize): NFD, drop every combining mark (General_Category M, by code point, so marks outside the BMP too) that follows an ASCII letter A-Z/a-z, map đ/Đ to d/D, NFC; expected value worked out by hand from the Unicode Character Database (decompositions, General_Category), not from tingqr",
+  "note": "Lone surrogates are kept. ả loses its mark before a lone low surrogate; U+0301 after a lone high surrogate follows the surrogate, not the letter a, so it stays."
+}

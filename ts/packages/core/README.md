@@ -21,8 +21,8 @@ if (r.ok) r.value // { bankBin: '970422', accountNumber: '0123456789', amount: '
 ```
 
 - `service: 'card'` builds a code to a card number (`QRIBFTTC`). Without `amount` the code is static.
-- A transfer note must be printable ASCII (banking apps reject accents). `removeVietnameseAccents(text)` is there if you
-  want to strip them yourself; tingqr never changes your text silently.
+- A transfer note must be printable ASCII (tingqr's own rule, not a recorded app behaviour).
+  `removeVietnameseAccents(text)` is there if you want to strip them yourself; tingqr never changes your text silently.
 - The builder writes only the tags banking apps expect.
 
 ## Other schemes

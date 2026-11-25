@@ -48,7 +48,24 @@ const CASES = [
   { id: 'render-v1-full-m', text: 'tingqr-render!', options: { ecc: 'M', boostEcc: false } },
   { id: 'render-v2-overflow-m', text: 'tingqr-render!!', options: { ecc: 'M', boostEcc: false } },
   { id: 'render-emoji', text: 'ting 😀 qr', options: {} },
+  // Large versions, pinned with minVersion = maxVersion. Each text is long enough that the version is also the smallest
+  // that fits it at that ECC level (checked with this oracle), so the data region is mostly real data, not padding.
+  // Versions 27+ use the widest character-count fields; 32 is the one version whose alignment-pattern step (26) is not given by the general formula; 40 is the largest.
+  { id: 'render-version-27-byte', text: repeatTo('tingqr ', 1100), options: { ecc: 'M', minVersion: 27, maxVersion: 27 } },
+  { id: 'render-version-32-alnum', text: repeatTo('TINGQR ', 1560), options: { ecc: 'Q', minVersion: 32, maxVersion: 32 } },
+  // 2953 bytes is the byte-mode capacity of version 40 at ECC L: every data codeword is used.
+  { id: 'render-version-40-byte-full', text: repeatTo('tingqr ', 2953), options: { ecc: 'L', minVersion: 40, maxVersion: 40 } },
+  // Numeric mode from version 10 up has a 12-bit character count (10 bits below).
+  { id: 'render-numeric-version-10', text: repeatTo('0123456789', 500), options: { ecc: 'M', minVersion: 10, maxVersion: 10 } },
+  // 7089 digits is the numeric-mode capacity of version 40 at ECC L, the longest text any QR code holds; one more digit
+  // is render-invalid-too-long-7090-digits below.
+  { id: 'render-numeric-version-40-full', text: repeatTo('0123456789', 7089), options: { ecc: 'L' } },
 ]
+
+/** `unit` repeated and cut to exactly `length` characters. */
+function repeatTo(unit, length) {
+  return unit.repeat(Math.ceil(length / unit.length)).slice(0, length)
+}
 
 /** Option validation cases: written by hand from the design (section 5.2), not produced by the oracle. */
 const INVALID = [
@@ -62,6 +79,11 @@ const INVALID = [
     'render-invalid-too-long',
     { text: 'a'.repeat(1274), maxVersion: 40, ecc: 'H', boostEcc: false },
     'one byte over version 40 at ECC H (1273 bytes in byte mode); the same text fits at ECC L',
+  ],
+  [
+    'render-invalid-too-long-7090-digits',
+    { text: repeatTo('0123456789', 7090), ecc: 'L' },
+    'one digit over the numeric-mode capacity of version 40 at ECC L (7089, render-numeric-version-40-full); the original encoder throws "Data too long"',
   ],
   [
     'render-invalid-lone-surrogate',

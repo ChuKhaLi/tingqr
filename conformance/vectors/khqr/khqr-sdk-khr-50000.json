@@ -35,6 +35,9 @@
   "warnings": [
     "MISSING_OPTIONAL_TAG"
   ],
+  "warningTags": [
+    "99.01"
+  ],
   "source": "bakong-khqr@1.0.20 test/decode.test.js (ISC declared in package.json, no LICENSE file; official NBC SDK), 'Decode Test 8'",
   "note": "expected written by hand. `node check-khqr.mjs` (conformance/tools/oracle) compares the fields bakong-khqr@1.0.20 BakongKHQR.decode extracts; that decode validates nothing (no CRC or required-tag check). Not compared: currencyAlpha, postalCode, the raw 62/99 maps, extraFields, warnings. CRC checked with conformance/tools/crc16.py. Older dynamic QR: KHR amount written 50000.0 (kept verbatim) and no 99.01, which SDK v2.8 requires: strict fails, lenient warns."
 }

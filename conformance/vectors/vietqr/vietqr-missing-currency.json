@@ -8,6 +8,9 @@
   "warnings": [
     "MISSING_OPTIONAL_TAG"
   ],
+  "warningTags": [
+    "53"
+  ],
   "expected": {
     "bankBin": "970422",
     "accountNumber": "0123456789",

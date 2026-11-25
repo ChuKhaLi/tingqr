@@ -161,10 +161,11 @@ test('unreachableStamps reports each file whose commit fails isAncestor, and a f
     const asked = []
     const problems = unreachableStamps(tmp, (c) => (asked.push(c), false))
     assert.deepEqual(asked, ['abc1234', 'abc1234'])
-    assert.deepEqual(problems, [
+    assert.deepEqual(problems.map((p) => p.split(' (')[0]), [
       'render-svg-a.json: source commit abc1234 is not an ancestor of HEAD',
       'render-svg-invalid-b.json: source commit abc1234 is not an ancestor of HEAD',
     ])
+    assert.match(problems[0], /squash or rebase.*regenerate/)
     writeFileSync(join(tmp, 'render-svg-a.json'), '{"source":"hand-written"}')
     assert.deepEqual(unreachableStamps(tmp, () => true), ['render-svg-a.json: no source commit'])
   } finally {

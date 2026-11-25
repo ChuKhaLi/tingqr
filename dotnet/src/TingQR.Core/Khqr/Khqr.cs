@@ -416,12 +416,12 @@ namespace TingQR
                     };
                 }
 
-                Dictionary<string, string>? timestamp = null;
+                IReadOnlyDictionary<string, string>? timestamp = null;
                 long? createdAt = null, expiresAt = null;
                 var stamp = p.GetField("99")?.Value;
                 if (stamp != null)
                 {
-                    timestamp = Tlv.ParseTemplate(stamp, "99").ToDictionary(n => n.Tag, n => n.Value);
+                    timestamp = ReadOnly.Dictionary(Tlv.ParseTemplate(stamp, "99").ToDictionary(n => n.Tag, n => n.Value));
                     foreach (var s in new[] { "00", "01" })
                     {
                         if (!timestamp.TryGetValue(s, out var v)) continue;

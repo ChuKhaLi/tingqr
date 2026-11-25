@@ -75,7 +75,7 @@ namespace TingQR
             if (purpose != null && !IsPrintableAscii(purpose))
             {
                 throw new TingQrException(TingQrErrorCode.NonAscii,
-                    "Purpose must be printable ASCII; banking apps reject accented text. Use VietnameseText.RemoveAccents() first.",
+                    "Purpose must be printable ASCII (a tingqr rule for VietQR). Use VietnameseText.RemoveAccents() first.",
                     "62");
             }
             if (input.Service != VietQrServiceCode.Account && input.Service != VietQrServiceCode.Card)

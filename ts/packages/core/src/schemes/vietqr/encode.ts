@@ -42,7 +42,7 @@ export function encodeVietQr(input: VietQrInput): string {
   if (purpose !== undefined && !PRINTABLE_ASCII.test(purpose)) {
     throw new TingQrError(
       'NON_ASCII',
-      'Purpose must be printable ASCII; banking apps reject accented text. Use removeVietnameseAccents() first.',
+      'Purpose must be printable ASCII (a tingqr rule for VietQR). Use removeVietnameseAccents() first.',
       '62',
     )
   }

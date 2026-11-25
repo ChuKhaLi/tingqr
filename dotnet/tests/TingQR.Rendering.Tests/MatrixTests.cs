@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
 using Xunit;
 
 namespace TingQR.Rendering.Tests
@@ -40,6 +41,45 @@ namespace TingQR.Rendering.Tests
                 () => TingQrRender.ToMatrix(new string('a', 100), new MatrixOptions { MaxVersion = 2 }));
             Assert.Equal(TingQrErrorCode.InvalidValue, e.Code);
             Assert.Contains("too long", e.Message, StringComparison.Ordinal);
+        }
+
+        // 7089 digits is the largest QR code there is: numeric mode, version 40, ECC L (4 + 14 + 2363 × 10 = 23 648 bits).
+        [Fact]
+        public void LongestNumericTextFitsVersion40AtEccL()
+        {
+            var m = TingQrRender.ToMatrix(new string('1', 7089), new MatrixOptions { Ecc = Ecc.L });
+            Assert.Equal(40, m.Version);
+            Assert.Equal(Ecc.L, m.Ecc);
+        }
+
+        public static IEnumerable<object[]> OverlongTexts()
+        {
+            yield return new object[] { "7090 digits", new string('1', 7090) };
+            yield return new object[] { "1 000 000 ASCII letters", new string('a', 1000000) };
+            var emoji = new StringBuilder(1000000);
+            for (var i = 0; i < 500000; i++) emoji.Append("😀");
+            yield return new object[] { "500 000 emoji (1 000 000 UTF-16 units)", emoji.ToString() };
+        }
+
+        [Theory]
+        [MemberData(nameof(OverlongTexts))]
+        public void TextLongerThanAnyQrCodeIsRejectedBeforeTheEncoderAllocates(string name, string text)
+        {
+            _ = name;
+            var options = new MatrixOptions { Ecc = Ecc.L };
+            TingQrRender.ToMatrix("warm up", options); // JIT and static tables are not part of the measurement
+#if NET
+            var before = GC.GetAllocatedBytesForCurrentThread();
+#endif
+            var e = Assert.Throws<TingQrException>(() => TingQrRender.ToMatrix(text, options));
+#if NET
+            var allocated = GC.GetAllocatedBytesForCurrentThread() - before;
+            // Before the early check existed this measured 435 488 bytes (7090 digits), 108 501 464 (letters) and
+            // 216 999 384 (emoji) on net10.0, Windows, 2026-11-25; the early rejection allocates the exception only.
+            Assert.True(allocated < 32 * 1024, $"allocated {allocated} bytes");
+#endif
+            Assert.Equal(TingQrErrorCode.InvalidValue, e.Code);
+            Assert.Equal("Text is too long for a QR code of version ≤ 40 at ECC L.", e.Message);
         }
 
         [Fact]

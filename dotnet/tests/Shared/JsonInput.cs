@@ -99,13 +99,19 @@ namespace TingQR.Tests.Conformance
             return value;
         }
 
-        /// <summary>Any JSON number as a double, or null when absent.</summary>
+        /// <summary>Any JSON number within the range of a double, or null when absent.</summary>
         public double? Double(string name)
         {
             var node = Take(name, out var present);
             if (!present) return null;
             if (Kind(node!) != JsonValueKind.Number) throw new InputConversionException($"input.{name} is not a number.");
-            return node!.GetValue<double>();
+            // Out of range (1e400): Infinity on .NET Core 3.0+, a failed parse on .NET Framework. Either way an input
+            // error, so a vector never passes Infinity by accident (no JSON number is infinite).
+            if (!node!.GetValue<JsonElement>().TryGetDouble(out var value) || double.IsInfinity(value))
+            {
+                throw new InputConversionException($"input.{name} is out of the range of a double.");
+            }
+            return value;
         }
 
         /// <summary>The JSON kind of a field, or null when absent; does not mark it read.</summary>

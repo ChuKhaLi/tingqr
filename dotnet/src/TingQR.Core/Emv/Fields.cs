@@ -8,18 +8,18 @@ namespace TingQR.Emv
     internal static class Fields
     {
         /// <summary>Every sub-tag of tag 62, keyed by sub-tag; null when tag 62 is absent. Rejects duplicates.</summary>
-        public static Dictionary<string, string>? ReadAdditionalData(EmvPayload p)
+        public static IReadOnlyDictionary<string, string>? ReadAdditionalData(EmvPayload p)
         {
             var value = p.GetField("62")?.Value;
             if (value == null) return null;
-            return Tlv.ParseTemplate(value, "62").ToDictionary(n => n.Tag, n => n.Value);
+            return ReadOnly.Dictionary(Tlv.ParseTemplate(value, "62").ToDictionary(n => n.Tag, n => n.Value));
         }
 
         /// <summary>Top-level tags not in <paramref name="interpreted"/>, verbatim; null when there are none.</summary>
-        public static Dictionary<string, string>? ReadExtraFields(EmvPayload p, ISet<string> interpreted)
+        public static IReadOnlyDictionary<string, string>? ReadExtraFields(EmvPayload p, ISet<string> interpreted)
         {
             var extra = p.Fields.Where(f => !interpreted.Contains(f.Tag)).ToList();
-            return extra.Count > 0 ? extra.ToDictionary(f => f.Tag, f => f.Value) : null;
+            return extra.Count > 0 ? ReadOnly.Dictionary(extra.ToDictionary(f => f.Tag, f => f.Value)) : null;
         }
 
         /// <summary>

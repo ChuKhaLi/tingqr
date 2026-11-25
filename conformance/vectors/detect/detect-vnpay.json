@@ -12,5 +12,9 @@
     "MISSING_OPTIONAL_TAG",
     "MISSING_OPTIONAL_TAG"
   ],
+  "warningTags": [
+    "52",
+    "60"
+  ],
   "note": "detect reads in lenient mode; the VNPAY sample lacks tags 52 and 60."
 }

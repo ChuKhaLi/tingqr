@@ -1,0 +1,37 @@
+{
+  "id": "vnpay-static-trimmed-lowercase-crc",
+  "scheme": "vnpay",
+  "kind": "lenient",
+  "payload": "  00020101021126280010A0000007750110012345678953037045802VN5911TINGQR SHOP62240312TINGQR STORE0704TQ016304bc4b ",
+  "expected": {
+    "merchantId": "0123456789",
+    "initiation": "static",
+    "currency": "704",
+    "country": "VN",
+    "merchantName": "TINGQR SHOP",
+    "store": "TINGQR STORE",
+    "terminal": "TQ01",
+    "additionalData": {
+      "03": "TINGQR STORE",
+      "07": "TQ01"
+    }
+  },
+  "error": "MISSING_TAG",
+  "errorTag": "52",
+  "warnings": [
+    "TRIMMED_WHITESPACE",
+    "LOWERCASE_CRC",
+    "MISSING_OPTIONAL_TAG",
+    "MISSING_OPTIONAL_TAG"
+  ],
+  "warningTags": [
+    null,
+    "63",
+    "52",
+    "60"
+  ],
+  "source": "derived from vnpay-static, CRC recomputed with conformance/tools/crc16.py (independent Python CRC-16/CCITT-FALSE)",
+  "derived": true,
+  "derivedFrom": "vnpay-static",
+  "note": "Two spaces added before and one after the payload; CRC recomputed over the payload up to 6304 (BC4B, unchanged since the edits are outside it) and written lowercase. Expected warnings follow the warning-tag rule in conformance/README.md: parse-stage TRIMMED_WHITESPACE (no tag) and LOWERCASE_CRC (63), then the scheme's missing tags 52 and 60 in numeric order. Strict still fails on the missing tag 52."
+}

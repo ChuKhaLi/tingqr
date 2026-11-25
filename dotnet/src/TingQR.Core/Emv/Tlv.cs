@@ -81,7 +81,7 @@ namespace TingQR.Emv
                 result.Add(new TlvNode(tag, Join(chars, start, length)));
                 i = start + length;
             }
-            return result;
+            return result.AsReadOnly();
         }
 
         /// <summary>Throws DUPLICATE_TAG if a tag appears twice at this level; <paramref name="path"/> prefixes the tag.</summary>

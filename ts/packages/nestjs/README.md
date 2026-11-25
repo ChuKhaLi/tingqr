@@ -53,7 +53,7 @@ constructor(@Inject(TingQrService) private readonly tingqr: TingQrService) {}
 const payload = this.tingqr.paymentQr({ amount: 50000, purpose: 'ORDER A1' }) // VietQR string
 ```
 
-Without `amount` you get a static code. A purpose with Vietnamese accents throws `NON_ASCII` (banking apps reject it).
+Without `amount` you get a static code. A purpose with Vietnamese accents throws `NON_ASCII` (tingqr's own ASCII-only rule, not a recorded app behaviour).
 `tingqr.bin` and `tingqr.bank` give the configured bank.
 
 ## Serve the QR as an image

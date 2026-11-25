@@ -27,6 +27,10 @@
     "MISSING_OPTIONAL_TAG",
     "MISSING_OPTIONAL_TAG"
   ],
+  "warningTags": [
+    "52",
+    "60"
+  ],
   "source": "vietnam-qr-pay README (MIT), https://github.com/xuannghia/vietnam-qr-pay; public shop QR (CellphoneS) shown in that README",
   "note": "expected written by hand and cross-checked with `new QRPay(payload)` of vietnam-qr-pay@1.5.1; no tags 52/60 and tag 01 = 11 with an amount, as in real VNPAY codes."
 }

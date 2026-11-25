@@ -17,15 +17,18 @@ namespace TingQR.Tests.Conformance
     {
         private sealed class Runner
         {
-            public Runner(Func<JsonNode, object?>? encode, Func<string, ParseMode, object>? decode)
+            public Runner(Func<JsonNode, object?>? encode, Func<string, ParseMode, object>? decode, Func<object, JsonNode, object?>? expiry = null)
             {
                 Encode = encode;
                 Decode = decode;
+                Expiry = expiry;
             }
 
             public Func<JsonNode, object?>? Encode { get; }
 
             public Func<string, ParseMode, object>? Decode { get; }
+
+            public Func<object, JsonNode, object?>? Expiry { get; }
         }
 
         private static readonly Dictionary<string, Runner> Schemes = new Dictionary<string, Runner>(StringComparer.Ordinal);
@@ -43,6 +46,16 @@ namespace TingQR.Tests.Conformance
         {
             if (Schemes.ContainsKey(scheme)) throw new InvalidOperationException($"Scheme {scheme} registered twice.");
             Schemes[scheme] = new Runner(encode, decode);
+        }
+
+        /// <summary>
+        /// Registers a scheme of <c>expiry</c> vectors: <paramref name="decode"/> reads the payload (lenient), then
+        /// <paramref name="expiry"/> gets the decoded value and the vector's raw <c>input</c>.
+        /// </summary>
+        public static void RegisterExpiry(string scheme, Func<string, ParseMode, object> decode, Func<object, JsonNode, object?> expiry)
+        {
+            if (Schemes.ContainsKey(scheme)) throw new InvalidOperationException($"Scheme {scheme} registered twice.");
+            Schemes[scheme] = new Runner(null, decode, expiry);
         }
 
         public static bool IsRegistered(string scheme) => Schemes.ContainsKey(scheme);
@@ -107,6 +120,10 @@ namespace TingQR.Tests.Conformance
             return ToOutcome(r.Decode!(Str(v, "payload")!, mode));
         }
 
+        /// <summary>The vector's warningTags (JSON null kept as null); none when the vector has no warnings.</summary>
+        private static IReadOnlyList<string?> WarningTags(JsonObject v)
+            => v["warningTags"] is JsonArray a ? a.Select(n => n == null ? null : (string)n!).ToList() : new List<string?>();
+
         private static void ExpectValue(JsonObject v, Outcome o, string mode, IReadOnlyList<string> warnings)
         {
             var id = Str(v, "id")!;
@@ -117,6 +134,10 @@ namespace TingQR.Tests.Conformance
             var codes = o.Warnings.Select(w => w.Code.ToWireName()).ToList();
             Check(codes.SequenceEqual(warnings), id,
                 $"{mode}: warnings [{string.Join(",", codes)}], expected [{string.Join(",", warnings)}]");
+            var tags = o.Warnings.Select(w => w.Tag).ToList();
+            var expectedTags = WarningTags(v);
+            Check(tags.SequenceEqual(expectedTags, StringComparer.Ordinal), id,
+                $"{mode}: warning tags [{string.Join(",", tags.Select(x => x ?? "null"))}], expected [{string.Join(",", expectedTags.Select(x => x ?? "null"))}]");
         }
 
         /// <summary>Error code plus, when the vector pins an errorTag, the tag, as in errorOf() of the TS runner.</summary>
@@ -128,6 +149,12 @@ namespace TingQR.Tests.Conformance
             var actualCode = o.Ok ? null : o.Error!.Code.ToWireName();
             Check(actualCode == error, id, $"{mode}: error {actualCode ?? "(none)"}, expected {error}");
             if (errorTag != null) Check(o.Error!.Tag == errorTag, id, $"{mode}: error tag {o.Error.Tag ?? "(none)"}, expected {errorTag}");
+            if (v["errorFields"] is JsonNode errorFields)
+            {
+                var fields = ResultJson.ToNode(o.Error?.Fields);
+                Check(ResultJson.JsonEquals(fields, errorFields), id,
+                    $"{mode}: error fields {ResultJson.Show(fields)}, expected {ResultJson.Show(errorFields)}");
+            }
         }
 
         /// <summary>
@@ -157,6 +184,10 @@ namespace TingQR.Tests.Conformance
             Check(!typeCheck, id, "type-check vector: input converted to the C# input type, but it must not");
             return true;
         }
+
+        // UTF-16 code units outside printable ASCII as \uXXXX, so a failing message shows lone surrogates and marks.
+        private static string Escape(string? s)
+            => s == null ? "null" : string.Concat(s.Select(c => c >= ' ' && c <= '~' ? c.ToString() : "\\u" + ((int)c).ToString("x4", System.Globalization.CultureInfo.InvariantCulture)));
 
         /// <summary>Runs every check of the vector's kind; throws on the first mismatch.</summary>
         public static void Run(string id)
@@ -204,6 +235,25 @@ namespace TingQR.Tests.Conformance
                     {
                         Check(linkError == null, id, $"link threw {(linkError == null ? "" : linkError.Code.ToWireName())}");
                         Check(link is string l && l == Str((JsonObject)v["expected"]!, "link"), id, $"link {link}, expected {v["expected"]!["link"]}");
+                    }
+                    break;
+                case "expiry":
+                    {
+                        Check(r.Expiry != null, id, "scheme has no expiry check");
+                        var decoded = Decode(r, v, ParseMode.Lenient);
+                        Check(decoded.Ok, id, $"decode failed: {decoded.Error?.Code.ToWireName()}");
+                        var expired = ResultJson.ToNode(r.Expiry!(decoded.Value!, v["input"]!));
+                        var expectedExpired = v["expected"]!["result"];
+                        Check(ResultJson.JsonEquals(expired, expectedExpired), id, $"expiry {ResultJson.Show(expired)}, expected {ResultJson.Show(expectedExpired)}");
+                    }
+                    break;
+                case "text":
+                    if (TryEncode(r, v, out var text, out var textError))
+                    {
+                        Check(textError == null, id, $"text threw {(textError == null ? "" : textError.Code.ToWireName())}");
+                        var expectedText = JsonInput.Of(v["expected"]).String("result");
+                        Check(text is string s && string.Equals(s, expectedText, StringComparison.Ordinal), id,
+                            $"text {Escape(text as string)}, expected {Escape(expectedText)}");
                     }
                     break;
                 case "lookup":

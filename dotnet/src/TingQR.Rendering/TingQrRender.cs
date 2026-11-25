@@ -7,6 +7,20 @@ namespace TingQR.Rendering
     {
         private static TingQrException Invalid(string message) => new TingQrException(TingQrErrorCode.InvalidValue, message);
 
+        /// <summary>
+        /// The most characters any QR code holds: 7089 digits (numeric mode, version 40, ECC L: 4 + 14 + 2363 × 10 =
+        /// 23 648 bits, the 2956 data codewords of 40-L). Each UTF-16 unit of a text costs at least one of these
+        /// characters: numeric and alphanumeric texts are ASCII (one unit, one character), and in byte mode each unit is
+        /// at least one UTF-8 byte (a surrogate pair, two units, is four bytes) while 40-L holds 2953 bytes. So a longer
+        /// text fits no version, ECC or mode: it is rejected before the encoder builds buffers as long as the text.
+        /// Shorter texts go to the encoder, which decides.
+        /// </summary>
+        private const int MaxUnits = 7089;
+
+        private static TingQrException TooLong(int maxVersion, Ecc ecc) =>
+            // Stryker disable once String : error message
+            Invalid(string.Format(CultureInfo.InvariantCulture, "Text is too long for a QR code of version ≤ {0} at ECC {1}.", maxVersion, ecc));
+
         private static int IntOption(int? value, string name, int min, int max, int fallback)
         {
             if (value == null) return fallback;
@@ -77,6 +91,7 @@ namespace TingQR.Rendering
             // Stryker disable once String : error message
             if (minVersion > maxVersion) throw Invalid("Option minVersion must not exceed maxVersion.");
             var mask = IntOption(options.Mask, "mask", 0, 7, -1);
+            if (text.Length > MaxUnits) throw TooLong(maxVersion, ecc);
 
             QrCode qr;
             try
@@ -85,8 +100,7 @@ namespace TingQR.Rendering
             }
             catch (RangeError)
             {
-                // Stryker disable once String : error message
-                throw Invalid(string.Format(CultureInfo.InvariantCulture, "Text is too long for a QR code of version ≤ {0} at ECC {1}.", maxVersion, ecc));
+                throw TooLong(maxVersion, ecc);
             }
             var rows = new bool[qr.Size][];
             for (var y = 0; y < qr.Size; y++)

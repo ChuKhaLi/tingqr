@@ -5,7 +5,8 @@ banks and banking apps. It does not draw QR images, confirm payments or receive 
 
 **Status: not released.** Version `0.0.0`, not on NuGet. Targets `net10.0` and `netstandard2.0`. Tests run on `net10.0`
 (Ubuntu and Windows) and `net481` (Windows) in `ci-dotnet`; first green run on PR #10, 2026-11-23, together with
-`mutation-dotnet`. Drawing QR images is in `TingQR.Rendering`, bank logos in `TingQR.BankLogos`, the ASP.NET Core
+`mutation-dotnet`. The 2026-11-25 changes (read-only results, `RemoveAccents` on lone surrogates and marks outside the
+BMP, the new shared vectors) have run only locally on Windows, not on CI or Linux. Drawing QR images is in `TingQR.Rendering`, bank logos in `TingQR.BankLogos`, the ASP.NET Core
 integration in `TingQR.AspNetCore`. The four packages share one version, separate from the npm packages.
 
 Once released, install it from NuGet:
@@ -88,6 +89,11 @@ Everything is in the `TingQR` namespace except the EMV layer and `ParseMode`, wh
 - **No value equality on data with dictionaries.** `VietQrData`, `PromptPayData`, `KhqrData` and `VnpayQrData` are
   records, but their dictionary members (`AdditionalData`, `ExtraFields`, ...) compare by reference, so two equal decodes are not
   `==`. Compare the fields you need.
+- **Read-only results.** Lists and dictionaries the library returns (`Warnings`, `EmvPayload.Fields`, `TlvNode.Children`,
+  `TingQrException.Fields`, `AlsoMatches`, the dictionaries of decoded data, `Banks.All`...) are read-only wrappers:
+  casting one to `IList<T>` or `IDictionary<,>` and changing it throws `NotSupportedException`. They are snapshots:
+  the public constructors (`EmvPayload`, `TingQrException`, `TlvNode`) and `TingQrResult<T>.Success` copy the list
+  they are given, so later changes to your list are not seen.
 - **`BankApps.Link` and `fallbackUrl`.** .NET has no WHATWG URL parser, so a small checker produces the normalised
   URL. It rejects (`INVALID_VALUE`) URLs WHATWG would accept and rewrite: user info, IPv6, non-canonical IPv4, `%` or
   `\` in the host, `\` or `.`/`..` segments in the path (also percent-encoded, `%2e`, `.%2e`), a last host label
