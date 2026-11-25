@@ -29,7 +29,9 @@ jobs:
   mutation:
     name: mutation (${{ matrix.project }})
     runs-on: ubuntu-latest
-    timeout-minutes: 30  # Core and Rendering ~5 min each locally (2026-11-23)
+    # ~5 min each locally, but much slower on CI: rendering took 22 min (main b684bca), 27 min (PR #11) and was
+    # cancelled at the old 30-minute limit on main f6bff23 (run 45446475415, 2026-11-24); core ~17 min.
+    timeout-minutes: 45
     strategy:
       fail-fast: false  # report both scores even when one fails
       matrix:
