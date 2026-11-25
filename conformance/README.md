@@ -119,8 +119,9 @@ Ba luật chung nữa, cùng loại:
 - **Tag của cảnh báo** (`warningTags`): `MISSING_OPTIONAL_TAG` mang đúng tag bị thiếu. Thứ tự: các tag chuẩn thiếu
   theo thứ tự số (`52`, `53`, `58`, `59`, `60`), rồi `99.01` (KHQR động không có hạn đọc được). `LOWERCASE_CRC` mang
   `63`; `TRIMMED_WHITESPACE` không có tag (`null`). Hai cảnh báo này của bước đọc chuỗi đứng trước cảnh báo của loại
-  QR. Giá trị trong mẫu đọc bằng tay từ chuỗi QR (tag nào vắng), không lấy từ đầu ra của tingqr. Chưa có mẫu nào mang
-  `TRIMMED_WHITESPACE` hay `LOWERCASE_CRC`.
+  QR. Tag trong mẫu đọc bằng tay từ chuỗi QR (tag nào vắng), không lấy từ đầu ra của tingqr; còn thứ tự là luật riêng
+  của tingqr, ghi theo code. Mẫu `vnpay-static-trimmed-lowercase-crc` (sửa từ `vnpay-static`) mang cả
+  `TRIMMED_WHITESPACE`, `LOWERCASE_CRC` và hai tag chuẩn thiếu. Chưa có mẫu nào có cả tag chuẩn thiếu lẫn `99.01`.
 - `removeVietnameseAccents` / `VietnameseText.RemoveAccents` với `null` (hay thứ không phải chuỗi ở TypeScript) là lỗi
   lập trình, không phải `TingQrError`: TypeScript ném `TypeError`, .NET ném `ArgumentNullException`. Không có mẫu cho
   trường hợp này (chỉ test riêng). Phần còn lại có mẫu `text` (dưới).
@@ -171,14 +172,20 @@ Dành cho `removeVietnameseAccents` / `VietnameseText.RemoveAccents`. Mẫu nằ
 
 - `input`: `{ text }`; `expected`: `{ result }`, đều là chuỗi. Không có `payload`, không có `error`.
 - **Quy tắc so sánh:** `removeVietnameseAccents(input.text)` phải bằng `result` từng đơn vị UTF-16.
-- **Luật** (cả hai bản): chuẩn hoá NFD; bỏ mọi dấu kết hợp (General_Category `M`, tính theo code point nên kể cả dấu
+- **Luật** (của tingqr, cả hai bản): chuẩn hoá NFD; bỏ mọi dấu kết hợp (General_Category `M`, tính theo code point nên kể cả dấu
   ngoài BMP) trong cả chuỗi dấu liên tiếp đứng sau một chữ ASCII `A`–`Z`/`a`–`z`; đổi `đ`/`Đ` thành `d`/`D`; chuẩn hoá NFC. Dấu sau chữ không
   phải ASCII (Thái, Khmer, Hy Lạp...) và sau chữ số được giữ. Surrogate lẻ giữ nguyên (JavaScript `normalize` để nguyên
-  nó; .NET chuẩn hoá từng đoạn giữa các surrogate lẻ), và dấu sau surrogate lẻ không tính là đứng sau chữ cái.
-- Giá trị mong đợi tính bằng tay theo luật trên từ bảng Unicode (phân rã, General_Category), không lấy từ tingqr. Đối
-  chiếu thêm bằng một hàm viết lại luật trên Node 22.23.3 (`String.prototype.normalize`, 2026-11-25).
+  nó; .NET chuẩn hoá từng đoạn giữa các surrogate lẻ), và dấu sau surrogate lẻ không tính là đứng sau chữ cái. Vế về
+  surrogate lẻ là luật riêng của tingqr, đặt cho khớp `String.prototype.normalize` của JavaScript.
+- **Phụ thuộc bảng Unicode của nền tảng:** dấu nào là dấu kết hợp và cách chuẩn hoá lấy từ bảng Unicode của từng
+  runtime (TypeScript: ICU của engine JS, `\p{M}` và `normalize`; .NET: `CharUnicodeInfo` và `string.Normalize`).
+  .NET Framework (đích `netstandard2.0` chạy trên net481) dùng bảng Unicode cũ hơn, nên một dấu mới (thêm vào Unicode
+  sau phiên bản bảng của runtime) có thể bị bỏ ở bản này mà giữ ở bản kia. Hai bản chỉ cam kết khớp trên ký tự có trong
+  bảng Unicode của mọi runtime đang dùng; các mẫu chỉ dùng ký tự cũ (dấu ngoài BMP là U+1D167, Unicode 3.1).
+- Giá trị mong đợi tính bằng tay theo luật trên từ bảng Unicode (phân rã, General_Category), không lấy từ tingqr.
 - Trong file, dấu kết hợp và surrogate lẻ viết dạng `\uXXXX` cho dễ đọc. Bộ chạy .NET đọc chuỗi có surrogate lẻ qua
   `JsonInput.String` (System.Text.Json từ chối nó khi đọc thẳng).
+
 ## Mẫu link mở app (`kind: "link"`, `scheme: "bank-app-link"`)
 
 Dành cho `bankAppLink` (`@tingqr/core/banks`). Mẫu nằm ở `vectors/bank-app-link/`.
@@ -254,8 +261,10 @@ Nguồn cho `@tingqr/bank-logos` và `TingQR.BankLogos`.
 
 ## Mẫu ma trận (`kind: "matrix"`, `scheme: "render"`)
 
-Dành cho bộ vẽ QR (`@tingqr/render`, `TingQR.Rendering` bên .NET). Mẫu nằm ở `vectors/render/`. Hiện có 23 mẫu ma trận
-(sinh từ Nayuki gốc; có phiên bản 27, 32, 40 và chế độ số ở phiên bản 10) và 8 mẫu lỗi tuỳ chọn `render-invalid-*` viết tay (nguồn: thiết kế render, mục 5.2).
+Dành cho bộ vẽ QR (`@tingqr/render`, `TingQR.Rendering` bên .NET). Mẫu nằm ở `vectors/render/`. Hiện có 24 mẫu ma trận
+(sinh từ Nayuki gốc; có phiên bản 27, 32, 40, chế độ số ở phiên bản 10, và 7089 chữ số ở phiên bản 40 ECC L, dung lượng
+lớn nhất của QR) và 9 mẫu lỗi `render-invalid-*` viết tay (nguồn: thiết kế render, mục 5.2). Mẫu lỗi
+`render-invalid-too-long-7090-digits` là 7090 chữ số, một chữ số quá dung lượng đó (Nayuki gốc báo "Data too long").
 
 - `input`: `{ text, ecc?, boostEcc?, minVersion?, maxVersion?, mask? }`. Không có `payload`, không có `error`.
 - `expected`: `{ size, version, ecc, mask, rows }`. `rows[y]` là chuỗi `0`/`1`, `1` là ô tối.

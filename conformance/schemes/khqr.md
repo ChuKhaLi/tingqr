@@ -65,7 +65,9 @@ Ngoài ra:
 - `timestamp` giữ mọi sub-tag của `99` nguyên văn. `createdAt`, `expiresAt` chỉ có khi giá trị là 13 chữ số.
 - **Hàm đọc không so với giờ hiện tại.** Mọi mẫu động trong test của SDK đã hết hạn từ 2024; nếu hàm đọc tự kiểm thì
   kết quả test thay đổi theo ngày chạy. Muốn kiểm thì gọi `isKhqrExpired(data, nowMs)`: `true` khi `nowMs > expiresAt`
-  (như SDK), `undefined` khi không có `expiresAt`.
+  (như SDK: `bakong-khqr@1.0.20` `src/MerchantCode/timeStamp.js:26` ném `KHQR_EXPIRED` khi
+  `expirationTimestamp < Date.now()`, nên đúng biên là chưa hết hạn), `undefined` khi không có `expiresAt` (luật riêng
+  của tingqr: SDK ném lỗi với QR động không có hạn 13 chữ số).
 - Tag trùng trong `29`, `30`, `62`, `64`, `99` báo `DUPLICATE_TAG`. Tag cấp đầu không được diễn giải trả trong
   `extraFields`.
 

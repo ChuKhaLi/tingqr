@@ -76,7 +76,7 @@ if (found.ok && found.value.scheme === 'vietqr') {
 
 - Building throws a `TingQrError` with a code from [`conformance/errors.json`](conformance/errors.json) for bad input.
   For example, a transfer note with Vietnamese accents is `NON_ASCII`,
-  because tingqr allows only printable ASCII there (its own rule; no scan has recorded an app rejecting accents).
+  because tingqr allows only printable ASCII there (its own rule; no scan has tried an accented transfer note yet).
 - Reading returns a result object: `{ ok: true, value, warnings }` or `{ ok: false, error }`. By default readers accept
   codes missing tags the standard requires but real codes often omit (VNPAY codes usually lack tags 52 and 60), with a
   warning; `{ mode: 'strict' }` refuses them. A lowercase CRC and surrounding whitespace are accepted in both modes,

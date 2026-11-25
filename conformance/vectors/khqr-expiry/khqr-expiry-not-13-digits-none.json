@@ -9,6 +9,6 @@
   "expected": {
     "result": null
   },
-  "source": "conformance/schemes/khqr.md (isKhqrExpired: true when nowMs > expiresAt, as the Bakong SDK; undefined, written null, when the decoded code has no 13-digit expiresAt), expected value worked out by hand",
+  "source": "conformance/schemes/khqr.md (isKhqrExpired: true when nowMs > expiresAt, as the Bakong SDK: bakong-khqr@1.0.20 src/MerchantCode/timeStamp.js:26 `expirationTimestamp < Date.now()`, so equal is not expired; undefined, written null, when the decoded code has no 13-digit expiresAt), expected value worked out by hand",
   "note": "99.01 is not 13 digits: lenient mode keeps it only in timestamp, expiresAt is absent. payload copied unchanged from conformance/vectors/khqr/khqr-expiry-not-13-digits.json."
 }

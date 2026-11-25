@@ -55,9 +55,9 @@ Hướng dẫn cho phần .NET của tingqr. Quy tắc chung: `../CLAUDE.md`. Th
     `Log10` + 1 thay cho hai vòng chỉnh), `Color.Lin` (`channel <= 10`), `Svg.IsPositiveLength` (một biểu thức, không
     còn nhánh chỉ net481 chạy tới), `Svg.AppendModulePath` (đọc hàng trực tiếp, vượt biên thì ném lỗi).
   - Lần chạy cục bộ trên Windows 2026-11-25 (sau khi thêm kiểm độ dài 7089 và `SvgSize` so theo giá trị): Rendering
-    99,42% = 486 bị giết + 31 quá giờ trên 520 được tính, 3 sống sót (dưới); 14 bị bỏ qua vì chỉ đổi thông báo lỗi, 20
-    vì chỉ đổi thông báo, 53 do bộ lọc "block already covered", `QrCodeGen.cs` bị loại (876). Core (2026-11-25): 100% =
-    1556 bị giết + 16 quá giờ trên 1572 được tính, 0 sống sót, 1202 bị bỏ qua (771 bộ lọc mutate, 150 "block already
+    99,42% = 486 bị giết + 31 quá giờ trên 520 được tính, 3 sống sót (dưới); bị bỏ qua: 14 theo comment
+    `String : error message` (literal thông báo lỗi), 20 theo comment `all` (dòng chỉ dựng thông báo), 53 do bộ lọc
+    "block already covered"; `QrCodeGen.cs` bị loại (876). Core (2026-11-25): 100% = 1556 bị giết + 16 quá giờ trên 1572 được tính, 0 sống sót, 1202 bị bỏ qua (771 bộ lọc mutate, 150 "block already
     covered", phần còn lại theo comment `disable`).
   - Ba đột biến sống sót được chấp nhận: tương đương, nhưng nằm chung dòng với đột biến cùng loại giết được nên không
     `disable` được, và viết lại thì không còn giống bản TS. `Layout.CheckColours`: `Luminance(fg) >= Luminance(bg)` thành

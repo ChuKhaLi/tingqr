@@ -8,6 +8,6 @@
   "expected": {
     "result": "ภาษาไทย น\u0e49ำ 한국어 ចន ស\u17d2ម\u17b8ន ά й"
   },
-  "source": "Unicode rule of removeVietnameseAccents (conformance/README.md): NFD, drop every combining mark (General_Category M, by code point, so marks outside the BMP too) that follows an ASCII letter A-Z/a-z, map đ/Đ to d/D, NFC; expected value worked out by hand from the Unicode Character Database (decompositions, General_Category), not from tingqr",
+  "source": "tingqr's rule of removeVietnameseAccents (conformance/README.md; which code points are marks and how text normalises come from each runtime's Unicode tables, so marks newer than a runtime's tables may differ, e.g. on .NET Framework; the lone-surrogate clause is tingqr's own, matching JavaScript normalize): NFD, drop every combining mark (General_Category M, by code point, so marks outside the BMP too) that follows an ASCII letter A-Z/a-z, map đ/Đ to d/D, NFC; expected value worked out by hand from the Unicode Character Database (decompositions, General_Category), not from tingqr",
   "note": "Thai, Korean, Khmer, Greek and Cyrillic: marks follow a non-ASCII letter, so they stay; Hangul syllables decompose to jamo under NFD and recompose under NFC."
 }

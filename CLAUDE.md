@@ -148,8 +148,8 @@ TypeScript và bản .NET, kèm tích hợp sẵn cho Angular, NestJS và ASP.NE
   - **Dọn lỗi nhỏ sau Plan 8c** (2026-11-25, nhánh `minors-after-8c`): `docs/superpowers/plans/2026-11-25-minors-after-8c.md`.
     - Xong: tài liệu và công cụ nhỏ; .NET trả danh sách/từ điển chỉ đọc, `SvgSize` so theo giá trị, `RemoveAccents` khớp
       TS (surrogate lẻ, dấu ngoài BMP), `JsonInput.Double` chặn tràn; canvas nhận `null`, `toPng*` mã hoá một lần, cả hai
-      bản từ chối văn bản quá 7089 đơn vị UTF-16 trước khi mã hoá; mẫu mới (ma trận phiên bản lớn, hết hạn KHQR, bỏ dấu,
-      `warningTags`, `errorFields`).
+      bản từ chối văn bản quá 7089 đơn vị UTF-16 trước khi mã hoá; mẫu mới (ma trận phiên bản lớn, biên 7089/7090 chữ số,
+      hết hạn KHQR, bỏ dấu, `warningTags` kể cả `TRIMMED_WHITESPACE`/`LOWERCASE_CRC`, `errorFields`).
     - **Chưa làm (có lý do):** PromptPay đọc tag 64 (chưa có đặc tả), bộ đọc thứ hai cho `check-promptpay` (cần chọn
       oracle), deprecate 0.0.1 (chỉ sau 0.1.0).
     - **CI GitHub chưa chạy cho nhánh này:** Actions lỗi thanh toán ngày 2026-11-25; chủ dự án chọn gộp không chờ CI.

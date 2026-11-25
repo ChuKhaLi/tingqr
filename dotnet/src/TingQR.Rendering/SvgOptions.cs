@@ -86,6 +86,12 @@ namespace TingQR.Rendering
         /// Same form and same value: pixels compare with <c>==</c> of <see cref="double"/> (so 0 equals -0 and NaN equals
         /// nothing), lengths compare ordinally.
         /// </summary>
+        /// <remarks>
+        /// A NaN pixel size is not equal to itself: <c>Equals</c> and <c>==</c> return false for two NaN sizes, even a size
+        /// compared with itself. The compiler-generated equality of <see cref="SvgOptions"/> uses this method, so two
+        /// <see cref="SvgOptions"/> with <c>Size = double.NaN</c> are not equal either (before value equality, NaN sizes
+        /// were equal). NaN is rejected when rendering, so this only affects hash sets and dictionaries.
+        /// </remarks>
         public bool Equals(SvgSize other)
             => IsLength == other.IsLength && _pixels == other._pixels && string.Equals(_length, other._length, StringComparison.Ordinal);
 

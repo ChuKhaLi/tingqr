@@ -22,7 +22,7 @@ Planned as 0.1.0, after MoMo and ZaloPay recognition and scans with more banking
   them (`bankAppLink`).
 - New shared vectors in `conformance/` (no behaviour change): KHQR expiry (`khqr-expiry`), accent removal
   (`vietnamese-text`), the tag of each warning (`warningTags`), the TLV fields of an `UNKNOWN_SCHEME` error
-  (`errorFields`), and four large-version QR matrices (versions 10, 27, 32, 40).
+  (`errorFields`). The new render vectors are listed under `@tingqr/render`.
 
 ### @tingqr/render
 
@@ -38,6 +38,8 @@ Planned as 0.1.0, after MoMo and ZaloPay recognition and scans with more banking
 - A text longer than 7089 UTF-16 units (the most any QR code holds) is `INVALID_VALUE` before the encoder runs; same
   error and message as before.
 - QR encoder ported from Project Nayuki's QR Code generator v1.8.0 (MIT).
+- New shared render vectors (no behaviour change): matrices at versions 27, 32 and 40, numeric mode at version 10, and
+  7089 digits at version 40 (ECC L), all from the original Nayuki generator; 7090 digits is `INVALID_VALUE`.
 
 ### @tingqr/bank-logos
 
@@ -99,11 +101,12 @@ no script checks it.
 
 - C# port of `@tingqr/render` (Plan 8b): `TingQrRender.ToMatrix`, `ToSvg`, `CheckSvgOptions`, with the optional centre
   logo (provisional limits). No PNG. The SVG is byte for byte the TypeScript output on 80 golden vectors in
-  `conformance/vectors/render/`; the matrices are also checked on the 23 Nayuki matrix vectors and the 8 hand-written
-  option-error vectors. Targets `net10.0` and `netstandard2.0`; the encoder is ported from Project Nayuki's generator
+  `conformance/vectors/render/`; the matrices are also checked on the 24 Nayuki matrix vectors and the 9 hand-written
+  error vectors. Targets `net10.0` and `netstandard2.0`; the encoder is ported from Project Nayuki's generator
   v1.8.0 (MIT).
 - `SvgSize` has value equality (`IEquatable<SvgSize>`, `==`, `!=`): same form and same value (pixels by `==` of
-  `double`, lengths ordinal).
+  `double`, lengths ordinal). So a NaN pixel size equals nothing, itself included, and two `SvgOptions` with
+  `Size = double.NaN` are no longer equal (record equality); NaN is rejected when rendering anyway.
 - A text longer than 7089 UTF-16 units (the most any QR code holds) is `INVALID_VALUE` before the encoder allocates
   buffers sized by the text; same error and message as before.
 

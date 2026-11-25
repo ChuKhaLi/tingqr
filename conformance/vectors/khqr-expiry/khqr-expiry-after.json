@@ -9,6 +9,6 @@
   "expected": {
     "result": true
   },
-  "source": "conformance/schemes/khqr.md (isKhqrExpired: true when nowMs > expiresAt, as the Bakong SDK; undefined, written null, when the decoded code has no 13-digit expiresAt), expected value worked out by hand",
+  "source": "conformance/schemes/khqr.md (isKhqrExpired: true when nowMs > expiresAt, as the Bakong SDK: bakong-khqr@1.0.20 src/MerchantCode/timeStamp.js:26 `expirationTimestamp < Date.now()`, so equal is not expired; undefined, written null, when the decoded code has no 13-digit expiresAt), expected value worked out by hand",
   "note": "nowMs is 1 ms after expiresAt 1726822035797. payload copied unchanged from conformance/vectors/khqr/khqr-sdk-individual-usd.json."
 }

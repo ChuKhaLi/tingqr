@@ -9,6 +9,6 @@
   "expected": {
     "result": null
   },
-  "source": "conformance/schemes/khqr.md (isKhqrExpired: true when nowMs > expiresAt, as the Bakong SDK; undefined, written null, when the decoded code has no 13-digit expiresAt), expected value worked out by hand",
+  "source": "conformance/schemes/khqr.md (isKhqrExpired: true when nowMs > expiresAt, as the Bakong SDK: bakong-khqr@1.0.20 src/MerchantCode/timeStamp.js:26 `expirationTimestamp < Date.now()`, so equal is not expired; undefined, written null, when the decoded code has no 13-digit expiresAt), expected value worked out by hand",
   "note": "Dynamic code whose tag 99 has only 99.00 (createdAt 1630395838502), read in lenient mode: no expiresAt. payload copied unchanged from conformance/vectors/khqr/khqr-sdk-khr-50000.json."
 }
