@@ -3,6 +3,7 @@ import { join } from 'node:path'
 import { TingQrError } from '@tingqr/core'
 import { CONFORMANCE_DIR } from './conformance-root.js'
 import { toMatrix, type MatrixOptions } from '../src/index.js'
+import { QrSegment } from '../src/qrcodegen.js'
 
 const ALNUM = JSON.parse(readFileSync(join(CONFORMANCE_DIR, 'vectors', 'render', 'render-vietqr-alnum.json'), 'utf8')).input.text
 
@@ -83,4 +84,28 @@ test.each(['\uD800', 'a\uDC00b', '😀'.slice(0, 1)])('text with an unpaired sur
 
 test('null options are the defaults, like .NET', () => {
   expect(toMatrix('TINGQR', null as unknown as MatrixOptions)).toEqual(toMatrix('TINGQR'))
+})
+
+describe('text longer than any QR code can hold is rejected before the encoder runs', () => {
+  // 7089 digits is the largest QR code there is: numeric mode, version 40, ECC L (4 + 14 + 2363 × 10 = 23 648 bits).
+  afterEach(() => vi.restoreAllMocks())
+
+  test('7089 digits still reach the encoder and fit version 40-L', () => {
+    const spy = vi.spyOn(QrSegment, 'makeSegments')
+    const m = toMatrix('1'.repeat(7089), { ecc: 'L' })
+    expect([m.version, m.ecc]).toEqual([40, 'L'])
+    expect(spy).toHaveBeenCalledTimes(1)
+  })
+
+  test.each([
+    ['7090 digits', '1'.repeat(7090)],
+    ['1 000 000 ASCII letters', 'a'.repeat(1_000_000)],
+    ['500 000 emoji (1 000 000 UTF-16 units)', '😀'.repeat(500_000)],
+  ])('%s: INVALID_VALUE without calling the encoder', (_name, text) => {
+    const spy = vi.spyOn(QrSegment, 'makeSegments')
+    const e = thrown(() => toMatrix(text, { ecc: 'L' }))
+    expect(e.code).toBe('INVALID_VALUE')
+    expect(e.message).toBe('Text is too long for a QR code of version ≤ 40 at ECC L.')
+    expect(spy.mock.calls.length).toBe(0) // not toHaveBeenCalled: its failure message would print the whole text
+  })
 })

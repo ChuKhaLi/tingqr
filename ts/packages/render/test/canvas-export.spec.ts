@@ -1,7 +1,8 @@
 import { TingQrError } from '@tingqr/core'
-import { drawQr, toPng, toPngBlob, toPngDataUrl } from '../src/canvas.js'
+import { drawQr, toPng, toPngBlob, toPngDataUrl, type CanvasOptions } from '../src/canvas.js'
 import { toMatrix } from '../src/index.js'
 import { logoBox } from '../src/logo.js'
+import { QrCode } from '../src/qrcodegen.js'
 import { ExportingCanvas, FakeCanvas, fakeImageClass } from './fake-canvas.js'
 
 const TEXT = 'TINGQR CANVAS LOGO'
@@ -245,5 +246,47 @@ describe('PNG export', () => {
   test('bad options are INVALID_VALUE before any canvas is needed', async () => {
     expect(await code(toPngBlob(TEXT, { scale: 0 }))).toBe('INVALID_VALUE')
     expect(await code(toPngDataUrl(TEXT, { foreground: '#fff' }))).toBe('INVALID_VALUE')
+  })
+})
+
+describe('null options and encoding once (like toSvg)', () => {
+  afterEach(() => vi.restoreAllMocks())
+
+  test('null options are the defaults for every canvas function', async () => {
+    installDom()
+    const nul = null as unknown as CanvasOptions
+    const a = new FakeCanvas()
+    const b = new FakeCanvas()
+    await drawQr(a, TEXT, nul)
+    await drawQr(b, TEXT)
+    expect(a.calls).toEqual(b.calls)
+    expect(a.width).toBe((toMatrix(TEXT).size + 8) * 8)
+    expect(await (await toPngBlob(TEXT, nul)).text()).toBe(await (await toPngBlob(TEXT)).text())
+    expect(await toPngDataUrl(TEXT, nul)).toBe(await toPngDataUrl(TEXT))
+    expect((await toPng(TEXT, nul)).dataUrl).toBe(await toPngDataUrl(TEXT))
+  })
+
+  test.each(['scale', 'margin', 'foreground', 'background', 'minVersion', 'maxVersion', 'mask'])(
+    'a null %s is still INVALID_VALUE, as in toSvg',
+    async (name) => {
+      installDom()
+      const options = { [name]: null } as unknown as CanvasOptions
+      expect(await code(drawQr(new FakeCanvas(), TEXT, options))).toBe('INVALID_VALUE')
+      expect(await code(toPngBlob(TEXT, options))).toBe('INVALID_VALUE')
+      expect(await code(toPngDataUrl(TEXT, options))).toBe('INVALID_VALUE')
+      expect(await code(toPng(TEXT, options))).toBe('INVALID_VALUE')
+    },
+  )
+
+  test.each([
+    ['drawQr', () => drawQr(new FakeCanvas(), TEXT, { logo: { href: DATA_HREF } })],
+    ['toPngBlob', () => toPngBlob(TEXT, { logo: { href: DATA_HREF } })],
+    ['toPngDataUrl', () => toPngDataUrl(TEXT)],
+    ['toPng', () => toPng(TEXT, { logo: { href: DATA_HREF } })],
+  ] as const)('%s encodes the text once', async (_name, run) => {
+    installDom()
+    const spy = vi.spyOn(QrCode, 'encodeSegments')
+    await run()
+    expect(spy).toHaveBeenCalledTimes(1)
   })
 })

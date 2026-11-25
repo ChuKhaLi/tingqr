@@ -29,7 +29,11 @@ Planned as 0.1.0, after MoMo and ZaloPay recognition and scans with more banking
   correctly, an engine reporting 0×0 has not been tried.
 - `checkSvgOptions(options)`: check render options without rendering (used by the HTTP integrations at startup).
 - `null` options are the defaults in `toMatrix`, `toSvg` and `checkSvgOptions`, and `logo: null` means no logo (also on
-  canvas), like .NET; a `null` in another option is still `INVALID_VALUE`.
+  canvas), like .NET; a `null` in another option is still `INVALID_VALUE`. `null` options are the defaults in the
+  canvas functions too.
+- The canvas functions encode the text once per call (`toPng`, `toPngBlob` and `toPngDataUrl` used to encode it twice).
+- A text longer than 7089 UTF-16 units (the most any QR code holds) is `INVALID_VALUE` before the encoder runs; same
+  error and message as before.
 - QR encoder ported from Project Nayuki's QR Code generator v1.8.0 (MIT).
 
 ### @tingqr/bank-logos
@@ -96,6 +100,8 @@ no script checks it.
   v1.8.0 (MIT).
 - `SvgSize` has value equality (`IEquatable<SvgSize>`, `==`, `!=`): same form and same value (pixels by `==` of
   `double`, lengths ordinal).
+- A text longer than 7089 UTF-16 units (the most any QR code holds) is `INVALID_VALUE` before the encoder allocates
+  buffers sized by the text; same error and message as before.
 
 ### TingQR.BankLogos
 
