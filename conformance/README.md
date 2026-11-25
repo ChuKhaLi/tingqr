@@ -172,7 +172,7 @@ Dành cho `removeVietnameseAccents` / `VietnameseText.RemoveAccents`. Mẫu nằ
 - `input`: `{ text }`; `expected`: `{ result }`, đều là chuỗi. Không có `payload`, không có `error`.
 - **Quy tắc so sánh:** `removeVietnameseAccents(input.text)` phải bằng `result` từng đơn vị UTF-16.
 - **Luật** (cả hai bản): chuẩn hoá NFD; bỏ mọi dấu kết hợp (General_Category `M`, tính theo code point nên kể cả dấu
-  ngoài BMP) đứng ngay sau một chữ ASCII `A`–`Z`/`a`–`z`; đổi `đ`/`Đ` thành `d`/`D`; chuẩn hoá NFC. Dấu sau chữ không
+  ngoài BMP) trong cả chuỗi dấu liên tiếp đứng sau một chữ ASCII `A`–`Z`/`a`–`z`; đổi `đ`/`Đ` thành `d`/`D`; chuẩn hoá NFC. Dấu sau chữ không
   phải ASCII (Thái, Khmer, Hy Lạp...) và sau chữ số được giữ. Surrogate lẻ giữ nguyên (JavaScript `normalize` để nguyên
   nó; .NET chuẩn hoá từng đoạn giữa các surrogate lẻ), và dấu sau surrogate lẻ không tính là đứng sau chữ cái.
 - Giá trị mong đợi tính bằng tay theo luật trên từ bảng Unicode (phân rã, General_Category), không lấy từ tingqr. Đối

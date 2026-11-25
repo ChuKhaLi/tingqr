@@ -29,6 +29,7 @@ Hướng dẫn cho phần .NET của tingqr. Quy tắc chung: `../CLAUDE.md`. Th
 - Không dependency lúc chạy.
 - `src/TingQR.Core/Banks/BankData.g.cs` là file sinh (từ `conformance/banks/`); không sửa tay.
 - Mẫu thử đọc tại chỗ qua `ConformanceRoot` (tests), không chép `conformance/`.
+- File test dùng chung nằm ở `dotnet/tests/Shared/` (`JsonInput.cs`, `NodeFactAttribute.cs`), link vào từng project test bằng `<Compile Include="..\Shared\X" Link="Shared\X" />`; không chép.
 - **Mutation test (Stryker.NET 5.1.0, tool cục bộ trong `.config/dotnet-tools.json`):** `dotnet tool restore` rồi `dotnet tool run dotnet-stryker --config-file ../../stryker-config.json` trong `dotnet/tests/TingQR.Core.Tests/` (~5 phút). Chạy từ thư mục đó để Stryker chỉ dùng `TingQR.Core.Tests`; chạy trong `dotnet/` thì nó dùng cả `TingQR.Rendering.Tests` (project này tham chiếu Core), chậm gấp đôi và vượt giới hạn 30 phút của CI (2026-11-24). Cấu hình `stryker-config.json` (TingQR.Core; Rendering xem mục dưới): chạy test `net10.0`, ngưỡng chặn ≥ 90 (`thresholds.break`), loại `Banks/BankData.g.cs` và `Polyfills.cs`. CI: `.github/workflows/mutation-dotnet.yml`. Báo cáo HTML ở `StrykerOutput/` trong thư mục chạy (không commit).
   - Không dùng `ignore-methods`: mã lỗi và tag là quy phạm nên vẫn bị đột biến. Chỉ chuỗi thông báo lỗi (và tên trường chỉ xuất hiện trong thông báo) được loại, từng chỗ một bằng `// Stryker disable once String : error message` đặt ngay trước literal.
   - Đột biến tương đương thật sự cũng loại từng chỗ bằng `// Stryker disable once <Loại> : <lý do>` ngay trên dòng đó (ví dụ `dot < 0` so với `dot <= 0`, dung lượng `StringBuilder`, `>>` so với `>>>` với số không âm, tổ hợp mã băm). Lý do phải nằm trong comment, không để ở đây. Phạm vi thật của `disable once` (đo bằng báo cáo JSON, Stryker.NET 5.1.0): mọi đột biến cùng loại trong cả câu lệnh/dòng đó, không riêng một đột biến. Vì vậy chỉ dùng khi mọi đột biến loại đó trên dòng đều tương đương; nếu lẫn đột biến giết được thì viết lại mã cho đột biến tương đương biến mất (ví dụ `IndexOf(x) != -1` thay cho `>= 0`, `dot == -1` thay cho `dot < 0`) hoặc tách ra dòng riêng.
@@ -53,9 +54,11 @@ Hướng dẫn cho phần .NET của tingqr. Quy tắc chung: `../CLAUDE.md`. Th
     `JsNumber` (`Math.Sign`, so sánh đặt tại biên đạt được, chia thay cho dịch bit, `biased != 1`, điểm bắt đầu
     `Log10` + 1 thay cho hai vòng chỉnh), `Color.Lin` (`channel <= 10`), `Svg.IsPositiveLength` (một biểu thức, không
     còn nhánh chỉ net481 chạy tới), `Svg.AppendModulePath` (đọc hàng trực tiếp, vượt biên thì ném lỗi).
-  - Lần chạy cục bộ trên Windows 2026-11-24: 99,41% = 475 bị giết + 28 quá giờ trên 506 được tính, 3 sống sót (dưới),
-    87 bị bỏ qua (34 theo comment `disable`, 53 do bộ lọc "block already covered"), `QrCodeGen.cs` bị loại (876). Core
-    (2026-11-23): 1506 bị giết, 12 quá giờ, 0 sống sót, 291 bị bỏ qua.
+  - Lần chạy cục bộ trên Windows 2026-11-25 (sau khi thêm kiểm độ dài 7089 và `SvgSize` so theo giá trị): Rendering
+    99,42% = 486 bị giết + 31 quá giờ trên 520 được tính, 3 sống sót (dưới); 14 bị bỏ qua vì chỉ đổi thông báo lỗi, 20
+    vì chỉ đổi thông báo, 53 do bộ lọc "block already covered", `QrCodeGen.cs` bị loại (876). Core (2026-11-25): 100% =
+    1556 bị giết + 16 quá giờ trên 1572 được tính, 0 sống sót, 1202 bị bỏ qua (771 bộ lọc mutate, 150 "block already
+    covered", phần còn lại theo comment `disable`).
   - Ba đột biến sống sót được chấp nhận: tương đương, nhưng nằm chung dòng với đột biến cùng loại giết được nên không
     `disable` được, và viết lại thì không còn giống bản TS. `Layout.CheckColours`: `Luminance(fg) >= Luminance(bg)` thành
     `>` (độ sáng bằng nhau thì tỉ lệ là 1, vẫn bị từ chối) và `ContrastRatio < MinContrast` thành `<=` (không cặp màu
@@ -92,7 +95,8 @@ Hướng dẫn cho phần .NET của tingqr. Quy tắc chung: `../CLAUDE.md`. Th
   `dotnet/tests/TingQR.BankLogos.Tests/` (~1 phút). `mutation-dotnet.yml` có thêm hai job matrix
   (đạt trên Ubuntu lần đầu ở PR #11, run 45423456206, 2026-11-24).
   Các quy tắc `disable once` ở trên áp dụng y nguyên.
-- Lần chạy cục bộ trên Windows 2026-11-24:
+- Lần chạy cục bộ trên Windows 2026-11-24 (BankLogos chạy lại 2026-11-25 sau khi `Keys` thành chỉ đọc: 100% = 66/66,
+  đã thêm kiểm thứ tự vào test đọc danh sách):
   - AspNetCore (sau khi thêm kiểm `CacheControl` và test "luôn 200"): 100% = 227 bị giết, 0 quá giờ, 0 sống sót; 77 bị
     bỏ qua (22 theo comment `disable`, 55 do bộ lọc "block already covered"), 29 lỗi biên dịch (không tính).
   - BankLogos: 100% = 66 bị giết, 0 quá giờ, 0 sống sót; 15 bị bỏ qua (4 theo comment `disable`, 11 do bộ lọc), 7 lỗi

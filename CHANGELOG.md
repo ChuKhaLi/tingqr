@@ -20,6 +20,9 @@ Planned as 0.1.0, after MoMo and ZaloPay recognition and scans with more banking
   claiming that banking apps reject accents; the code is unchanged.
 - `@tingqr/core/banks`: Vietnamese banks (`findBank`), banking apps (`findBankApp`, `appsForBank`) and links that open
   them (`bankAppLink`).
+- New shared vectors in `conformance/` (no behaviour change): KHQR expiry (`khqr-expiry`), accent removal
+  (`vietnamese-text`), the tag of each warning (`warningTags`), the TLV fields of an `UNKNOWN_SCHEME` error
+  (`errorFields`), and four large-version QR matrices (versions 10, 27, 32, 40).
 
 ### @tingqr/render
 
@@ -90,12 +93,13 @@ no script checks it.
   the BMP after a Latin letter, matching `removeVietnameseAccents`; `null` throws `ArgumentNullException`.
 - The VietQR `NON_ASCII` message for an accented purpose states tingqr's rule (printable ASCII only) instead of
   claiming that banking apps reject accents; the code is unchanged.
+- Runs the new shared vectors (KHQR expiry, accent removal, warning tags, `UNKNOWN_SCHEME` fields); no behaviour change.
 
 ### TingQR.Rendering
 
 - C# port of `@tingqr/render` (Plan 8b): `TingQrRender.ToMatrix`, `ToSvg`, `CheckSvgOptions`, with the optional centre
   logo (provisional limits). No PNG. The SVG is byte for byte the TypeScript output on 80 golden vectors in
-  `conformance/vectors/render/`; the matrices are also checked on the 19 Nayuki matrix vectors and the 8 hand-written
+  `conformance/vectors/render/`; the matrices are also checked on the 23 Nayuki matrix vectors and the 8 hand-written
   option-error vectors. Targets `net10.0` and `netstandard2.0`; the encoder is ported from Project Nayuki's generator
   v1.8.0 (MIT).
 - `SvgSize` has value equality (`IEquatable<SvgSize>`, `==`, `!=`): same form and same value (pixels by `==` of

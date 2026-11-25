@@ -50,7 +50,7 @@ const CASES = [
   { id: 'render-emoji', text: 'ting 😀 qr', options: {} },
   // Large versions, pinned with minVersion = maxVersion. Each text is long enough that the version is also the smallest
   // that fits it at that ECC level (checked with this oracle), so the data region is mostly real data, not padding.
-  // Versions 27+ use the widest character-count fields; 32 has a non-uniform alignment-pattern step; 40 is the largest.
+  // Versions 27+ use the widest character-count fields; 32 is the one version whose alignment-pattern step (26) is not given by the general formula; 40 is the largest.
   { id: 'render-version-27-byte', text: repeatTo('tingqr ', 1100), options: { ecc: 'M', minVersion: 27, maxVersion: 27 } },
   { id: 'render-version-32-alnum', text: repeatTo('TINGQR ', 1560), options: { ecc: 'Q', minVersion: 32, maxVersion: 32 } },
   // 2953 bytes is the byte-mode capacity of version 40 at ECC L: every data codeword is used.
