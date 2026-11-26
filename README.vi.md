@@ -7,8 +7,8 @@ TypeScript và bản [.NET](#net). Chạy offline, có kiểu rõ ràng, kiểm 
 > dùng thông báo của ngân hàng hay của bên trung gian thanh toán (ví dụ SePay).
 
 <!-- status:npm -->
-**Trạng thái: chưa phát hành.** v0.1 đợi có nhận diện QR MoMo, ZaloPay và quét thử bằng thêm app ngân hàng. Các gói npm
-dưới đây đã xong và có test trong repo này, nhưng chưa có trên npm.
+**Trạng thái: 0.1.0, bản phát hành đầu tiên.** QR VietQR đã được quét bằng hai app ngân hàng (MB Bank, MyVIB); VNPAY,
+PromptPay và KHQR chưa được quét bằng app thật, và chưa nhận diện QR MoMo, ZaloPay.
 
 Mục tiêu: đọc được mọi QR mà app ngân hàng Việt Nam quét được. Bảng dưới cho biết bằng chứng hiện có tới đâu.
 
@@ -40,8 +40,8 @@ của tingqr bằng app của mình? [Báo kết quả](https://github.com/ChuKh
 ## .NET
 
 <!-- status:nuget -->
-**Trạng thái: chưa phát hành.** Bốn gói NuGet dưới đây đã xong và có test trong repo này, nhưng chưa có trên NuGet. Số phiên
-bản của chúng riêng với các gói npm; bốn gói dùng chung một số.
+**Trạng thái: 0.1.0, bản phát hành đầu tiên.** Bằng chứng quét thử giống các gói npm. Số phiên bản của chúng riêng với
+các gói npm; bốn gói dùng chung một số.
 
 | Gói | Dùng để |
 |---|---|

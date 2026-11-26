@@ -1,4 +1,4 @@
-export const VERSION = '0.0.0'
+export const VERSION = '0.1.0'
 
 export { ERROR_CODES, WARNING_CODES, TingQrError } from './errors.js'
 export type { ErrorCode, WarningCode, Warning, Result } from './errors.js'

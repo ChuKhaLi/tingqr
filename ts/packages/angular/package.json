@@ -1,6 +1,6 @@
 {
   "name": "@tingqr/angular",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Angular component and pipe for payment QR codes (VietQR, PromptPay, KHQR…): SVG in SSR, PNG <img> in the browser. Signals, zoneless.",
   "license": "MIT",
   "author": "Chung Nguyen",

@@ -7,7 +7,7 @@ image.
 > identify the receiving bank or the app to open. Source and licence of every file:
 > [`LOGOS-NOTICE.md`](./LOGOS-NOTICE.md). The package's code is MIT.
 >
-> **Not released yet.** See the [repository README](https://github.com/ChuKhaLi/tingqr#readme) for status.
+> **0.1.0, the first release.** See the [repository README](https://github.com/ChuKhaLi/tingqr#readme) for status.
 
 ## What is in it
 

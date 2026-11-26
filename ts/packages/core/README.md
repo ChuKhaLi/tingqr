@@ -5,7 +5,7 @@ payload. Vietnamese banks and banking-app links. No dependencies; runs in browse
 
 > **tingqr does not confirm payments or receive webhooks.** It only builds, reads and draws QR codes.
 >
-> **Not released yet.** See the [repository README](https://github.com/ChuKhaLi/tingqr#readme) for status and for which
+> **0.1.0, the first release.** See the [repository README](https://github.com/ChuKhaLi/tingqr#readme) for status and for which
 > codes have been scanned with real banking apps (VietQR to an account: MB Bank, MyVIB; VietQR to a card: MB Bank read it, MyVIB did not;
 > VNPAY, PromptPay, KHQR: not yet).
 

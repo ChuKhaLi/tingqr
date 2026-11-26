@@ -1,11 +1,21 @@
 # Changelog
 
 Two release lines with their own version numbers: the six npm packages share one version (tags `ts-v*`), the four
-NuGet packages share another (tags `dotnet-v*`). Nothing has been published yet; see `docs/RELEASING.md`.
+NuGet packages share another (tags `dotnet-v*`). See `docs/RELEASING.md`.
 
 ## Unreleased (npm)
 
-Planned as 0.1.0, after MoMo and ZaloPay recognition and scans with more banking apps.
+Nothing yet.
+
+## Unreleased (NuGet, .NET)
+
+Nothing yet.
+
+## 0.1.0 (npm, 2026-11-27)
+
+First release. The owner chose to release before MoMo and ZaloPay recognition and before scans with more banking apps:
+VietQR has been scanned with MB Bank and MyVIB; VNPAY, PromptPay and KHQR have not been scanned with a real app
+(`conformance/scans.md`). A 0.0.1 placeholder was published by hand only to set up trusted publishing; do not use it.
 
 ### @tingqr/core
 
@@ -69,9 +79,9 @@ Planned as 0.1.0, after MoMo and ZaloPay recognition and scans with more banking
 - Only a tag that points to a commit on `main` publishes, and two releases never run at once (GitHub keeps one waiting
   run per group, so push one tag at a time). Not yet run on GitHub.
 
-## Unreleased (NuGet, .NET)
+## 0.1.0 (NuGet, .NET, 2026-11-27)
 
-Not published. The repository reads `0.0.0`; the first number is chosen when the owner decides to release.
+First release, at the same scan evidence as npm 0.1.0. Passes `conformance/` at `e4a4747`.
 
 Each .NET release entry names the `conformance/` commit whose vectors it passes (for example "passes `conformance/` at
 `abc1234`"), so a reader can tell which shared behaviour a version has. This is a manual step of `docs/RELEASING.md`:

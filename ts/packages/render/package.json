@@ -1,6 +1,6 @@
 {
   "name": "@tingqr/render",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Render payment QR payloads as a module matrix or SVG, with an optional centre logo. QR encoder ported from Project Nayuki (MIT).",
   "license": "MIT",
   "author": "Chung Nguyen",

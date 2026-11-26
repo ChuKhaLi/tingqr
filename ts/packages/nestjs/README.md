@@ -7,7 +7,7 @@ Tested on NestJS 12.6 with Express and with Fastify (CI). Peer range `>=10`; ver
 
 > tingqr does **not** confirm payments or receive webhooks. It only builds, reads and draws QR codes.
 >
-> **Not released yet.** See the [repository README](https://github.com/ChuKhaLi/tingqr#readme) for status and for which
+> **0.1.0, the first release.** See the [repository README](https://github.com/ChuKhaLi/tingqr#readme) for status and for which
 > codes have been scanned with real banking apps.
 
 ```sh

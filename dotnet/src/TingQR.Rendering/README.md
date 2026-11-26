@@ -3,11 +3,11 @@
 C# port of `@tingqr/render`: turn any text (usually a payment QR payload from `TingQR.Core`) into a QR module matrix or
 an SVG string. It does not confirm payments, receive webhooks or produce PNG files.
 
-**Status: not released.** Version `0.0.0`, not on NuGet. Targets `net10.0` and `netstandard2.0` (so it also runs on
+**Status: 0.1.0, the first release.** Targets `net10.0` and `netstandard2.0` (so it also runs on
 .NET Framework 4.6.1+; tested on `net481`). It depends on `TingQR.Core` and has no other dependency. The four TingQR
 packages share one version, separate from the npm packages.
 
-Once released, install it from NuGet:
+Install it from NuGet:
 
 ```sh
 dotnet add package TingQR.Rendering
@@ -77,9 +77,9 @@ lengths with the same string (ordinal).
 - Stryker.NET, local, Windows: `TingQR.Rendering` (2026-11-25) 99.42% = 486 killed + 31 timeouts of 520 counted
   mutants, 3 survived (all equivalent, documented in `dotnet/CLAUDE.md`); the ported encoder `QrCodeGen.cs` is excluded
   (876 mutants). `TingQR.Core` (2026-11-25) 100%: 1556 killed, 16 timeouts, 0 survived.
-- The Rendering mutation job passed on GitHub CI (Ubuntu, 2026-11-24), but only for the code before the 2026-11-25
-  changes. Those changes (the matrix vectors for versions 10, 27, 32 and 40, the 7089- and 7090-digit vectors, the
-  early rejection of texts over 7089 characters, `SvgSize` value equality) have not run on CI or on Linux.
+- On GitHub CI (Ubuntu), the Rendering mutation job and the tests passed on 2026-11-26 for the current code, including
+  the 2026-11-25 changes (the matrix vectors for versions 10, 27, 32 and 40, the 7089- and 7090-digit vectors, the early
+  rejection of texts over 7089 characters, `SvgSize` value equality).
 - During review the output was also compared with the TypeScript version on 1,500 random option combinations and
   574,640 numbers for `size`, with no difference. These were one-off checks, not tests in the repo.
 

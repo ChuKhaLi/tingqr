@@ -1,6 +1,6 @@
 {
   "name": "@tingqr/core",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Encode, decode and detect payment QR codes (VietQR first). Zero dependencies.",
   "license": "MIT",
   "author": "Chung Nguyen",

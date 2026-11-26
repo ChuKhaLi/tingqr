@@ -6,7 +6,7 @@ encoder is ported from Project Nayuki's QR Code generator (MIT, see NOTICE). No 
 
 > tingqr does **not** confirm payments or receive webhooks.
 >
-> **Not released yet.** See the [repository README](https://github.com/ChuKhaLi/tingqr#readme) for status and for which
+> **0.1.0, the first release.** See the [repository README](https://github.com/ChuKhaLi/tingqr#readme) for status and for which
 > codes have been scanned with real banking apps.
 
 ## SVG (browsers, Node, Workers, SSR)
