@@ -1,6 +1,6 @@
 {
   "name": "@tingqr/hono",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Hono helpers that serve payment QR codes as SVG from your own routes (no open query-string endpoint). Runs on Workers, Node, Bun and Deno.",
   "license": "MIT",
   "author": "Chung Nguyen",

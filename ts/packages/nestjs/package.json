@@ -1,6 +1,6 @@
 {
   "name": "@tingqr/nestjs",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "NestJS module for payment QR codes: configure the receiving account once, build VietQR with TingQrService, serve QR SVG from your controllers with @TingQrSvg(). Express and Fastify.",
   "license": "MIT",
   "author": "Chung Nguyen",

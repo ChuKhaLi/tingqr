@@ -7,8 +7,8 @@ TypeScript and [.NET](#net). Offline, typed, and tested against sourced sample c
 > that money arrived, use your bank's or a payment provider's notification (for example SePay).
 
 <!-- status:npm -->
-**Status: not released yet.** v0.1 waits for MoMo and ZaloPay recognition and for scans with more banking apps. The
-npm packages below are complete and tested in this repository; they are not on npm yet.
+**Status: 0.1.0, the first release.** VietQR codes have been scanned with two banking apps (MB Bank, MyVIB); VNPAY,
+PromptPay and KHQR have not been scanned with a real app yet, and MoMo and ZaloPay codes are not recognised yet.
 
 The goal: read every QR that Vietnamese banking apps can scan. The table below says how far the evidence goes today.
 
@@ -42,8 +42,8 @@ tingqr code with your app? [Report it](https://github.com/ChuKhaLi/tingqr/issues
 ## .NET
 
 <!-- status:nuget -->
-**Status: not released yet.** The four NuGet packages below are complete and have tests in this repository; they are not
-on NuGet yet. Their version number is separate from the npm packages; the four share one version.
+**Status: 0.1.0, the first release.** The same scan evidence as the npm packages applies. Their version number is
+separate from the npm packages; the four share one version.
 
 | Package | For |
 |---|---|

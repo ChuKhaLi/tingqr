@@ -4,5 +4,5 @@ namespace TingQR;
 public static class TingQrVersion
 {
     /// <summary>The version string.</summary>
-    public const string Value = "0.0.0";
+    public const string Value = "0.1.0";
 }

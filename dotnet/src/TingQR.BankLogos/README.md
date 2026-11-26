@@ -4,7 +4,7 @@ Vietnamese bank logos (by BIN) and banking-app icons (by app id) for payment QR 
 runtime dependencies. Part of [tingqr](https://github.com/ChuKhaLi/tingqr). This library does **not** confirm payments
 or receive webhooks.
 
-**Not released yet.**
+**0.1.0, the first release.**
 
 ## License: the images are not MIT
 

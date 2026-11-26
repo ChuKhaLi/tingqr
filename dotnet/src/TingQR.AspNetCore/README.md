@@ -6,7 +6,7 @@ endpoints or MVC controllers. No network calls. Targets `net10.0`.
 
 > tingqr does **not** confirm payments or receive webhooks. It only builds, reads and draws QR codes.
 >
-> **Not released yet.** Version `0.0.0`, not on NuGet. See the
+> **0.1.0, the first release.** See the
 > [repository README](https://github.com/ChuKhaLi/tingqr#readme) for status and for which codes have been scanned with
 > real banking apps.
 
