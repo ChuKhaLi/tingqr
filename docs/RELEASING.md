@@ -41,9 +41,11 @@ Nguồn các điều về npm (đọc ngày 2026-11-21; nên đọc lại trư�
    - Những gì đã biết đang nằm trong lịch sử:
      - **Đã làm (2026-11-22):** số tài khoản ảo nhận tiền của Noel tree trong file kết quả thử Noel tree đã được thay
        khỏi toàn bộ lịch sử `main` (`git filter-branch`, rồi force-push). Mọi mã commit từ commit đó trở đi đã đổi.
-       **Còn sót:** các PR cũ trên GitHub (#7 Plan 6 và các PR sau) vẫn giữ commit cũ trong `refs/pull/*`, và GitHub
-       vẫn cho xem commit cũ theo mã cho tới khi dọn rác. Muốn xoá hẳn thì phải nhờ GitHub Support, hoặc tạo repo mới
-       từ lịch sử đã sạch trước khi mở công khai;
+       Các PR cũ (#7, #8, #9) vẫn giữ commit cũ trong `refs/pull/*`. **Đã làm (2026-11-26):** repo cũ đổi tên thành
+       `ChuKhaLi/tingqr-archive` (riêng tư, chưa xoá); `ChuKhaLi/tingqr` là repo mới chỉ có `main` sạch (commit
+       `c277e12`, không `refs/pull/*`, không tag; trước khi push đã quét 231 commit ở máy, không còn số tài khoản), rồi
+       mở công khai. 13 PR cũ và lịch sử Actions nằm lại ở repo archive. **Còn lại:** xoá `tingqr-archive` (chủ dự
+       án), vì commit cũ vẫn còn trong đó;
      - email tác giả trong mọi commit;
      - các ghi chú bàn giao và kế hoạch nội bộ trong `docs/superpowers/`.
    - Nên chạy thêm một công cụ dò bí mật trên toàn bộ lịch sử (ví dụ `gitleaks detect` hay `trufflehog git`), và kiểm
@@ -51,7 +53,7 @@ Nguồn các điều về npm (đọc ngày 2026-11-21; nên đọc lại trư�
      quét thật). Claude không đọc được `conformance/private/`, nên việc kiểm này phải do chủ dự án làm.
    - Muốn xoá thứ gì khỏi lịch sử thì phải viết lại lịch sử (ví dụ `git filter-repo`) và force-push. Việc này không rút
      lại được và làm hỏng mọi bản clone cũ. Làm **trước** khi mở công khai, sau khi đã sao lưu repo.
-1. **Mở công khai repo** `ChuKhaLi/tingqr`.
+1. **Mở công khai repo** `ChuKhaLi/tingqr`. **Đã làm (2026-11-26).**
    - Đây là điều kiện bắt buộc: job `publish` từ chối chạy khi repo còn riêng tư. Với repo riêng tư, bước duyệt của
      GitHub environment chỉ có ở gói Enterprise, nên chỉ cần đẩy tag là gói phát hành luôn.
    - Provenance trên npm cũng chỉ có khi repo công khai.

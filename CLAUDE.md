@@ -55,7 +55,8 @@ TypeScript và bản .NET, kèm tích hợp sẵn cho Angular, NestJS và ASP.NE
       - ngân sách core 45 KB (nâng lên 48 000 byte ở Plan 7);
       - logo PNG thu về WebP lossless cao 128 px;
       - gói `bank-logos` khoảng 1,8 MB.
-  - Repo GitHub riêng tư `ChuKhaLi/tingqr`; CI (`ci-ts.yml`) và mutation (`mutation-ts.yml`, ngưỡng 90%) chạy trên PR.
+  - Repo GitHub **công khai** `ChuKhaLi/tingqr` từ 2026-11-26 (repo mới, lịch sử `main` sạch; repo cũ là
+    `ChuKhaLi/tingqr-archive`, riêng tư, giữ các PR #1–#13 cũ, chờ chủ dự án xoá; xem `docs/RELEASING.md` bước 0); CI (`ci-ts.yml`) và mutation (`mutation-ts.yml`, ngưỡng 90%) chạy trên PR.
   - **VietQR đã quét bằng app thật** (2026-11-21, Android 16, màn hình và giấy): MB Bank và MyVIB đọc đúng QR tĩnh và QR
     có số tiền, có và không có logo thử (`conformance/scans.md`). Chưa thử iPhone, app khác. VNPAY, PromptPay, KHQR
     chưa quét bằng app thật.
